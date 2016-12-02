@@ -22,4 +22,7 @@
   succeeded
 
 `lebab src/index.js -o src/index.js --transform obj-shorthand`
+  succeeded
+
+`lebab src/index.js -o src/index.js --transform no-strict`
 

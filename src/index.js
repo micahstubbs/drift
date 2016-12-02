@@ -1,4 +1,4 @@
-"use strict";(function(){ var lodash = window._; window.Flow={}; window.H2O={};(function () {
+(function(){ var lodash = window._; window.Flow={}; window.H2O={};(function () {
     var checkSparklingWater, getContextPath;
     getContextPath = function () {
         window.Flow.ContextPath = '/';
