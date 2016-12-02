@@ -21,4 +21,5 @@
 `lebab src/index.js -o src/index.js --transform obj-method`
   succeeded
 
+`lebab src/index.js -o src/index.js --transform obj-shorthand`
 

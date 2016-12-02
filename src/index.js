@@ -68,7 +68,7 @@
                             _ref1 = _ref[_i], name = _ref1.name, value = _ref1.value;
                             properties.push({
                                 caption: 'H2O ' + name,
-                                value: value
+                                value
                             });
                         }
                     }
@@ -100,7 +100,7 @@
             title: _opts.title,
             acceptCaption: _opts.acceptCaption,
             message: Flow.Util.multilineTextToHTML(_message),
-            accept: accept,
+            accept,
             template: 'alert-dialog'
         };
     };
@@ -154,8 +154,8 @@
                 name: _name,
                 date: _date,
                 fromNow: _fromNow,
-                load: load,
-                purge: purge
+                load,
+                purge
             };
         };
         loadNotebooks = function () {
@@ -181,7 +181,7 @@
         return {
             docs: _sortedDocs,
             hasDocs: _hasDocs,
-            loadNotebooks: loadNotebooks
+            loadNotebooks
         };
     };
 }.call(this));
@@ -331,16 +331,16 @@
             result: _result,
             hasOutput: _hasOutput,
             isInputVisible: _isInputVisible,
-            toggleInput: toggleInput,
+            toggleInput,
             isOutputHidden: _isOutputHidden,
-            toggleOutput: toggleOutput,
-            select: select,
-            navigate: navigate,
-            activate: activate,
-            execute: execute,
-            clear: clear,
-            clip: clip,
-            _actions: _actions,
+            toggleOutput,
+            select,
+            navigate,
+            activate,
+            execute,
+            clear,
+            clip,
+            _actions,
             getCursorPosition() {
                 return _actions.getCursorPosition();
             },
@@ -409,8 +409,8 @@
             return self = {
                 type: _type,
                 input: _input,
-                execute: execute,
-                insert: insert,
+                execute,
+                insert,
                 remove: Flow.Prelude.remove,
                 canRemove: _canRemove
             };
@@ -490,7 +490,7 @@
             trashClips: _trashClips,
             trashClipCount: _trashClipCount,
             hasTrashClips: _hasTrashClips,
-            emptyTrash: emptyTrash
+            emptyTrash
         };
     };
 }.call(this));
@@ -603,8 +603,8 @@
             acceptCaption: _opts.acceptCaption,
             declineCaption: _opts.declineCaption,
             message: Flow.Util.multilineTextToHTML(_message),
-            accept: accept,
-            decline: decline,
+            accept,
+            decline,
             template: 'confirm-dialog'
         };
     };
@@ -630,11 +630,11 @@
         };
         _.trackException(message + '; ' + causes.join('; '));
         return {
-            message: message,
+            message,
             stack: error.stack,
-            causes: causes,
+            causes,
             isStackVisible: _isStackVisible,
-            toggleStack: toggleStack,
+            toggleStack,
             template: 'flow-failure'
         };
     };
@@ -936,10 +936,10 @@
         });
         return {
             content: _content,
-            goHome: goHome,
-            goBack: goBack,
+            goHome,
+            goBack,
             canGoBack: _canGoBack,
-            goForward: goForward,
+            goForward,
             canGoForward: _canGoForward
         };
     };
@@ -1057,7 +1057,7 @@
             }();
             return {
                 version: '1.0.0',
-                cells: cells
+                cells
             };
         };
         deserialize = function (localName, remoteName, doc) {
@@ -1645,13 +1645,13 @@
         startTour = notImplemented;
         createMenu = function (label, items) {
             return {
-                label: label,
-                items: items
+                label,
+                items
             };
         };
         createMenuHeader = function (label) {
             return {
-                label: label,
+                label,
                 action: null
             };
         };
@@ -1665,7 +1665,7 @@
             kbds = shortcut ? createShortcutHint(shortcut) : '';
             return {
                 label: '' + lodash.escape(label) + kbds,
-                action: action
+                action
             };
         };
         menuDivider = {
@@ -1805,9 +1805,9 @@
                 isDisabled = false;
             }
             return {
-                label: label,
-                action: action,
-                isDisabled: isDisabled,
+                label,
+                action,
+                isDisabled,
                 icon: 'fa fa-' + icon
             };
         };
@@ -2029,8 +2029,8 @@
                 return '<kbd>' + key + '</kbd>';
             }).join(' ');
             return {
-                keystrokes: keystrokes,
-                caption: caption
+                keystrokes,
+                caption
             };
         };
         normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
@@ -2075,8 +2075,8 @@
         return {
             name: _localName,
             isEditingName: _isEditingName,
-            editName: editName,
-            saveName: saveName,
+            editName,
+            saveName,
             menus: _menus,
             sidebar: _sidebar,
             status: _status,
@@ -2089,8 +2089,8 @@
             runningCaption: _runningCaption,
             runningPercent: _runningPercent,
             runningCellInput: _runningCellInput,
-            stopRunningAll: stopRunningAll,
-            toggleSidebar: toggleSidebar,
+            stopRunningAll,
+            toggleSidebar,
             shortcutsHelp: {
                 normalMode: normalModeKeyboardShortcutsHelp,
                 editMode: editModeKeyboardShortcutsHelp
@@ -2211,9 +2211,9 @@
             return _isExpanded(!_isExpanded());
         };
         return {
-            key: key,
+            key,
             preview: preview(object, true),
-            toggle: toggle,
+            toggle,
             expansions: _expansions,
             isExpanded: _isExpanded,
             canExpand: _canExpand
@@ -2295,16 +2295,16 @@
         return {
             outline: _outline,
             isOutlineMode: _isOutlineMode,
-            switchToOutline: switchToOutline,
+            switchToOutline,
             browser: _browser,
             isBrowserMode: _isBrowserMode,
-            switchToBrowser: switchToBrowser,
+            switchToBrowser,
             clipboard: _clipboard,
             isClipboardMode: _isClipboardMode,
-            switchToClipboard: switchToClipboard,
+            switchToClipboard,
             help: _help,
             isHelpMode: _isHelpMode,
-            switchToHelp: switchToHelp
+            switchToHelp
         };
     };
 }.call(this));
@@ -2689,14 +2689,14 @@
         }
     };
     Flow.Async = {
-        createBuffer: createBuffer,
+        createBuffer,
         noop: _noop,
         applicate: _applicate,
         isFuture: _isFuture,
         fork: _fork,
         join: _join,
-        pipe: pipe,
-        iterate: iterate,
+        pipe,
+        iterate,
         async: _async,
         find: _find,
         get: _get
@@ -2901,7 +2901,7 @@
                     rootScope = parseDeclarations(program.body[0].expression['arguments'][0].callee.body);
                     for (name in sandbox.context) {
                         rootScope[name] = {
-                            name: name,
+                            name,
                             object: '_h2o_context_'
                         };
                     }
@@ -2943,7 +2943,7 @@
             }
             for (name in routines) {
                 globalScope[name] = {
-                    name: name,
+                    name,
                     object: 'h2o'
                 };
             }
@@ -3018,15 +3018,15 @@
             };
         };
         return {
-            safetyWrapCoffeescript: safetyWrapCoffeescript,
-            compileCoffeescript: compileCoffeescript,
-            parseJavascript: parseJavascript,
-            createRootScope: createRootScope,
-            removeHoistedDeclarations: removeHoistedDeclarations,
-            rewriteJavascript: rewriteJavascript,
-            generateJavascript: generateJavascript,
-            compileJavascript: compileJavascript,
-            executeJavascript: executeJavascript
+            safetyWrapCoffeescript,
+            compileCoffeescript,
+            parseJavascript,
+            createRootScope,
+            removeHoistedDeclarations,
+            rewriteJavascript,
+            generateJavascript,
+            compileJavascript,
+            executeJavascript
         };
     }();
 }.call(this));
@@ -3113,14 +3113,14 @@
             return _results;
         };
         return {
-            label: label,
-            description: description,
-            schema: schema,
-            variables: variables,
-            rows: rows,
-            meta: meta,
-            fill: fill,
-            expand: expand,
+            label,
+            description,
+            schema,
+            variables,
+            rows,
+            meta,
+            fill,
+            expand,
             _is_table_: true
         };
     };
@@ -3288,11 +3288,11 @@
             }
         },
         Record: createRecordConstructor,
-        computeRange: computeRange,
-        combineRanges: combineRanges,
-        includeZeroInRange: includeZeroInRange,
-        factor: factor,
-        permute: permute
+        computeRange,
+        combineRanges,
+        includeZeroInRange,
+        factor,
+        permute
     };
 }.call(this));
 (function () {
@@ -3317,7 +3317,7 @@
                     throw new Error('Cannot re-attach slot');
                 } else {
                     return arrow = {
-                        func: func,
+                        func,
                         dispose() {
                             return arrow = null;
                         }
@@ -3345,7 +3345,7 @@
                 var arrow;
                 console.assert(lodash.isFunction(func));
                 arrows.push(arrow = {
-                    func: func,
+                    func,
                     dispose() {
                         return Flow.Prelude.remove(arrows, arrow);
                     }
@@ -3391,7 +3391,7 @@
                     var arrow;
                     console.assert(lodash.isFunction(func));
                     arrows.push(arrow = {
-                        func: func,
+                        func,
                         dispose() {
                             return Flow.Prelude.remove(arrows, arrow);
                         }
@@ -3642,7 +3642,7 @@
         };
     };
     Flow.Format = {
-        Digits: Digits,
+        Digits,
         Real: formatReal,
         Date: formatDate,
         Time: formatTime
@@ -3652,7 +3652,7 @@
     Flow.Growl = function (_) {
         return Flow.Dataflow.link(_.growl, function (message, type) {
             if (type) {
-                return $.bootstrapGrowl(message, { type: type });
+                return $.bootstrapGrowl(message, { type });
             } else {
                 return $.bootstrapGrowl(message);
             }
@@ -3696,7 +3696,7 @@
         }
         guid = 'gui_' + lodash.uniqueId();
         return {
-            type: type,
+            type,
             id: opts.id || guid,
             label: Flow.Dataflow.signal(opts.label || ' '),
             description: Flow.Dataflow.signal(opts.description || ' '),
@@ -3766,15 +3766,15 @@
         return self;
     };
     Flow.Gui = {
-        text: text,
-        html: html,
-        markdown: markdown,
-        checkbox: checkbox,
-        dropdown: dropdown,
-        listbox: listbox,
-        textbox: textbox,
-        textarea: textarea,
-        button: button
+        text,
+        html,
+        markdown,
+        checkbox,
+        dropdown,
+        listbox,
+        textbox,
+        textarea,
+        button
     };
 }.call(this));
 (function () {
@@ -4069,10 +4069,10 @@
         }
     };
     Flow.LocalStorage = {
-        list: list,
-        read: read,
-        write: write,
-        purge: purge
+        list,
+        read,
+        write,
+        purge
     };
 }.call(this));
 (function () {
@@ -4198,7 +4198,7 @@
 (function () {
     Flow.Sandbox = function (_, routines) {
         return {
-            routines: routines,
+            routines,
             context: {},
             results: {}
         };
@@ -4311,16 +4311,16 @@
         }
     };
     Flow.Util = {
-        describeCount: describeCount,
-        fromNow: fromNow,
-        formatBytes: formatBytes,
-        formatMilliseconds: formatMilliseconds,
-        formatElapsedTime: formatElapsedTime,
-        formatClockTime: formatClockTime,
-        multilineTextToHTML: multilineTextToHTML,
+        describeCount,
+        fromNow,
+        formatBytes,
+        formatMilliseconds,
+        formatElapsedTime,
+        formatClockTime,
+        multilineTextToHTML,
         uuid: (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null,
-        sanitizeName: sanitizeName,
-        highlight: highlight
+        sanitizeName,
+        highlight
     };
 }.call(this));
 (function () {
@@ -4423,7 +4423,7 @@
             }
             return $.ajax({
                 dataType: type,
-                url: url,
+                url,
                 success(data, status, xhr) {
                     return go(null, data);
                 },
@@ -4604,7 +4604,7 @@
             };
         };
         requestExec = function (ast, go) {
-            return doPost('/99/Rapids', { ast: ast }, function (error, result) {
+            return doPost('/99/Rapids', { ast }, function (error, result) {
                 if (error) {
                     return go(error);
                 } else {
@@ -4677,7 +4677,7 @@
         requestExportFrame = function (key, path, overwrite, go) {
             var params;
             params = {
-                path: path,
+                path,
                 force: overwrite ? 'true' : 'false'
             };
             return doPost('/3/Frames/' + encodeURIComponent(key) + '/export', params, go);
@@ -4718,7 +4718,7 @@
             var opts;
             opts = {
                 src: encodeURIComponent(path),
-                limit: limit
+                limit
             };
             return requestWithOpts('/3/Typeahead/files', opts, go);
         };
@@ -4746,7 +4746,7 @@
             opts = {
                 source_frames: encodeArrayForPost(sourceKeys),
                 parse_type: parseType,
-                separator: separator,
+                separator,
                 single_quotes: useSingleQuotes,
                 check_header: checkHeader,
                 column_types: encodeArrayForPost(columnTypes)
@@ -4759,7 +4759,7 @@
                 destination_frame: destinationKey,
                 source_frames: encodeArrayForPost(sourceKeys),
                 parse_type: parseType,
-                separator: separator,
+                separator,
                 number_columns: columnCount,
                 single_quotes: useSingleQuotes,
                 column_names: encodeArrayForPost(columnNames),
@@ -5089,7 +5089,7 @@
             return doDelete('/3/DKV', go);
         };
         requestEcho = function (message, go) {
-            return doPost('/3/LogAndEcho', { message: message }, go);
+            return doPost('/3/LogAndEcho', { message }, go);
         };
         requestLogFile = function (nodeIndex, fileType, go) {
             return doGet('/3/Logs/nodes/' + nodeIndex + '/files/' + fileType, go);
@@ -5149,7 +5149,7 @@
             return doPost('/3/scalaint', {}, go);
         };
         requestScalaCode = function (session_id, code, go) {
-            return doPost('/3/scalaint/' + session_id, { code: code }, go);
+            return doPost('/3/scalaint/' + session_id, { code }, go);
         };
         requestAsH2OFrameFromRDD = function (rdd_id, name, go) {
             if (name === void 0) {
@@ -5407,7 +5407,7 @@
         return {
             name: leader.name,
             columns: leader.columns,
-            data: data,
+            data,
             rowcount: rowCount
         };
     };
@@ -5750,7 +5750,7 @@
                     for (i = _i = 0, _len = tps.length; _i < _len; i = ++_i) {
                         tp = tps[i];
                         _results.push({
-                            domain: domain,
+                            domain,
                             matrix: [
                                 [
                                     tns[i],
@@ -5982,7 +5982,7 @@
             return function () {
                 return convertTableToFrame(table, tableName, {
                     description: table.description || '',
-                    origin: origin
+                    origin
                 });
             };
         };
@@ -5990,7 +5990,7 @@
             return function () {
                 return createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
                     description: '',
-                    origin: origin
+                    origin
                 });
             };
         };
@@ -5998,7 +5998,7 @@
             return function () {
                 return createDataframe(name, [createList(name, parseAndFormatObjectArray(array))], lodash.range(array.length), null, {
                     description: '',
-                    origin: origin
+                    origin
                 });
             };
         };
@@ -6016,7 +6016,7 @@
                 }();
                 return createDataframe(name, vectors, lodash.range(1), null, {
                     description: '',
-                    origin: origin
+                    origin
                 });
             };
         };
@@ -6601,8 +6601,8 @@
                 var counts, i, labels, level, levels, percents, sortedLevels, vectors, _i, _len, _ref1;
                 levels = lodash.map(column.histogram_bins, function (count, index) {
                     return {
-                        count: count,
-                        index: index
+                        count,
+                        index
                     };
                 });
                 sortedLevels = lodash.sortBy(levels, function (level) {
@@ -6748,8 +6748,8 @@
                 key = _ref1[i];
                 sum += ratio = ratios[i];
                 parts.push({
-                    key: key,
-                    ratio: ratio
+                    key,
+                    ratio
                 });
             }
             parts.push({
@@ -7297,7 +7297,7 @@
                         if (error) {
                             return go(error);
                         } else {
-                            return go(null, extendParseSetupResults({ paths: paths }, parseSetupResults));
+                            return go(null, extendParseSetupResults({ paths }, parseSetupResults));
                         }
                     });
                 }
@@ -7476,33 +7476,33 @@
                         for (_j = 0, _len1 = frames.length; _j < _len1; _j++) {
                             frame = frames[_j];
                             combos.push({
-                                model: model,
-                                frame: frame
+                                model,
+                                frame
                             });
                         }
                     }
                     return _fork(requestPredicts, combos);
                 } else {
                     return assist(predict, {
-                        predictions_frame: predictions_frame,
-                        models: models,
-                        frames: frames
+                        predictions_frame,
+                        models,
+                        frames
                     });
                 }
             } else {
                 if (model && frame) {
                     return _fork(requestPredict, predictions_frame, model, frame, {
-                        reconstruction_error: reconstruction_error,
-                        deep_features_hidden_layer: deep_features_hidden_layer,
-                        leaf_node_assignment: leaf_node_assignment
+                        reconstruction_error,
+                        deep_features_hidden_layer,
+                        leaf_node_assignment
                     });
                 } else if (model && exemplar_index !== void 0) {
-                    return _fork(requestPredict, predictions_frame, model, null, { exemplar_index: exemplar_index });
+                    return _fork(requestPredict, predictions_frame, model, null, { exemplar_index });
                 } else {
                     return assist(predict, {
-                        predictions_frame: predictions_frame,
-                        model: model,
-                        frame: frame
+                        predictions_frame,
+                        model,
+                        frame
                     });
                 }
             }
@@ -7550,9 +7550,9 @@
                 return _fork(requestPrediction, model, frame);
             } else {
                 return assist(getPrediction, {
-                    predictions_frame: predictions_frame,
-                    model: model,
-                    frame: frame
+                    predictions_frame,
+                    model,
+                    frame
                 });
             }
         };
@@ -7787,8 +7787,8 @@
             var onDone, onFail;
             onDone = function (script, status) {
                 return go(null, {
-                    script: script,
-                    status: status
+                    script,
+                    status
                 });
             };
             onFail = function (jqxhr, settings, error) {
@@ -7892,66 +7892,66 @@
             react: Flow.Dataflow.react,
             lift: Flow.Dataflow.lift,
             merge: Flow.Dataflow.merge,
-            dump: dump,
-            inspect: inspect,
-            plot: plot,
-            grid: grid,
+            dump,
+            inspect,
+            plot,
+            grid,
             get: _get,
-            assist: assist,
-            gui: gui,
-            loadScript: loadScript,
-            getJobs: getJobs,
-            getJob: getJob,
-            cancelJob: cancelJob,
-            importFiles: importFiles,
-            setupParse: setupParse,
-            parseFiles: parseFiles,
-            createFrame: createFrame,
-            splitFrame: splitFrame,
-            mergeFrames: mergeFrames,
-            buildPartialDependence: buildPartialDependence,
-            getPartialDependence: getPartialDependence,
-            getFrames: getFrames,
-            getFrame: getFrame,
-            bindFrames: bindFrames,
-            getFrameSummary: getFrameSummary,
-            getFrameData: getFrameData,
-            deleteFrames: deleteFrames,
-            deleteFrame: deleteFrame,
-            exportFrame: exportFrame,
-            getColumnSummary: getColumnSummary,
-            changeColumnType: changeColumnType,
-            imputeColumn: imputeColumn,
-            buildModel: buildModel,
-            buildAutoModel: buildAutoModel,
-            getGrids: getGrids,
-            getModels: getModels,
-            getModel: getModel,
-            getGrid: getGrid,
-            deleteModels: deleteModels,
-            deleteModel: deleteModel,
-            importModel: importModel,
-            exportModel: exportModel,
-            predict: predict,
-            getPrediction: getPrediction,
-            getPredictions: getPredictions,
-            getCloud: getCloud,
-            getTimeline: getTimeline,
-            getProfile: getProfile,
-            getStackTrace: getStackTrace,
-            getLogFile: getLogFile,
-            testNetwork: testNetwork,
-            deleteAll: deleteAll
+            assist,
+            gui,
+            loadScript,
+            getJobs,
+            getJob,
+            cancelJob,
+            importFiles,
+            setupParse,
+            parseFiles,
+            createFrame,
+            splitFrame,
+            mergeFrames,
+            buildPartialDependence,
+            getPartialDependence,
+            getFrames,
+            getFrame,
+            bindFrames,
+            getFrameSummary,
+            getFrameData,
+            deleteFrames,
+            deleteFrame,
+            exportFrame,
+            getColumnSummary,
+            changeColumnType,
+            imputeColumn,
+            buildModel,
+            buildAutoModel,
+            getGrids,
+            getModels,
+            getModel,
+            getGrid,
+            deleteModels,
+            deleteModel,
+            importModel,
+            exportModel,
+            predict,
+            getPrediction,
+            getPredictions,
+            getCloud,
+            getTimeline,
+            getProfile,
+            getStackTrace,
+            getLogFile,
+            testNetwork,
+            deleteAll
         };
         if (_.onSparklingWater) {
             routinesOnSw = {
-                getDataFrames: getDataFrames,
-                getRDDs: getRDDs,
-                getScalaIntp: getScalaIntp,
-                runScalaCode: runScalaCode,
-                asH2OFrameFromRDD: asH2OFrameFromRDD,
-                asH2OFrameFromDF: asH2OFrameFromDF,
-                asDataFrame: asDataFrame
+                getDataFrames,
+                getRDDs,
+                getScalaIntp,
+                runScalaCode,
+                asH2OFrameFromRDD,
+                asH2OFrameFromDF,
+                asDataFrame
             };
             for (attrname in routinesOnSw) {
                 routines[attrname] = routinesOnSw[attrname];
@@ -7969,8 +7969,8 @@
         return Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
     };
     H2O.Util = {
-        validateFileExtension: validateFileExtension,
-        getFileBaseName: getFileBaseName
+        validateFileExtension,
+        getFileBaseName
     };
 }.call(this));
 (function () {
@@ -7978,7 +7978,7 @@
         var createAssistItem, item, name;
         createAssistItem = function (name, item) {
             return {
-                name: name,
+                name,
                 description: item.description,
                 icon: 'fa fa-' + item.icon + ' flow-icon',
                 execute() {
@@ -8032,7 +8032,7 @@
             arg = {
                 frame: _frame(),
                 column: _column(),
-                maxRunTime: maxRunTime
+                maxRunTime
             };
             return _.insertAndExecuteCell('cs', 'buildAutoModel ' + JSON.stringify(arg));
         };
@@ -8091,7 +8091,7 @@
             column: _column,
             maxRunTime: _maxRunTime,
             canBuildModel: _canBuildModel,
-            buildModel: buildModel,
+            buildModel,
             template: 'flow-automodel-input'
         };
     };
@@ -8104,7 +8104,7 @@
         };
         lodash.defer(_go);
         return {
-            viewFrame: viewFrame,
+            viewFrame,
             template: 'flow-bind-frames-output'
         };
     };
@@ -8457,10 +8457,10 @@
             nodes: _nodes,
             isLive: _isLive,
             isBusy: _isBusy,
-            toggleRefresh: toggleRefresh,
-            refresh: refresh,
+            toggleRefresh,
+            refresh,
             isExpanded: _isExpanded,
-            toggleExpansion: toggleExpansion,
+            toggleExpansion,
             template: 'flow-cloud-output'
         };
     };
@@ -8515,8 +8515,8 @@
             summaryPlot: _summaryPlot,
             distributionPlot: _distributionPlot,
             domainPlot: _domainPlot,
-            impute: impute,
-            inspect: inspect,
+            impute,
+            inspect,
             template: 'flow-column-summary-output'
         };
     };
@@ -8589,7 +8589,7 @@
             missingFraction: _missingFraction,
             responseFactors: _responseFactors,
             hasResponse: _hasResponse,
-            createFrame: createFrame,
+            createFrame,
             template: 'flow-create-frame-input'
         };
     };
@@ -8674,7 +8674,7 @@
             path: _path,
             overwrite: _overwrite,
             canExportFrame: _canExportFrame,
-            exportFrame: exportFrame,
+            exportFrame,
             template: 'flow-export-frame-input'
         };
     };
@@ -8724,7 +8724,7 @@
             path: _path,
             overwrite: _overwrite,
             canExportModel: _canExportModel,
-            exportModel: exportModel,
+            exportModel,
             template: 'flow-export-model-input'
         };
     };
@@ -8756,8 +8756,8 @@
         uploadFile = function (basename) {
             return _.requestUploadObject('notebook', basename, new FormData(_form()), function (error, filename) {
                 return _go({
-                    error: error,
-                    filename: filename
+                    error,
+                    filename
                 });
             });
         };
@@ -8786,8 +8786,8 @@
             file: _file,
             overwrite: _overwrite,
             canAccept: _canAccept,
-            accept: accept,
-            decline: decline,
+            accept,
+            decline,
             template: 'file-open-dialog'
         };
     };
@@ -8800,8 +8800,8 @@
         uploadFile = function (key) {
             return _.requestUploadFile(key, new FormData(_form()), function (error, result) {
                 return _go({
-                    error: error,
-                    result: result
+                    error,
+                    result
                 });
             });
         };
@@ -8817,8 +8817,8 @@
         return {
             form: _form,
             file: _file,
-            accept: accept,
-            decline: decline,
+            accept,
+            decline,
             template: 'file-upload-dialog'
         };
     };
@@ -8892,8 +8892,8 @@
             columnNameSearchTerm: _columnNameSearchTerm,
             canGoToPreviousPage: _canGoToPreviousPage,
             canGoToNextPage: _canGoToNextPage,
-            goToPreviousPage: goToPreviousPage,
-            goToNextPage: goToNextPage,
+            goToPreviousPage,
+            goToNextPage,
             template: 'flow-frame-data-output'
         };
     };
@@ -9030,18 +9030,18 @@
             distributionSummary: _distributionSummary,
             columnNameSearchTerm: _columnNameSearchTerm,
             grid: _grid,
-            inspect: inspect,
-            createModel: createModel,
-            inspectData: inspectData,
-            splitFrame: splitFrame,
-            predict: predict,
-            download: download,
-            exportFrame: exportFrame,
+            inspect,
+            createModel,
+            inspectData,
+            splitFrame,
+            predict,
+            download,
+            exportFrame,
             canGoToPreviousPage: _canGoToPreviousPage,
             canGoToNextPage: _canGoToNextPage,
-            goToPreviousPage: goToPreviousPage,
-            goToNextPage: goToNextPage,
-            deleteFrame: deleteFrame,
+            goToPreviousPage,
+            goToNextPage,
+            deleteFrame,
             template: 'flow-frame-output'
         };
     };
@@ -9112,10 +9112,10 @@
                 rowCount: frame.rows,
                 columnCount: frame.columns,
                 isText: frame.is_text,
-                view: view,
-                predict: predict,
-                inspect: inspect,
-                createModel: createModel
+                view,
+                predict,
+                inspect,
+                createModel
             };
         };
         importFiles = function () {
@@ -9151,9 +9151,9 @@
         return {
             frameViews: _frameViews,
             hasFrames: _frames.length > 0,
-            importFiles: importFiles,
-            predictOnFrames: predictOnFrames,
-            deleteFrames: deleteFrames,
+            importFiles,
+            predictOnFrames,
+            deleteFrames,
             hasSelectedFrames: _hasSelectedFrames,
             checkAllFrames: _checkAllFrames,
             template: 'flow-frames-output'
@@ -9225,10 +9225,10 @@
             return {
                 key: model_id.name,
                 isChecked: _isChecked,
-                predict: predict,
+                predict,
                 clone: cloneModel,
-                inspect: inspect,
-                view: view
+                inspect,
+                view
             };
         };
         buildModel = function () {
@@ -9311,17 +9311,17 @@
             hasModels: _hasModels,
             errorViews: _errorViews,
             hasErrors: _hasErrors,
-            buildModel: buildModel,
-            compareModels: compareModels,
-            predictUsingModels: predictUsingModels,
-            deleteModels: deleteModels,
+            buildModel,
+            compareModels,
+            predictUsingModels,
+            deleteModels,
             checkedModelCount: _checkedModelCount,
             canCompareModels: _canCompareModels,
             hasSelectedModels: _hasSelectedModels,
             checkAllModels: _checkAllModels,
-            inspect: inspect,
-            inspectHistory: inspectHistory,
-            inspectAll: inspectAll,
+            inspect,
+            inspectHistory,
+            inspectAll,
             template: 'flow-grid-output'
         };
     };
@@ -9338,7 +9338,7 @@
             return {
                 key: grid.grid_id.name,
                 size: grid.model_ids.length,
-                view: view
+                view
             };
         };
         buildModel = function () {
@@ -9352,7 +9352,7 @@
         return {
             gridViews: _gridViews,
             hasGrids: _grids.length > 0,
-            buildModel: buildModel,
+            buildModel,
             template: 'flow-grids-output'
         };
     };
@@ -9445,7 +9445,7 @@
         createSelectedFileItem = function (path) {
             var self;
             return self = {
-                path: path,
+                path,
                 deselect() {
                     var file, _i, _len, _ref;
                     _selectedFiles.remove(self);
@@ -9462,7 +9462,7 @@
         createFileItem = function (path, isSelected) {
             var self;
             self = {
-                path: path,
+                path,
                 isSelected: Flow.Dataflow.signal(isSelected),
                 select() {
                     _selectedFiles.push(createSelectedFileItem(self.path));
@@ -9485,7 +9485,7 @@
             return _.requestFileGlob(query, 10, function (error, result) {
                 if (!error) {
                     return process(lodash.map(result.matches, function (value) {
-                        return { value: value };
+                        return { value };
                     }));
                 }
             });
@@ -9525,18 +9525,18 @@
             specifiedPath: _specifiedPath,
             hasErrorMessage: _hasErrorMessage,
             exception: _exception,
-            tryImportFiles: tryImportFiles,
+            tryImportFiles,
             listPathHints: lodash.throttle(listPathHints, 100),
             hasImportedFiles: _hasImportedFiles,
             importedFiles: _importedFiles,
             importedFileCount: _importedFileCount,
             selectedFiles: _selectedFiles,
-            selectAllFiles: selectAllFiles,
-            deselectAllFiles: deselectAllFiles,
+            selectAllFiles,
+            deselectAllFiles,
             hasUnselectedFiles: _hasUnselectedFiles,
             hasSelectedFiles: _hasSelectedFiles,
             selectedFileCount: _selectedFileCount,
-            importSelectedFiles: importSelectedFiles,
+            importSelectedFiles,
             template: 'flow-import-files'
         };
     };
@@ -9566,7 +9566,7 @@
             title: _title,
             importViews: _importViews,
             canParse: _canParse,
-            parse: parse,
+            parse,
             template: 'flow-import-files-output',
             templateOf(view) {
                 return view.template;
@@ -9593,7 +9593,7 @@
             path: _path,
             overwrite: _overwrite,
             canImportModel: _canImportModel,
-            importModel: importModel,
+            importModel,
             template: 'flow-import-model-input'
         };
     };
@@ -9606,7 +9606,7 @@
         };
         lodash.defer(_go);
         return {
-            viewModel: viewModel,
+            viewModel,
             template: 'flow-import-model-output'
         };
     };
@@ -9747,7 +9747,7 @@
             canGroupByColumns: _canGroupByColumns,
             groupByColumns: _groupByColumns,
             canImpute: _canImpute,
-            impute: impute,
+            impute,
             template: 'flow-impute-input'
         };
     };
@@ -9765,9 +9765,9 @@
         return {
             label: _frame.label,
             vectors: _frame.vectors,
-            view: view,
+            view,
             canPlot: _frame.metadata.plot ? true : false,
-            plot: plot,
+            plot,
             template: 'flow-inspect-output'
         };
     };
@@ -9789,10 +9789,10 @@
             return {
                 label: table.label,
                 description: table.metadata.description,
-                inspect: inspect,
-                grid: grid,
+                inspect,
+                grid,
                 canPlot: table.metadata.plot ? true : false,
-                plot: plot
+                plot
             };
         };
         lodash.defer(_go);
@@ -9993,8 +9993,8 @@
             isLive: _isLive,
             canView: _canView,
             canCancel: _canCancel,
-            cancel: cancel,
-            view: view,
+            cancel,
+            view,
             template: 'flow-job-output'
         };
     };
@@ -10030,13 +10030,13 @@
             }();
             return {
                 destination: job.dest.name,
-                type: type,
+                type,
                 description: job.description,
                 startTime: Flow.Format.Time(new Date(job.start_time)),
                 endTime: Flow.Format.Time(new Date(job.start_time + job.msec)),
                 elapsedTime: Flow.Util.formatMilliseconds(job.msec),
                 status: job.status,
-                view: view
+                view
             };
         };
         toggleRefresh = function () {
@@ -10072,8 +10072,8 @@
             hasJobViews: _hasJobViews,
             isLive: _isLive,
             isBusy: _isBusy,
-            toggleRefresh: toggleRefresh,
-            refresh: refresh,
+            toggleRefresh,
+            refresh,
             exception: _exception,
             template: 'flow-jobs-output'
         };
@@ -10101,7 +10101,7 @@
         createNode = function (node, index) {
             return {
                 name: node.ip_port,
-                index: index
+                index
             };
         };
         refreshActiveView = function (node, fileType) {
@@ -10149,7 +10149,7 @@
             fileTypes: _fileTypes,
             activeFileType: _activeFileType,
             contents: _contents,
-            refresh: refresh,
+            refresh,
             template: 'flow-log-file-output'
         };
     };
@@ -10281,7 +10281,7 @@
             return !value;
         });
         return {
-            kind: kind,
+            kind,
             name: parameter.name,
             label: parameter.label,
             description: parameter.help,
@@ -10418,7 +10418,7 @@
                 }
             });
             return {
-                isSelected: isSelected,
+                isSelected,
                 value: value.value,
                 type: value.type,
                 missingLabel: value.missingLabel,
@@ -10722,7 +10722,7 @@
                                         return {
                                             type: column.type === 'enum' ? 'enum(' + column.domain_cardinality + ')' : column.type,
                                             value: column.label,
-                                            missingPercent: missingPercent,
+                                            missingPercent,
                                             missingLabel: missingPercent === 0 ? '' : '' + Math.round(missingPercent) + '% NA'
                                         };
                                     });
@@ -10947,8 +10947,8 @@
             gridStoppingMetric: _gridStoppingMetric,
             gridStoppingTolerance: _gridStoppingTolerance,
             exception: _exception,
-            parameterTemplateOf: parameterTemplateOf,
-            createModel: createModel,
+            parameterTemplateOf,
+            createModel,
             hasValidationFailures: _hasValidationFailures,
             validationFailureMessage: _validationFailureMessage
         };
@@ -11043,7 +11043,7 @@
             algorithm: _algorithm,
             modelForm: _modelForm,
             canCreateModel: _canCreateModel,
-            createModel: createModel,
+            createModel,
             template: 'flow-model-input'
         };
     };
@@ -11102,9 +11102,9 @@
                     }
                 }();
                 return {
-                    label: label,
-                    value: value,
-                    help: help,
+                    label,
+                    value,
+                    help,
                     isModified: default_value === actual_value
                 };
             });
@@ -11156,8 +11156,8 @@
                         return _results;
                     }();
                     return {
-                        thresholds: thresholds,
-                        criteria: criteria
+                        thresholds,
+                        criteria
                     };
                 } else {
                     return void 0;
@@ -11248,11 +11248,11 @@
                     }
                 });
                 return _plots.push({
-                    title: title,
+                    title,
                     plot: container,
                     frame: linkedFrame,
                     controls: Flow.Dataflow.signal(rocPanel),
-                    isCollapsed: isCollapsed
+                    isCollapsed
                 });
             };
             renderMultinomialConfusionMatrix = function (title, cm) {
@@ -11603,17 +11603,17 @@
                 plots: _plots,
                 inputParameters: _inputParameters,
                 isExpanded: _isExpanded,
-                toggle: toggle,
-                cloneModel: cloneModel,
-                predict: predict,
-                inspect: inspect,
-                previewPojo: previewPojo,
-                downloadPojo: downloadPojo,
-                downloadMojo: downloadMojo,
+                toggle,
+                cloneModel,
+                predict,
+                inspect,
+                previewPojo,
+                downloadPojo,
+                downloadMojo,
                 pojoPreview: _pojoPreview,
                 isPojoLoaded: _isPojoLoaded,
-                exportModel: exportModel,
-                deleteModel: deleteModel
+                exportModel,
+                deleteModel
             };
         };
         _isLive = Flow.Dataflow.signal(false);
@@ -11708,10 +11708,10 @@
                 key: model.model_id.name,
                 algo: model.algo_full_name,
                 isChecked: _isChecked,
-                predict: predict,
+                predict,
                 clone: cloneModel,
-                inspect: inspect,
-                view: view
+                inspect,
+                view
             };
         };
         buildModel = function () {
@@ -11767,10 +11767,10 @@
         return {
             modelViews: _modelViews,
             hasModels: _models.length > 0,
-            buildModel: buildModel,
-            compareModels: compareModels,
-            predictUsingModels: predictUsingModels,
-            deleteModels: deleteModels,
+            buildModel,
+            compareModels,
+            predictUsingModels,
+            deleteModels,
             checkedModelCount: _checkedModelCount,
             canCompareModels: _canCompareModels,
             hasSelectedModels: _hasSelectedModels,
@@ -11827,7 +11827,7 @@
         'PARQUET'
     ], function (type) {
         return {
-            type: type,
+            type,
             caption: type
         };
     });
@@ -11870,7 +11870,7 @@
         ];
         createDelimiter = function (caption, charCode) {
             return {
-                charCode: charCode,
+                charCode,
                 caption: '' + caption + ': \'' + ('00' + charCode).slice(-2) + '\''
             };
         };
@@ -11959,7 +11959,7 @@
                     index: '' + (j + 1),
                     name: Flow.Dataflow.signal(columnNames ? columnNames[j] : ''),
                     type: Flow.Dataflow.signal(columnTypes[j]),
-                    data: data
+                    data
                 };
             }
             return rows;
@@ -11985,8 +11985,8 @@
         });
         makePage = function (index, columns) {
             return {
-                index: index,
-                columns: columns
+                index,
+                columns
             };
         };
         _activePage = Flow.Dataflow.lift(_columns, function (columns) {
@@ -12056,8 +12056,8 @@
         return {
             sourceKeys: _inputs[_inputKey],
             canReconfigure: _canReconfigure,
-            parseTypes: parseTypes,
-            dataTypes: dataTypes,
+            parseTypes,
+            dataTypes,
             delimiters: parseDelimiters,
             parseType: _parseType,
             delimiter: _delimiter,
@@ -12066,12 +12066,12 @@
             headerOption: _headerOption,
             deleteOnDone: _deleteOnDone,
             columns: _visibleColumns,
-            parseFiles: parseFiles,
+            parseFiles,
             columnNameSearchTerm: _columnNameSearchTerm,
             canGoToNextPage: _canGoToNextPage,
             canGoToPreviousPage: _canGoToPreviousPage,
-            goToNextPage: goToNextPage,
-            goToPreviousPage: goToPreviousPage,
+            goToNextPage,
+            goToPreviousPage,
             template: 'flow-parse-raw-input'
         };
     };
@@ -12240,7 +12240,7 @@
             x: _x,
             y: _y,
             color: _color,
-            plot: plot,
+            plot,
             canPlot: _canPlot,
             template: 'flow-plot-input'
         };
@@ -12419,7 +12419,7 @@
             selectedModel: _selectedModel,
             frames: _frames,
             models: _models,
-            predict: predict,
+            predict,
             isDeepLearning: _isDeepLearning,
             hasReconError: _hasReconError,
             hasLeafNodeAssignment: _hasLeafNodeAssignment,
@@ -12468,9 +12468,9 @@
                 }
             });
             return _plots.push({
-                title: title,
+                title,
                 plot: container,
-                combineWithFrame: combineWithFrame,
+                combineWithFrame,
                 canCombineWithFrame: title === 'Prediction'
             });
         };
@@ -12505,7 +12505,7 @@
         lodash.defer(_go);
         return {
             plots: _plots,
-            inspect: inspect,
+            inspect,
             canInspect: _canInspect,
             template: 'flow-predict-output'
         };
@@ -12579,8 +12579,8 @@
                 modelCategory: prediction.model_category,
                 isChecked: _isChecked,
                 hasFrame: _hasFrame,
-                view: view,
-                inspect: inspect
+                view,
+                inspect
             };
         };
         _predictionsTable = _.inspect('predictions', _predictions);
@@ -12628,14 +12628,14 @@
         return {
             predictionViews: _predictionViews,
             hasPredictions: _predictions.length > 0,
-            comparePredictions: comparePredictions,
+            comparePredictions,
             canComparePredictions: _canComparePredictions,
             checkAllPredictions: _checkAllPredictions,
-            plotPredictions: plotPredictions,
-            plotScores: plotScores,
-            plotMetrics: plotMetrics,
+            plotPredictions,
+            plotScores,
+            plotMetrics,
             inspect: inspectAll,
-            predict: predict,
+            predict,
             rocCurve: _rocCurve,
             template: 'flow-predicts-output'
         };
@@ -12666,8 +12666,8 @@
             return self = {
                 name: node.node_name,
                 caption: '' + node.node_name + ' at ' + new Date(node.timestamp),
-                entries: entries,
-                display: display
+                entries,
+                display
             };
         };
         _nodes = function () {
@@ -12923,8 +12923,8 @@
             lastSplitKey: _lastSplitKey,
             splits: _splits,
             seed: _seed,
-            addSplit: addSplit,
-            splitFrame: splitFrame,
+            addSplit,
+            splitFrame,
             validationMessage: _validationMessage,
             template: 'flow-split-frame-input'
         };
@@ -12955,9 +12955,9 @@
                 return _.insertAndExecuteCell('cs', 'getFrameSummary ' + Flow.Prelude.stringify(key));
             };
             return self = {
-                key: key,
-                ratio: ratio,
-                view: view
+                key,
+                ratio,
+                view
             };
         };
         _ratios = computeRatios(_splitFrameResult.ratios);
@@ -13008,7 +13008,7 @@
                     }
                     return _results;
                 }(),
-                display: display
+                display
             };
         };
         _nodes = function () {
@@ -13145,8 +13145,8 @@
             data: _data,
             isLive: _isLive,
             isBusy: _isBusy,
-            toggleRefresh: toggleRefresh,
-            refresh: refresh,
+            toggleRefresh,
+            refresh,
             template: 'flow-timeline-output'
         };
     };
