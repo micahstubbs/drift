@@ -5296,8 +5296,8 @@
           var serverError;
           _.status('server', 'error', path);
           response = xhr.responseJSON;
-          cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = '' + response.dev_msg + ' (' + response.exception_type + ')' + '\n  ' + response.stacktrace.join('\n  '), serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error('HTTP connection failure: status=' + status + ', code=' + xhr.status + ', error=' + (error || '?'));
-          return go(new Flow.Error('Error calling ' + method + ' ' + path + optsToString(opts), cause));
+          cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
+          return go(new Flow.Error(`Error calling ${method} ${path}${optsToString(opts)}`, cause));
         });
       };
       doGet = function (path, go) {
@@ -5352,9 +5352,9 @@
         var params;
         if (opts) {
           params = mapWithKey(opts, function (v, k) {
-            return '' + k + '=' + v;
+            return `${k}=${v}`;
           });
-          return path + '?' + params.join('&');
+          return `${path}?${params.join('&')}`;
         } else {
           return path;
         }
@@ -5367,13 +5367,7 @@
           if (array.length === 0) {
             return null;
           } else {
-            return '[' + lodash.map(array, function (element) {
-              if (lodash.isNumber(element)) {
-                return element;
-              } else {
-                return '"' + element + '"';
-              }
-            }).join(',') + ']';
+            return `[${lodash.map(array, element => { if (lodash.isNumber(element)) { return element; } else { return `"${element}"`; } }).join(',')} ]`;
           }
         } else {
           return null;
@@ -5450,27 +5444,27 @@
         });
       };
       requestFrame = function (key, go) {
-        return doGet('/3/Frames/' + encodeURIComponent(key), unwrap(go, function (result) {
+        return doGet(`/3/Frames/${encodeURIComponent(key)}`, unwrap(go, function (result) {
           return lodash.head(result.frames);
         }));
       };
       requestFrameSlice = function (key, searchTerm, offset, count, go) {
-        return doGet('/3/Frames/' + encodeURIComponent(key) + '?column_offset=' + offset + '&column_count=' + count, unwrap(go, function (result) {
+        return doGet(`/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, function (result) {
           return lodash.head(result.frames);
         }));
       };
       requestFrameSummary = function (key, go) {
-        return doGet('/3/Frames/' + encodeURIComponent(key) + '/summary', unwrap(go, function (result) {
+        return doGet(`/3/Frames/${encodeURIComponent(key)}/summary`, unwrap(go, function (result) {
           return lodash.head(result.frames);
         }));
       };
       requestFrameSummarySlice = function (key, searchTerm, offset, count, go) {
-        return doGet('/3/Frames/' + encodeURIComponent(key) + '/summary?column_offset=' + offset + '&column_count=' + count + '&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles', unwrap(go, function (result) {
+        return doGet(`/3/Frames/${encodeURIComponent(key)}/summary?column_offset=${offset}&column_count=${count}&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, function (result) {
           return lodash.head(result.frames);
         }));
       };
       requestFrameSummaryWithoutData = function (key, go) {
-        return doGet('/3/Frames/' + encodeURIComponent(key) + '/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles', function (error, result) {
+        return doGet(`/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, function (error, result) {
           if (error) {
             return go(error);
           } else {
@@ -5479,7 +5473,7 @@
         });
       };
       requestDeleteFrame = function (key, go) {
-        return doDelete('/3/Frames/' + encodeURIComponent(key), go);
+        return doDelete(`/3/Frames/${encodeURIComponent(key)}`, go);
       };
       requestExportFrame = function (key, path, overwrite, go) {
         var params;
@@ -5487,10 +5481,10 @@
           path,
           force: overwrite ? 'true' : 'false'
         };
-        return doPost('/3/Frames/' + encodeURIComponent(key) + '/export', params, go);
+        return doPost(`/3/Frames/${encodeURIComponent(key)}/export`, params, go);
       };
       requestColumnSummary = function (frameKey, column, go) {
-        return doGet('/3/Frames/' + encodeURIComponent(frameKey) + '/columns/' + encodeURIComponent(column) + '/summary', unwrap(go, function (result) {
+        return doGet(`/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`, unwrap(go, function (result) {
           return lodash.head(result.frames);
         }));
       };
@@ -5504,7 +5498,7 @@
         });
       };
       requestJob = function (key, go) {
-        return doGet('/3/Jobs/' + encodeURIComponent(key), function (error, result) {
+        return doGet(`/3/Jobs/${encodeURIComponent(key)}`, function (error, result) {
           if (error) {
             return go(new Flow.Error(`Error fetching job \'${key}\'`, error));
           } else {
