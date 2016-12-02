@@ -6,6 +6,7 @@
     "no-restricted-syntax": "off",
     "newline-per-chained-call": "off",
     "no-console": "off",
-    "func-names": "off"
+    "func-names": "off",
+    "consistent-return": "off"
   }
 }

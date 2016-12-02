@@ -877,8 +877,8 @@
                 if (H2O.Util.validateFileExtension(flowName, '.flow')) {
                   return _.requestFlow(packName, flowName, function (error, flow) {
                     if (!error) {
-                    return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
-                  }
+                      return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
+                    }
                   });
                 }
               }
@@ -7299,18 +7299,18 @@
                   }
                 } else if (lodash.isObject(v)) {
                   if (meta = v.__meta) {
-                  if (meta.schema_type === 'Key<Frame>') {
+                    if (meta.schema_type === 'Key<Frame>') {
                       record[k] = '<a href=\'#\' data-type=\'frame\' data-key=' + Flow.Prelude.stringify(v.name) + '>' + lodash.escape(v.name) + '</a>';
                     } else if (meta.schema_type === 'Key<Model>') {
-                        record[k] = '<a href=\'#\' data-type=\'model\' data-key=' + Flow.Prelude.stringify(v.name) + '>' + lodash.escape(v.name) + '</a>';
-                      } else if (meta.schema_type === 'Frame') {
-                          record[k] = '<a href=\'#\' data-type=\'frame\' data-key=' + Flow.Prelude.stringify(v.frame_id.name) + '>' + lodash.escape(v.frame_id.name) + '</a>';
-                        } else {
-                          inspectObject(inspections, '' + name + ' - ' + k, origin, v);
-                        }
-                } else {
-                  console.log('WARNING: dropping [' + k + '] from inspection:', v);
-                }
+                      record[k] = '<a href=\'#\' data-type=\'model\' data-key=' + Flow.Prelude.stringify(v.name) + '>' + lodash.escape(v.name) + '</a>';
+                    } else if (meta.schema_type === 'Frame') {
+                      record[k] = '<a href=\'#\' data-type=\'frame\' data-key=' + Flow.Prelude.stringify(v.frame_id.name) + '>' + lodash.escape(v.frame_id.name) + '</a>';
+                    } else {
+                      inspectObject(inspections, '' + name + ' - ' + k, origin, v);
+                    }
+                  } else {
+                    console.log('WARNING: dropping [' + k + '] from inspection:', v);
+                  }
                 } else {
                   record[k] = lodash.isNumber(v) ? format6fi(v) : v;
                 }
@@ -12628,37 +12628,37 @@
                   var columnValues;
                   if (!error) {
                     columnValues = lodash.map(frame.columns, function (column) {
-                    return column.label;
-                  });
+                      return column.label;
+                    });
                     columnLabels = lodash.map(frame.columns, function (column) {
-                    var missingPercent;
-                    missingPercent = 100 * column.missing_count / frame.rows;
-                    return {
+                      var missingPercent;
+                      missingPercent = 100 * column.missing_count / frame.rows;
+                      return {
                         type: column.type === 'enum' ? 'enum(' + column.domain_cardinality + ')' : column.type,
                         value: column.label,
                         missingPercent,
                         missingLabel: missingPercent === 0 ? '' : '' + Math.round(missingPercent) + '% NA'
                       };
-                  });
+                    });
                     if (responseColumnParameter) {
-                    responseColumnParameter.values(columnValues);
-                  }
+                      responseColumnParameter.values(columnValues);
+                    }
                     if (ignoredColumnsParameter) {
-                    ignoredColumnsParameter.values(columnLabels);
-                  }
+                      ignoredColumnsParameter.values(columnLabels);
+                    }
                     if (weightsColumnParameter) {
-                    weightsColumnParameter.values(columnValues);
-                  }
+                      weightsColumnParameter.values(columnValues);
+                    }
                     if (foldColumnParameter) {
-                    foldColumnParameter.values(columnValues);
-                  }
+                      foldColumnParameter.values(columnValues);
+                    }
                     if (offsetColumnsParameter) {
-                    offsetColumnsParameter.values(columnValues);
-                  }
+                      offsetColumnsParameter.values(columnValues);
+                    }
                     if (responseColumnParameter && ignoredColumnsParameter) {
-                    return Flow.Dataflow.lift(responseColumnParameter.value, function (responseVariableName) {
+                      return Flow.Dataflow.lift(responseColumnParameter.value, function (responseVariableName) {
                       });
-                  }
+                    }
                   }
                 });
               }
@@ -12731,18 +12731,18 @@
                   case 'list':
                     if (value.length) {
                       selectedValues = function () {
-                      var _len6;
-                      var _o;
-                      var _results;
-                      _results = [];
-                      for (_o = 0, _len6 = value.length; _o < _len6; _o++) {
+                        var _len6;
+                        var _o;
+                        var _results;
+                        _results = [];
+                        for (_o = 0, _len6 = value.length; _o < _len6; _o++) {
                           entry = value[_o];
                           if (entry.isSelected()) {
-                              _results.push(entry.value);
-                            }
+                            _results.push(entry.value);
+                          }
                         }
-                      return _results;
-                    }();
+                        return _results;
+                      }();
                       parameters[control.name] = selectedValues;
                     }
                     break;
@@ -12811,29 +12811,29 @@
                   control = controls[_m];
                   if (validations = validationsByControlName[control.name]) {
                     for (_n = 0, _len5 = validations.length; _n < _len5; _n++) {
-                    validation = validations[_n];
-                    if (validation.message_type === 'TRACE') {
+                      validation = validations[_n];
+                      if (validation.message_type === 'TRACE') {
                         control.isVisible(false);
                       } else {
                         control.isVisible(true);
                         if (checkForErrors) {
-                            switch (validation.message_type) {
-                                case 'INFO':
-                                  control.hasInfo(true);
-                                  control.message(validation.message);
-                                  break;
-                                case 'WARN':
-                                  control.hasWarning(true);
-                                  control.message(validation.message);
-                                  break;
-                                case 'ERRR':
-                                  control.hasError(true);
-                                  control.message(validation.message);
-                                  hasErrors = true;
-                              }
+                          switch (validation.message_type) {
+                            case 'INFO':
+                              control.hasInfo(true);
+                              control.message(validation.message);
+                              break;
+                            case 'WARN':
+                              control.hasWarning(true);
+                              control.message(validation.message);
+                              break;
+                            case 'ERRR':
+                              control.hasError(true);
+                              control.message(validation.message);
+                              hasErrors = true;
                           }
+                        }
                       }
-                  }
+                    }
                   } else {
                     control.isVisible(true);
                     control.hasInfo(false);
@@ -13244,27 +13244,27 @@
                   };
                   _.plot(renderTable)(function (error, table) {
                     if (!error) {
-                    return linkedFrame(table.element);
-                  }
+                      return linkedFrame(table.element);
+                    }
                   });
                   if (rocPanel) {
                     if (indices.length === 1) {
-                    selectedIndex = lodash.head(indices);
-                    _autoHighlight = false;
-                    rocPanel.threshold(lodash.find(rocPanel.thresholds(), function (threshold) {
+                      selectedIndex = lodash.head(indices);
+                      _autoHighlight = false;
+                      rocPanel.threshold(lodash.find(rocPanel.thresholds(), function (threshold) {
                         return threshold.index === selectedIndex;
                       }));
-                    currentCriterion = rocPanel.criterion();
-                    if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
+                      currentCriterion = rocPanel.criterion();
+                      if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
                         rocPanel.criterion(lodash.find(rocPanel.criteria(), function (criterion) {
-                            return criterion.index === selectedIndex;
-                          }));
+                          return criterion.index === selectedIndex;
+                        }));
                       }
-                    _autoHighlight = true;
-                  } else {
-                    rocPanel.criterion(null);
-                    rocPanel.threshold(null);
-                  }
+                      _autoHighlight = true;
+                    } else {
+                      rocPanel.criterion(null);
+                      rocPanel.threshold(null);
+                    }
                   }
                 });
                 vis.subscribe('markdeselect', function () {
@@ -13277,13 +13277,13 @@
                 if (rocPanel) {
                   Flow.Dataflow.react(rocPanel.threshold, function (threshold) {
                     if (threshold && _autoHighlight) {
-                    return vis.highlight([threshold.index]);
-                  }
+                      return vis.highlight([threshold.index]);
+                    }
                   });
                   return Flow.Dataflow.react(rocPanel.criterion, function (criterion) {
                     if (criterion && _autoHighlight) {
-                    return vis.highlight([criterion.index]);
-                  }
+                      return vis.highlight([criterion.index]);
+                    }
                   });
                 }
               }
@@ -15530,7 +15530,7 @@
           }
         });
       };
-      Flow.Dataflow.act(_isLive, function (isLive) {
+      Flow.Dataflow.act(_isLive, (isLive) => {
         if (isLive) {
           return refresh();
         }
