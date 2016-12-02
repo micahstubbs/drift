@@ -15226,7 +15226,8 @@
             return _validationMessage(error);
           } else {
             _validationMessage('');
-            return _.insertAndExecuteCell('cs', 'splitFrame ' + Flow.Prelude.stringify(_frame()) + ', ' + Flow.Prelude.stringify(splitRatios) + ', ' + Flow.Prelude.stringify(splitKeys) + ', ' + _seed());
+            return _.insertAndExecuteCell('cs',
+              `splitFrame ${Flow.Prelude.stringify(_frame())}, ${Flow.Prelude.stringify(splitRatios)}, ${Flow.Prelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
           }
         });
       };
