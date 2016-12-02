@@ -44,4 +44,8 @@
   error loading deep learning model
   invalid field model parameters
 
+`lebab src/index.js -o src/index.js --transform default-param`
+  succeeded
+  no actual changes apparently
+
 
