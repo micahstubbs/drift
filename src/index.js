@@ -10514,11 +10514,11 @@
               $a = $(e.target);
               switch ($a.attr('data-type')) {
                 case 'summary-link':
-                  return _.insertAndExecuteCell('cs', 'getColumnSummary ' + Flow.Prelude.stringify(_frame.frame_id.name) + ', ' + Flow.Prelude.stringify($a.attr('data-key')));
+                  return _.insertAndExecuteCell('cs', `getColumnSummary ${Flow.Prelude.stringify(_frame.frame_id.name)}, ${Flow.Prelude.stringify($a.attr('data-key'))}`);
                 case 'as-factor-link':
-                  return _.insertAndExecuteCell('cs', 'changeColumnType frame: ' + Flow.Prelude.stringify(_frame.frame_id.name) + ', column: ' + Flow.Prelude.stringify($a.attr('data-key')) + ', type: \'enum\'');
+                  return _.insertAndExecuteCell('cs', `changeColumnType frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}, column: ${Flow.Prelude.stringify($a.attr('data-key'))}, type: \'enum\'`);
                 case 'as-numeric-link':
-                  return _.insertAndExecuteCell('cs', 'changeColumnType frame: ' + Flow.Prelude.stringify(_frame.frame_id.name) + ', column: ' + Flow.Prelude.stringify($a.attr('data-key')) + ', type: \'int\'');
+                  return _.insertAndExecuteCell('cs', `changeColumnType frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}, column: ${Flow.Prelude.stringify($a.attr('data-key'))}, type: \'int\'`);
               }
             });
             return _grid(vis.element);
@@ -10526,25 +10526,25 @@
         });
       };
       createModel = function () {
-        return _.insertAndExecuteCell('cs', 'assist buildModel, null, training_frame: ' + Flow.Prelude.stringify(_frame.frame_id.name));
+        return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
       };
       inspect = function () {
-        return _.insertAndExecuteCell('cs', 'inspect getFrameSummary ' + Flow.Prelude.stringify(_frame.frame_id.name));
+        return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
       };
       inspectData = function () {
-        return _.insertAndExecuteCell('cs', 'getFrameData ' + Flow.Prelude.stringify(_frame.frame_id.name));
+        return _.insertAndExecuteCell('cs', `getFrameData ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
       };
       splitFrame = function () {
-        return _.insertAndExecuteCell('cs', 'assist splitFrame, ' + Flow.Prelude.stringify(_frame.frame_id.name));
+        return _.insertAndExecuteCell('cs', `assist splitFrame, ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
       };
       predict = function () {
-        return _.insertAndExecuteCell('cs', 'predict frame: ' + Flow.Prelude.stringify(_frame.frame_id.name));
+        return _.insertAndExecuteCell('cs', `predict frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
       };
       download = function () {
-        return window.open(window.Flow.ContextPath + ('3/DownloadDataset?frame_id=' + encodeURIComponent(_frame.frame_id.name)), '_blank');
+        return window.open(`${window.Flow.ContextPath}${(`3/DownloadDataset?frame_id=${encodeURIComponent(_frame.frame_id.name)}`)}`, '_blank');
       };
       exportFrame = function () {
-        return _.insertAndExecuteCell('cs', 'exportFrame ' + Flow.Prelude.stringify(_frame.frame_id.name));
+        return _.insertAndExecuteCell('cs', `exportFrame ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
       };
       deleteFrame = function () {
         return _.confirm('Are you sure you want to delete this frame?', {
@@ -10552,7 +10552,7 @@
           declineCaption: 'Cancel'
         }, function (accept) {
           if (accept) {
-            return _.insertAndExecuteCell('cs', 'deleteFrame ' + Flow.Prelude.stringify(_frame.frame_id.name));
+            return _.insertAndExecuteCell('cs', `deleteFrame ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
           }
         });
       };
@@ -10694,19 +10694,19 @@
         }), 15);
         view = function () {
           if (frame.is_text) {
-            return _.insertAndExecuteCell('cs', 'setupParse source_frames: [ ' + Flow.Prelude.stringify(frame.frame_id.name) + ' ]');
+            return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${Flow.Prelude.stringify(frame.frame_id.name)} ]`);
           } else {
-            return _.insertAndExecuteCell('cs', 'getFrameSummary ' + Flow.Prelude.stringify(frame.frame_id.name));
+            return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(frame.frame_id.name)}`);
           }
         };
         predict = function () {
-          return _.insertAndExecuteCell('cs', 'predict frame: ' + Flow.Prelude.stringify(frame.frame_id.name));
+          return _.insertAndExecuteCell('cs', `predict frame: ${Flow.Prelude.stringify(frame.frame_id.name)}`);
         };
         inspect = function () {
-          return _.insertAndExecuteCell('cs', 'inspect getFrameSummary ' + Flow.Prelude.stringify(frame.frame_id.name));
+          return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${Flow.Prelude.stringify(frame.frame_id.name)}`);
         };
         createModel = function () {
-          return _.insertAndExecuteCell('cs', 'assist buildModel, null, training_frame: ' + Flow.Prelude.stringify(frame.frame_id.name));
+          return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${Flow.Prelude.stringify(frame.frame_id.name)}`);
         };
         return {
           key: frame.frame_id.name,
@@ -10741,7 +10741,7 @@
         return _results;
       };
       predictOnFrames = function () {
-        return _.insertAndExecuteCell('cs', 'predict frames: ' + Flow.Prelude.stringify(collectSelectedKeys()));
+        return _.insertAndExecuteCell('cs', `predict frames: ${Flow.Prelude.stringify(collectSelectedKeys())}`);
       };
       deleteFrames = function () {
         return _.confirm('Are you sure you want to delete these frames?', {
@@ -10749,7 +10749,7 @@
           declineCaption: 'Cancel'
         }, function (accept) {
           if (accept) {
-            return _.insertAndExecuteCell('cs', 'deleteFrames ' + Flow.Prelude.stringify(collectSelectedKeys()));
+            return _.insertAndExecuteCell('cs', `deleteFrames ${Flow.Prelude.stringify(collectSelectedKeys())}`);
           }
         });
       };
@@ -10846,17 +10846,17 @@
           return _checkedModelCount(checkedViews.length);
         });
         predict = function () {
-          return _.insertAndExecuteCell('cs', 'predict model: ' + Flow.Prelude.stringify(model_id.name));
+          return _.insertAndExecuteCell('cs', `predict model: ${Flow.Prelude.stringify(model_id.name)}`);
         };
         cloneModel = function () {
           return alert('Not implemented');
-          return _.insertAndExecuteCell('cs', 'cloneModel ' + Flow.Prelude.stringify(model_id.name));
+          return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model_id.name)}`);
         };
         view = function () {
-          return _.insertAndExecuteCell('cs', 'getModel ' + Flow.Prelude.stringify(model_id.name));
+          return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(model_id.name)}`);
         };
         inspect = function () {
-          return _.insertAndExecuteCell('cs', 'inspect getModel ' + Flow.Prelude.stringify(model_id.name));
+          return _.insertAndExecuteCell('cs', `inspect getModel ${Flow.Prelude.stringify(model_id.name)}`);
         };
         return {
           key: model_id.name,
@@ -10887,10 +10887,10 @@
         return _results;
       };
       compareModels = function () {
-        return _.insertAndExecuteCell('cs', 'inspect getModels ' + Flow.Prelude.stringify(collectSelectedKeys()));
+        return _.insertAndExecuteCell('cs', `'inspect getModels ${Flow.Prelude.stringify(collectSelectedKeys())}`);
       };
       predictUsingModels = function () {
-        return _.insertAndExecuteCell('cs', 'predict models: ' + Flow.Prelude.stringify(collectSelectedKeys()));
+        return _.insertAndExecuteCell('cs', `predict models: ${Flow.Prelude.stringify(collectSelectedKeys())}`);
       };
       deleteModels = function () {
         return _.confirm('Are you sure you want to delete these models?', {
@@ -10898,19 +10898,19 @@
           declineCaption: 'Cancel'
         }, function (accept) {
           if (accept) {
-            return _.insertAndExecuteCell('cs', 'deleteModels ' + Flow.Prelude.stringify(collectSelectedKeys()));
+            return _.insertAndExecuteCell('cs', `deleteModels ${Flow.Prelude.stringify(collectSelectedKeys())}`);
           }
         });
       };
       inspect = function () {
         var summary;
         summary = _.inspect('summary', _grid);
-        return _.insertAndExecuteCell('cs', 'grid inspect \'summary\', ' + summary.metadata.origin);
+        return _.insertAndExecuteCell('cs', `grid inspect \'summary\', ${summary.metadata.origin}`);
       };
       inspectHistory = function () {
         var history;
         history = _.inspect('scoring_history', _grid);
-        return _.insertAndExecuteCell('cs', 'grid inspect \'scoring_history\', ' + history.metadata.origin);
+        return _.insertAndExecuteCell('cs', `grid inspect \'scoring_history\', ${history.metadata.origin}`);
       };
       inspectAll = function () {
         var allKeys;
@@ -10928,7 +10928,7 @@
           }
           return _results;
         }();
-        return _.insertAndExecuteCell('cs', 'inspect getModels ' + Flow.Prelude.stringify(allKeys));
+        return _.insertAndExecuteCell('cs', `inspect getModels ${Flow.Prelude.stringify(allKeys)}`);
       };
       initialize = function (grid) {
         var errorViews;
@@ -10941,9 +10941,9 @@
           _results = [];
           for (i = _i = 0, _ref = grid.failure_details.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
             _results.push({
-              title: 'Error ' + (i + 1),
+              title: `Error ${(i + 1)}`,
               detail: grid.failure_details[i],
-              params: 'Parameters: [ ' + grid.failed_raw_params[i].join(', ') + ' ]',
+              params: `Parameters: [ ${grid.failed_raw_params[i].join(', ')} ]`,
               stacktrace: grid.failure_stack_traces[i]
             });
           }
@@ -10983,7 +10983,7 @@
       createGridView = function (grid) {
         var view;
         view = function () {
-          return _.insertAndExecuteCell('cs', 'getGrid ' + Flow.Prelude.stringify(grid.grid_id.name));
+          return _.insertAndExecuteCell('cs', `getGrid ${Flow.Prelude.stringify(grid.grid_id.name)}`);
         };
         return {
           key: grid.grid_id.name,
@@ -11070,7 +11070,7 @@
       _importedFiles = Flow.Dataflow.signals([]);
       _importedFileCount = Flow.Dataflow.lift(_importedFiles, function (files) {
         if (files.length) {
-          return 'Found ' + Flow.Util.describeCount(files.length, 'file') + ':';
+          return `Found ${Flow.Util.describeCount(files.length, 'file')}:`;
         } else {
           return '';
         }
@@ -11098,7 +11098,7 @@
       });
       _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, function (files) {
         if (files.length) {
-          return '' + Flow.Util.describeCount(files.length, 'file') + ' selected:';
+          return `${Flow.Util.describeCount(files.length, 'file')} selected:`;
         } else {
           return '(No files selected)';
         }
@@ -11111,7 +11111,7 @@
         paths = lodash.map(files, function (file) {
           return Flow.Prelude.stringify(file.path);
         });
-        return _.insertAndExecuteCell('cs', 'importFiles [ ' + paths.join(',') + ' ]');
+        return _.insertAndExecuteCell('cs', `importFiles [ ${paths.join(',')} ]`);
       };
       importSelectedFiles = function () {
         return importFiles(_selectedFiles());
@@ -11240,7 +11240,7 @@
         return result.destination_frames;
       })));
       _canParse = _allFrames.length > 0;
-      _title = '' + _allFrames.length + ' / ' + _importResults.length + ' files imported.';
+      _title = `${_allFrames.length} / ${_importResults.length} files imported.`;
       createImportView = function (result) {
         return {
           files: result.files,
@@ -11251,7 +11251,7 @@
       parse = function () {
         var paths;
         paths = lodash.map(_allFrames, Flow.Prelude.stringify);
-        return _.insertAndExecuteCell('cs', 'setupParse source_frames: [ ' + paths.join(',') + ' ]');
+        return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${paths.join(',')} ]`);
       };
       lodash.defer(_go);
       return {
@@ -11281,7 +11281,7 @@
         return path && path.length;
       });
       importModel = function () {
-        return _.insertAndExecuteCell('cs', 'importModel ' + Flow.Prelude.stringify(_path()) + ', overwrite: ' + (_overwrite() ? 'true' : 'false'));
+        return _.insertAndExecuteCell('cs', `importModel ${Flow.Prelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
       };
       lodash.defer(_go);
       return {
@@ -11297,7 +11297,7 @@
     H2O.ImportModelOutput = function (_, _go, result) {
       var viewModel;
       viewModel = function () {
-        return _.insertAndExecuteCell('cs', 'getModel ' + Flow.Prelude.stringify(result.models[0].model_id.name));
+        return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(result.models[0].model_id.name)}`);
       };
       lodash.defer(_go);
       return {
@@ -11400,7 +11400,7 @@
             arg.groupByColumns = groupByColumns;
           }
         }
-        return _.insertAndExecuteCell('cs', 'imputeColumn ' + JSON.stringify(arg));
+        return _.insertAndExecuteCell('cs', `imputeColumn ${JSON.stringify(arg)}`);
       };
       _.requestFrames(function (error, frames) {
         var frame;
@@ -11478,7 +11478,7 @@
       var plot;
       var view;
       view = function () {
-        return _.insertAndExecuteCell('cs', 'grid inspect ' + Flow.Prelude.stringify(_frame.label) + ', ' + _frame.metadata.origin);
+        return _.insertAndExecuteCell('cs', `grid inspect ${Flow.Prelude.stringify(_frame.label)}, ${_frame.metadata.origin}`);
       };
       plot = function () {
         return _.insertAndExecuteCell('cs', _frame.metadata.plot);
@@ -11502,10 +11502,10 @@
         var inspect;
         var plot;
         inspect = function () {
-          return _.insertAndExecuteCell('cs', 'inspect ' + Flow.Prelude.stringify(table.label) + ', ' + table.metadata.origin);
+          return _.insertAndExecuteCell('cs', `inspect ${Flow.Prelude.stringify(table.label)}, ${table.metadata.origin}`);
         };
         grid = function () {
-          return _.insertAndExecuteCell('cs', 'grid inspect ' + Flow.Prelude.stringify(table.label) + ', ' + table.metadata.origin);
+          return _.insertAndExecuteCell('cs', `grid inspect ${Flow.Prelude.stringify(table.label)}, ${table.metadata.origin}`);
         };
         plot = function () {
           return _.insertAndExecuteCell('cs', table.metadata.plot);
@@ -11548,7 +11548,7 @@
       }
     };
     getJobProgressPercent = function (progress) {
-      return '' + Math.ceil(100 * progress) + '%';
+      return `${Math.ceil(100 * progress)}%`;
     };
     H2O.JobOutput = function (_, _go, _job) {
       var canView;
@@ -11648,7 +11648,7 @@
               if (message.message_type !== 'HIDE') {
                 _results.push({
                   icon: messageIcons[message.message_type],
-                  message: '' + message.field_name + ': ' + message.message
+                  message: `${message.field_name}: ${message.message}`
                 });
               }
             }
@@ -11698,17 +11698,17 @@
         }
         switch (_destinationType) {
           case 'Frame':
-            return _.insertAndExecuteCell('cs', 'getFrameSummary ' + Flow.Prelude.stringify(_destinationKey));
+            return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(_destinationKey)}`);
           case 'Model':
-            return _.insertAndExecuteCell('cs', 'getModel ' + Flow.Prelude.stringify(_destinationKey));
+            return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(_destinationKey)}`);
           case 'Grid':
-            return _.insertAndExecuteCell('cs', 'getGrid ' + Flow.Prelude.stringify(_destinationKey));
+            return _.insertAndExecuteCell('cs', `getGrid ${Flow.Prelude.stringify(_destinationKey)}`);
           case 'PartialDependence':
-            return _.insertAndExecuteCell('cs', 'getPartialDependence ' + Flow.Prelude.stringify(_destinationKey));
+            return _.insertAndExecuteCell('cs', `getPartialDependence ${Flow.Prelude.stringify(_destinationKey)}`);
           case 'Auto Model':
             return _.insertAndExecuteCell('cs', 'getGrids');
           case 'Void':
-            return alert('This frame was exported to\n' + _job.dest.name);
+            return alert(`This frame was exported to\n${_job.dest.name}`);
         }
       };
       cancel = function () {
@@ -11775,7 +11775,7 @@
         var type;
         var view;
         view = function () {
-          return _.insertAndExecuteCell('cs', 'getJob ' + Flow.Prelude.stringify(job.key.name));
+          return _.insertAndExecuteCell('cs', `getJob ${Flow.Prelude.stringify(job.key.name)}`);
         };
         type = function () {
           switch (job.dest.type) {
@@ -11880,7 +11880,7 @@
         if (node) {
           return _.requestLogFile(node.index, fileType, function (error, logFile) {
             if (error) {
-              return _contents('Error fetching log file: ' + error.message);
+              return _contents(`Error fetching log file: ${error.message}`);
             } else {
               return _contents(logFile.log);
             }
@@ -11949,7 +11949,7 @@
       var _selectedRightColumn;
       var _selectedRightFrame;
       _exception = Flow.Dataflow.signal(null);
-      _destinationKey = Flow.Dataflow.signal('merged-' + Flow.Util.uuid());
+      _destinationKey = Flow.Dataflow.signal(`merged-${Flow.Util.uuid()}`);
       _frames = Flow.Dataflow.signals([]);
       _selectedLeftFrame = Flow.Dataflow.signal(null);
       _leftColumns = Flow.Dataflow.signals([]);
@@ -11997,7 +11997,7 @@
         if (!_canMerge()) {
           return;
         }
-        cs = 'mergeFrames ' + Flow.Prelude.stringify(_destinationKey()) + ', ' + Flow.Prelude.stringify(_selectedLeftFrame()) + ', ' + _selectedLeftColumn().index + ', ' + _includeAllLeftRows() + ', ' + Flow.Prelude.stringify(_selectedRightFrame()) + ', ' + _selectedRightColumn().index + ', ' + _includeAllRightRows();
+        cs = `mergeFrames ${Flow.Prelude.stringify(_destinationKey())}, ${Flow.Prelude.stringify(_selectedLeftFrame())}, ${_selectedLeftColumn().index}, ${_includeAllLeftRows()}, ${Flow.Prelude.stringify(_selectedRightFrame())}, ${_selectedRightColumn().index}, ${_includeAllRightRows()}`;
         return _.insertAndExecuteCell('cs', cs);
       };
       _.requestFrames(function (error, frames) {
@@ -12044,7 +12044,7 @@
       var _viewFrame;
       _frameKey = _mergeFramesResult.key;
       _viewFrame = function () {
-        return _.insertAndExecuteCell('cs', 'getFrameSummary ' + Flow.Prelude.stringify(_frameKey));
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(_frameKey)}`);
       };
       lodash.defer(_go);
       return {
@@ -12141,7 +12141,7 @@
           isReal = true;
       }
       _text = Flow.Dataflow.signal(isArrayValued ? ((_ref = parameter.actual_value) != null ? _ref : []).join(', ') : (_ref1 = parameter.actual_value) != null ? _ref1 : '');
-      _textGrided = Flow.Dataflow.signal(_text() + ';');
+      _textGrided = Flow.Dataflow.signal(`${_text()};`);
       textToValues = function (text) {
         var parsed;
         var vals;
@@ -12179,7 +12179,7 @@
         var _len;
         var _ref2;
         lodash.values = [];
-        _ref2 = ('' + text).split(/\s*;\s*/g);
+        _ref2 = (`${text}`).split(/\s*;\s*/g);
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           part = _ref2[_i];
           if (token = part.trim()) {
@@ -12298,12 +12298,12 @@
       });
       _searchCaption = Flow.Dataflow.lift(_entries, _filteredItems, _selectionCount, _currentPage, _maxPages, function (entries, filteredItems, selectionCount, currentPage, maxPages) {
         var caption;
-        caption = maxPages === 0 ? '' : 'Showing page ' + (currentPage + 1) + ' of ' + maxPages + '.';
+        caption = maxPages === 0 ? '' : `Showing page ${(currentPage + 1)} of ${maxPages}.`;
         if (filteredItems.length !== entries.length) {
-          caption += ' Filtered ' + filteredItems.length + ' of ' + entries.length + '.';
+          caption += ` Filtered ${filteredItems.length} of ${entries.length}.`;
         }
         if (selectionCount !== 0) {
-          caption += ' ' + selectionCount + ' ignored.';
+          caption += ` ${selectionCount} ignored.`;
         }
         return caption;
       });
@@ -12489,7 +12489,7 @@
         'RandomDiscrete'
       ];
       _isGrided = Flow.Dataflow.signal(false);
-      _gridId = Flow.Dataflow.signal('grid-' + Flow.Util.uuid());
+      _gridId = Flow.Dataflow.signal(`grid-${Flow.Util.uuid()}`);
       _gridStrategy = Flow.Dataflow.signal('Cartesian');
       _isGridRandomDiscrete = Flow.Dataflow.lift(_gridStrategy, function (strategy) {
         return strategy !== _gridStrategies[0];
@@ -12594,7 +12594,7 @@
         }
       };
       parameterTemplateOf = function (control) {
-        return 'flow-' + control.kind + '-model-parameter';
+        return `'flow-${control.kind}-model-parameter`;
       };
       findFormField = function (name) {
         return lodash.find(_form, function (field) {
@@ -12634,10 +12634,10 @@
                       var missingPercent;
                       missingPercent = 100 * column.missing_count / frame.rows;
                       return {
-                        type: column.type === 'enum' ? 'enum(' + column.domain_cardinality + ')' : column.type,
+                        type: column.type === 'enum' ? `enum(${column.domain_cardinality})` : column.type,
                         value: column.label,
                         missingPercent,
-                        missingLabel: missingPercent === 0 ? '' : '' + Math.round(missingPercent) + '% NA'
+                        missingLabel: missingPercent === 0 ? '' : `${Math.round(missingPercent)}% NA`
                       };
                     });
                     if (responseColumnParameter) {
@@ -12858,7 +12858,7 @@
         return performValidations(true, function () {
           var parameters;
           parameters = collectParameters(false);
-          return _.insertAndExecuteCell('cs', 'buildModel \'' + _algorithm + '\', ' + Flow.Prelude.stringify(parameters));
+          return _.insertAndExecuteCell('cs', `buildModel \'${_algorithm}\', ${Flow.Prelude.stringify(parameters)}`);
         });
       };
       _revalidate = function (value) {
