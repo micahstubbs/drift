@@ -15169,7 +15169,10 @@
         totalRatio = 0;
         for (_i = 0, _len = splitRatios.length; _i < _len; _i++) {
           ratio = splitRatios[_i];
-          if (0 < ratio && ratio < 1) {
+          if (
+            ratio > 0 &&
+            ratio < 1
+          ) {
             totalRatio += ratio;
           } else {
             return go('One or more split ratios are invalid. Ratios should between 0 and 1.');
@@ -15198,7 +15201,7 @@
         var _key;
         var _ratio;
         var _ratioText;
-        _ratioText = Flow.Dataflow.signal('' + ratio);
+        _ratioText = Flow.Dataflow.signal(`${ratio}`);
         _key = Flow.Dataflow.signal('');
         _ratio = Flow.Dataflow.lift(_ratioText, function (text) {
           return parseFloat(text);
@@ -15224,11 +15227,10 @@
         return computeSplits(function (error, splitRatios, splitKeys) {
           if (error) {
             return _validationMessage(error);
-          } else {
-            _validationMessage('');
-            return _.insertAndExecuteCell('cs',
-              `splitFrame ${Flow.Prelude.stringify(_frame())}, ${Flow.Prelude.stringify(splitRatios)}, ${Flow.Prelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
           }
+          _validationMessage('');
+          return _.insertAndExecuteCell('cs',
+            `splitFrame ${Flow.Prelude.stringify(_frame())}, ${Flow.Prelude.stringify(splitRatios)}, ${Flow.Prelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
         });
       };
       initialize = function () {
