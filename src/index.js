@@ -15517,16 +15517,15 @@
       };
       refresh = function () {
         _isBusy(true);
-        return _.requestTimeline(function (error, timeline) {
+        return _.requestTimeline((error, timeline) => {
           _isBusy(false);
           if (error) {
             _exception(Flow.Failure(_, new Flow.Error('Error fetching timeline', error)));
             return _isLive(false);
-          } else {
-            updateTimeline(timeline);
-            if (_isLive()) {
-              return lodash.delay(refresh, 2000);
-            }
+          }
+          updateTimeline(timeline);
+          if (_isLive()) {
+            return lodash.delay(refresh, 2000);
           }
         });
       };

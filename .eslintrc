@@ -7,6 +7,8 @@
     "newline-per-chained-call": "off",
     "no-console": "off",
     "func-names": "off",
-    "consistent-return": "off"
+    "consistent-return": "off",
+    "no-undef": "off",
+    "new-cap": "off"
   }
 }

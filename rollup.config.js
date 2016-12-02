@@ -18,5 +18,7 @@ export default {
   dest: 'build/flow.js',
   acorn: {
     allowReserved: true
-  }
+  }//,
+  //sourceMap: true,
+  //sourceMapFile: 'build/flow.js'
 };
