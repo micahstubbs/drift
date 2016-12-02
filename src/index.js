@@ -3101,9 +3101,9 @@
                 }
             });
         };
-        expand = function () {
+        expand = function(...args) {
             var type, types, _j, _len1, _results;
-            types = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+            types = 1 <= args.length ? __slice.call(args, 0) : [];
             _results = [];
             for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
                 type = types[_j];
@@ -3141,9 +3141,9 @@
             return range;
         }
     };
-    combineRanges = function () {
+    combineRanges = function(...args) {
         var hi, lo, range, ranges, value, _i, _len;
-        ranges = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        ranges = 1 <= args.length ? __slice.call(args, 0) : [];
         lo = Number.POSITIVE_INFINITY;
         hi = Number.NEGATIVE_INFINITY;
         for (_i = 0, _len = ranges.length; _i < _len; _i++) {
@@ -3452,9 +3452,9 @@
                 return source();
             }));
         };
-        _act = function () {
+        _act = function(...args) {
             var func, sources, _i;
-            sources = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), func = arguments[_i++];
+            sources = 2 <= args.length ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
             _apply(sources, func);
             return lodash.map(sources, function (source) {
                 return _link(source, function () {
@@ -3462,18 +3462,18 @@
                 });
             });
         };
-        _react = function () {
+        _react = function(...args) {
             var func, sources, _i;
-            sources = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), func = arguments[_i++];
+            sources = 2 <= args.length ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
             return lodash.map(sources, function (source) {
                 return _link(source, function () {
                     return _apply(sources, func);
                 });
             });
         };
-        _lift = function () {
+        _lift = function(...args) {
             var evaluate, func, sources, target, _i;
-            sources = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), func = arguments[_i++];
+            sources = 2 <= args.length ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
             evaluate = function () {
                 return _apply(sources, func);
             };
@@ -3485,9 +3485,9 @@
             });
             return target;
         };
-        _merge = function () {
+        _merge = function(...args) {
             var evaluate, func, sources, target, _i;
-            sources = 3 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 2) : (_i = 0, []), target = arguments[_i++], func = arguments[_i++];
+            sources = 3 <= args.length ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []), target = args[_i++], func = args[_i++];
             evaluate = function () {
                 return _apply(sources, func);
             };

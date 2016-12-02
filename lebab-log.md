@@ -1,5 +1,17 @@
 # round one
 `lebab src/index.js -o src/index.js --transform arrow`
   resulted in terrible errors
+
 `lebab src/index.js -o src/index.js --transform for-of`
   succeeded
+  no actual changes apparently
+
+`lebab src/index.js -o src/index.js --transform for-each`
+  succeeded
+  some `unable to tranform`s
+  no actual changes apparently
+
+`lebab src/index.js -o src/index.js --transform arg-rest`
+  succeeded
+  
+
