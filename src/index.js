@@ -2443,7 +2443,7 @@
     _applicate = function (go) {
         return function (error, args) {
             if (lodash.isFunction(go)) {
-                return go.apply(null, [error].concat(args));
+                return go(...[error].concat(args));
             }
         };
     };
@@ -2475,7 +2475,7 @@
                             return go(error);
                         }
                     } else {
-                        return f.apply(null, args.concat(function (error, result) {
+                        return f(...args.concat(function (error, result) {
                             if (error) {
                                 self.error = error;
                                 self.fulfilled = false;
@@ -2563,7 +2563,7 @@
             var task;
             task = _tasks.shift();
             if (task) {
-                return task.apply(null, args.concat(function () {
+                return task(...args.concat(function () {
                     var error, results;
                     error = arguments[0], results = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
                     if (error) {
@@ -2573,7 +2573,7 @@
                     }
                 }));
             } else {
-                return go.apply(null, [null].concat(args));
+                return go(...[null].concat(args));
             }
         };
         return function () {
@@ -2613,7 +2613,7 @@
             var args, error, go, result, _i;
             args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
             try {
-                result = f.apply(null, args);
+                result = f(...args);
                 return go(null, result);
             } catch (_error) {
                 error = _error;
@@ -3448,7 +3448,7 @@
             }
         };
         _apply = function (sources, func) {
-            return func.apply(null, lodash.map(sources, function (source) {
+            return func(...lodash.map(sources, function (source) {
                 return source();
             }));
         };
@@ -3530,7 +3530,7 @@
                     }
                 }
             };
-            _dialog(dialog = ctor.apply(null, [_].concat(args).concat(go)));
+            _dialog(dialog = ctor(...[_].concat(args).concat(go)));
             $dialog = $('#' + dialog.template);
             $dialog.modal();
             $dialog.on('hidden.bs.modal', function (e) {
@@ -5472,7 +5472,7 @@
             return lodash.head(arrays);
         default:
             a = lodash.head(arrays);
-            return a.concat.apply(a, lodash.tail(arrays));
+            return a.concat(...lodash.tail(arrays));
         }
     };
     computeTruePositiveRate = function (cm) {
@@ -5581,11 +5581,11 @@
         _get = Flow.Async.get;
         proceed = function (func, args, go) {
             return go(null, render_({}, function () {
-                return func.apply(null, [_].concat(args || []));
+                return func(...[_].concat(args || []));
             }));
         };
         proceed = function (func, args, go) {
-            return go(null, render_.apply(null, [
+            return go(null, render_(...[
                 {},
                 func
             ].concat(args || [])));
@@ -5615,7 +5615,7 @@
             var args, raw, render;
             raw = arguments[0], render = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
             flow_(raw).render = function (go) {
-                return render.apply(null, [
+                return render(...[
                     _,
                     go
                 ].concat(args));

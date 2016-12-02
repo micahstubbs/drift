@@ -1,5 +1,6 @@
 # round one
 `lebab src/index.js -o src/index.js --transform arrow`
+  failed
   resulted in terrible errors
 
 `lebab src/index.js -o src/index.js --transform for-of`
@@ -13,5 +14,6 @@
 
 `lebab src/index.js -o src/index.js --transform arg-rest`
   succeeded
-  
 
+`lebab src/index.js -o src/index.js --transform arg-spread`
+  succeeded
