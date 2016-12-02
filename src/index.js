@@ -14241,7 +14241,7 @@
       var _selectedFrame;
       var _selectedModel;
       _exception = Flow.Dataflow.signal(null);
-      _destinationKey = Flow.Dataflow.signal('ppd-' + Flow.Util.uuid());
+      _destinationKey = Flow.Dataflow.signal(`ppd-${Flow.Util.uuid()}`);
       _frames = Flow.Dataflow.signals([]);
       _models = Flow.Dataflow.signals([]);
       _selectedModel = Flow.Dataflow.signals(null);
@@ -14262,7 +14262,7 @@
           frame_id: _selectedFrame(),
           nbins: _nbins()
         };
-        cs = 'buildPartialDependence ' + Flow.Prelude.stringify(opts);
+        cs = `buildPartialDependence ${Flow.Prelude.stringify(opts)}`;
         return _.insertAndExecuteCell('cs', cs);
       };
       _.requestFrames(function (error, frames) {
@@ -14350,11 +14350,11 @@
       _ref = _result.partial_dependence_data;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         data = _ref[i];
-        if (table = _.inspect('plot' + (i + 1), _result)) {
+        if (table = _.inspect(`plot${(i + 1)}`, _result)) {
           x = data.columns[0].name;
           y = data.columns[1].name;
           _plots.push(section = {
-            title: '' + x + ' vs ' + y,
+            title: `${x} vs ${y}`,
             plot: Flow.Dataflow.signal(null),
             frame: Flow.Dataflow.signal(null)
           });
@@ -14367,7 +14367,7 @@
         }
       }
       _viewFrame = function () {
-        return _.insertAndExecuteCell('cs', 'requestPartialDependenceData ' + Flow.Prelude.stringify(_destinationKey));
+        return _.insertAndExecuteCell('cs', `requestPartialDependenceData ${Flow.Prelude.stringify(_destinationKey)}`);
       };
       lodash.defer(_go);
       return {
