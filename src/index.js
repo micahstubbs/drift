@@ -12928,7 +12928,7 @@
           return parameter.name === 'model_id';
         });
         if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
-          destinationKeyParameter.actual_value = '' + algorithm + '-' + Flow.Util.uuid();
+          destinationKeyParameter.actual_value = `${algorithm}-${Flow.Util.uuid()}`;
         }
         classificationParameter = lodash.find(parameters, function (parameter) {
           return parameter.name === 'do_classification';
@@ -13147,7 +13147,7 @@
         getAucAsLabel = function (model, tableName) {
           var metrics;
           if (metrics = _.inspect(tableName, model)) {
-            return ' , AUC = ' + metrics.schema.AUC.at(0);
+            return ` , AUC = ${metrics.schema.AUC.at(0)}`;
           } else {
             return '';
           }
@@ -13222,9 +13222,9 @@
                 $a = $(e.target);
                 switch ($a.attr('data-type')) {
                   case 'frame':
-                    return _.insertAndExecuteCell('cs', 'getFrameSummary ' + Flow.Prelude.stringify($a.attr('data-key')));
+                    return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify($a.attr('data-key'))}`);
                   case 'model':
-                    return _.insertAndExecuteCell('cs', 'getModel ' + Flow.Prelude.stringify($a.attr('data-key')));
+                    return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify($a.attr('data-key'))}`);
                 }
               });
               container(vis.element);
@@ -13346,7 +13346,7 @@
             rows.push(tr(cells));
           }
           return _plots.push({
-            title: title + (cm.description ? ' ' + cm.description : ''),
+            title: title + (cm.description ? ` ${cm.description}` : ''),
             plot: Flow.Dataflow.signal(Flow.HTML.render('div', table(tbody(rows)))),
             frame: Flow.Dataflow.signal(null),
             controls: Flow.Dataflow.signal(null),
@@ -13380,19 +13380,19 @@
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Training Metrics' + getAucAsLabel(_model, 'output - training_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Validation Metrics' + getAucAsLabel(_model, 'output - validation_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Validation Metrics${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Cross Validation Metrics' + getAucAsLabel(_model, 'output - cross_validation_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - Standardized Coefficient Magnitudes', _model)) {
               renderPlot('Standardized Coefficient Magnitudes', false, _.plot(function (g) {
@@ -13451,19 +13451,19 @@
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Training Metrics' + getAucAsLabel(_model, 'output - training_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Validation Metrics' + getAucAsLabel(_model, 'output - validation_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+              renderPlot(`'ROC Curve - Validation Metrics' + ${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Cross Validation Metrics' + getAucAsLabel(_model, 'output - cross_validation_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+              renderPlot(`'ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - Variable Importances', _model)) {
               renderPlot('Variable Importances', false, _.plot(function (g) {
@@ -13513,19 +13513,19 @@
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Training Metrics' + getAucAsLabel(_model, 'output - training_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Validation Metrics' + getAucAsLabel(_model, 'output - validation_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Validation Metrics${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Cross Validation Metrics' + getAucAsLabel(_model, 'output - cross_validation_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Cross Validation Metrics${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - Variable Importances', _model)) {
               renderPlot('Variable Importances', false, _.plot(function (g) {
@@ -13551,19 +13551,19 @@
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Training Metrics' + getAucAsLabel(_model, 'output - training_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Validation Metrics' + getAucAsLabel(_model, 'output - validation_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+              renderPlot(`'ROC Curve - Validation Metrics${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
               plotter = _.plot(function (g) {
                 return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
               });
-              renderPlot('ROC Curve - Cross Validation Metrics' + getAucAsLabel(_model, 'output - cross_validation_metrics'), false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Cross Validation Metrics${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
             }
             if (table = _.inspect('output - Variable Importances', _model)) {
               renderPlot('Variable Importances', false, _.plot(function (g) {
