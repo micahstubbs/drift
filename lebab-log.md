@@ -17,3 +17,8 @@
 
 `lebab src/index.js -o src/index.js --transform arg-spread`
   succeeded
+
+`lebab src/index.js -o src/index.js --transform obj-method`
+  succeeded
+
+

@@ -5,7 +5,7 @@
         return $.ajax({
             url: window.referrer,
             type: 'GET',
-            success: function (data, status, xhr) {
+            success(data, status, xhr) {
                 if (xhr.getAllResponseHeaders().indexOf('X-h2o-context-path') !== -1) {
                     return window.Flow.ContextPath = xhr.getResponseHeader('X-h2o-context-path');
                 }
@@ -19,7 +19,7 @@
             url: window.Flow.ContextPath + '3/Metadata/endpoints',
             type: 'GET',
             dataType: 'json',
-            success: function (response) {
+            success(response) {
                 var route, _i, _len, _ref, _results;
                 _ref = response.routes;
                 _results = [];
@@ -286,13 +286,13 @@
                 input = 'runScalaCode ' + _.scalaIntpId() + ', \'' + input + '\'';
             }
             render(input, {
-                data: function (result) {
+                data(result) {
                     return _outputs.push(result);
                 },
-                close: function (result) {
+                close(result) {
                     return _result(result);
                 },
-                error: function (error) {
+                error(error) {
                     _hasError(true);
                     if (error.name === 'FlowError') {
                         _outputs.push(Flow.Failure(_, error));
@@ -304,7 +304,7 @@
                     }
                     return _errors.push(error);
                 },
-                end: function () {
+                end() {
                     _hasInput(_isCode());
                     _isBusy(false);
                     _time(Flow.Util.formatElapsedTime(Date.now() - startTime));
@@ -341,16 +341,16 @@
             clear: clear,
             clip: clip,
             _actions: _actions,
-            getCursorPosition: function () {
+            getCursorPosition() {
                 return _actions.getCursorPosition();
             },
-            autoResize: function () {
+            autoResize() {
                 return _actions.autoResize();
             },
-            scrollIntoView: function (immediate) {
+            scrollIntoView(immediate) {
                 return _actions.scrollIntoView(immediate);
             },
-            templateOf: function (view) {
+            templateOf(view) {
                 return view.template;
             },
             template: 'flow-cell'
@@ -645,7 +645,7 @@
         return {
             form: _form,
             template: 'flow-form',
-            templateOf: function (control) {
+            templateOf(control) {
                 return control.template;
             }
         };
@@ -969,34 +969,34 @@
     var __slice = [].slice;
     Flow.Renderers = function (_, _sandbox) {
         return {
-            h1: function () {
+            h1() {
                 return Flow.Heading(_, 'h1');
             },
-            h2: function () {
+            h2() {
                 return Flow.Heading(_, 'h2');
             },
-            h3: function () {
+            h3() {
                 return Flow.Heading(_, 'h3');
             },
-            h4: function () {
+            h4() {
                 return Flow.Heading(_, 'h4');
             },
-            h5: function () {
+            h5() {
                 return Flow.Heading(_, 'h5');
             },
-            h6: function () {
+            h6() {
                 return Flow.Heading(_, 'h6');
             },
-            md: function () {
+            md() {
                 return Flow.Markdown(_);
             },
-            cs: function (guid) {
+            cs(guid) {
                 return Flow.Coffeescript(_, guid, _sandbox);
             },
-            sca: function (guid) {
+            sca(guid) {
                 return Flow.Coffeescript(_, guid, _sandbox);
             },
-            raw: function () {
+            raw() {
                 return Flow.Raw(_);
             }
         };
@@ -2097,7 +2097,7 @@
             },
             about: _about,
             dialogs: _dialogs,
-            templateOf: function (view) {
+            templateOf(view) {
                 return view.template;
             }
         };
@@ -3278,7 +3278,7 @@
         Table: createTable,
         Variable: createVariable,
         Factor: createFactor,
-        computeColumnInterpretation: function (type) {
+        computeColumnInterpretation(type) {
             if (type === Flow.TNumber) {
                 return 'c';
             } else if (type === Flow.TFactor) {
@@ -3318,7 +3318,7 @@
                 } else {
                     return arrow = {
                         func: func,
-                        dispose: function () {
+                        dispose() {
                             return arrow = null;
                         }
                     };
@@ -3346,7 +3346,7 @@
                 console.assert(lodash.isFunction(func));
                 arrows.push(arrow = {
                     func: func,
-                    dispose: function () {
+                    dispose() {
                         return Flow.Prelude.remove(arrows, arrow);
                     }
                 });
@@ -3392,7 +3392,7 @@
                     console.assert(lodash.isFunction(func));
                     arrows.push(arrow = {
                         func: func,
-                        dispose: function () {
+                        dispose() {
                             return Flow.Prelude.remove(arrows, arrow);
                         }
                     });
@@ -3562,7 +3562,7 @@
         });
         return {
             dialog: _dialog,
-            template: function (dialog) {
+            template(dialog) {
                 return 'flow-' + dialog.template;
             }
         };
@@ -3703,7 +3703,7 @@
             visible: Flow.Dataflow.signal(opts.visible === false ? false : true),
             disable: Flow.Dataflow.signal(opts.disable === true ? true : false),
             template: 'flow-form-' + type,
-            templateOf: function (control) {
+            templateOf(control) {
                 return control.template;
             }
         };
@@ -3783,7 +3783,7 @@
     }
     Flow.HTML = {
         template: diecut,
-        render: function (name, html) {
+        render(name, html) {
             var el;
             el = document.createElement(name);
             if (html) {
@@ -3802,7 +3802,7 @@
         return;
     }
     ko.bindingHandlers.raw = {
-        update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        update(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var $element, arg;
             arg = ko.unwrap(valueAccessor());
             if (arg) {
@@ -3813,7 +3813,7 @@
         }
     };
     ko.bindingHandlers.markdown = {
-        update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        update(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var data, error, html;
             data = ko.unwrap(valueAccessor());
             try {
@@ -3826,14 +3826,14 @@
         }
     };
     ko.bindingHandlers.stringify = {
-        update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        update(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var data;
             data = ko.unwrap(valueAccessor());
             return $(element).text(JSON.stringify(data, null, 2));
         }
     };
     ko.bindingHandlers.enterKey = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var $element, action;
             if (action = ko.unwrap(valueAccessor())) {
                 if (lodash.isFunction(action)) {
@@ -3850,7 +3850,7 @@
         }
     };
     ko.bindingHandlers.typeahead = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var $element, action;
             if (action = ko.unwrap(valueAccessor())) {
                 if (lodash.isFunction(action)) {
@@ -3866,7 +3866,7 @@
         }
     };
     ko.bindingHandlers.cursorPosition = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var arg;
             if (arg = ko.unwrap(valueAccessor())) {
                 arg.getCursorPosition = function () {
@@ -3876,7 +3876,7 @@
         }
     };
     ko.bindingHandlers.autoResize = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var $el, arg, resize;
             if (arg = ko.unwrap(valueAccessor())) {
                 arg.autoResize = resize = function () {
@@ -3890,7 +3890,7 @@
         }
     };
     ko.bindingHandlers.scrollIntoView = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var $el, $viewport, arg;
             if (arg = ko.unwrap(valueAccessor())) {
                 $el = $(element);
@@ -3915,7 +3915,7 @@
         }
     };
     ko.bindingHandlers.collapse = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var $caretEl, $el, $nextEl, caretDown, caretEl, caretRight, isCollapsed, toggle;
             caretDown = 'fa-caret-down';
             caretRight = 'fa-caret-right';
@@ -3950,7 +3950,7 @@
         }
     };
     ko.bindingHandlers.dom = {
-        update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        update(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var $element, arg;
             arg = ko.unwrap(valueAccessor());
             if (arg) {
@@ -3961,18 +3961,18 @@
         }
     };
     ko.bindingHandlers.dump = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var object;
             return object = ko.unwrap(valueAccessor());
         }
     };
     ko.bindingHandlers.element = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             return valueAccessor()(element);
         }
     };
     ko.bindingHandlers.file = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var $file, file;
             file = valueAccessor();
             if (file) {
@@ -3984,7 +3984,7 @@
         }
     };
     ko.bindingHandlers.codemirror = {
-        init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        init(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var editor, internalTextArea, options;
             options = ko.unwrap(valueAccessor());
             editor = CodeMirror.fromTextArea(element, options);
@@ -4001,7 +4001,7 @@
             internalTextArea.removeAttr('wrap');
             return editor.refresh();
         },
-        update: function (element, valueAccessor) {
+        update(element, valueAccessor) {
             if (element.editor) {
                 return element.editor.refresh();
             }
@@ -4081,7 +4081,7 @@
     }
     marked.setOptions({
         smartypants: true,
-        highlight: function (code, lang) {
+        highlight(code, lang) {
             if (window.hljs) {
                 return window.hljs.highlightAuto(code, [lang]).value;
             } else {
@@ -4424,10 +4424,10 @@
             return $.ajax({
                 dataType: type,
                 url: url,
-                success: function (data, status, xhr) {
+                success(data, status, xhr) {
                     return go(null, data);
                 },
-                error: function (xhr, status, error) {
+                error(xhr, status, error) {
                     return go(new Flow.Error(error));
                 }
             });
@@ -7981,7 +7981,7 @@
                 name: name,
                 description: item.description,
                 icon: 'fa fa-' + item.icon + ' flow-icon',
-                execute: function () {
+                execute() {
                     return _.insertAndExecuteCell('cs', name);
                 }
             };
@@ -9446,7 +9446,7 @@
             var self;
             return self = {
                 path: path,
-                deselect: function () {
+                deselect() {
                     var file, _i, _len, _ref;
                     _selectedFiles.remove(self);
                     _ref = _importedFiles();
@@ -9464,7 +9464,7 @@
             self = {
                 path: path,
                 isSelected: Flow.Dataflow.signal(isSelected),
-                select: function () {
+                select() {
                     _selectedFiles.push(createSelectedFileItem(self.path));
                     return self.isSelected(true);
                 }
@@ -9568,7 +9568,7 @@
             canParse: _canParse,
             parse: parse,
             template: 'flow-import-files-output',
-            templateOf: function (view) {
+            templateOf(view) {
                 return view.template;
             }
         };
@@ -11805,7 +11805,7 @@
     H2O.NoAssist = function (_, _go) {
         lodash.defer(_go);
         return {
-            showAssist: function () {
+            showAssist() {
                 return _.insertAndExecuteCell('cs', 'assist');
             },
             template: 'flow-no-assist'
@@ -12722,7 +12722,7 @@
                 status: result.status,
                 scalaResponseVisible: _scalaResponseVisible,
                 scalaLinkText: _scalaLinkText,
-                toggleVisibility: function () {
+                toggleVisibility() {
                     _scalaResponseVisible(!_scalaResponseVisible());
                     if (_scalaResponseVisible()) {
                         return _scalaLinkText('Hide Scala Response');
