@@ -32,4 +32,16 @@
   no actual changes apparently
 
 `lebab src/index.js -o src/index.js --transform multi-var`
+  succeeded
+
+`lebab src/index.js -o src/index.js --transform let`
+  failed
+  error loading deep learning model
+  invalid field model parameters
+
+`lebab src/index.js -o src/index.js --transform template`
+  failed
+  error loading deep learning model
+  invalid field model parameters
+
 
