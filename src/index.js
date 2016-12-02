@@ -15234,9 +15234,8 @@
         _.requestFrames(function (error, frames) {
           var frame;
           var frameKeys;
-          if (error) {
-          } else {
-            frameKeys = function () {
+          if (!error) {
+            frameKeys = (function () {
               var _i;
               var _len;
               var _results;
@@ -15248,7 +15247,7 @@
                 }
               }
               return _results;
-            }();
+            }());
             frameKeys.sort();
             _frames(frameKeys);
             return _frame(_frameKey);
@@ -15286,7 +15285,7 @@
         var ratios;
         var total;
         total = 0;
-        ratios = function () {
+        ratios = (function () {
           var _i;
           var _len;
           var _results;
@@ -15297,7 +15296,7 @@
             _results.push(ratio);
           }
           return _results;
-        }();
+        }());
         ratios.push(1 - total);
         return ratios;
       };
@@ -15305,7 +15304,7 @@
         var self;
         var view;
         view = function () {
-          return _.insertAndExecuteCell('cs', 'getFrameSummary ' + Flow.Prelude.stringify(key));
+          return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(key)}`);
         };
         return self = {
           key,
@@ -15314,7 +15313,7 @@
         };
       };
       _ratios = computeRatios(_splitFrameResult.ratios);
-      _frames = function () {
+      _frames = (function () {
         var _i;
         var _len;
         var _ref;
@@ -15326,7 +15325,7 @@
           _results.push(createFrameView(key, _ratios[index]));
         }
         return _results;
-      }();
+      }());
       lodash.defer(_go);
       return {
         frames: _frames,
@@ -15360,7 +15359,7 @@
         return self = {
           name: node.node,
           timestamp: new Date(node.time),
-          threads: function () {
+          threads: (function () {
             var _i;
             var _len;
             var _ref;
@@ -15372,11 +15371,11 @@
               _results.push(createThread(thread));
             }
             return _results;
-          }(),
+          }()),
           display
         };
       };
-      _nodes = function () {
+      _nodes = (function () {
         var _i;
         var _len;
         var _ref;
@@ -15388,7 +15387,7 @@
           _results.push(createNode(node));
         }
         return _results;
-      }();
+      }());
       _activeNode(lodash.head(_nodes));
       lodash.defer(_go);
       return {
@@ -15442,18 +15441,19 @@
               'UDP',
               event.type,
               '-',
-              '' + event.sends + ' sent ' + event.recvs + ' received'
+              `${event.sends} sent ${event.recvs} received'`
             ];
           case 'network_msg':
             return [
               event.date,
               event.nanos,
-              '' + event.from + ' &#8594; ' + event.to,
+              `${event.from} &#8594; ${event.to}`,
               event.protocol,
               event.msg_type,
               event.is_send ? 'send' : 'receive',
               event.data
             ];
+          default:
         }
       };
       updateTimeline = function (timeline) {
@@ -15470,8 +15470,15 @@
         var tr;
         var trs;
         var _ref;
-        _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td'), grid = _ref[0], table = _ref[1], thead = _ref[2], tbody = _ref[3], tr = _ref[4], th = _ref[5], td = _ref[6];
-        ths = function () {
+        _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td');
+        grid = _ref[0];
+        table = _ref[1];
+        thead = _ref[2];
+        tbody = _ref[3];
+        tr = _ref[4];
+        th = _ref[5];
+        td = _ref[6];
+        ths = (function () {
           var _i;
           var _len;
           var _results;
@@ -15481,23 +15488,19 @@
             _results.push(th(header));
           }
           return _results;
-        }();
-        trs = function () {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
-          _ref1 = timeline.events;
-          _results = [];
+        }());
+        trs = (function () {
+          let _i;
+          let _len;
+          const _ref1 = timeline.events;
+          const _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             event = _ref1[_i];
             _results.push(tr(function () {
-              var _j;
-              var _len1;
-              var _ref2;
-              var _results1;
-              _ref2 = createEvent(event);
-              _results1 = [];
+              let _j;
+              let _len1;
+              const _ref2 = createEvent(event);
+              const _results1 = [];
               for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
                 cell = _ref2[_j];
                 _results1.push(td(cell));
@@ -15506,7 +15509,7 @@
             }()));
           }
           return _results;
-        }();
+        }());
         return _data(Flow.HTML.render('div', grid([table([
           thead(tr(ths)),
           tbody(trs)
