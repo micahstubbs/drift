@@ -9769,56 +9769,22 @@
           cloud.cloud_healthy,
           'TOTAL',
           '-',
-          sum(nodes, function (node) {
-            return node.num_cpus;
-          }),
-          format3f(sum(nodes, function (node) {
-            return node.sys_load;
-          })),
+          sum(nodes, node => node.num_cpus),
+          format3f(sum(nodes, node => node.sys_load)),
           '-',
           '-',
-          '' + format3f(sum(nodes, function (node) {
-            return node.gflops;
-          })),
-          '' + prettyPrintBytes(sum(nodes, function (node) {
-            return node.mem_bw;
-          })) + ' / s',
-          '' + prettyPrintBytes(sum(nodes, function (node) {
-            return node.mem_value_size;
-          })) + ' / ' + prettyPrintBytes(sum(nodes, function (node) {
-            return node.total_value_size;
-          })),
-          '' + Math.floor(avg(nodes, function (node) {
-            return node.mem_value_size * 100 / node.total_value_size;
-          })) + '%',
-          '' + prettyPrintBytes(sum(nodes, function (node) {
-            return node.free_mem;
-          })) + ' / ' + prettyPrintBytes(sum(nodes, function (node) {
-            return node.tot_mem;
-          })) + ' / ' + prettyPrintBytes(sum(nodes, function (node) {
-            return node.max_mem;
-          })),
-          '' + prettyPrintBytes(sum(nodes, function (node) {
-            return node.free_disk;
-          })) + ' / ' + prettyPrintBytes(sum(nodes, function (node) {
-            return node.max_disk;
-          })),
-          '' + Math.floor(avg(nodes, function (node) {
-            return node.free_disk * 100 / node.max_disk;
-          })) + '%',
+          `${format3f(sum(nodes, node => node.gflops))}`,
+          `${prettyPrintBytes(sum(nodes, node => node.mem_bw))} / s`,
+          `${prettyPrintBytes(sum(nodes, node => node.mem_value_size))} / ${prettyPrintBytes(sum(nodes, node => node.total_value_size))}`,
+          `${Math.floor(avg(nodes, node => node.mem_value_size * 100 / node.total_value_size))}%`,
+          `${prettyPrintBytes(sum(nodes, node => node.free_mem))} / ${prettyPrintBytes(sum(nodes, node => node.tot_mem))} / ${prettyPrintBytes(sum(nodes, node => node.max_mem))}`,
+          `${prettyPrintBytes(sum(nodes, node => node.free_disk))} / ${prettyPrintBytes(sum(nodes, node => node.max_disk))}`,
+          `${Math.floor(avg(nodes, node => node.free_disk * 100 / node.max_disk))}%`,
           '-',
-          sum(nodes, function (node) {
-            return node.num_keys;
-          }),
-          sum(nodes, function (node) {
-            return node.tcps_active;
-          }),
-          sum(nodes, function (node) {
-            return node.open_fds;
-          }),
-          sum(nodes, function (node) {
-            return node.rpcs_active;
-          }),
+          sum(nodes, node => node.num_keys),
+          sum(nodes, node => node.tcps_active),
+          sum(nodes, node => node.open_fds),
+          sum(nodes, node => node.rpcs_active),
           '-',
           '-'
         ];
@@ -9898,7 +9864,7 @@
         _version(cloud.version);
         _hasConsensus(cloud.consensus);
         _uptime(formatMilliseconds(cloud.cloud_uptime_millis));
-        _nodeCounts('' + (cloud.cloud_size - cloud.bad_nodes) + ' / ' + cloud.cloud_size);
+        _nodeCounts(`${(cloud.cloud_size - cloud.bad_nodes)} / ${cloud.cloud_size}`);
         _isLocked(cloud.locked);
         _isHealthy(cloud.cloud_healthy);
         return _nodes(createGrid(cloud, isExpanded));
@@ -10000,10 +9966,10 @@
         }));
       }
       impute = function () {
-        return _.insertAndExecuteCell('cs', 'imputeColumn frame: ' + Flow.Prelude.stringify(frameKey) + ', column: ' + Flow.Prelude.stringify(columnName));
+        return _.insertAndExecuteCell('cs', `imputeColumn frame: ${Flow.Prelude.stringify(frameKey)}, column: ${Flow.Prelude.stringify(columnName)}`);
       };
       inspect = function () {
-        return _.insertAndExecuteCell('cs', 'inspect getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName));
+        return _.insertAndExecuteCell('cs', `inspect getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`);
       };
       lodash.defer(_go);
       return {
@@ -10082,7 +10048,7 @@
           response_factors: _responseFactors(),
           has_response: _hasResponse()
         };
-        return _.insertAndExecuteCell('cs', 'createFrame ' + Flow.Prelude.stringify(opts));
+        return _.insertAndExecuteCell('cs', `createFrame ${Flow.Prelude.stringify(opts)}`);
       };
       lodash.defer(_go);
       return {
@@ -10172,7 +10138,7 @@
         return frame && path;
       });
       exportFrame = function () {
-        return _.insertAndExecuteCell('cs', 'exportFrame ' + Flow.Prelude.stringify(_selectedFrame()) + ', ' + Flow.Prelude.stringify(_path()) + ', overwrite: ' + (_overwrite() ? 'true' : 'false'));
+        return _.insertAndExecuteCell('cs', `exportFrame ${Flow.Prelude.stringify(_selectedFrame())}, ${Flow.Prelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
       };
       _.requestFrames(function (error, frames) {
         var frame;
@@ -10229,7 +10195,7 @@
         return modelKey && path;
       });
       exportModel = function () {
-        return _.insertAndExecuteCell('cs', 'exportModel ' + Flow.Prelude.stringify(_selectedModelKey()) + ', ' + Flow.Prelude.stringify(_path()) + ', overwrite: ' + (_overwrite() ? 'true' : 'false'));
+        return _.insertAndExecuteCell('cs', `exportModel ${Flow.Prelude.stringify(_selectedModelKey())}, ${Flow.Prelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
       };
       _.requestModels(function (error, models) {
         var model;
