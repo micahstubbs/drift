@@ -14421,7 +14421,7 @@
       plot = function () {
         var color;
         var command;
-        command = (color = _color()) ? 'plot (g) -> g(\n  g.' + _type() + '(\n    g.position ' + Flow.Prelude.stringify(_x()) + ', ' + Flow.Prelude.stringify(_y()) + '\n    g.color ' + Flow.Prelude.stringify(color) + '\n  )\n  g.from inspect ' + Flow.Prelude.stringify(_frame.label) + ', ' + _frame.metadata.origin + '\n)' : 'plot (g) -> g(\n  g.' + _type() + '(\n    g.position ' + Flow.Prelude.stringify(_x()) + ', ' + Flow.Prelude.stringify(_y()) + '\n  )\n  g.from inspect ' + Flow.Prelude.stringify(_frame.label) + ', ' + _frame.metadata.origin + '\n)';
+        command = (color = _color()) ? `plot (g) -> g(\n  g.${_type()}(\n    g.position ${Flow.Prelude.stringify(_x())}, ${Flow.Prelude.stringify(_y())}\n    g.color ${Flow.Prelude.stringify(color)}\n  )\n  g.from inspect ${Flow.Prelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)` : `plot (g) -> g(\n  g.${_type()}(\n    g.position ${Flow.Prelude.stringify(_x())}, ${Flow.Prelude.stringify(_y())}\n  )\n  g.from inspect ${Flow.Prelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)`;
         return _.insertAndExecuteCell('cs', command);
       };
       lodash.defer(_go);
@@ -14475,7 +14475,7 @@
       var _selectedModel;
       var _selectedModels;
       var _selectedModelsCaption;
-      _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : 'prediction-' + Flow.Util.uuid());
+      _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${Flow.Util.uuid()}`);
       _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
       _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
       _selectedModelsCaption = _selectedModels.join(', ');
@@ -14612,9 +14612,9 @@
           frameArg = _selectedFrame();
         }
         destinationKey = _destinationKey();
-        cs = 'predict model: ' + Flow.Prelude.stringify(modelArg) + ', frame: ' + Flow.Prelude.stringify(frameArg);
+        cs = `predict model: ${Flow.Prelude.stringify(modelArg)}, frame: ${Flow.Prelude.stringify(frameArg)}`;
         if (destinationKey) {
-          cs += ', predictions_frame: ' + Flow.Prelude.stringify(destinationKey);
+          cs += `, predictions_frame: ${Flow.Prelude.stringify(destinationKey)}`;
         }
         if (_hasReconError()) {
           if (_computeReconstructionError()) {
@@ -14622,7 +14622,7 @@
           }
         }
         if (_computeDeepFeaturesHiddenLayer()) {
-          cs += ', deep_features_hidden_layer: ' + _deepFeaturesHiddenLayerValue();
+          cs += `, deep_features_hidden_layer: ${_deepFeaturesHiddenLayerValue()}`;
         }
         if (_hasLeafNodeAssignment()) {
           if (_computeLeafNodeAssignment()) {
@@ -14630,7 +14630,7 @@
           }
         }
         if (_hasExemplarIndex()) {
-          cs += ', exemplar_index: ' + _exemplarIndexValue();
+          cs += `, exemplar_index: ${_exemplarIndexValue()}`;
         }
         return _.insertAndExecuteCell('cs', cs);
       };
@@ -14688,8 +14688,8 @@
           var predictionsFrameName;
           var targetFrameName;
           predictionsFrameName = prediction.predictions.frame_id.name;
-          targetFrameName = 'combined-' + predictionsFrameName;
-          return _.insertAndExecuteCell('cs', 'bindFrames ' + Flow.Prelude.stringify(targetFrameName) + ', [ ' + Flow.Prelude.stringify(predictionsFrameName) + ', ' + Flow.Prelude.stringify(frame.name) + ' ]');
+          targetFrameName = `combined-${predictionsFrameName}`;
+          return _.insertAndExecuteCell('cs', `bindFrames ${Flow.Prelude.stringify(targetFrameName)}, [ ${Flow.Prelude.stringify(predictionsFrameName)}, ${Flow.Prelude.stringify(frame.name)} ]`);
         };
         render(function (error, vis) {
           if (error) {
@@ -14700,9 +14700,9 @@
               $a = $(e.target);
               switch ($a.attr('data-type')) {
                 case 'frame':
-                  return _.insertAndExecuteCell('cs', 'getFrameSummary ' + Flow.Prelude.stringify($a.attr('data-key')));
+                  return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify($a.attr('data-key'))}`);
                 case 'model':
-                  return _.insertAndExecuteCell('cs', 'getModel ' + Flow.Prelude.stringify($a.attr('data-key')));
+                  return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify($a.attr('data-key'))}`);
               }
             });
             return container(vis.element);
@@ -14741,7 +14741,7 @@
         }
       }
       inspect = function () {
-        return _.insertAndExecuteCell('cs', 'inspect getPrediction model: ' + Flow.Prelude.stringify(model.name) + ', frame: ' + Flow.Prelude.stringify(frame.name));
+        return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${Flow.Prelude.stringify(model.name)}, frame: ${Flow.Prelude.stringify(frame.name)}`);
       };
       lodash.defer(_go);
       return {
@@ -14835,12 +14835,12 @@
         });
         view = function () {
           if (_hasFrame) {
-            return _.insertAndExecuteCell('cs', 'getPrediction model: ' + Flow.Prelude.stringify(_modelKey) + ', frame: ' + Flow.Prelude.stringify(_frameKey));
+            return _.insertAndExecuteCell('cs', `getPrediction model: ${Flow.Prelude.stringify(_modelKey)}, frame: ${Flow.Prelude.stringify(_frameKey)}`);
           }
         };
         inspect = function () {
           if (_hasFrame) {
-            return _.insertAndExecuteCell('cs', 'inspect getPrediction model: ' + Flow.Prelude.stringify(_modelKey) + ', frame: ' + Flow.Prelude.stringify(_frameKey));
+            return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${Flow.Prelude.stringify(_modelKey)}, frame: ${Flow.Prelude.stringify(_frameKey)}`);
           }
         };
         return {
@@ -14877,7 +14877,7 @@
           }
           return _results;
         }();
-        return _.insertAndExecuteCell('cs', 'getPredictions ' + Flow.Prelude.stringify(selectedKeys));
+        return _.insertAndExecuteCell('cs', `getPredictions ${Flow.Prelude.stringify(selectedKeys)}`);
       };
       plotPredictions = function () {
         return _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
@@ -14889,7 +14889,7 @@
         return _.insertAndExecuteCell('cs', _metricsTable.metadata.plot);
       };
       inspectAll = function () {
-        return _.insertAndExecuteCell('cs', 'inspect ' + _predictionsTable.metadata.origin);
+        return _.insertAndExecuteCell('cs', `inspect ${_predictionsTable.metadata.origin}`);
       };
       predict = function () {
         return _.insertAndExecuteCell('cs', 'predict');
@@ -14942,14 +14942,14 @@
             entry = _ref[_i];
             _results.push({
               stacktrace: entry.stacktrace,
-              caption: 'Count: ' + entry.count
+              caption: `Count: ${entry.count}`
             });
           }
           return _results;
         }();
         return self = {
           name: node.node_name,
-          caption: '' + node.node_name + ' at ' + new Date(node.timestamp),
+          caption: `${node.node_name} at ${new Date(node.timestamp)}`,
           entries,
           display
         };
