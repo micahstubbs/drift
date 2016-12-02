@@ -25,4 +25,11 @@
   succeeded
 
 `lebab src/index.js -o src/index.js --transform no-strict`
+  succeeded
+
+`lebab src/index.js -o src/index.js --transform commonjs`
+  succeeded
+  no actual changes apparently
+
+`lebab src/index.js -o src/index.js --transform multi-var`
 
