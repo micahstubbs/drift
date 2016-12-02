@@ -16,6 +16,7 @@
     "no-loop-func": "off",
     "no-shadow": "off",
     "no-unused-vars": "off",
-    "no-return-assign": "off"
+    "no-return-assign": "off",
+    "no-cond-assign": "off"
   }
 }

@@ -14954,7 +14954,7 @@
           display
         };
       };
-      _nodes = function () {
+      _nodes = (function () {
         var _i;
         var _len;
         var _ref;
@@ -14966,7 +14966,7 @@
           _results.push(createNode(node));
         }
         return _results;
-      }();
+      }());
       _activeNode(lodash.head(_nodes));
       lodash.defer(_go);
       return {
@@ -15017,9 +15017,8 @@
             _scalaResponseVisible(!_scalaResponseVisible());
             if (_scalaResponseVisible()) {
               return _scalaLinkText('Hide Scala Response');
-            } else {
-              return _scalaLinkText('Show Scala Response');
             }
+            return _scalaLinkText('Show Scala Response');
           }
         };
       };
@@ -15077,9 +15076,8 @@
       _lastSplitRatioText = Flow.Dataflow.lift(_lastSplitRatio, function (ratio) {
         if (lodash.isNaN(ratio)) {
           return ratio;
-        } else {
-          return format4f(ratio);
         }
+        return format4f(ratio);
       });
       _lastSplitKey = Flow.Dataflow.signal('');
       _splits = Flow.Dataflow.signals([]);
@@ -15105,7 +15103,7 @@
       collectKeys = function () {
         var entry;
         var splitKeys;
-        splitKeys = function () {
+        splitKeys = (function () {
           var _i;
           var _len;
           var _ref;
@@ -15117,12 +15115,12 @@
             _results.push(entry.key().trim());
           }
           return _results;
-        }();
+        }());
         splitKeys.push(_lastSplitKey().trim());
         return splitKeys;
       };
       createSplitName = function (key, ratio) {
-        return key + '_' + format4f(ratio);
+        return `${key}_${format4f(ratio)}`;
       };
       updateSplitRatiosAndNames = function () {
         var entry;
