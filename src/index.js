@@ -13615,7 +13615,7 @@
             }
           }
           if (table = _.inspect(tableName, _model)) {
-            renderPlot(tableName + (table.metadata.description ? ' (' + table.metadata.description + ')' : ''), true, _.plot(function (g) {
+            renderPlot(tableName + (table.metadata.description ? ` (${table.metadata.description})` : ''), true, _.plot(function (g) {
               return g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table));
             }));
           }
@@ -13627,28 +13627,28 @@
           return alert('Not implemented');
         };
         predict = function () {
-          return _.insertAndExecuteCell('cs', 'predict model: ' + Flow.Prelude.stringify(_model.model_id.name));
+          return _.insertAndExecuteCell('cs', `predict model: ${Flow.Prelude.stringify(_model.model_id.name)}`);
         };
         inspect = function () {
-          return _.insertAndExecuteCell('cs', 'inspect getModel ' + Flow.Prelude.stringify(_model.model_id.name));
+          return _.insertAndExecuteCell('cs', `inspect getModel ${Flow.Prelude.stringify(_model.model_id.name)}`);
         };
         previewPojo = function () {
           return _.requestPojoPreview(_model.model_id.name, function (error, result) {
             if (error) {
-              return _pojoPreview('<pre>' + lodash.escape(error) + '</pre>');
+              return _pojoPreview(`<pre>${lodash.escape(error)}</pre>`);
             } else {
-              return _pojoPreview('<pre>' + Flow.Util.highlight(result, 'java') + '</pre>');
+              return _pojoPreview(`<pre>${Flow.Util.highlight(result, 'java')}</pre>`);
             }
           });
         };
         downloadPojo = function () {
-          return window.open('/3/Models.java/' + encodeURIComponent(_model.model_id.name), '_blank');
+          return window.open(`/3/Models.java/${encodeURIComponent(_model.model_id.name)}`, '_blank');
         };
         downloadMojo = function () {
-          return window.open('/3/Models/' + encodeURIComponent(_model.model_id.name) + '/mojo', '_blank');
+          return window.open(`/3/Models/${encodeURIComponent(_model.model_id.name)}/mojo`, '_blank');
         };
         exportModel = function () {
-          return _.insertAndExecuteCell('cs', 'exportModel ' + Flow.Prelude.stringify(_model.model_id.name));
+          return _.insertAndExecuteCell('cs', `exportModel ${Flow.Prelude.stringify(_model.model_id.name)}`);
         };
         deleteModel = function () {
           return _.confirm('Are you sure you want to delete this model?', {
@@ -13656,7 +13656,7 @@
             declineCaption: 'Cancel'
           }, function (accept) {
             if (accept) {
-              return _.insertAndExecuteCell('cs', 'deleteModel ' + Flow.Prelude.stringify(_model.model_id.name));
+              return _.insertAndExecuteCell('cs', `deleteModel ${Flow.Prelude.stringify(_model.model_id.name)}`);
             }
           });
         };
@@ -13779,17 +13779,17 @@
           return _checkedModelCount(checkedViews.length);
         });
         predict = function () {
-          return _.insertAndExecuteCell('cs', 'predict model: ' + Flow.Prelude.stringify(model.model_id.name));
+          return _.insertAndExecuteCell('cs', `predict model: ${Flow.Prelude.stringify(model.model_id.name)}`);
         };
         cloneModel = function () {
           return alert('Not implemented');
-          return _.insertAndExecuteCell('cs', 'cloneModel ' + Flow.Prelude.stringify(model.model_id.name));
+          return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model.model_id.name)}`);
         };
         view = function () {
-          return _.insertAndExecuteCell('cs', 'getModel ' + Flow.Prelude.stringify(model.model_id.name));
+          return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(model.model_id.name)}`);
         };
         inspect = function () {
-          return _.insertAndExecuteCell('cs', 'inspect getModel ' + Flow.Prelude.stringify(model.model_id.name));
+          return _.insertAndExecuteCell('cs', `inspect getModel ${Flow.Prelude.stringify(model.model_id.name)}`);
         };
         return {
           key: model.model_id.name,
@@ -13821,10 +13821,10 @@
         return _results;
       };
       compareModels = function () {
-        return _.insertAndExecuteCell('cs', 'inspect getModels ' + Flow.Prelude.stringify(collectSelectedKeys()));
+        return _.insertAndExecuteCell('cs', `inspect getModels ${Flow.Prelude.stringify(collectSelectedKeys())}`);
       };
       predictUsingModels = function () {
-        return _.insertAndExecuteCell('cs', 'predict models: ' + Flow.Prelude.stringify(collectSelectedKeys()));
+        return _.insertAndExecuteCell('cs', `predict models: ${Flow.Prelude.stringify(collectSelectedKeys())}`);
       };
       deleteModels = function () {
         return _.confirm('Are you sure you want to delete these models?', {
@@ -13832,7 +13832,7 @@
           declineCaption: 'Cancel'
         }, function (accept) {
           if (accept) {
-            return _.insertAndExecuteCell('cs', 'deleteModels ' + Flow.Prelude.stringify(collectSelectedKeys()));
+            return _.insertAndExecuteCell('cs', `deleteModels ${Flow.Prelude.stringify(collectSelectedKeys())}`);
           }
         });
       };
@@ -13852,7 +13852,7 @@
           }
           return _results;
         }();
-        return _.insertAndExecuteCell('cs', 'inspect getModels ' + Flow.Prelude.stringify(allKeys));
+        return _.insertAndExecuteCell('cs', `inspect getModels ${Flow.Prelude.stringify(allKeys)}`);
       };
       initialize = function (models) {
         _modelViews(lodash.map(models, createModelView));
@@ -13974,7 +13974,7 @@
       createDelimiter = function (caption, charCode) {
         return {
           charCode,
-          caption: '' + caption + ': \'' + ('00' + charCode).slice(-2) + '\''
+          caption: `${caption}: \'${(`00${charCode}`).slice(-2)}\'`
         };
       };
       whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
@@ -14100,7 +14100,7 @@
             data[i] = previewData[i][j];
           }
           rows[j] = row = {
-            index: '' + (j + 1),
+            index: `${(j + 1)}`,
             name: Flow.Dataflow.signal(columnNames ? columnNames[j] : ''),
             type: Flow.Dataflow.signal(columnTypes[j]),
             data
