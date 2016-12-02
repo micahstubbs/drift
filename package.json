@@ -1,0 +1,51 @@
+{
+  "name": "drift",
+  "version": "0.1.0",
+  "description": "d3 scatterplot visualization with a distance-limited voronoi overlay for improved tooltip interaction",
+  "main": "build/flow.js",
+  "scripts": {
+    "prepublish": "rm -rf build && mkdir build && rollup -c -- src/index.js",
+    "build": "rm -rf build && mkdir build && rollup -c  -- src/index.js && cp build/flow.js ../h2o-3/h2o-web/src/main/resources/www/flow/js/flow.js",
+    "lint": "eslint index.js src --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/micahstubbs/drift"
+  },
+  "keywords": [
+    "flow"
+  ],
+  "homepage": "https://github.com/micahstubbs/drift",
+  "author": {
+    "name": "Contributors",
+    "email": "micah.stubbs@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "@micahstubbs",
+      "email": "micah.stubbs@gmail.com"
+    }
+  ],
+  "devDependencies": {
+    "babel-preset-es2015-rollup": "^1.1.1",
+    "cli": "^0.11.2",
+    "eslint": "^2.13.1",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.10.2",
+    "eslint-plugin-jsx-a11y": "^1.5.5",
+    "eslint-plugin-react": "^5.2.2",
+    "package-preamble": "0.0",
+    "rollup": "^0.33.2",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^5.0.5",
+    "rollup-plugin-json": "^2.0.1",
+    "rollup-plugin-node-resolve": "^2.0.0"
+  },
+  "dependencies": { 
+    "rollup": "^0.33.2"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/micahstubbs/drift/issues"
+  }
+}
