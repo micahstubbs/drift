@@ -5506,16 +5506,16 @@
       requestJob = function (key, go) {
         return doGet('/3/Jobs/' + encodeURIComponent(key), function (error, result) {
           if (error) {
-            return go(new Flow.Error('Error fetching job \'' + key + '\'', error));
+            return go(new Flow.Error(`Error fetching job \'${key}\'`, error));
           } else {
             return go(null, lodash.head(result.jobs));
           }
         });
       };
       requestCancelJob = function (key, go) {
-        return doPost('/3/Jobs/' + encodeURIComponent(key) + '/cancel', {}, function (error, result) {
+        return doPost(`/3/Jobs/${encodeURIComponent(key)}/cancel`, {}, function (error, result) {
           if (error) {
-            return go(new Flow.Error('Error canceling job \'' + key + '\'', error));
+            return go(new Flow.Error(`Error canceling job \'${key}\'`, error));
           } else {
             return go(null);
           }
@@ -5581,7 +5581,7 @@
         return doPost('/3/PartialDependence/', opts, go);
       };
       requestPartialDependenceData = function (key, go) {
-        return doGet('/3/PartialDependence/' + encodeURIComponent(key), function (error, result) {
+        return doGet(`/3/PartialDependence/${encodeURIComponent(key)}`, function (error, result) {
           if (error) {
             return go(error, result);
           } else {
@@ -5619,10 +5619,10 @@
             params.decreasing = opts.decreasing;
           }
         }
-        return doGet(composePath('/99/Grids/' + encodeURIComponent(key), params), go);
+        return doGet(composePath(`/99/Grids/' + ${encodeURIComponent(key)}`, params), go);
       };
       requestModel = function (key, go) {
-        return doGet('/3/Models/' + encodeURIComponent(key), function (error, result) {
+        return doGet(`/3/Models/${encodeURIComponent(key)}`, function (error, result) {
           if (error) {
             return go(error, result);
           } else {
@@ -5631,10 +5631,10 @@
         });
       };
       requestPojoPreview = function (key, go) {
-        return download('text', '/3/Models.java/' + encodeURIComponent(key) + '/preview', go);
+        return download('text', `/3/Models.java/${encodeURIComponent(key)}/preview`, go);
       };
       requestDeleteModel = function (key, go) {
-        return doDelete('/3/Models/' + encodeURIComponent(key), go);
+        return doDelete(`/3/Models/${encodeURIComponent(key)}`, go);
       };
       requestImportModel = function (path, overwrite, go) {
         var opts;
@@ -5645,7 +5645,7 @@
         return doPost('/99/Models.bin/not_in_use', opts, go);
       };
       requestExportModel = function (key, path, overwrite, go) {
-        return doGet('/99/Models.bin/' + encodeURIComponent(key) + '?dir=' + encodeURIComponent(path) + '&force=' + overwrite, go);
+        return doGet(`/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`, go);
       };
       requestModelBuildersVisibility = function (go) {
         return doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, function (result) {
@@ -5665,8 +5665,8 @@
         gridModelBuilderEndpoints = {};
         for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
           modelBuilder = modelBuilders[_i];
-          modelBuilderEndpoints[modelBuilder.algo] = '/' + modelBuilder.__meta.schema_version + '/ModelBuilders/' + modelBuilder.algo;
-          gridModelBuilderEndpoints[modelBuilder.algo] = '/99/Grid/' + modelBuilder.algo;
+          modelBuilderEndpoints[modelBuilder.algo] = `/${modelBuilder.__meta.schema_version}/ModelBuilders/${modelBuilder.algo}`;
+          gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${modelBuilder.algo}`;
         }
         __modelBuilderEndpoints = modelBuilderEndpoints;
         __gridModelBuilderEndpoints = gridModelBuilderEndpoints;
@@ -5744,7 +5744,7 @@
         return doGet(getModelBuilderEndpoint(algo), go);
       };
       requestModelInputValidation = function (algo, parameters, go) {
-        return doPost('' + getModelBuilderEndpoint(algo) + '/parameters', encodeObjectForPost(parameters), go);
+        return doPost(`${getModelBuilderEndpoint(algo)}/parameters`, encodeObjectForPost(parameters), go);
       };
       requestModelBuild = function (algo, parameters, go) {
         _.trackEvent('model', algo);
@@ -5780,7 +5780,7 @@
         if (void 0 !== (opt = options.exemplar_index)) {
           opts.exemplar_index = opt;
         }
-        return doPost('/3/Predictions/models/' + encodeURIComponent(modelKey) + '/frames/' + encodeURIComponent(frameKey), opts, function (error, result) {
+        return doPost(`/3/Predictions/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, opts, function (error, result) {
           if (error) {
             return go(error);
           } else {
@@ -5789,7 +5789,7 @@
         });
       };
       requestPrediction = function (modelKey, frameKey, go) {
-        return doGet('/3/ModelMetrics/models/' + encodeURIComponent(modelKey) + '/frames/' + encodeURIComponent(frameKey), function (error, result) {
+        return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, function (error, result) {
           if (error) {
             return go(error);
           } else {
@@ -5840,11 +5840,11 @@
           }
         };
         if (modelKey && frameKey) {
-          return doGet('/3/ModelMetrics/models/' + encodeURIComponent(modelKey) + '/frames/' + encodeURIComponent(frameKey), go);
+          return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/'${encodeURIComponent(frameKey)}`, go);
         } else if (modelKey) {
-          return doGet('/3/ModelMetrics/models/' + encodeURIComponent(modelKey), go);
+          return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}`, go);
         } else if (frameKey) {
-          return doGet('/3/ModelMetrics/frames/' + encodeURIComponent(frameKey), go);
+          return doGet(`/3/ModelMetrics/frames/${encodeURIComponent(frameKey)}`, go);
         } else {
           return doGet('/3/ModelMetrics', go);
         }
@@ -5861,28 +5861,28 @@
         }
       };
       requestObjects = function (type, go) {
-        return doGet('/3/NodePersistentStorage/' + encodeURIComponent(type), unwrap(go, function (result) {
+        return doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}`, unwrap(go, function (result) {
           return result.entries;
         }));
       };
       requestObjectExists = function (type, name, go) {
-        return doGet('/3/NodePersistentStorage/categories/' + encodeURIComponent(type) + '/names/' + encodeURIComponent(name) + '/exists', function (error, result) {
+        return doGet(`/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`, function (error, result) {
           return go(null, error ? false : result.exists);
         });
       };
       requestObject = function (type, name, go) {
-        return doGet('/3/NodePersistentStorage/' + encodeURIComponent(type) + '/' + encodeURIComponent(name), unwrap(go, function (result) {
+        return doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, unwrap(go, function (result) {
           return JSON.parse(result.value);
         }));
       };
       requestDeleteObject = function (type, name, go) {
-        return doDelete('/3/NodePersistentStorage/' + encodeURIComponent(type) + '/' + encodeURIComponent(name), go);
+        return doDelete(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, go);
       };
       requestPutObject = function (type, name, value, go) {
         var uri;
-        uri = '/3/NodePersistentStorage/' + encodeURIComponent(type);
+        uri = `/3/NodePersistentStorage/${encodeURIComponent(type)}`;
         if (name) {
-          uri += '/' + encodeURIComponent(name);
+          uri += `/${encodeURIComponent(name)}`;
         }
         return doPost(uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, function (result) {
           return result.name;
@@ -5890,16 +5890,16 @@
       };
       requestUploadObject = function (type, name, formData, go) {
         var uri;
-        uri = '/3/NodePersistentStorage.bin/' + encodeURIComponent(type);
+        uri = `/3/NodePersistentStorage.bin/${encodeURIComponent(type)}`;
         if (name) {
-          uri += '/' + encodeURIComponent(name);
+          uri += `/${encodeURIComponent(name)}`;
         }
         return doUpload(uri, formData, unwrap(go, function (result) {
           return result.name;
         }));
       };
       requestUploadFile = function (key, formData, go) {
-        return doUpload('/3/PostFile?destination_frame=' + encodeURIComponent(key), formData, go);
+        return doUpload(`/3/PostFile?destination_frame=${encodeURIComponent(key)}`, formData, go);
       };
       requestCloud = function (go) {
         return doGet('/3/Cloud', go);
@@ -5908,7 +5908,7 @@
         return doGet('/3/Timeline', go);
       };
       requestProfile = function (depth, go) {
-        return doGet('/3/Profiler?depth=' + depth, go);
+        return doGet(`/3/Profiler?depth=${depth}`, go);
       };
       requestStackTrace = function (go) {
         return doGet('/3/JStack', go);
@@ -5920,7 +5920,7 @@
         return doPost('/3/LogAndEcho', { message }, go);
       };
       requestLogFile = function (nodeIndex, fileType, go) {
-        return doGet('/3/Logs/nodes/' + nodeIndex + '/files/' + fileType, go);
+        return doGet(`/3/Logs/nodes/${nodeIndex}/files/${fileType}`, go);
       };
       requestNetworkTest = function (go) {
         return doGet('/3/NetworkTest', go);
@@ -5935,13 +5935,13 @@
         return doGet('/3/Metadata/endpoints', go);
       };
       requestEndpoint = function (index, go) {
-        return doGet('/3/Metadata/endpoints/' + index, go);
+        return doGet(`/3/Metadata/endpoints/${index}`, go);
       };
       requestSchemas = function (go) {
         return doGet('/3/Metadata/schemas', go);
       };
       requestSchema = function (name, go) {
-        return doGet('/3/Metadata/schemas/' + encodeURIComponent(name), go);
+        return doGet(`/3/Metadata/schemas/${encodeURIComponent(name)}`, go);
       };
       getLines = function (data) {
         return lodash.filter(data.split('\n'), function (line) {
@@ -5956,16 +5956,16 @@
         return download('text', '/flow/packs/index.list', unwrap(go, getLines));
       };
       requestPack = function (packName, go) {
-        return download('text', '/flow/packs/' + encodeURIComponent(packName) + '/index.list', unwrap(go, getLines));
+        return download('text', `/flow/packs/${encodeURIComponent(packName)}/index.list`, unwrap(go, getLines));
       };
       requestFlow = function (packName, flowName, go) {
-        return download('json', '/flow/packs/' + encodeURIComponent(packName) + '/' + encodeURIComponent(flowName), go);
+        return download('json', `/flow/packs/${encodeURIComponent(packName)}/${encodeURIComponent(flowName)}`, go);
       };
       requestHelpIndex = function (go) {
         return download('json', '/flow/help/catalog.json', go);
       };
       requestHelpContent = function (name, go) {
-        return download('text', '/flow/help/' + name + '.html', go);
+        return download('text', `/flow/help/${name}.html`, go);
       };
       requestRDDs = function (go) {
         return doGet('/3/RDDs', go);
@@ -5977,27 +5977,27 @@
         return doPost('/3/scalaint', {}, go);
       };
       requestScalaCode = function (session_id, code, go) {
-        return doPost('/3/scalaint/' + session_id, { code }, go);
+        return doPost(`/3/scalaint/${session_id}`, { code }, go);
       };
       requestAsH2OFrameFromRDD = function (rdd_id, name, go) {
         if (name === void 0) {
-          return doPost('/3/RDDs/' + rdd_id + '/h2oframe', {}, go);
+          return doPost(`/3/RDDs/${rdd_id}/h2oframe`, {}, go);
         } else {
-          return doPost('/3/RDDs/' + rdd_id + '/h2oframe', { h2oframe_id: name }, go);
+          return doPost(`/3/RDDs/${rdd_id}/h2oframe`, { h2oframe_id: name }, go);
         }
       };
       requestAsH2OFrameFromDF = function (df_id, name, go) {
         if (name === void 0) {
-          return doPost('/3/dataframes/' + df_id + '/h2oframe', {}, go);
+          return doPost(`/3/dataframes/${df_id}/h2oframe`, {}, go);
         } else {
-          return doPost('/3/dataframes/' + df_id + '/h2oframe', { h2oframe_id: name }, go);
+          return doPost(`/3/dataframes/${df_id}/h2oframe`, { h2oframe_id: name }, go);
         }
       };
       requestAsDataFrame = function (hf_id, name, go) {
         if (name === void 0) {
-          return doPost('/3/h2oframes/' + hf_id + '/dataframe', {}, go);
+          return doPost(`/3/h2oframes/${hf_id}/dataframe`, {}, go);
         } else {
-          return doPost('/3/h2oframes/' + hf_id + '/dataframe', { dataframe_id: name }, go);
+          return doPost(`/3/h2oframes/${hf_id}/dataframe`, { dataframe_id: name }, go);
         }
       };
       Flow.Dataflow.link(_.requestInspect, requestInspect);
@@ -6108,7 +6108,7 @@
       lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
     }
     createTempKey = function () {
-      return 'flow_' + Flow.Util.uuid().replace(/\-/g, '');
+      return `flow_${Flow.Util.uuid().replace(/\-/g, '')}`;
     };
     createVector = lightning.createVector;
     createFactor = lightning.createFactor;
@@ -6349,7 +6349,7 @@
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         element = source[i];
-        target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? '<a href=\'#\' data-type=\'model\' data-key=' + Flow.Prelude.stringify(element.name) + '>' + lodash.escape(element.name) + '</a>' : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? '<a href=\'#\' data-type=\'frame\' data-key=' + Flow.Prelude.stringify(element.name) + '>' + lodash.escape(element.name) + '</a>' : element : void 0;
+        target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : element : void 0;
       }
       return target;
     };
@@ -6431,21 +6431,21 @@
           yellow(tn),
           normal(fp),
           normal(format4f(fpr)),
-          normal(fp + ' / ' + (fp + tn))
+          normal(`${fp} / ${(fp + tn)}`)
         ]),
         tr([
           strong(domain[1]),
           normal(fn),
           yellow(tp),
           normal(format4f(fnr)),
-          normal(fn + ' / ' + (tp + fn))
+          normal(`${fn} / ${(tp + fn)}`)
         ]),
         tr([
           strong('Total'),
           strong(tn + fn),
           strong(tp + fp),
           strong(format4f((fn + fp) / (fp + tn + tp + fn))),
-          strong(fn + fp + ' / ' + (fp + tn + tp + fn))
+          strong(`${fn}${fp} / ${(fp + tn + tp + fn)}`)
         ])
       ])]);
     };
@@ -6474,15 +6474,15 @@
           }
           return _results;
         }();
-        return 'getPredictions ' + Flow.Prelude.stringify(sanitizedOpts);
+        return `getPredictions ${Flow.Prelude.stringify(sanitizedOpts)}`;
       } else {
         modelKey = opts.model, frameKey = opts.frame;
         if (modelKey && frameKey) {
-          return 'getPredictions model: ' + Flow.Prelude.stringify(modelKey) + ', frame: ' + Flow.Prelude.stringify(frameKey);
+          return `getPredictions model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`;
         } else if (modelKey) {
-          return 'getPredictions model: ' + Flow.Prelude.stringify(modelKey);
+          return `getPredictions model: ${Flow.Prelude.stringify(modelKey)}`;
         } else if (frameKey) {
-          return 'getPredictions frame: ' + Flow.Prelude.stringify(frameKey);
+          return `getPredictions frame: ${Flow.Prelude.stringify(frameKey)}`;
         } else {
           return 'getPredictions()';
         }
@@ -6828,7 +6828,7 @@
         if (!(inspectors = root.inspect)) {
           return;
         }
-        if (cached = root._cache_[key = 'inspect_' + attr]) {
+        if (cached = root._cache_[key = `inspect_${attr}`]) {
           return cached;
         }
         if (!(f = inspectors[attr])) {
@@ -6976,8 +6976,8 @@
         _ref1 = result.partial_dependence_data;
         for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
           data = _ref1[i];
-          origin = 'getPartialDependence ' + Flow.Prelude.stringify(result.destination_key);
-          inspections['plot' + (i + 1)] = inspectTwoDimTable_(origin, 'plot' + (i + 1), data);
+          origin = `getPartialDependence ${Flow.Prelude.stringify(result.destination_key)}`;
+          inspections[`plot${(i + 1)}`] = inspectTwoDimTable_(origin, `plot${(i + 1)}`, data);
         }
         inspect_(result, inspections);
         render_(result, H2O.PartialDependenceOutput, result);
@@ -7094,8 +7094,8 @@
             return _results;
           }();
           return createDataframe('parameters', vectors, lodash.range(models.length), null, {
-            description: 'Parameters for models ' + modelKeys.join(', '),
-            origin: 'getModels ' + Flow.Prelude.stringify(modelKeys)
+            description: `Parameters for models ${modelKeys.join(', ')}`,
+            origin: `getModels ${Flow.Prelude.stringify(modelKeys)}`
           });
         };
       };
@@ -7135,8 +7135,8 @@
             return _results;
           }();
           return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-            description: 'Parameters for model \'' + model.model_id.name + '\'',
-            origin: 'getModel ' + Flow.Prelude.stringify(model.model_id.name)
+            description: `Parameters for model \'${model.model_id.name}\'`,
+            origin: `getModel ${Flow.Prelude.stringify(model.model_id.name)}`
           });
         };
       };
@@ -7289,7 +7289,7 @@
               record[k] = null;
             } else {
               if (((_ref2 = v.__meta) != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
-                inspections['' + name + ' - ' + v.name] = inspectTwoDimTable_(origin, '' + name + ' - ' + v.name, v);
+                inspections[`${name} - ${v.name}`] = inspectTwoDimTable_(origin, `${name} - ${v.name}`, v);
               } else {
                 if (lodash.isArray(v)) {
                   if (k === 'cross_validation_models' || k === 'cross_validation_predictions' || name === 'output' && (k === 'weights' || k === 'biases')) {
@@ -7300,16 +7300,16 @@
                 } else if (lodash.isObject(v)) {
                   if (meta = v.__meta) {
                     if (meta.schema_type === 'Key<Frame>') {
-                      record[k] = '<a href=\'#\' data-type=\'frame\' data-key=' + Flow.Prelude.stringify(v.name) + '>' + lodash.escape(v.name) + '</a>';
+                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
                     } else if (meta.schema_type === 'Key<Model>') {
-                      record[k] = '<a href=\'#\' data-type=\'model\' data-key=' + Flow.Prelude.stringify(v.name) + '>' + lodash.escape(v.name) + '</a>';
+                      record[k] = `<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
                     } else if (meta.schema_type === 'Frame') {
-                      record[k] = '<a href=\'#\' data-type=\'frame\' data-key=' + Flow.Prelude.stringify(v.frame_id.name) + '>' + lodash.escape(v.frame_id.name) + '</a>';
+                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;
                     } else {
-                      inspectObject(inspections, '' + name + ' - ' + k, origin, v);
+                      inspectObject(inspections, `${name} - ${k}`, origin, v);
                     }
                   } else {
-                    console.log('WARNING: dropping [' + k + '] from inspection:', v);
+                    console.log(`WARNING: dropping [${k}] from inspection:`, v);
                   }
                 } else {
                   record[k] = lodash.isNumber(v) ? format6fi(v) : v;
@@ -7331,14 +7331,14 @@
           var _ref1;
           inspections = {};
           inspections.parameters = inspectModelParameters(model);
-          origin = 'getModel ' + Flow.Prelude.stringify(model.model_id.name);
+          origin = `getModel ${Flow.Prelude.stringify(model.model_id.name)}`;
           inspectObject(inspections, 'output', origin, model.output);
           if (model.__meta.schema_type === 'NaiveBayesModel') {
             if (lodash.isArray(model.output.pcond)) {
               _ref1 = model.output.pcond;
               for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
                 table = _ref1[_i];
-                tableName = 'output - pcond - ' + table.name;
+                tableName = `output - pcond - ${table.name}`;
                 inspections[tableName] = inspectTwoDimTable_(origin, tableName, table);
               }
             }
@@ -7361,9 +7361,9 @@
       extendGrid = function (grid, opts) {
         var inspections;
         var origin;
-        origin = 'getGrid ' + Flow.Prelude.stringify(grid.grid_id.name);
+        origin = `getGrid ${Flow.Prelude.stringify(grid.grid_id.name)}`;
         if (opts) {
-          origin += ', ' + Flow.Prelude.stringify(opts);
+          origin += `, ${Flow.Prelude.stringify(opts)}`;
         }
         inspections = {
           summary: inspectTwoDimTable_(origin, 'summary', grid.summary_table),
@@ -7421,10 +7421,10 @@
         predictionFrame = result.predictions_frame;
         inspections = {};
         if (prediction) {
-          inspectObject(inspections, 'Prediction', 'getPrediction model: ' + Flow.Prelude.stringify(modelKey) + ', frame: ' + Flow.Prelude.stringify(frameKey), prediction);
+          inspectObject(inspections, 'Prediction', `getPrediction model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`, prediction);
         } else {
           prediction = {};
-          inspectObject(inspections, 'Prediction', 'getPrediction model: ' + Flow.Prelude.stringify(modelKey) + ', frame: ' + Flow.Prelude.stringify(frameKey), { prediction_frame: predictionFrame });
+          inspectObject(inspections, 'Prediction', `getPrediction model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`, { prediction_frame: predictionFrame });
         }
         inspect_(prediction, inspections);
         return render_(prediction, H2O.PredictOutput, prediction);
@@ -7456,7 +7456,7 @@
             'cardinality'
           ];
           toColumnSummaryLink = function (label) {
-            return '<a href=\'#\' data-type=\'summary-link\' data-key=' + Flow.Prelude.stringify(label) + '>' + lodash.escape(label) + '</a>';
+            return `<a href=\'#\' data-type=\'summary-link\' data-key=${Flow.Prelude.stringify(label)}>${lodash.escape(label)}</a>`;
           };
           toConversionLink = function (value) {
             var label;
@@ -7465,10 +7465,10 @@
             _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
             switch (type) {
               case 'enum':
-                return '<a href=\'#\' data-type=\'as-numeric-link\' data-key=' + Flow.Prelude.stringify(label) + '>Convert to numeric</a>';
+                return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${Flow.Prelude.stringify(label)}>Convert to numeric</a>`;
               case 'int':
               case 'string':
-                return '<a href=\'#\' data-type=\'as-factor-link\' data-key=' + Flow.Prelude.stringify(label) + '>Convert to enum</a>';
+                return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${Flow.Prelude.stringify(label)}>Convert to enum</a>'`;
               default:
                 return void 0;
             }
@@ -7586,15 +7586,15 @@
             var _results;
             _results = [];
             for (i = _i = 0, _ref1 = frameColumns.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
-              _results.push('' + typeVector.valueAt(i) + '\0' + labelVector.valueAt(i));
+              _results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);
             }
             return _results;
           }();
           vectors.push(createFactor('Actions', Flow.TString, actionsData, null, toConversionLink));
           return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
-            description: 'A list of ' + tableLabel + ' in the H2O Frame.',
-            origin: 'getFrameSummary ' + Flow.Prelude.stringify(frameKey),
-            plot: 'plot inspect \'' + tableLabel + '\', getFrameSummary ' + Flow.Prelude.stringify(frameKey)
+            description: `A list of ${tableLabel} in the H2O Frame.`,
+            origin: `getFrameSummary ${Flow.Prelude.stringify(frameKey)}`,
+            plot: `plot inspect \'${tableLabel}\', getFrameSummary ${Flow.Prelude.stringify(frameKey)}`
           });
         };
       };
@@ -7661,7 +7661,7 @@
           }()));
           return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
             description: 'A partial list of rows in the H2O Frame.',
-            origin: 'getFrameData ' + Flow.Prelude.stringify(frameKey)
+            origin: `getFrameData ${Flow.Prelude.stringify(frameKey)}`
           });
         };
       };
@@ -7669,7 +7669,7 @@
         var inspections;
         var origin;
         inspections = { data: inspectFrameData(frameKey, frame) };
-        origin = 'getFrameData ' + Flow.Prelude.stringify(frameKey);
+        origin = `getFrameData ${Flow.Prelude.stringify(frameKey)}`;
         inspect_(frame, inspections);
         return render_(frame, H2O.FrameDataOutput, frame);
       };
@@ -7700,7 +7700,7 @@
         if (enumColumns.length > 0) {
           inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
         }
-        origin = 'getFrameSummary ' + Flow.Prelude.stringify(frameKey);
+        origin = `getFrameSummary ${Flow.Prelude.stringify(frameKey)}`;
         inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
         inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
         inspect_(frame, inspections);
@@ -7730,7 +7730,7 @@
         if (enumColumns.length > 0) {
           inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
         }
-        origin = 'getFrameSummary ' + Flow.Prelude.stringify(frameKey);
+        origin = `getFrameSummary ${Flow.Prelude.stringify(frameKey)}`;
         inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
         inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
         inspect_(frame, inspections);
@@ -7754,8 +7754,8 @@
             createVector('value', Flow.TNumber, column.percentiles)
           ];
           return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
-            description: 'Percentiles for column \'' + column.label + '\' in frame \'' + frameKey + '\'.',
-            origin: 'getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName)
+            description: `Percentiles for column \'${column.label}\' in frame \'${frameKey}\'.`,
+            origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
           });
         };
         inspectDistribution = function () {
@@ -7832,9 +7832,9 @@
             createVector('count', Flow.TNumber, countData)
           ];
           return createDataframe('distribution', vectors, lodash.range(binCount), null, {
-            description: 'Distribution for column \'' + column.label + '\' in frame \'' + frameKey + '\'.',
-            origin: 'getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName),
-            plot: 'plot inspect \'distribution\', getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName)
+            description: `Distribution for column \'${column.label}\' in frame \'${frameKey}\'.`,
+            origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,
+            plot: `plot inspect \'distribution\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
           });
         };
         inspectCharacteristics = function () {
@@ -7881,9 +7881,9 @@
             createVector('percent', Flow.TNumber, percentData)
           ];
           return createDataframe('characteristics', vectors, lodash.range(characteristicData.length), null, {
-            description: 'Characteristics for column \'' + column.label + '\' in frame \'' + frameKey + '\'.',
-            origin: 'getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName),
-            plot: 'plot inspect \'characteristics\', getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName)
+            description: `Characteristics for column \'${column.label}\' in frame \'${frameKey}\'.`,
+            origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,
+            plot: `plot inspect \'characteristics\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
           });
         };
         inspectSummary = function () {
@@ -7916,9 +7916,9 @@
             createVector('max', Flow.TNumber, [maximum])
           ];
           return createDataframe('summary', vectors, lodash.range(1), null, {
-            description: 'Summary for column \'' + column.label + '\' in frame \'' + frameKey + '\'.',
-            origin: 'getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName),
-            plot: 'plot inspect \'summary\', getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName)
+            description: `Summary for column \'${column.label}\' in frame \'${frameKey}\'.`,
+            origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,
+            plot: `plot inspect \'summary\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
           });
         };
         inspectDomain = function () {
@@ -7955,9 +7955,9 @@
             createVector('percent', Flow.TNumber, percents)
           ];
           return createDataframe('domain', vectors, lodash.range(sortedLevels.length), null, {
-            description: 'Domain for column \'' + column.label + '\' in frame \'' + frameKey + '\'.',
-            origin: 'getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName),
-            plot: 'plot inspect \'domain\', getColumnSummary ' + Flow.Prelude.stringify(frameKey) + ', ' + Flow.Prelude.stringify(columnName)
+            description: `Domain for column \'${column.label}\' in frame \'${frameKey}\'.`,
+            origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,
+            plot: `plot inspect \'domain\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
           });
         };
         inspections = { characteristics: inspectCharacteristics };
@@ -8115,7 +8115,7 @@
         return splits;
       };
       requestBindFrames = function (key, sourceKeys, go) {
-        return _.requestExec('(assign ' + key + ' (cbind ' + sourceKeys.join(' ') + '))', function (error, result) {
+        return _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`, function (error, result) {
           if (error) {
             return go(error);
           } else {
@@ -8138,16 +8138,16 @@
           splits = computeSplits(splitRatios, splitKeys);
           randomVecKey = createTempKey();
           statements = [];
-          statements.push('(tmp= ' + randomVecKey + ' (h2o.runif ' + frameKey + ' ' + seed + '))');
+          statements.push(`(tmp= ${randomVecKey} (h2o.runif ${frameKey} ${seed}))`);
           for (i = _i = 0, _len = splits.length; _i < _len; i = ++_i) {
             part = splits[i];
-            g = i !== 0 ? '(> ' + randomVecKey + ' ' + part.min + ')' : null;
-            l = i !== splits.length - 1 ? '(<= ' + randomVecKey + ' ' + part.max + ')' : null;
-            sliceExpr = g && l ? '(& ' + g + ' ' + l + ')' : l ? l : g;
-            statements.push('(assign ' + part.key + ' (rows ' + frameKey + ' ' + sliceExpr + '))');
+            g = i !== 0 ? `(> ${randomVecKey} ${part.min})` : null;
+            l = i !== splits.length - 1 ? `(<= ${randomVecKey} ${part.max})` : null;
+            sliceExpr = g && l ? `(& ${g} ${l})` : l ? l : g;
+            statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);
           }
-          statements.push('(rm ' + randomVecKey + ')');
-          return _.requestExec('(, ' + statements.join(' ') + ')', function (error, result) {
+          statements.push(`(rm ${randomVecKey})`);
+          return _.requestExec(`(, ${statements.join(' ')})`, function (error, result) {
             if (error) {
               return go(error);
             } else {
@@ -8167,7 +8167,7 @@
         var statement;
         lr = includeAllLeftRows ? 'TRUE' : 'FALSE';
         rr = includeAllRightRows ? 'TRUE' : 'FALSE';
-        statement = '(assign ' + destinationKey + ' (merge ' + leftFrameKey + ' ' + rightFrameKey + ' ' + lr + ' ' + rr + ' ' + leftColumnIndex + ' ' + rightColumnIndex + ' "radix"))';
+        statement = `(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;
         return _.requestExec(statement, function (error, result) {
           if (error) {
             return go(error);
@@ -8409,7 +8409,7 @@
             return i;
           }
         }
-        throw new Flow.Error('Column [' + columnLabel + '] not found in frame');
+        throw new Flow.Error(`Column [${columnLabel}] not found in frame`);
       };
       findColumnIndicesByColumnLabels = function (frame, columnLabels) {
         var columnLabel;
@@ -8456,8 +8456,8 @@
             } else {
               groupByColumnIndices = null;
             }
-            groupByArg = groupByColumnIndices ? '[' + groupByColumnIndices.join(' ') + ']' : '[]';
-            return _.requestExec('(h2o.impute ' + frame + ' ' + columnIndex + ' ' + JSON.stringify(method) + ' ' + JSON.stringify(combineMethod) + ' ' + groupByArg + ' _ _)', function (error, result) {
+            groupByArg = groupByColumnIndices ? `[${groupByColumnIndices.join(' ')}]` : '[]';
+            return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`, function (error, result) {
               if (error) {
                 return go(error);
               } else {
@@ -8483,7 +8483,7 @@
             columnKeyError = _error;
             return go(columnKeyError);
           }
-          return _.requestExec('(assign ' + frame + ' (:= ' + frame + ' (' + method + ' (cols ' + frame + ' ' + columnIndex + ')) ' + columnIndex + ' [0:' + result.rows + ']))', function (error, result) {
+          return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`, function (error, result) {
             if (error) {
               return go(error);
             } else {
@@ -8775,7 +8775,7 @@
                 }
                 return _results;
               }();
-              return go(new Flow.Error('Model build failure: ' + messages.join('; ')));
+              return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));
             } else {
               return go(null, extendJob(result.job));
             }
@@ -9393,7 +9393,7 @@
         return {
           name,
           description: item.description,
-          icon: 'fa fa-' + item.icon + ' flow-icon',
+          icon: `fa fa-${item.icon} flow-icon`,
           execute() {
             return _.insertAndExecuteCell('cs', name);
           }
@@ -9457,7 +9457,7 @@
           column: _column(),
           maxRunTime
         };
-        return _.insertAndExecuteCell('cs', 'buildAutoModel ' + JSON.stringify(arg));
+        return _.insertAndExecuteCell('cs', `buildAutoModel ${JSON.stringify(arg)}`);
       };
       _.requestFrames(function (error, frames) {
         var frame;
@@ -9528,7 +9528,7 @@
     H2O.BindFramesOutput = function (_, _go, key, result) {
       var viewFrame;
       viewFrame = function () {
-        return _.insertAndExecuteCell('cs', 'getFrameSummary ' + Flow.Prelude.stringify(key));
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(key)}`);
       };
       lodash.defer(_go);
       return {
@@ -9607,7 +9607,7 @@
           return '-';
         }
         i = Math.floor(Math.log(bytes) / Math.log(1024));
-        return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + _sizes[i];
+        return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${_sizes[i]}`;
       };
       formatThreads = function (fjs) {
         var i;
