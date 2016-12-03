@@ -22,7 +22,6 @@
     "max-len":"off",
     "no-unneeded-ternary": "off",
     "default-case": "off",
-    "no-else-return": "off",
     "no-sequences": "off",
     "no-unused-expressions": "off",
     "no-nested-ternary": "off",
