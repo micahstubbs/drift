@@ -1990,16 +1990,12 @@
           action: null
         };
       };
-      createShortcutHint = function (shortcut) {
-        return '<span style=\'float:right\'>' + lodash.map(shortcut, function (key) {
-          return '<kbd>' + key + '</kbd>';
-        }).join(' ') + '</span>';
-      };
+      createShortcutHint = shortcut => `<span style=\'float:right\'>${lodash.map(shortcut, key => `<kbd>${key}</kbd>`).join(' ')}</span>`;
       createMenuItem = function (label, action, shortcut) {
         var kbds;
         kbds = shortcut ? createShortcutHint(shortcut) : '';
         return {
-          label: '' + lodash.escape(label) + kbds,
+          label: `${lodash.escape(label)}${kbds}`,
           action
         };
       };
@@ -2054,7 +2050,7 @@
       initializeMenus = function (builder) {
         var modelMenuItems;
         modelMenuItems = lodash.map(builder, function (builder) {
-          return createMenuItem('' + builder.algo_full_name + '...', executeCommand('buildModel ' + Flow.Prelude.stringify(builder.algo)));
+          return createMenuItem(`${builder.algo_full_name}...`, executeCommand(`buildModel ${Flow.Prelude.stringify(builder.algo)}`));
         }).concat([
           menuDivider,
           createMenuItem('List All Models', executeCommand('getModels')),
@@ -2143,7 +2139,7 @@
           label,
           action,
           isDisabled,
-          icon: 'fa fa-' + icon
+          icon: `fa fa-${icon}`
         };
       };
       _toolbar = [
@@ -2363,7 +2359,7 @@
         var seq;
         seq = shortcut[0], caption = shortcut[1];
         keystrokes = lodash.map(seq.split(/\+/g), function (key) {
-          return '<kbd>' + key + '</kbd>';
+          return `<kbd>${key}</kbd>`;
         }).join(' ');
         return {
           keystrokes,
@@ -2487,7 +2483,7 @@
         }
         return _results;
       }();
-      return '[' + previews.join(', ') + ellipsis + ']';
+      return `[${previews.join(', ')}${ellipsis}]`;
     };
     previewObject = function (object) {
       var count;
@@ -2503,13 +2499,13 @@
         if (!(key !== '_flow_')) {
           continue;
         }
-        previews.push('' + key + ': ' + preview(value));
+        previews.push(`${key}: ${preview(value)}`);
         if (++count === 5) {
           ellipsis = ', ...';
           break;
         }
       }
-      return '{' + previews.join(', ') + ellipsis + '}';
+      return `{${previews.join(', ')}${ellipsis}}`;
     };
     preview = function (element, recurse) {
       var type;
@@ -2703,12 +2699,12 @@
             switch (type) {
               case 'request':
                 _connections(_connections() + 1);
-                return lodash.defer(_message, 'Requesting ' + data);
+                return lodash.defer(_message, `Requesting ${data}`);
               case 'response':
               case 'error':
                 _connections(connections = _connections() - 1);
                 if (connections) {
-                  return lodash.defer(_message, 'Waiting for ' + connections + ' responses...');
+                  return lodash.defer(_message, `Waiting for ${connections} responses...`);
                 } else {
                   return lodash.defer(_message, defaultMessage);
                 }
@@ -2734,7 +2730,7 @@
       });
       return Flow.Dataflow.link(_.trackException, function (description) {
         return lodash.defer(function () {
-          _.requestEcho('FLOW: ' + description, function () {
+          _.requestEcho(`FLOW: ${description}`, function () {
           });
           return window.ga('send', 'exception', {
             exDescription: description,
@@ -2946,7 +2942,7 @@
           }
           if (error) {
             _settled = true;
-            go(new Flow.Error('Error evaluating future[' + task.resultIndex + ']', error));
+            go(new Flow.Error(`Error evaluating future[${task.resultIndex}]`, error));
           } else {
             _results[task.resultIndex] = result;
             _actual++;
@@ -3174,9 +3170,9 @@
           var lines;
           lines = cs.replace(/[\n\r]/g, '\n').split('\n');
           block = lodash.map(lines, function (line) {
-            return '  ' + line;
+            return `  ${line}`;
           });
-          block.unshift('_h2o_results_[\'' + guid + '\'].result do ->');
+          block.unshift(`_h2o_results_[\'${guid}\'].result do ->`);
           return go(null, block.join('\n'));
         };
       };
@@ -3520,7 +3516,7 @@
     var __slice = [].slice;
     _prototypeId = 0;
     nextPrototypeName = function () {
-      return 'Map' + ++_prototypeId;
+      return `Map${++_prototypeId}`;
     };
     _prototypeCache = {};
     createCompiledPrototype = function (attrs) {
@@ -3541,7 +3537,7 @@
         var _results;
         _results = [];
         for (i = _i = 0, _ref = attrs.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-          _results.push('a' + i);
+          _results.push(`a${i}`);
         }
         return _results;
       }();
@@ -3552,12 +3548,12 @@
         _results = [];
         for (i = _i = 0, _len = attrs.length; _i < _len; i = ++_i) {
           attr = attrs[i];
-          _results.push('this[' + JSON.stringify(attr) + ']=a' + i + ';');
+          _results.push(`this[${JSON.stringify(attr)}]=a${i};`);
         }
         return _results;
       }();
       prototypeName = nextPrototypeName();
-      return _prototypeCache[cacheKey] = new Function('function ' + prototypeName + '(' + params.join(',') + '){' + inits.join('') + '} return ' + prototypeName + ';')();
+      return _prototypeCache[cacheKey] = new Function(`function ${prototypeName}(${params.join(',')}){${inits.join('')}} return ${prototypeName};`)();
     };
     createRecordConstructor = function (variables) {
       var variable;
@@ -4117,7 +4113,7 @@
           }
         };
         _dialog(dialog = ctor(...[_].concat(args).concat(go)));
-        $dialog = $('#' + dialog.template);
+        $dialog = $(`#${dialog.template}`);
         $dialog.modal();
         $dialog.on('hidden.bs.modal', function (e) {
           if (!responded) {
@@ -4152,7 +4148,7 @@
       return {
         dialog: _dialog,
         template(dialog) {
-          return 'flow-' + dialog.template;
+          return `flow-${dialog.template}`;
         }
       };
     };
@@ -4237,7 +4233,7 @@
     formatReal = function (precision) {
       var cached;
       var format;
-      format = (cached = __formatReal[precision]) ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format('.' + precision + 'f');
+      format = (cached = __formatReal[precision]) ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${precision}f`);
       return function (value) {
         return format(value);
       };
@@ -4307,7 +4303,7 @@
       if (!opts) {
         opts = {};
       }
-      guid = 'gui_' + lodash.uniqueId();
+      guid = `gui_${lodash.uniqueId()}`;
       return {
         type,
         id: opts.id || guid,
@@ -4315,7 +4311,7 @@
         description: Flow.Dataflow.signal(opts.description || ' '),
         visible: Flow.Dataflow.signal(opts.visible === false ? false : true),
         disable: Flow.Dataflow.signal(opts.disable === true ? true : false),
-        template: 'flow-form-' + type,
+        template: `flow-form-${type}`,
         templateOf(control) {
           return control.template;
         }
@@ -4656,7 +4652,7 @@
     }
     _ls = window.localStorage;
     keyOf = function (type, id) {
-      return '' + type + ':' + id;
+      return `${type}:${id}`;
     };
     list = function (type) {
       var i;
@@ -4902,15 +4898,15 @@
     var splitTime;
     describeCount = function (count, singular, plural) {
       if (!plural) {
-        plural = singular + 's';
+        plural = `${singular}s`;
       }
       switch (count) {
         case 0:
-          return 'No ' + plural;
+          return `No ${plural}`;
         case 1:
-          return '1 ' + singular;
+          return `1 ${singular}`;
         default:
-          return '' + count + ' ' + plural;
+          return `${count} ${plural}`;
       }
     };
     fromNow = function (date) {
@@ -4933,7 +4929,7 @@
       return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
     };
     padTime = function (n) {
-      return '' + (n < 10 ? '0' : '') + n;
+      return `${(n < 10 ? '0' : '')}${n}`;
     };
     splitTime = function (s) {
       var hrs;
@@ -4960,7 +4956,7 @@
       var secs;
       var _ref;
       _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
-      return '' + padTime(hrs) + ':' + padTime(mins) + ':' + padTime(secs) + '.' + ms;
+      return `${padTime(hrs)}:${padTime(mins)}:${padTime(secs)}.${ms}`;
     };
     format1d0 = function (n) {
       return Math.round(n * 10) / 10;
@@ -4973,13 +4969,13 @@
       var _ref;
       _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
       if (hrs !== 0) {
-        return '' + format1d0((hrs * 60 + mins) / 60) + 'h';
+        return `${format1d0((hrs * 60 + mins) / 60)}h`;
       } else if (mins !== 0) {
-        return '' + format1d0((mins * 60 + secs) / 60) + 'm';
+        return `${format1d0((mins * 60 + secs) / 60)}m`;
       } else if (secs !== 0) {
-        return '' + format1d0((secs * 1000 + ms) / 1000) + 's';
+        return `${format1d0((secs * 1000 + ms) / 1000)}s`;
       } else {
-        return '' + ms + 'ms';
+        return `${ms}ms`;
       }
     };
     formatClockTime = function (date) {
@@ -5226,9 +5222,9 @@
       optsToString = function (opts) {
         var str;
         if (opts != null) {
-          str = ' with opts ' + JSON.stringify(opts);
+          str = ` with opts ${JSON.stringify(opts)}`;
           if (str.length > 50) {
-            return '' + str.substr(0, 50) + '...';
+            return `${str.substr(0, 50)}...`;
           } else {
             return str;
           }
@@ -5286,7 +5282,7 @@
             return go(null, data);
           } catch (_error) {
             error = _error;
-            return go(new Flow.Error('Error processing ' + method + ' ' + path, error));
+            return go(new Flow.Error(`Error processing ${method} ${path}`, error));
           }
         });
         return req.fail(function (xhr, status, error) {
