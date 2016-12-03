@@ -17,7 +17,7 @@
   checkSparklingWater = function (context) {
     context.onSparklingWater = false;
     return $.ajax({
-      url: window.Flow.ContextPath + '3/Metadata/endpoints',
+      url: `${window.Flow.ContextPath}3/Metadata/endpoints`,
       type: 'GET',
       dataType: 'json',
       success(response) {
@@ -78,7 +78,7 @@
               for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                 _ref1 = _ref[_i], name = _ref1.name, value = _ref1.value;
                 properties.push({
-                  caption: 'H2O ' + name,
+                  caption: `H2O ${name}`,
                   value
                 });
               }
@@ -153,7 +153,7 @@
           });
         };
         purge = function () {
-          return _.confirm('Are you sure you want to delete this notebook?\n"' + _name + '"', {
+          return _.confirm(`Are you sure you want to delete this notebook?\n"${_name}"`, {
             acceptCaption: 'Delete',
             declineCaption: 'Keep'
           }, function (accept) {
@@ -315,7 +315,7 @@
         var render;
         var startTime;
         startTime = Date.now();
-        _time('Started at ' + Flow.Util.formatClockTime(startTime));
+        _time(`Started at ${Flow.Util.formatClockTime(startTime)}`);
         input = _input().trim();
         if (!input) {
           if (go) {
@@ -331,7 +331,7 @@
           input = input.replace(/\\/g, '\\\\');
           input = input.replace(/'/g, '\\\'');
           input = input.replace(/\n/g, '\\n');
-          input = 'runScalaCode ' + _.scalaIntpId() + ', \'' + input + '\'';
+          input = `runScalaCode ${_.scalaIntpId()}, \'${input}\'`;
         }
         render(input, {
           data(result) {
@@ -437,7 +437,7 @@
       var _userClips;
       lengthOf = function (array) {
         if (array.length) {
-          return '(' + array.length + ')';
+          return `(${array.length})`;
         } else {
           return '';
         }
@@ -523,7 +523,7 @@
       saveUserClips = function () {
         return _.requestPutObject('environment', 'clips', serializeUserClips(), function (error) {
           if (error) {
-            _.alert('Error saving clips: ' + error.message);
+            _.alert(`Error saving clips: ${error.message}`);
           }
         });
       };
@@ -706,7 +706,7 @@
       toggleStack = function () {
         return _isStackVisible(!_isStackVisible());
       };
-      _.trackException(message + '; ' + causes.join('; '));
+      _.trackException(`${message}; ${causes.join('; ')}`);
       return {
         message,
         stack: error.stack,
@@ -735,7 +735,7 @@
       render = function (input, output) {
         output.data({
           text: input.trim() || '(Untitled)',
-          template: 'flow-' + level
+          template: `flow-${level}`
         });
         return output.end();
       };
@@ -967,7 +967,7 @@
         var mark;
         var p;
         var _ref;
-        _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-file-text-o', 'a href=\'#\' data-action=\'get-flow\' data-pack-name=\'' + packName + '\' data-flow-name=\'$1\''), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], i = _ref[4], a = _ref[5];
+        _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-file-text-o', `a href=\'#\' data-action=\'get-flow\' data-pack-name=\'${packName}\' data-flow-name=\'$1\'`), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], i = _ref[4], a = _ref[5];
         displayHtml(Flow.HTML.render('div', div([
           mark('Pack'),
           h5(packName),
@@ -999,7 +999,7 @@
         ];
         for (routeIndex = _i = 0, _len = routes.length; _i < _len; routeIndex = ++_i) {
           route = routes[routeIndex];
-          els.push(p(action(code(route.http_method + ' ' + route.url_pattern), routeIndex) + '<br/>' + route.summary));
+          els.push(p(`${action(code(`${route.http_method} ${route.url_pattern}`), routeIndex)}<br/>${route.summary}`));
         }
         displayHtml(Flow.HTML.render('div', div(els)));
       };
@@ -1055,7 +1055,7 @@
             _results = [];
             for (_i = 0, _len = schemas.length; _i < _len; _i++) {
               schema = schemas[_i];
-              _results.push(li('' + action(code(schema.name), schema.name) + ' ' + variable(lodash.escape(schema.type))));
+              _results.push(li(`${action(code(schema.name), schema.name)} ${variable(lodash.escape(schema.type))}`));
             }
             return _results;
           }())
@@ -1080,14 +1080,14 @@
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'code', 'var', 'small'), div = _ref[0], mark = _ref[1], h5 = _ref[2], h6 = _ref[3], p = _ref[4], code = _ref[5], variable = _ref[6], small = _ref[7];
         content = [
           mark('Schema'),
-          h5('' + schema.name + ' (' + lodash.escape(schema.type) + ')'),
+          h5(`${schema.name} (${lodash.escape(schema.type)})`),
           h6('Fields')
         ];
         _ref1 = schema.fields;
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           field = _ref1[_i];
           if (field.name !== '__meta') {
-            content.push(p('' + variable(field.name) + (field.required ? '*' : '') + ' ' + code(lodash.escape(field.type)) + '<br/>' + small(field.help)));
+            content.push(p(`${variable(field.name)}${(field.required ? '*' : '')} ${code(lodash.escape(field.type))}<br/>${small(field.help)}`));
           }
         }
         return displayHtml(Flow.HTML.render('div', div(content)));
@@ -1297,7 +1297,7 @@
       var _toolbar;
       _localName = Flow.Dataflow.signal('Untitled Flow');
       Flow.Dataflow.react(_localName, function (name) {
-        return document.title = 'H2O' + (name && name.trim() ? '- ' + name : '');
+        return document.title = `H2O${(name && name.trim() ? `- ${name}` : '')}`;
       });
       _remoteName = Flow.Dataflow.signal(null);
       _isEditingName = Flow.Dataflow.signal(false);
@@ -1408,7 +1408,7 @@
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
           cell = _ref[i];
           if (!cell) {
-            error('index ' + i + ' is empty');
+            error(`index ${i} is empty`);
           } else {
             if (cell.isSelected()) {
               selectionCount++;
@@ -1416,7 +1416,7 @@
           }
         }
         if (selectionCount !== 1) {
-          error('selected cell count = ' + selectionCount);
+          error(`selected cell count = ${selectionCount}`);
         }
       };
       selectCell = function (target, scrollIntoView, scrollImmediately) {
@@ -1458,7 +1458,7 @@
       };
       convertCellToHeading = function (level) {
         return function () {
-          _selectedCell.type('h' + level);
+          _selectedCell.type(`h${level}`);
           return _selectedCell.execute();
         };
       };
@@ -1576,7 +1576,7 @@
         if (_selectedCellIndex !== cells.length - 1) {
           nextCell = cells[_selectedCellIndex + 1];
           if (_selectedCell.type() === nextCell.type()) {
-            nextCell.input(_selectedCell.input() + '\n' + nextCell.input());
+            nextCell.input(`${_selectedCell.input()}\n${nextCell.input()}`);
             removeCell();
           }
         }
@@ -1640,14 +1640,14 @@
       storeNotebook = function (localName, remoteName) {
         return _.requestPutObject('notebook', localName, serialize(), function (error) {
           if (error) {
-            return _.alert('Error saving notebook: ' + error.message);
+            return _.alert(`Error saving notebook: ${error.message}`);
           } else {
             _remoteName(localName);
             _localName(localName);
             if (remoteName !== localName) {
               return _.requestDeleteObject('notebook', remoteName, function (error) {
                 if (error) {
-                  _.alert('Error deleting remote notebook [' + remoteName + ']: ' + error.message);
+                  _.alert(`Error deleting remote notebook [${remoteName}]: ${error.message}`);
                 }
                 return _.saved();
               });
@@ -1710,7 +1710,7 @@
               return _.growl((_ref = error.message) != null ? _ref : error);
             } else {
               _.growl('File uploaded successfully!');
-              return _.insertAndExecuteCell('cs', 'setupParse source_frames: [ ' + Flow.Prelude.stringify(result.result.destination_frame) + ']');
+              return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${Flow.Prelude.stringify(result.result.destination_frame)}]`);
             }
           }
         });
@@ -1806,9 +1806,9 @@
         var _ref;
         _ref = getBuildProperties(), gitBranch = _ref[0], projectVersion = _ref[1], buildVersion = _ref[2], gitHash = _ref[3];
         if (buildVersion && buildVersion !== '99999') {
-          return window.open('http://h2o-release.s3.amazonaws.com/h2o/' + gitBranch + '/' + buildVersion + '/docs-website/h2o-docs/index.html', '_blank');
+          return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${gitBranch}/${buildVersion}/docs-website/h2o-docs/index.html`, '_blank');
         } else {
-          return window.open('https://github.com/h2oai/h2o-3/blob/' + gitHash + '/h2o-docs/src/product/flow/README.md', '_blank');
+          return window.open(`https://github.com/h2oai/h2o-3/blob/${gitHash}/h2o-docs/src/product/flow/README.md`, '_blank');
         }
       };
       displayFAQ = function () {
@@ -1819,9 +1819,9 @@
         var _ref;
         _ref = getBuildProperties(), gitBranch = _ref[0], projectVersion = _ref[1], buildVersion = _ref[2], gitHash = _ref[3];
         if (buildVersion && buildVersion !== '99999') {
-          return window.open('http://h2o-release.s3.amazonaws.com/h2o/' + gitBranch + '/' + buildVersion + '/docs-website/h2o-docs/index.html', '_blank');
+          return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${gitBranch}/${buildVersion}/docs-website/h2o-docs/index.html`, '_blank');
         } else {
-          return window.open('https://github.com/h2oai/h2o-3/blob/' + gitHash + '/h2o-docs/src/product/howto/FAQ.md', '_blank');
+          return window.open(`https://github.com/h2oai/h2o-3/blob/${gitHash}/h2o-docs/src/product/howto/FAQ.md`, '_blank');
         }
       };
       executeCommand = function (command) {
@@ -1835,7 +1835,7 @@
       shutdown = function () {
         return _.requestShutdown(function (error, result) {
           if (error) {
-            return _.growl('Shutdown failed: ' + error.message, 'danger');
+            return _.growl(`Shutdown failed: ${error.message}`, 'danger');
           } else {
             return _.growl('Shutdown complete!', 'warning');
           }
@@ -1863,7 +1863,7 @@
         });
       };
       duplicateNotebook = function () {
-        return deserialize('Copy of ' + _localName(), null, serialize());
+        return deserialize(`Copy of ${_localName()}`, null, serialize());
       };
       openNotebook = function (name, doc) {
         return deserialize(name, null, doc);
@@ -1881,7 +1881,7 @@
       exportNotebook = function () {
         var remoteName;
         if (remoteName = _remoteName()) {
-          return window.open('/3/NodePersistentStorage.bin/notebook/' + remoteName, '_blank');
+          return window.open(`/3/NodePersistentStorage.bin/notebook/${remoteName}`, '_blank');
         } else {
           return _.alert('Please save this notebook before exporting.');
         }
@@ -1916,8 +1916,8 @@
             if (cell) {
               cell.scrollIntoView(true);
               cellIndex++;
-              _runningCaption('Running cell ' + cellIndex + ' of ' + cellCount);
-              _runningPercent('' + Math.floor(100 * cellIndex / cellCount) + '%');
+              _runningCaption(`Running cell ${cellIndex} of ${cellCount}`);
+              _runningPercent(`${Math.floor(100 * cellIndex / cellCount)}%`);
               _runningCellInput(cell.input());
               return cell.execute(function (errors) {
                 if (errors) {
