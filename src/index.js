@@ -1580,7 +1580,10 @@
           input = _selectedCell.input();
           if (input.length > 1) {
             cursorPosition = _selectedCell.getCursorPosition();
-            if (0 < cursorPosition && cursorPosition < input.length - 1) {
+            if (
+              cursorPosition > 0 &&
+              cursorPosition < input.length - 1
+            ) {
               left = input.substr(0, cursorPosition);
               right = input.substr(cursorPosition);
               _selectedCell.input(left);
@@ -2938,7 +2941,7 @@
           return task(...args.concat(function () {
             var error;
             var results;
-            error = arguments[0], results = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+            error = arguments[0], results = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
             if (error) {
               return go(error);
             }
@@ -2951,7 +2954,7 @@
         var args;
         var go;
         var _i;
-        args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
+        args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
         return next(args, go);
       };
     };
@@ -2983,14 +2986,14 @@
       var args;
       var f;
       var later;
-      f = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
       later = function () {
         var args;
         var error;
         var go;
         var result;
         var _i;
-        args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
+        args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
         try {
           result = f(...args);
           return go(null, result);
@@ -3035,7 +3038,7 @@
       var ta;
       var tb;
       var tc;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
       switch (args.length) {
         case 3:
           a = args[0], b = args[1], c = args[2];
@@ -3516,7 +3519,7 @@
         var _ref;
         var _results;
         _results = [];
-        for (i = _i = 0, _ref = attrs.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+        for (i = _i = 0, _ref = attrs.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
           _results.push(`a${i}`);
         }
         return _results;
@@ -3594,7 +3597,7 @@
         var _j;
         var _len1;
         var _results;
-        types = 1 <= args.length ? __slice.call(args, 0) : [];
+        types = args.length >= 1 ? __slice.call(args, 0) : [];
         _results = [];
         for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
           type = types[_j];
@@ -3640,7 +3643,7 @@
       var value;
       var _i;
       var _len;
-      ranges = 1 <= args.length ? __slice.call(args, 0) : [];
+      ranges = args.length >= 1 ? __slice.call(args, 0) : [];
       lo = Number.POSITIVE_INFINITY;
       hi = Number.NEGATIVE_INFINITY;
       for (_i = 0, _len = ranges.length; _i < _len; _i++) {
@@ -3836,7 +3839,7 @@
         arrow = null;
         self = function () {
           var args;
-          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
           if (arrow) {
             return arrow.func.apply(null, args);
           }
@@ -3868,7 +3871,7 @@
         arrows = [];
         self = function () {
           var args;
-          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
           return lodash.map(arrows, function (arrow) {
             return arrow.func.apply(null, args);
           });
@@ -3992,7 +3995,7 @@
         var func;
         var sources;
         var _i;
-        sources = 2 <= args.length ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
+        sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
         _apply(sources, func);
         return lodash.map(sources, function (source) {
           return _link(source, function () {
@@ -4004,7 +4007,7 @@
         var func;
         var sources;
         var _i;
-        sources = 2 <= args.length ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
+        sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
         return lodash.map(sources, function (source) {
           return _link(source, function () {
             return _apply(sources, func);
@@ -4017,7 +4020,7 @@
         var sources;
         var target;
         var _i;
-        sources = 2 <= args.length ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
+        sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
         evaluate = function () {
           return _apply(sources, func);
         };
@@ -4035,7 +4038,7 @@
         var sources;
         var target;
         var _i;
-        sources = 3 <= args.length ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []), target = args[_i++], func = args[_i++];
+        sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []), target = args[_i++], func = args[_i++];
         evaluate = function () {
           return _apply(sources, func);
         };
@@ -4100,7 +4103,7 @@
         var ctor;
         var go;
         var _i;
-        ctor = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), go = arguments[_i++];
+        ctor = arguments[0], args = arguments.length >= 3 ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), go = arguments[_i++];
         return showDialog(ctor, args, go);
       });
       Flow.Dataflow.link(_.confirm, function (message, opts, go) {
@@ -4626,7 +4629,7 @@
       var _ref;
       var _ref1;
       objs = [];
-      for (i = _i = 0, _ref = _ls.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
         key = _ls.key(i);
         _ref1 = key.split(':'), t = _ref1[0], id = _ref1[1];
         if (type === t) {
@@ -4666,7 +4669,7 @@
         var _ref;
         var _results;
         _results = [];
-        for (i = _i = 0, _ref = _ls.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+        for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
           _results.push(_ls.key(i));
         }
         return _results;
@@ -4742,7 +4745,7 @@
       };
       _remove = function (array, element) {
         var index;
-        if (-1 < (index = lodash.indexOf(array, element))) {
+        if ((index = lodash.indexOf(array, element)) > -1) {
           return lodash.head(array.splice(index, 1));
         }
         return void 0;
@@ -4755,7 +4758,7 @@
         var i;
         var _i;
         array = [];
-        for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
+        for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
           array.push(value);
         }
         return array;
@@ -6188,7 +6191,7 @@
         table = tables[_i];
         rowCount += table.rowcount;
       }
-      for (i = _j = 0; 0 <= columnCount ? _j < columnCount : _j > columnCount; i = 0 <= columnCount ? ++_j : --_j) {
+      for (i = _j = 0; columnCount >= 0 ? _j < columnCount : _j > columnCount; i = columnCount >= 0 ? ++_j : --_j) {
         data[i] = columnData = new Array(rowCount);
         index = 0;
         for (_k = 0, _len1 = tables.length; _k < _len1; _k++) {
@@ -6212,7 +6215,7 @@
       var _i;
       var _results;
       _results = [];
-      for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
+      for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
         _results.push(new Array(length));
       }
       return _results;
@@ -6276,7 +6279,7 @@
       var target;
       var _i;
       target = new Array(count);
-      for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
+      for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
         target[i] = value;
       }
       return target;
@@ -6602,20 +6605,20 @@
       _fork = function () {
         var args;
         var f;
-        f = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+        f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         return Flow.Async.fork(f, args);
       };
       _join = function () {
         var args;
         var go;
         var _i;
-        args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
+        args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
         return Flow.Async.join(args, Flow.Async.applicate(go));
       };
       _call = function () {
         var args;
         var go;
-        go = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+        go = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         return Flow.Async.join(args, Flow.Async.applicate(go));
       };
       _apply = function (go, args) {
@@ -6662,7 +6665,7 @@
         var args;
         var raw;
         var render;
-        raw = arguments[0], render = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+        raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
         flow_(raw).render = function (go) {
           return render(...[
             _,
@@ -7500,7 +7503,7 @@
             var _ref1;
             var _results;
             _results = [];
-            for (i = _i = 0, _ref1 = frameColumns.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
+            for (i = _i = 0, _ref1 = frameColumns.length; _ref1 >= 0 ? _i < _ref1 : _i > _ref1; i = _ref1 >= 0 ? ++_i : --_i) {
               _results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);
             }
             return _results;
@@ -7707,7 +7710,7 @@
             intervalData = new Array(binCount);
             widthData = new Array(binCount);
             countData = new Array(binCount);
-            for (i = _i = 0; 0 <= binCount ? _i < binCount : _i > binCount; i = 0 <= binCount ? ++_i : --_i) {
+            for (i = _i = 0; binCount >= 0 ? _i < binCount : _i > binCount; i = binCount >= 0 ? ++_i : --_i) {
               m = i * width;
               n = m + width;
               count = 0;
@@ -9051,7 +9054,7 @@
       assist = function () {
         var args;
         var func;
-        func = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+        func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         if (func === void 0) {
           return _fork(proceed, H2O.Assist, [_assistance]);
         }
@@ -9202,7 +9205,7 @@
     var getFileBaseName;
     var validateFileExtension;
     validateFileExtension = function (filename, extension) {
-      return -1 !== filename.indexOf(extension, filename.length - extension.length);
+      return filename.indexOf(extension, filename.length - extension.length) !== -1;
     };
     getFileBaseName = function (filename, extension) {
       return Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
@@ -9453,12 +9456,12 @@
           }
         }
         s = '[';
-        for (i = _j = 0; 0 <= max_lo ? _j < max_lo : _j > max_lo; i = 0 <= max_lo ? ++_j : --_j) {
+        for (i = _j = 0; max_lo >= 0 ? _j < max_lo : _j > max_lo; i = max_lo >= 0 ? ++_j : --_j) {
           s += Math.max(fjs[i], 0);
           s += '/';
         }
         s += '.../';
-        for (i = _k = 120, _ref = fjs.length - 1; 120 <= _ref ? _k < _ref : _k > _ref; i = 120 <= _ref ? ++_k : --_k) {
+        for (i = _k = 120, _ref = fjs.length - 1; _ref >= 120 ? _k < _ref : _k > _ref; i = _ref >= 120 ? ++_k : --_k) {
           s += fjs[i];
           s += '/';
         }
@@ -10730,7 +10733,7 @@
           var _ref;
           var _results;
           _results = [];
-          for (i = _i = 0, _ref = grid.failure_details.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+          for (i = _i = 0, _ref = grid.failure_details.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
             _results.push({
               title: `Error ${(i + 1)}`,
               detail: grid.failure_details[i],
@@ -12112,7 +12115,7 @@
             entry = _ref[i];
             missingPercent = parseFloat(ignoreNATerm);
             hide = false;
-            if (searchTerm !== '' && -1 === entry.value.toLowerCase().indexOf(searchTerm.toLowerCase())) {
+            if (searchTerm !== '' && entry.value.toLowerCase().indexOf(searchTerm.toLowerCase()) === -1) {
               hide = true;
             } else if (!lodash.isNaN(missingPercent) && missingPercent !== 0 && entry.missingPercent <= missingPercent) {
               hide = true;
@@ -12932,7 +12935,7 @@
               var _ref;
               var _results;
               _results = [];
-              for (i = _i = 0, _ref = thresholdVector.count(); 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+              for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
                 _results.push({
                   index: i,
                   value: thresholdVector.at(i)
@@ -12947,7 +12950,7 @@
               var _ref;
               var _results;
               _results = [];
-              for (i = _i = 0, _ref = metricVector.count(); 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+              for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
                 _results.push({
                   index: idxVector.at(i),
                   value: metricVector.valueAt(i)
@@ -13090,7 +13093,7 @@
           rows = [tr(headers)];
           errorColumnIndex = columnCount - 2;
           totalRowIndex = rowCount - 1;
-          for (rowIndex = _i = 0; 0 <= rowCount ? _i < rowCount : _i > rowCount; rowIndex = 0 <= rowCount ? ++_i : --_i) {
+          for (rowIndex = _i = 0; rowCount >= 0 ? _i < rowCount : _i > rowCount; rowIndex = rowCount >= 0 ? ++_i : --_i) {
             cells = function () {
               var _j;
               var _len;
@@ -13369,11 +13372,11 @@
             continue;
           }
           if (output = ((_ref25 = _model.output) != null ? _ref25.model_category : void 0) === 'Multinomial') {
-            if (0 === tableName.indexOf('output - training_metrics - cm')) {
+            if (tableName.indexOf('output - training_metrics - cm') === 0) {
               continue;
-            } else if (0 === tableName.indexOf('output - validation_metrics - cm')) {
+            } else if (tableName.indexOf('output - validation_metrics - cm') === 0) {
               continue;
-            } else if (0 === tableName.indexOf('output - cross_validation_metrics - cm')) {
+            } else if (tableName.indexOf('output - cross_validation_metrics - cm') === 0) {
               continue;
             }
           }
@@ -13855,9 +13858,9 @@
         rowCount = previewData.length;
         columnNames = preview.column_names;
         rows = new Array(columnCount);
-        for (j = _i = 0; 0 <= columnCount ? _i < columnCount : _i > columnCount; j = 0 <= columnCount ? ++_i : --_i) {
+        for (j = _i = 0; columnCount >= 0 ? _i < columnCount : _i > columnCount; j = columnCount >= 0 ? ++_i : --_i) {
           data = new Array(rowCount);
-          for (i = _j = 0; 0 <= rowCount ? _j < rowCount : _j > rowCount; i = 0 <= rowCount ? ++_j : --_j) {
+          for (i = _j = 0; rowCount >= 0 ? _j < rowCount : _j > rowCount; i = rowCount >= 0 ? ++_j : --_j) {
             data[i] = previewData[i][j];
           }
           rows[j] = row = {
@@ -13899,7 +13902,7 @@
       });
       filterColumns = function () {
         return _activePage(makePage(0, lodash.filter(_columns(), function (column) {
-          return -1 < column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase());
+          return column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1;
         })));
       };
       Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));
