@@ -31,7 +31,6 @@
     "no-nested-ternary": "off",
     "no-unreachable": "off",
     "no-alert": "off",
-    "dot-notation": "off",
     "camelcase": "off"
   }
 }
