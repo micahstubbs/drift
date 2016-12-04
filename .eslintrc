@@ -35,7 +35,6 @@
     "prefer-rest-params": "off",
     "no-useless-concat": "off",
     "radix": "off",
-    "curly": "off",
     "no-throw-literal": "off",
     "no-use-before-define": "off",
     "vars-on-top": "off",
