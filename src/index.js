@@ -8147,9 +8147,8 @@
               }));
             }
           });
-        } else {
-          return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));
         }
+        return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));
       };
       requestMergeFrames = function (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows, go) {
         var lr;
@@ -8161,17 +8160,15 @@
         return _.requestExec(statement, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendMergeFramesResult({ key: destinationKey }));
           }
+          return go(null, extendMergeFramesResult({ key: destinationKey }));
         });
       };
       createFrame = function (opts) {
         if (opts) {
           return _fork(requestCreateFrame, opts);
-        } else {
-          return assist(createFrame);
         }
+        return assist(createFrame);
       };
       splitFrame = function (frameKey, splitRatios, splitKeys, seed) {
         if (seed == null) {
@@ -8179,30 +8176,26 @@
         }
         if (frameKey && splitRatios && splitKeys) {
           return _fork(requestSplitFrame, frameKey, splitRatios, splitKeys, seed);
-        } else {
-          return assist(splitFrame);
         }
+        return assist(splitFrame);
       };
       mergeFrames = function (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows) {
         if (destinationKey && leftFrameKey && rightFrameKey) {
           return _fork(requestMergeFrames, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
-        } else {
-          return assist(mergeFrames);
         }
+        return assist(mergeFrames);
       };
       buildPartialDependence = function (opts) {
         if (opts) {
           return _fork(requestPartialDependence, opts);
-        } else {
-          return assist(buildPartialDependence);
         }
+        return assist(buildPartialDependence);
       };
       getPartialDependence = function (destinationKey) {
         if (destinationKey) {
           return _fork(requestPartialDependenceData, destinationKey);
-        } else {
-          return assist(getPartialDependence);
         }
+        return assist(getPartialDependence);
       };
       getFrames = function () {
         return _fork(requestFrames);
@@ -8238,17 +8231,15 @@
         return _.requestDeleteFrame(frameKey, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendDeletedKeys([frameKey]));
           }
+          return go(null, extendDeletedKeys([frameKey]));
         });
       };
       deleteFrame = function (frameKey) {
         if (frameKey) {
           return _fork(requestDeleteFrame, frameKey);
-        } else {
-          return assist(deleteFrame);
         }
+        return assist(deleteFrame);
       };
       extendExportFrame = function (result) {
         return render_(result, H2O.ExportFrameOutput, result);
@@ -8260,15 +8251,13 @@
         return _.requestExportFrame(frameKey, path, opts.overwrite ? true : false, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return _.requestJob(result.job.key.name, function (error, job) {
-              if (error) {
-                return go(error);
-              } else {
-                return go(null, extendJob(job));
-              }
-            });
           }
+          return _.requestJob(result.job.key.name, function (error, job) {
+            if (error) {
+              return go(error);
+            }
+            return go(null, extendJob(job));
+          });
         });
       };
       exportFrame = function (frameKey, path, opts) {
@@ -8277,9 +8266,8 @@
         }
         if (frameKey && path) {
           return _fork(requestExportFrame, frameKey, path, opts);
-        } else {
-          return assist(exportFrame, frameKey, path, opts);
         }
+        return assist(exportFrame, frameKey, path, opts);
       };
       requestDeleteFrames = function (frameKeys, go) {
         var futures;
@@ -8289,9 +8277,8 @@
         return Flow.Async.join(futures, function (error, results) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendDeletedKeys(frameKeys));
           }
+          return go(null, extendDeletedKeys(frameKeys));
         });
       };
       deleteFrames = function (frameKeys) {
@@ -8311,9 +8298,8 @@
         return _.requestModels(function (error, models) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendModels(models));
           }
+          return go(null, extendModels(models));
         });
       };
       requestModelsByKeys = function (modelKeys, go) {
@@ -8324,29 +8310,25 @@
         return Flow.Async.join(futures, function (error, models) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendModels(models));
           }
+          return go(null, extendModels(models));
         });
       };
       getModels = function (modelKeys) {
         if (lodash.isArray(modelKeys)) {
           if (modelKeys.length) {
             return _fork(requestModelsByKeys, modelKeys);
-          } else {
-            return _fork(requestModels);
           }
-        } else {
           return _fork(requestModels);
         }
+        return _fork(requestModels);
       };
       requestGrids = function (go) {
         return _.requestGrids(function (error, grids) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendGrids(grids));
           }
+          return go(null, extendGrids(grids));
         });
       };
       getGrids = function () {
@@ -8356,9 +8338,8 @@
         return _.requestModel(modelKey, function (error, model) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendModel(model));
           }
+          return go(null, extendModel(model));
         });
       };
       getModel = function (modelKey) {
@@ -8373,9 +8354,8 @@
         return _.requestGrid(gridKey, opts, function (error, grid) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendGrid(grid, opts));
           }
+          return go(null, extendGrid(grid, opts));
         });
       };
       getGrid = function (gridKey, opts) {
@@ -8429,32 +8409,30 @@
           var groupByColumnIndices;
           if (error) {
             return go(error);
-          } else {
-            try {
-              columnIndex = findColumnIndexByColumnLabel(result, column);
-            } catch (_error) {
-              columnKeyError = _error;
-              return go(columnKeyError);
-            }
-            if (groupByColumns && groupByColumns.length) {
-              try {
-                groupByColumnIndices = findColumnIndicesByColumnLabels(result, groupByColumns);
-              } catch (_error) {
-                columnIndicesError = _error;
-                return go(columnIndicesError);
-              }
-            } else {
-              groupByColumnIndices = null;
-            }
-            groupByArg = groupByColumnIndices ? `[${groupByColumnIndices.join(' ')}]` : '[]';
-            return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`, function (error, result) {
-              if (error) {
-                return go(error);
-              } else {
-                return requestColumnSummary(frame, column, go);
-              }
-            });
           }
+          try {
+            columnIndex = findColumnIndexByColumnLabel(result, column);
+          } catch (_error) {
+            columnKeyError = _error;
+            return go(columnKeyError);
+          }
+          if (groupByColumns && groupByColumns.length) {
+            try {
+              groupByColumnIndices = findColumnIndicesByColumnLabels(result, groupByColumns);
+            } catch (_error) {
+              columnIndicesError = _error;
+              return go(columnIndicesError);
+            }
+          } else {
+            groupByColumnIndices = null;
+          }
+          groupByArg = groupByColumnIndices ? `[${groupByColumnIndices.join(' ')}]` : '[]';
+          return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`, function (error, result) {
+            if (error) {
+              return go(error);
+            }
+            return requestColumnSummary(frame, column, go);
+          });
         });
       };
       requestChangeColumnType = function (opts, go) {
@@ -8476,41 +8454,36 @@
           return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`, function (error, result) {
             if (error) {
               return go(error);
-            } else {
-              return requestColumnSummary(frame, column, go);
             }
+            return requestColumnSummary(frame, column, go);
           });
         });
       };
       imputeColumn = function (opts) {
         if (opts && opts.frame && opts.column && opts.method) {
           return _fork(requestImputeColumn, opts);
-        } else {
-          return assist(imputeColumn, opts);
         }
+        return assist(imputeColumn, opts);
       };
       changeColumnType = function (opts) {
         if (opts && opts.frame && opts.column && opts.type) {
           return _fork(requestChangeColumnType, opts);
-        } else {
-          return assist(changeColumnType, opts);
         }
+        return assist(changeColumnType, opts);
       };
       requestDeleteModel = function (modelKey, go) {
         return _.requestDeleteModel(modelKey, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendDeletedKeys([modelKey]));
           }
+          return go(null, extendDeletedKeys([modelKey]));
         });
       };
       deleteModel = function (modelKey) {
         if (modelKey) {
           return _fork(requestDeleteModel, modelKey);
-        } else {
-          return assist(deleteModel);
         }
+        return assist(deleteModel);
       };
       extendImportModel = function (result) {
         return render_(result, H2O.ImportModelOutput, result);
@@ -8519,17 +8492,15 @@
         return _.requestImportModel(path, opts.overwrite ? true : false, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendImportModel(result));
           }
+          return go(null, extendImportModel(result));
         });
       };
       importModel = function (path, opts) {
         if (path && path.length) {
           return _fork(requestImportModel, path, opts);
-        } else {
-          return assist(importModel, path, opts);
         }
+        return assist(importModel, path, opts);
       };
       extendExportModel = function (result) {
         return render_(result, H2O.ExportModelOutput, result);
@@ -8538,17 +8509,15 @@
         return _.requestExportModel(modelKey, path, opts.overwrite ? true : false, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendExportModel(result));
           }
+          return go(null, extendExportModel(result));
         });
       };
       exportModel = function (modelKey, path, opts) {
         if (modelKey && path) {
           return _fork(requestExportModel, modelKey, path, opts);
-        } else {
-          return assist(exportModel, modelKey, path, opts);
         }
+        return assist(exportModel, modelKey, path, opts);
       };
       requestDeleteModels = function (modelKeys, go) {
         var futures;
@@ -8558,9 +8527,8 @@
         return Flow.Async.join(futures, function (error, results) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendDeletedKeys(modelKeys));
           }
+          return go(null, extendDeletedKeys(modelKeys));
         });
       };
       deleteModels = function (modelKeys) {
@@ -8577,18 +8545,16 @@
         return _.requestJob(key, function (error, job) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendJob(job));
           }
+          return go(null, extendJob(job));
         });
       };
       requestJobs = function (go) {
         return _.requestJobs(function (error, jobs) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendJobs(jobs));
           }
+          return go(null, extendJobs(jobs));
         });
       };
       getJobs = function () {
@@ -8601,9 +8567,8 @@
           case 'Object':
             if (arg.key != null) {
               return getJob(arg.key);
-            } else {
-              return assist(getJob);
             }
+            return assist(getJob);
             break;
           default:
             return assist(getJob);
@@ -8613,9 +8578,8 @@
         return _.requestCancelJob(key, function (error) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendCancelJob({}));
           }
+          return go(null, extendCancelJob({}));
         });
       };
       cancelJob = function (arg) {
@@ -8633,9 +8597,8 @@
         return _.requestImportFiles(paths, function (error, importResults) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendImportResults(importResults));
           }
+          return go(null, extendImportResults(importResults));
         });
       };
       importFiles = function (paths) {
@@ -8654,27 +8617,24 @@
           var sourceKeys;
           if (error) {
             return go(error);
-          } else {
-            sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, function (result) {
-              return result.destination_frames;
-            })));
-            return _.requestParseSetup(sourceKeys, function (error, parseSetupResults) {
-              if (error) {
-                return go(error);
-              } else {
-                return go(null, extendParseSetupResults({ paths }, parseSetupResults));
-              }
-            });
           }
+          sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, function (result) {
+            return result.destination_frames;
+          })));
+          return _.requestParseSetup(sourceKeys, function (error, parseSetupResults) {
+            if (error) {
+              return go(error);
+            }
+            return go(null, extendParseSetupResults({ paths }, parseSetupResults));
+          });
         });
       };
       requestParseSetup = function (sourceKeys, go) {
         return _.requestParseSetup(sourceKeys, function (error, parseSetupResults) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
           }
+          return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
         });
       };
       setupParse = function (args) {
@@ -8682,9 +8642,8 @@
           return _fork(requestImportAndParseSetup, args.paths);
         } else if (args.source_frames && lodash.isArray(args.source_frames)) {
           return _fork(requestParseSetup, args.source_frames);
-        } else {
-          return assist(setupParse);
         }
+        return assist(setupParse);
       };
       extendParseResult = function (parseResult) {
         return render_(parseResult, H2O.JobOutput, parseResult.job);
@@ -8694,27 +8653,24 @@
           var sourceKeys;
           if (error) {
             return go(error);
-          } else {
-            sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, function (result) {
-              return result.destination_frames;
-            })));
-            return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, function (error, parseResult) {
-              if (error) {
-                return go(error);
-              } else {
-                return go(null, extendParseResult(parseResult));
-              }
-            });
           }
+          sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, function (result) {
+            return result.destination_frames;
+          })));
+          return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, function (error, parseResult) {
+            if (error) {
+              return go(error);
+            }
+            return go(null, extendParseResult(parseResult));
+          });
         });
       };
       requestParseFiles = function (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
         return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, function (error, parseResult) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendParseResult(parseResult));
           }
+          return go(null, extendParseResult(parseResult));
         });
       };
       parseFiles = function (opts) {
@@ -8740,9 +8696,8 @@
         chunkSize = opts.chunk_size;
         if (opts.paths) {
           return _fork(requestImportAndParseFiles, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
-        } else {
-          return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
         }
+        return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       };
       requestModelBuild = function (algo, opts, go) {
         return _.requestModelBuild(algo, opts, function (error, result) {
@@ -8750,26 +8705,24 @@
           var validation;
           if (error) {
             return go(error);
-          } else {
-            if (result.error_count > 0) {
-              messages = function () {
-                var _i;
-                var _len;
-                var _ref1;
-                var _results;
-                _ref1 = result.messages;
-                _results = [];
-                for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                  validation = _ref1[_i];
-                  _results.push(validation.message);
-                }
-                return _results;
-              }();
-              return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));
-            } else {
-              return go(null, extendJob(result.job));
-            }
           }
+          if (result.error_count > 0) {
+            messages = function () {
+              var _i;
+              var _len;
+              var _ref1;
+              var _results;
+              _ref1 = result.messages;
+              _results = [];
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                validation = _ref1[_i];
+                _results.push(validation.message);
+              }
+              return _results;
+            }();
+            return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));
+          }
+          return go(null, extendJob(result.job));
         });
       };
       requestAutoModelBuild = function (opts, go) {
@@ -8784,32 +8737,28 @@
         return _.requestAutoModelBuild(params, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendJob(result.job));
           }
+          return go(null, extendJob(result.job));
         });
       };
       buildAutoModel = function (opts) {
         if (opts && lodash.keys(opts).length > 1) {
           return _fork(requestAutoModelBuild, opts);
-        } else {
-          return assist(buildAutoModel, opts);
         }
+        return assist(buildAutoModel, opts);
       };
       buildModel = function (algo, opts) {
         if (algo && opts && lodash.keys(opts).length > 1) {
           return _fork(requestModelBuild, algo, opts);
-        } else {
-          return assist(buildModel, algo, opts);
         }
+        return assist(buildModel, algo, opts);
       };
       unwrapPrediction = function (go) {
         return function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendPrediction(result));
           }
+          return go(null, extendPrediction(result));
         };
       };
       requestPredict = function (destinationKey, modelKey, frameKey, options, go) {
@@ -8827,9 +8776,8 @@
         return Flow.Async.join(futures, function (error, predictions) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendPredictions(opts, predictions));
           }
+          return go(null, extendPredictions(opts, predictions));
         });
       };
       predict = function (opts) {
@@ -8875,30 +8823,27 @@
               }
             }
             return _fork(requestPredicts, combos);
-          } else {
-            return assist(predict, {
-              predictions_frame,
-              models,
-              frames
-            });
           }
-        } else {
-          if (model && frame) {
-            return _fork(requestPredict, predictions_frame, model, frame, {
-              reconstruction_error,
-              deep_features_hidden_layer,
-              leaf_node_assignment
-            });
-          } else if (model && exemplar_index !== void 0) {
-            return _fork(requestPredict, predictions_frame, model, null, { exemplar_index });
-          } else {
-            return assist(predict, {
-              predictions_frame,
-              model,
-              frame
-            });
-          }
+          return assist(predict, {
+            predictions_frame,
+            models,
+            frames
+          });
         }
+        if (model && frame) {
+          return _fork(requestPredict, predictions_frame, model, frame, {
+            reconstruction_error,
+            deep_features_hidden_layer,
+            leaf_node_assignment
+          });
+        } else if (model && exemplar_index !== void 0) {
+          return _fork(requestPredict, predictions_frame, model, null, { exemplar_index });
+        }
+        return assist(predict, {
+          predictions_frame,
+          model,
+          frame
+        });
       };
       requestPrediction = function (modelKey, frameKey, go) {
         return _.requestPrediction(modelKey, frameKey, unwrapPrediction(go));
@@ -8918,23 +8863,20 @@
             var uniquePredictions;
             if (error) {
               return go(error);
-            } else {
-              uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), function (prediction) {
-                return prediction.model.name + prediction.frame.name;
-              }));
-              return go(null, extendPredictions(opts, uniquePredictions));
             }
-          });
-        } else {
-          modelKey = opts.model, frameKey = opts.frame;
-          return _.requestPredictions(modelKey, frameKey, function (error, predictions) {
-            if (error) {
-              return go(error);
-            } else {
-              return go(null, extendPredictions(opts, predictions));
-            }
+            uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), function (prediction) {
+              return prediction.model.name + prediction.frame.name;
+            }));
+            return go(null, extendPredictions(opts, uniquePredictions));
           });
         }
+        modelKey = opts.model, frameKey = opts.frame;
+        return _.requestPredictions(modelKey, frameKey, function (error, predictions) {
+          if (error) {
+            return go(error);
+          }
+          return go(null, extendPredictions(opts, predictions));
+        });
       };
       getPrediction = function (opts) {
         var frame;
@@ -8946,13 +8888,12 @@
         predictions_frame = opts.predictions_frame, model = opts.model, frame = opts.frame;
         if (model && frame) {
           return _fork(requestPrediction, model, frame);
-        } else {
-          return assist(getPrediction, {
-            predictions_frame,
-            model,
-            frame
-          });
         }
+        return assist(getPrediction, {
+          predictions_frame,
+          model,
+          frame
+        });
       };
       getPredictions = function (opts) {
         if (opts == null) {
@@ -8964,9 +8905,8 @@
         return _.requestCloud(function (error, cloud) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendCloud(cloud));
           }
+          return go(null, extendCloud(cloud));
         });
       };
       getCloud = function () {
@@ -8976,9 +8916,8 @@
         return _.requestTimeline(function (error, timeline) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendTimeline(timeline));
           }
+          return go(null, extendTimeline(timeline));
         });
       };
       getTimeline = function () {
@@ -8988,9 +8927,8 @@
         return _.requestStackTrace(function (error, stackTrace) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendStackTrace(stackTrace));
           }
+          return go(null, extendStackTrace(stackTrace));
         });
       };
       getStackTrace = function () {
@@ -9001,19 +8939,17 @@
           var NODE_INDEX_SELF;
           if (error) {
             return go(error);
-          } else {
-            if (nodeIndex < 0 || nodeIndex >= cloud.nodes.length) {
-              NODE_INDEX_SELF = -1;
-              nodeIndex = NODE_INDEX_SELF;
-            }
-            return _.requestLogFile(nodeIndex, fileType, function (error, logFile) {
-              if (error) {
-                return go(error);
-              } else {
-                return go(null, extendLogFile(cloud, nodeIndex, fileType, logFile));
-              }
-            });
           }
+          if (nodeIndex < 0 || nodeIndex >= cloud.nodes.length) {
+            NODE_INDEX_SELF = -1;
+            nodeIndex = NODE_INDEX_SELF;
+          }
+          return _.requestLogFile(nodeIndex, fileType, function (error, logFile) {
+            if (error) {
+              return go(error);
+            }
+            return go(null, extendLogFile(cloud, nodeIndex, fileType, logFile));
+          });
         });
       };
       getLogFile = function (nodeIndex, fileType) {
@@ -9029,9 +8965,8 @@
         return _.requestNetworkTest(function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendNetworkTest(result));
           }
+          return go(null, extendNetworkTest(result));
         });
       };
       testNetwork = function () {
@@ -9041,9 +8976,8 @@
         return _.requestRemoveAll(function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendDeletedKeys([]));
           }
+          return go(null, extendDeletedKeys([]));
         });
       };
       deleteAll = function () {
@@ -9057,9 +8991,8 @@
         return _.requestRDDs(function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendRDDs(result.rdds));
           }
+          return go(null, extendRDDs(result.rdds));
         });
       };
       getRDDs = function () {
@@ -9073,9 +9006,8 @@
         return _.requestDataFrames(function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendDataFrames(result.dataframes));
           }
+          return go(null, extendDataFrames(result.dataframes));
         });
       };
       getDataFrames = function () {
@@ -9089,9 +9021,8 @@
         return _.requestAsH2OFrameFromRDD(rdd_id, name, function (error, h2oframe_id) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendAsH2OFrame(h2oframe_id));
           }
+          return go(null, extendAsH2OFrame(h2oframe_id));
         });
       };
       asH2OFrameFromRDD = function (rdd_id, name) {
@@ -9104,9 +9035,8 @@
         return _.requestAsH2OFrameFromDF(df_id, name, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendAsH2OFrame(result));
           }
+          return go(null, extendAsH2OFrame(result));
         });
       };
       asH2OFrameFromDF = function (df_id, name) {
@@ -9123,9 +9053,8 @@
         return _.requestAsDataFrame(hf_id, name, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendAsDataFrame(result));
           }
+          return go(null, extendAsDataFrame(result));
         });
       };
       asDataFrame = function (hf_id, name) {
@@ -9138,9 +9067,8 @@
         return _.requestScalaCode(session_id, code, function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendScalaCode(result));
           }
+          return go(null, extendScalaCode(result));
         });
       };
       extendScalaCode = function (result) {
@@ -9154,9 +9082,8 @@
         return _.requestScalaIntp(function (error, result) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendScalaIntp(result));
           }
+          return go(null, extendScalaIntp(result));
         });
       };
       extendScalaIntp = function (result) {
@@ -9170,9 +9097,8 @@
         return _.requestProfile(depth, function (error, profile) {
           if (error) {
             return go(error);
-          } else {
-            return go(null, extendProfile(profile));
           }
+          return go(null, extendProfile(profile));
         });
       };
       getProfile = function (opts) {
@@ -9205,11 +9131,10 @@
       dump = function (f) {
         if (f != null ? f.isFuture : void 0) {
           return _fork(dumpFuture, f);
-        } else {
-          return Flow.Async.async(function () {
-            return f;
-          });
         }
+        return Flow.Async.async(function () {
+          return f;
+        });
       };
       assist = function () {
         var args;
@@ -9217,36 +9142,35 @@
         func = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
         if (func === void 0) {
           return _fork(proceed, H2O.Assist, [_assistance]);
-        } else {
-          switch (func) {
-            case importFiles:
-              return _fork(proceed, H2O.ImportFilesInput, []);
-            case buildModel:
-              return _fork(proceed, H2O.ModelInput, args);
-            case buildAutoModel:
-              return _fork(proceed, H2O.AutoModelInput, args);
-            case predict:
-            case getPrediction:
-              return _fork(proceed, H2O.PredictInput, args);
-            case createFrame:
-              return _fork(proceed, H2O.CreateFrameInput, args);
-            case splitFrame:
-              return _fork(proceed, H2O.SplitFrameInput, args);
-            case mergeFrames:
-              return _fork(proceed, H2O.MergeFramesInput, args);
-            case buildPartialDependence:
-              return _fork(proceed, H2O.PartialDependenceInput, args);
-            case exportFrame:
-              return _fork(proceed, H2O.ExportFrameInput, args);
-            case imputeColumn:
-              return _fork(proceed, H2O.ImputeInput, args);
-            case importModel:
-              return _fork(proceed, H2O.ImportModelInput, args);
-            case exportModel:
-              return _fork(proceed, H2O.ExportModelInput, args);
-            default:
-              return _fork(proceed, H2O.NoAssist, []);
-          }
+        }
+        switch (func) {
+          case importFiles:
+            return _fork(proceed, H2O.ImportFilesInput, []);
+          case buildModel:
+            return _fork(proceed, H2O.ModelInput, args);
+          case buildAutoModel:
+            return _fork(proceed, H2O.AutoModelInput, args);
+          case predict:
+          case getPrediction:
+            return _fork(proceed, H2O.PredictInput, args);
+          case createFrame:
+            return _fork(proceed, H2O.CreateFrameInput, args);
+          case splitFrame:
+            return _fork(proceed, H2O.SplitFrameInput, args);
+          case mergeFrames:
+            return _fork(proceed, H2O.MergeFramesInput, args);
+          case buildPartialDependence:
+            return _fork(proceed, H2O.PartialDependenceInput, args);
+          case exportFrame:
+            return _fork(proceed, H2O.ExportFrameInput, args);
+          case imputeColumn:
+            return _fork(proceed, H2O.ImputeInput, args);
+          case importModel:
+            return _fork(proceed, H2O.ImportModelInput, args);
+          case exportModel:
+            return _fork(proceed, H2O.ExportModelInput, args);
+          default:
+            return _fork(proceed, H2O.NoAssist, []);
         }
       };
       Flow.Dataflow.link(_.ready, function () {
@@ -9423,9 +9347,8 @@
       _hasFrame = Flow.Dataflow.lift(_frame, function (frame) {
         if (frame) {
           return true;
-        } else {
-          return false;
         }
+        return false;
       });
       _columns = Flow.Dataflow.signal([]);
       _column = Flow.Dataflow.signal(null);
@@ -9496,9 +9419,8 @@
               }
             }
           });
-        } else {
-          return _columns([]);
         }
+        return _columns([]);
       });
       lodash.defer(_go);
       return {
@@ -9869,11 +9791,10 @@
           if (error) {
             _exception(Flow.Failure(_, new Flow.Error('Error fetching cloud status', error)));
             return _isLive(false);
-          } else {
-            updateCloud(_cloud = cloud, _isExpanded());
-            if (_isLive()) {
-              return lodash.delay(refresh, 2000);
-            }
+          }
+          updateCloud(_cloud = cloud, _isExpanded());
+          if (_isLive()) {
+            return lodash.delay(refresh, 2000);
           }
         });
       };
@@ -9930,9 +9851,8 @@
         return render(function (error, vis) {
           if (error) {
             return console.debug(error);
-          } else {
-            return target(vis.element);
           }
+          return target(vis.element);
         });
       };
       if (table = _.inspect('characteristics', frame)) {
@@ -10239,9 +10159,8 @@
       _canAccept = Flow.Dataflow.lift(_file, function (file) {
         if (file != null ? file.name : void 0) {
           return H2O.Util.validateFileExtension(file.name, '.flow');
-        } else {
-          return false;
         }
+        return false;
       });
       checkIfNameIsInUse = function (name, go) {
         return _.requestObjectExists('notebook', name, function (error, exists) {
@@ -10263,15 +10182,13 @@
           basename = H2O.Util.getFileBaseName(file.name, '.flow');
           if (_overwrite()) {
             return uploadFile(basename);
-          } else {
-            return checkIfNameIsInUse(basename, function (isNameInUse) {
-              if (isNameInUse) {
-                return _overwrite(true);
-              } else {
-                return uploadFile(basename);
-              }
-            });
           }
+          return checkIfNameIsInUse(basename, function (isNameInUse) {
+            if (isNameInUse) {
+              return _overwrite(true);
+            }
+            return uploadFile(basename);
+          });
         }
       };
       decline = function () {
@@ -10353,9 +10270,8 @@
         return render(function (error, vis) {
           if (error) {
             return console.debug(error);
-          } else {
-            return container(vis.element);
           }
+          return container(vis.element);
         });
       };
       renderFrame = function (frame) {
@@ -10455,30 +10371,28 @@
         return render(function (error, vis) {
           if (error) {
             return console.debug(error);
-          } else {
-            return container(vis.element);
           }
+          return container(vis.element);
         });
       };
       renderGrid = function (render) {
         return render(function (error, vis) {
           if (error) {
             return console.debug(error);
-          } else {
-            $('a', vis.element).on('click', function (e) {
-              var $a;
-              $a = $(e.target);
-              switch ($a.attr('data-type')) {
-                case 'summary-link':
-                  return _.insertAndExecuteCell('cs', `getColumnSummary ${Flow.Prelude.stringify(_frame.frame_id.name)}, ${Flow.Prelude.stringify($a.attr('data-key'))}`);
-                case 'as-factor-link':
-                  return _.insertAndExecuteCell('cs', `changeColumnType frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}, column: ${Flow.Prelude.stringify($a.attr('data-key'))}, type: \'enum\'`);
-                case 'as-numeric-link':
-                  return _.insertAndExecuteCell('cs', `changeColumnType frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}, column: ${Flow.Prelude.stringify($a.attr('data-key'))}, type: \'int\'`);
-              }
-            });
-            return _grid(vis.element);
           }
+          $('a', vis.element).on('click', function (e) {
+            var $a;
+            $a = $(e.target);
+            switch ($a.attr('data-type')) {
+              case 'summary-link':
+                return _.insertAndExecuteCell('cs', `getColumnSummary ${Flow.Prelude.stringify(_frame.frame_id.name)}, ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+              case 'as-factor-link':
+                return _.insertAndExecuteCell('cs', `changeColumnType frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}, column: ${Flow.Prelude.stringify($a.attr('data-key'))}, type: \'enum\'`);
+              case 'as-numeric-link':
+                return _.insertAndExecuteCell('cs', `changeColumnType frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}, column: ${Flow.Prelude.stringify($a.attr('data-key'))}, type: \'int\'`);
+            }
+          });
+          return _grid(vis.element);
         });
       };
       createModel = function () {
@@ -10651,9 +10565,8 @@
         view = function () {
           if (frame.is_text) {
             return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${Flow.Prelude.stringify(frame.frame_id.name)} ]`);
-          } else {
-            return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(frame.frame_id.name)}`);
           }
+          return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(frame.frame_id.name)}`);
         };
         predict = function () {
           return _.insertAndExecuteCell('cs', `predict frame: ${Flow.Prelude.stringify(frame.frame_id.name)}`);
@@ -11007,9 +10920,8 @@
       _hasErrorMessage = Flow.Dataflow.lift(_exception, function (exception) {
         if (exception) {
           return true;
-        } else {
-          return false;
         }
+        return false;
       });
       tryImportFiles = function () {
         var specifiedPath;
@@ -11017,19 +10929,17 @@
         return _.requestFileGlob(specifiedPath, -1, function (error, result) {
           if (error) {
             return _exception(error.stack);
-          } else {
-            _exception('');
-            return processImportResult(result);
           }
+          _exception('');
+          return processImportResult(result);
         });
       };
       _importedFiles = Flow.Dataflow.signals([]);
       _importedFileCount = Flow.Dataflow.lift(_importedFiles, function (files) {
         if (files.length) {
           return `Found ${Flow.Util.describeCount(files.length, 'file')}:`;
-        } else {
-          return '';
         }
+        return '';
       });
       _hasImportedFiles = Flow.Dataflow.lift(_importedFiles, function (files) {
         return files.length > 0;
@@ -11055,9 +10965,8 @@
       _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, function (files) {
         if (files.length) {
           return `${Flow.Util.describeCount(files.length, 'file')} selected:`;
-        } else {
-          return '(No files selected)';
         }
+        return '(No files selected)';
       });
       _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, function (files) {
         return files.length > 0;
@@ -11315,9 +11224,8 @@
       _hasFrame = Flow.Dataflow.lift(_frame, function (frame) {
         if (frame) {
           return true;
-        } else {
-          return false;
         }
+        return false;
       });
       _columns = Flow.Dataflow.signal([]);
       _column = Flow.Dataflow.signal(null);
@@ -11405,9 +11313,8 @@
               }
             }
           });
-        } else {
-          return _columns([]);
         }
+        return _columns([]);
       });
       lodash.defer(_go);
       return {
@@ -11628,17 +11535,16 @@
           if (error) {
             _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
             return _isLive(false);
+          }
+          updateJob(job);
+          if (isJobRunning(job)) {
+            if (_isLive()) {
+              return lodash.delay(refresh, 1000);
+            }
           } else {
-            updateJob(job);
-            if (isJobRunning(job)) {
-              if (_isLive()) {
-                return lodash.delay(refresh, 1000);
-              }
-            } else {
-              _isLive(false);
-              if (_go) {
-                return lodash.defer(_go);
-              }
+            _isLive(false);
+            if (_go) {
+              return lodash.defer(_go);
             }
           }
         });
@@ -11671,19 +11577,17 @@
         return _.requestCancelJob(_key, function (error, result) {
           if (error) {
             return console.debug(error);
-          } else {
-            return updateJob(_job);
           }
+          return updateJob(_job);
         });
       };
       initialize = function (job) {
         updateJob(job);
         if (isJobRunning(job)) {
           return _isLive(true);
-        } else {
-          if (_go) {
-            return lodash.defer(_go);
-          }
+        }
+        if (_go) {
+          return lodash.defer(_go);
         }
       };
       initialize(_job);
@@ -11768,11 +11672,10 @@
           if (error) {
             _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
             return _isLive(false);
-          } else {
-            _jobViews(lodash.map(jobs, createJobView));
-            if (_isLive()) {
-              return lodash.delay(refresh, 2000);
-            }
+          }
+          _jobViews(lodash.map(jobs, createJobView));
+          if (_isLive()) {
+            return lodash.delay(refresh, 2000);
           }
         });
       };
@@ -11837,13 +11740,11 @@
           return _.requestLogFile(node.index, fileType, function (error, logFile) {
             if (error) {
               return _contents(`Error fetching log file: ${error.message}`);
-            } else {
-              return _contents(logFile.log);
             }
+            return _contents(logFile.log);
           });
-        } else {
-          return _contents('');
         }
+        return _contents('');
       };
       refresh = function () {
         return refreshActiveView(_activeNode(), _activeFileType());
@@ -11928,10 +11829,9 @@
               };
             }));
           });
-        } else {
-          _selectedLeftColumn(null);
-          return _leftColumns([]);
         }
+        _selectedLeftColumn(null);
+        return _leftColumns([]);
       });
       Flow.Dataflow.react(_selectedRightFrame, function (frameKey) {
         if (frameKey) {
@@ -11943,10 +11843,9 @@
               };
             }));
           });
-        } else {
-          _selectedRightColumn(null);
-          return _rightColumns([]);
         }
+        _selectedRightColumn(null);
+        return _rightColumns([]);
       });
       _merge = function () {
         var cs;
@@ -11960,21 +11859,20 @@
         var frame;
         if (error) {
           return _exception(new Flow.Error('Error fetching frame list.', error));
-        } else {
-          return _frames(function () {
-            var _i;
-            var _len;
-            var _results;
-            _results = [];
-            for (_i = 0, _len = frames.length; _i < _len; _i++) {
-              frame = frames[_i];
-              if (!frame.is_text) {
-                _results.push(frame.frame_id.name);
-              }
-            }
-            return _results;
-          }());
         }
+        return _frames(function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = frames.length; _i < _len; _i++) {
+            frame = frames[_i];
+            if (!frame.is_text) {
+              _results.push(frame.frame_id.name);
+            }
+          }
+          return _results;
+        }());
       });
       lodash.defer(_go);
       return {
@@ -12034,9 +11932,8 @@
       _hasMessage = Flow.Dataflow.lift(_message, function (message) {
         if (message) {
           return true;
-        } else {
-          return false;
         }
+        return false;
       });
       _isVisible = Flow.Dataflow.signal(true);
       _isGrided = Flow.Dataflow.signal(false);
@@ -12123,9 +12020,8 @@
             }
           }
           return vals;
-        } else {
-          return text;
         }
+        return text;
       };
       _value = Flow.Dataflow.lift(_text, textToValues);
       _valueGrided = Flow.Dataflow.lift(_textGrided, function (text) {
@@ -12477,9 +12373,8 @@
         controls = lodash.filter(lodash.map(_parametersByLevel[type], createControlFromParameter), function (a) {
           if (a) {
             return true;
-          } else {
-            return false;
           }
+          return false;
         });
         lodash.forEach(controls, function (control) {
           return Flow.Dataflow.react(control.isGrided, function () {
@@ -12755,58 +12650,56 @@
           var _n;
           if (error) {
             return _exception(Flow.Failure(_, new Flow.Error('Error fetching initial model builder state', error)));
-          } else {
-            hasErrors = false;
-            if (modelBuilder.messages.length) {
-              validationsByControlName = lodash.groupBy(modelBuilder.messages, function (validation) {
-                return validation.field_name;
-              });
-              for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
-                controls = _controlGroups[_l];
-                for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
-                  control = controls[_m];
-                  if (validations = validationsByControlName[control.name]) {
-                    for (_n = 0, _len5 = validations.length; _n < _len5; _n++) {
-                      validation = validations[_n];
-                      if (validation.message_type === 'TRACE') {
-                        control.isVisible(false);
-                      } else {
-                        control.isVisible(true);
-                        if (checkForErrors) {
-                          switch (validation.message_type) {
-                            case 'INFO':
-                              control.hasInfo(true);
-                              control.message(validation.message);
-                              break;
-                            case 'WARN':
-                              control.hasWarning(true);
-                              control.message(validation.message);
-                              break;
-                            case 'ERRR':
-                              control.hasError(true);
-                              control.message(validation.message);
-                              hasErrors = true;
-                          }
+          }
+          hasErrors = false;
+          if (modelBuilder.messages.length) {
+            validationsByControlName = lodash.groupBy(modelBuilder.messages, function (validation) {
+              return validation.field_name;
+            });
+            for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
+              controls = _controlGroups[_l];
+              for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
+                control = controls[_m];
+                if (validations = validationsByControlName[control.name]) {
+                  for (_n = 0, _len5 = validations.length; _n < _len5; _n++) {
+                    validation = validations[_n];
+                    if (validation.message_type === 'TRACE') {
+                      control.isVisible(false);
+                    } else {
+                      control.isVisible(true);
+                      if (checkForErrors) {
+                        switch (validation.message_type) {
+                          case 'INFO':
+                            control.hasInfo(true);
+                            control.message(validation.message);
+                            break;
+                          case 'WARN':
+                            control.hasWarning(true);
+                            control.message(validation.message);
+                            break;
+                          case 'ERRR':
+                            control.hasError(true);
+                            control.message(validation.message);
+                            hasErrors = true;
                         }
                       }
                     }
-                  } else {
-                    control.isVisible(true);
-                    control.hasInfo(false);
-                    control.hasWarning(false);
-                    control.hasError(false);
-                    control.message('');
                   }
+                } else {
+                  control.isVisible(true);
+                  control.hasInfo(false);
+                  control.hasWarning(false);
+                  control.hasError(false);
+                  control.message('');
                 }
               }
             }
-            if (hasErrors) {
-              return _validationFailureMessage('Your model parameters have one or more errors. Please fix them and try again.');
-            } else {
-              _validationFailureMessage('');
-              return go();
-            }
           }
+          if (hasErrors) {
+            return _validationFailureMessage('Your model parameters have one or more errors. Please fix them and try again.');
+          }
+          _validationFailureMessage('');
+          return go();
         });
       };
       createModel = function () {
@@ -12872,9 +12765,8 @@
       _canCreateModel = Flow.Dataflow.lift(_algorithm, function (algorithm) {
         if (algorithm) {
           return true;
-        } else {
-          return false;
         }
+        return false;
       });
       _modelForm = Flow.Dataflow.signal(null);
       populateFramesAndColumns = function (frameKey, algorithm, parameters, go) {
@@ -12947,9 +12839,8 @@
               return populateFramesAndColumns(frameKey, algorithm, parameters, function () {
                 return _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters));
               });
-            } else {
-              return _modelForm(null);
             }
+            return _modelForm(null);
           });
         });
       }());
@@ -13036,9 +12927,8 @@
         _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, function (preview) {
           if (preview) {
             return true;
-          } else {
-            return false;
           }
+          return false;
         });
         _inputParameters = lodash.map(_model.parameters, function (parameter) {
           var actual_value;
@@ -13054,16 +12944,14 @@
               case 'Key<Model>':
                 if (actual_value) {
                   return actual_value.name;
-                } else {
-                  return null;
                 }
+                return null;
                 break;
               case 'VecSpecifier':
                 if (actual_value) {
                   return actual_value.column_name;
-                } else {
-                  return null;
                 }
+                return null;
                 break;
               case 'string[]':
               case 'byte[]':
@@ -13074,9 +12962,8 @@
               case 'double[]':
                 if (actual_value) {
                   return actual_value.join(', ');
-                } else {
-                  return null;
                 }
+                return null;
                 break;
               default:
                 return actual_value;
@@ -13093,20 +12980,17 @@
           if (number) {
             if (number === 'NaN') {
               return void 0;
-            } else {
-              return number.toFixed(4).replace(/\.0+$/, '.0');
             }
-          } else {
-            return number;
+            return number.toFixed(4).replace(/\.0+$/, '.0');
           }
+          return number;
         };
         getAucAsLabel = function (model, tableName) {
           var metrics;
           if (metrics = _.inspect(tableName, model)) {
             return ` , AUC = ${metrics.schema.AUC.at(0)}`;
-          } else {
-            return '';
           }
+          return '';
         };
         getThresholdsAndCriteria = function (model, tableName) {
           var criteria;
@@ -13150,9 +13034,8 @@
               thresholds,
               criteria
             };
-          } else {
-            return void 0;
           }
+          return void 0;
         };
         renderPlot = function (title, isCollapsed, render, thresholdsAndCriteria) {
           var container;
@@ -13172,76 +13055,75 @@
             var _autoHighlight;
             if (error) {
               return console.debug(error);
-            } else {
-              $('a', vis.element).on('click', function (e) {
-                var $a;
-                $a = $(e.target);
-                switch ($a.attr('data-type')) {
-                  case 'frame':
-                    return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify($a.attr('data-key'))}`);
-                  case 'model':
-                    return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify($a.attr('data-key'))}`);
-                }
-              });
-              container(vis.element);
-              _autoHighlight = true;
-              if (vis.subscribe) {
-                vis.subscribe('markselect', function (_arg) {
-                  var currentCriterion;
-                  var frame;
-                  var indices;
-                  var renderTable;
-                  var selectedIndex;
-                  var subframe;
-                  frame = _arg.frame, indices = _arg.indices;
-                  subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
-                  renderTable = function (g) {
-                    return g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
-                  };
-                  _.plot(renderTable)(function (error, table) {
-                    if (!error) {
-                      return linkedFrame(table.element);
-                    }
-                  });
-                  if (rocPanel) {
-                    if (indices.length === 1) {
-                      selectedIndex = lodash.head(indices);
-                      _autoHighlight = false;
-                      rocPanel.threshold(lodash.find(rocPanel.thresholds(), function (threshold) {
-                        return threshold.index === selectedIndex;
-                      }));
-                      currentCriterion = rocPanel.criterion();
-                      if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
-                        rocPanel.criterion(lodash.find(rocPanel.criteria(), function (criterion) {
-                          return criterion.index === selectedIndex;
-                        }));
-                      }
-                      _autoHighlight = true;
-                    } else {
-                      rocPanel.criterion(null);
-                      rocPanel.threshold(null);
-                    }
-                  }
-                });
-                vis.subscribe('markdeselect', function () {
-                  linkedFrame(null);
-                  if (rocPanel) {
-                    rocPanel.criterion(null);
-                    return rocPanel.threshold(null);
+            }
+            $('a', vis.element).on('click', function (e) {
+              var $a;
+              $a = $(e.target);
+              switch ($a.attr('data-type')) {
+                case 'frame':
+                  return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+                case 'model':
+                  return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+              }
+            });
+            container(vis.element);
+            _autoHighlight = true;
+            if (vis.subscribe) {
+              vis.subscribe('markselect', function (_arg) {
+                var currentCriterion;
+                var frame;
+                var indices;
+                var renderTable;
+                var selectedIndex;
+                var subframe;
+                frame = _arg.frame, indices = _arg.indices;
+                subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
+                renderTable = function (g) {
+                  return g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
+                };
+                _.plot(renderTable)(function (error, table) {
+                  if (!error) {
+                    return linkedFrame(table.element);
                   }
                 });
                 if (rocPanel) {
-                  Flow.Dataflow.react(rocPanel.threshold, function (threshold) {
-                    if (threshold && _autoHighlight) {
-                      return vis.highlight([threshold.index]);
+                  if (indices.length === 1) {
+                    selectedIndex = lodash.head(indices);
+                    _autoHighlight = false;
+                    rocPanel.threshold(lodash.find(rocPanel.thresholds(), function (threshold) {
+                      return threshold.index === selectedIndex;
+                    }));
+                    currentCriterion = rocPanel.criterion();
+                    if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
+                      rocPanel.criterion(lodash.find(rocPanel.criteria(), function (criterion) {
+                        return criterion.index === selectedIndex;
+                      }));
                     }
-                  });
-                  return Flow.Dataflow.react(rocPanel.criterion, function (criterion) {
-                    if (criterion && _autoHighlight) {
-                      return vis.highlight([criterion.index]);
-                    }
-                  });
+                    _autoHighlight = true;
+                  } else {
+                    rocPanel.criterion(null);
+                    rocPanel.threshold(null);
+                  }
                 }
+              });
+              vis.subscribe('markdeselect', function () {
+                linkedFrame(null);
+                if (rocPanel) {
+                  rocPanel.criterion(null);
+                  return rocPanel.threshold(null);
+                }
+              });
+              if (rocPanel) {
+                Flow.Dataflow.react(rocPanel.threshold, function (threshold) {
+                  if (threshold && _autoHighlight) {
+                    return vis.highlight([threshold.index]);
+                  }
+                });
+                return Flow.Dataflow.react(rocPanel.criterion, function (criterion) {
+                  if (criterion && _autoHighlight) {
+                    return vis.highlight([criterion.index]);
+                  }
+                });
               }
             }
           });
@@ -13592,9 +13474,8 @@
           return _.requestPojoPreview(_model.model_id.name, function (error, result) {
             if (error) {
               return _pojoPreview(`<pre>${lodash.escape(error)}</pre>`);
-            } else {
-              return _pojoPreview(`<pre>${Flow.Util.highlight(result, 'java')}</pre>`);
             }
+            return _pojoPreview(`<pre>${Flow.Util.highlight(result, 'java')}</pre>`);
           });
         };
         downloadPojo = function () {
@@ -13842,9 +13723,8 @@
       render(function (error, vis) {
         if (error) {
           return console.debug(error);
-        } else {
-          return _result(vis.element);
         }
+        return _result(vis.element);
       });
       lodash.defer(_go);
       return {
@@ -14225,39 +14105,37 @@
         var frame;
         if (error) {
           return _exception(new Flow.Error('Error fetching frame list.', error));
-        } else {
-          return _frames(function () {
-            var _i;
-            var _len;
-            var _results;
-            _results = [];
-            for (_i = 0, _len = frames.length; _i < _len; _i++) {
-              frame = frames[_i];
-              if (!frame.is_text) {
-                _results.push(frame.frame_id.name);
-              }
-            }
-            return _results;
-          }());
         }
+        return _frames(function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = frames.length; _i < _len; _i++) {
+            frame = frames[_i];
+            if (!frame.is_text) {
+              _results.push(frame.frame_id.name);
+            }
+          }
+          return _results;
+        }());
       });
       _.requestModels(function (error, models) {
         var model;
         if (error) {
           return _exception(new Flow.Error('Error fetching model list.', error));
-        } else {
-          return _models(function () {
-            var _i;
-            var _len;
-            var _results;
-            _results = [];
-            for (_i = 0, _len = models.length; _i < _len; _i++) {
-              model = models[_i];
-              _results.push(model.model_id.name);
-            }
-            return _results;
-          }());
         }
+        return _models(function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = models.length; _i < _len; _i++) {
+            model = models[_i];
+            _results.push(model.model_id.name);
+          }
+          return _results;
+        }());
       });
       lodash.defer(_go);
       return {
@@ -14297,9 +14175,8 @@
         return render(function (error, vis) {
           if (error) {
             return console.debug(error);
-          } else {
-            return target(vis.element);
           }
+          return target(vis.element);
         });
       };
       _plots = [];
@@ -14508,21 +14385,20 @@
           var frame;
           if (error) {
             return _exception(new Flow.Error('Error fetching frame list.', error));
-          } else {
-            return _frames(function () {
-              var _i;
-              var _len;
-              var _results;
-              _results = [];
-              for (_i = 0, _len = frames.length; _i < _len; _i++) {
-                frame = frames[_i];
-                if (!frame.is_text) {
-                  _results.push(frame.frame_id.name);
-                }
-              }
-              return _results;
-            }());
           }
+          return _frames(function () {
+            var _i;
+            var _len;
+            var _results;
+            _results = [];
+            for (_i = 0, _len = frames.length; _i < _len; _i++) {
+              frame = frames[_i];
+              if (!frame.is_text) {
+                _results.push(frame.frame_id.name);
+              }
+            }
+            return _results;
+          }());
         });
       }
       if (!_hasModels) {
@@ -14530,19 +14406,18 @@
           var model;
           if (error) {
             return _exception(new Flow.Error('Error fetching model list.', error));
-          } else {
-            return _models(function () {
-              var _i;
-              var _len;
-              var _results;
-              _results = [];
-              for (_i = 0, _len = models.length; _i < _len; _i++) {
-                model = models[_i];
-                _results.push(model.model_id.name);
-              }
-              return _results;
-            }());
           }
+          return _models(function () {
+            var _i;
+            var _len;
+            var _results;
+            _results = [];
+            for (_i = 0, _len = models.length; _i < _len; _i++) {
+              model = models[_i];
+              _results.push(model.model_id.name);
+            }
+            return _results;
+          }());
         });
       }
       if (!_selectedModel()) {
@@ -14650,19 +14525,18 @@
         render(function (error, vis) {
           if (error) {
             return console.debug(error);
-          } else {
-            $('a', vis.element).on('click', function (e) {
-              var $a;
-              $a = $(e.target);
-              switch ($a.attr('data-type')) {
-                case 'frame':
-                  return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify($a.attr('data-key'))}`);
-                case 'model':
-                  return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify($a.attr('data-key'))}`);
-              }
-            });
-            return container(vis.element);
           }
+          $('a', vis.element).on('click', function (e) {
+            var $a;
+            $a = $(e.target);
+            switch ($a.attr('data-type')) {
+              case 'frame':
+                return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+              case 'model':
+                return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+            }
+          });
+          return container(vis.element);
         });
         return _plots.push({
           title,
