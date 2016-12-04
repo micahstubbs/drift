@@ -40,7 +40,6 @@
     "no-use-before-define": "off",
     "vars-on-top": "off",
     "no-new-func": "off",
-    "no-useless-escape": "off",
-    "brace-style": "off"
+    "no-useless-escape": "off"
   }
 }
