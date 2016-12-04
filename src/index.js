@@ -804,7 +804,7 @@
         return goTo(_history.length - 1);
       };
       fixImageSources = function (html) {
-        return html.replace(/\s+src\s*\=\s*\"images\//g, ' src="help/images/');
+        return html.replace(/\s+src\s*=\s*"images\//g, ' src="help/images/');
       };
       performAction = function (action, $el) {
         var packName;
