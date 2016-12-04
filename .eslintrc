@@ -35,7 +35,6 @@
     "camelcase": "off",
     "no-empty": "off",
     "guard-for-in": "off",
-    "prefer-rest-params": "off",
-    "no-useless-concat": "off",
+    "prefer-rest-params": "off"
   }
 }
