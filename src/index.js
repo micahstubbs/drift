@@ -573,9 +573,11 @@
         var _ref;
         _ref = sandbox.routines;
         for (name in _ref) {
-          routine = _ref[name];
-          if (f === routine) {
-            return true;
+          if ({}.hasOwnProperty.call(_ref, name)) {
+            routine = _ref[name];
+            if (f === routine) {
+              return true;
+            }
           }
         }
         return false;
@@ -2467,14 +2469,16 @@
       previews = [];
       ellipsis = '';
       for (key in object) {
-        value = object[key];
-        if (!(key !== '_flow_')) {
-          continue;
-        }
-        previews.push(`${key}: ${preview(value)}`);
-        if (++count === 5) {
-          ellipsis = ', ...';
-          break;
+        if ({}.hasOwnProperty.call(object, key)) {
+          value = object[key];
+          if (!(key !== '_flow_')) {
+            continue;
+          }
+          previews.push(`${key}: ${preview(value)}`);
+          if (++count === 5) {
+            ellipsis = ', ...';
+            break;
+          }
         }
       }
       return `{${previews.join(', ')}${ellipsis}}`;
@@ -2529,9 +2533,11 @@
         if (_expansions() === null) {
           expansions = [];
           for (key in object) {
-            value = object[key];
-            if (key !== '_flow_') {
-              expansions.push(Flow.ObjectBrowserElement(key, value));
+            if ({}.hasOwnProperty.call(object, key)) {
+              value = object[key];
+              if (key !== '_flow_') {
+                expansions.push(Flow.ObjectBrowserElement(key, value));
+              }
             }
           }
           _expansions(expansions);
@@ -3235,10 +3241,12 @@
           }
         } else {
           for (i in node) {
-            child = node[i];
-            if (lodash.isObject(child)) {
-              traverseJavascript(node, i, child, f);
-              f(node, i, child);
+            if ({}.hasOwnProperty.call(node, i)) {
+              child = node[i];
+              if (lodash.isObject(child)) {
+                traverseJavascript(node, i, child, f);
+                f(node, i, child);
+              }
             }
           }
         }
@@ -3282,13 +3290,17 @@
           scope = scopes[i];
           if (i === 0) {
             for (name in scope) {
-              identifier = scope[name];
-              currentScope[name] = identifier;
+              if ({}.hasOwnProperty.call(scope, name)) {
+                identifier = scope[name];
+                currentScope[name] = identifier;
+              }
             }
           } else {
             for (name in scope) {
-              identifier = scope[name];
-              currentScope[name] = null;
+              if ({}.hasOwnProperty.call(scope, name)) {
+                identifier = scope[name];
+                currentScope[name] = null;
+              }
             }
           }
         }
@@ -3306,10 +3318,12 @@
           currentScope = parentScope;
         }
         for (key in node) {
-          child = node[key];
-          if (lodash.isObject(child)) {
-            traverseJavascriptScoped(scopes, currentScope, node, key, child, f);
-            f(currentScope, node, key, child);
+          if ({}.hasOwnProperty.call(node, key)) {
+            child = node[key];
+            if (lodash.isObject(child)) {
+              traverseJavascriptScoped(scopes, currentScope, node, key, child, f);
+              f(currentScope, node, key, child);
+            }
           }
         }
         if (isNewScope) {
@@ -3324,10 +3338,12 @@
           try {
             rootScope = parseDeclarations(program.body[0].expression['arguments'][0].callee.body);
             for (name in sandbox.context) {
-              rootScope[name] = {
-                name,
-                object: '_h2o_context_'
-              };
+              if ({}.hasOwnProperty.call(sandbox.context, name)) {
+                rootScope[name] = {
+                  name,
+                  object: '_h2o_context_'
+                };
+              }
             }
             return go(null, rootScope, program);
           } catch (_error) {
@@ -3363,14 +3379,18 @@
         var name;
         globalScope = {};
         for (name in rootScope) {
-          identifier = rootScope[name];
-          globalScope[name] = identifier;
+          if ({}.hasOwnProperty.call(rootScope, name)) {
+            identifier = rootScope[name];
+            globalScope[name] = identifier;
+          }
         }
         for (name in routines) {
-          globalScope[name] = {
-            name,
-            object: 'h2o'
-          };
+          if ({}.hasOwnProperty.call(routines, name)) {
+            globalScope[name] = {
+              name,
+              object: 'h2o'
+            };
+          }
         }
         return globalScope;
       };
@@ -5270,8 +5290,10 @@
         var value;
         result = [];
         for (key in obj) {
-          value = obj[key];
-          result.push(f(value, key));
+          if ({}.hasOwnProperty.call(obj, key)) {
+            value = obj[key];
+            result.push(f(value, key));
+          }
         }
         return result;
       };
@@ -5303,8 +5325,10 @@
         var v;
         target = {};
         for (k in source) {
-          v = source[k];
-          target[k] = encodeURIComponent(v);
+          if ({}.hasOwnProperty.call(source, k)) {
+            v = source[k];
+            target[k] = encodeURIComponent(v);
+          }
         }
         return target;
       };
@@ -5314,8 +5338,10 @@
         var v;
         target = {};
         for (k in source) {
-          v = source[k];
-          target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
+          if ({}.hasOwnProperty.call(source, k)) {
+            v = source[k];
+            target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
+          }
         }
         return target;
       };
@@ -5605,8 +5631,10 @@
             _ref = result.model_builders;
             _results = [];
             for (algo in _ref) {
-              builder = _ref[algo];
-              _results.push(builder);
+              if ({}.hasOwnProperty.call(_ref, algo)) {
+                builder = _ref[algo];
+                _results.push(builder);
+              }
             }
             return _results;
           }();
@@ -6618,8 +6646,10 @@
       };
       _ref = Flow.Gui;
       for (name in _ref) {
-        f = _ref[name];
-        gui[name] = f;
+        if ({}.hasOwnProperty.call(_ref, name)) {
+          f = _ref[name];
+          gui[name] = f;
+        }
       }
       flow_ = function (raw) {
         return raw._flow_ || (raw._flow_ = { _cache_: {} });
@@ -6649,8 +6679,10 @@
           root.inspect = {};
         }
         for (attr in inspectors) {
-          f = inspectors[attr];
-          root.inspect[attr] = f;
+          if ({}.hasOwnProperty.call(inspectors, attr)) {
+            f = inspectors[attr];
+            root.inspect[attr] = f;
+          }
         }
         return raw;
       };
@@ -6671,8 +6703,10 @@
         if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
           inspections = [];
           for (attr in inspectors) {
-            f = inspectors[attr];
-            inspections.push(inspect$2(attr, obj));
+            if ({}.hasOwnProperty.call(inspectors, attr)) {
+              f = inspectors[attr];
+              inspections.push(inspect$2(attr, obj));
+            }
           }
           render_(inspections, H2O.InspectsOutput, inspections);
           return inspections;
@@ -7067,8 +7101,10 @@
             var _results;
             _results = [];
             for (k in obj) {
-              v = obj[k];
-              _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
+              if ({}.hasOwnProperty.call(obj, k)) {
+                v = obj[k];
+                _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
+              }
             }
             return _results;
           }();
@@ -7113,13 +7149,15 @@
         var _ref1;
         dicts = {};
         for (schema in _schemaHacks) {
-          attrs = _schemaHacks[schema];
-          dicts[schema] = dict = { __meta: true };
-          if (attrs.fields) {
-            _ref1 = Flow.Prelude.words(attrs.fields);
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              field = _ref1[_i];
-              dict[field] = true;
+          if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
+            attrs = _schemaHacks[schema];
+            dicts[schema] = dict = { __meta: true };
+            if (attrs.fields) {
+              _ref1 = Flow.Prelude.words(attrs.fields);
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                field = _ref1[_i];
+                dict[field] = true;
+              }
             }
           }
         }
@@ -7132,9 +7170,11 @@
         var transforms;
         transforms = {};
         for (schema in _schemaHacks) {
-          attrs = _schemaHacks[schema];
-          if (transform = attrs.transform) {
-            transforms[schema] = transform;
+          if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
+            attrs = _schemaHacks[schema];
+            if (transform = attrs.transform) {
+              transforms[schema] = transform;
+            }
           }
         }
         return transforms;
@@ -7158,36 +7198,38 @@
         record = {};
         inspections[name] = inspectRawObject_(name, origin, name, record);
         for (k in obj) {
-          v = obj[k];
-          if (!blacklistedAttributes[k]) {
-            if (v === null) {
-              record[k] = null;
-            } else {
-              if (((_ref2 = v.__meta) != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
-                inspections[`${name} - ${v.name}`] = inspectTwoDimTable_(origin, `${name} - ${v.name}`, v);
+          if ({}.hasOwnProperty.call(obj, k)) {
+            v = obj[k];
+            if (!blacklistedAttributes[k]) {
+              if (v === null) {
+                record[k] = null;
               } else {
-                if (lodash.isArray(v)) {
-                  if (k === 'cross_validation_models' || k === 'cross_validation_predictions' || name === 'output' && (k === 'weights' || k === 'biases')) {
-                    inspections[k] = inspectObjectArray_(k, origin, k, v);
-                  } else {
-                    inspections[k] = inspectRawArray_(k, origin, k, v);
-                  }
-                } else if (lodash.isObject(v)) {
-                  if (meta = v.__meta) {
-                    if (meta.schema_type === 'Key<Frame>') {
-                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
-                    } else if (meta.schema_type === 'Key<Model>') {
-                      record[k] = `<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
-                    } else if (meta.schema_type === 'Frame') {
-                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;
+                if (((_ref2 = v.__meta) != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
+                  inspections[`${name} - ${v.name}`] = inspectTwoDimTable_(origin, `${name} - ${v.name}`, v);
+                } else {
+                  if (lodash.isArray(v)) {
+                    if (k === 'cross_validation_models' || k === 'cross_validation_predictions' || name === 'output' && (k === 'weights' || k === 'biases')) {
+                      inspections[k] = inspectObjectArray_(k, origin, k, v);
                     } else {
-                      inspectObject(inspections, `${name} - ${k}`, origin, v);
+                      inspections[k] = inspectRawArray_(k, origin, k, v);
+                    }
+                  } else if (lodash.isObject(v)) {
+                    if (meta = v.__meta) {
+                      if (meta.schema_type === 'Key<Frame>') {
+                        record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
+                      } else if (meta.schema_type === 'Key<Model>') {
+                        record[k] = `<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
+                      } else if (meta.schema_type === 'Frame') {
+                        record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;
+                      } else {
+                        inspectObject(inspections, `${name} - ${k}`, origin, v);
+                      }
+                    } else {
+                      console.log(`WARNING: dropping [${k}] from inspection:`, v);
                     }
                   } else {
-                    console.log(`WARNING: dropping [${k}] from inspection:`, v);
+                    record[k] = lodash.isNumber(v) ? format6fi(v) : v;
                   }
-                } else {
-                  record[k] = lodash.isNumber(v) ? format6fi(v) : v;
                 }
               }
             }
@@ -9148,7 +9190,9 @@
           asDataFrame
         };
         for (attrname in routinesOnSw) {
-          routines[attrname] = routinesOnSw[attrname];
+          if ({}.hasOwnProperty.call(routinesOnSw, attrname)) {
+            routines[attrname] = routinesOnSw[attrname];
+          }
         }
       }
       return routines;
@@ -9189,8 +9233,10 @@
           var _results;
           _results = [];
           for (name in _items) {
-            item = _items[name];
-            _results.push(createAssistItem(name, item));
+            if ({}.hasOwnProperty.call(_items, name)) {
+              item = _items[name];
+              _results.push(createAssistItem(name, item));
+            }
           }
           return _results;
         }(),
