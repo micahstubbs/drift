@@ -9291,6 +9291,7 @@
       _.requestFrames(function (error, frames) {
         var frame;
         if (error) {
+          // empty
         } else {
           _frames(function () {
             var _i;
@@ -9315,6 +9316,7 @@
           return _.requestFrameSummaryWithoutData(frame, function (error, frame) {
             var column;
             if (error) {
+              // empty
             } else {
               _columns(function () {
                 var _i;
@@ -9969,6 +9971,7 @@
       _.requestFrames(function (error, frames) {
         var frame;
         if (error) {
+          // empty
         } else {
           _frames(function () {
             var _i;
@@ -10026,6 +10029,7 @@
       _.requestModels(function (error, models) {
         var model;
         if (error) {
+          // empty
         } else {
           _models(function () {
             var _i;
@@ -10208,6 +10212,7 @@
         itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
         return _.requestFrameDataE(_frame.frame_id.name, searchTerm, startIndex, itemCount, function (error, frame) {
           if (error) {
+            // empty
           } else {
             _lastUsedSearchTerm = searchTerm;
             _currentPage(pageIndex);
@@ -10366,6 +10371,7 @@
         itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
         return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, function (error, frame) {
           if (error) {
+            // empty
           } else {
             _lastUsedSearchTerm = searchTerm;
             _currentPage(pageIndex);
@@ -11185,6 +11191,7 @@
       _.requestFrames(function (error, frames) {
         var frame;
         if (error) {
+          // empty
         } else {
           _frames(function () {
             var _i;
@@ -11209,6 +11216,7 @@
           return _.requestFrameSummaryWithoutData(frame, function (error, frame) {
             var column;
             if (error) {
+              // empty
             } else {
               _columns(function () {
                 var _i;
@@ -12708,6 +12716,7 @@
           var _i;
           var _len;
           if (error) {
+            // empty
           } else {
             frameKeys = function () {
               var _i;
