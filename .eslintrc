@@ -33,7 +33,6 @@
     "no-unreachable": "off",
     "no-alert": "off",
     "dot-notation": "off",
-    "camelcase": "off",
-    "no-empty": "off"
+    "camelcase": "off"
   }
 }
