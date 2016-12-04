@@ -1,6 +1,8 @@
 {
   "extends": "airbnb",
   "rules": {
+    "no-throw-literal": "off",
+    "no-use-before-define": "off",
     "no-new-func": "off",
     "comma-dangle": "off",
     "no-param-reassign": "off",
@@ -35,8 +37,5 @@
     "guard-for-in": "off",
     "prefer-rest-params": "off",
     "no-useless-concat": "off",
-    "radix": "off",
-    "no-throw-literal": "off",
-    "no-use-before-define": "off"
   }
 }
