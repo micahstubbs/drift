@@ -1,6 +1,7 @@
 {
   "extends": "airbnb",
   "rules": {
+    "prefer-rest-params": "off",
     "no-throw-literal": "off",
     "no-use-before-define": "off",
     "no-new-func": "off",
@@ -33,8 +34,6 @@
     "no-alert": "off",
     "dot-notation": "off",
     "camelcase": "off",
-    "no-empty": "off",
-    "guard-for-in": "off",
-    "prefer-rest-params": "off"
+    "no-empty": "off"
   }
 }
