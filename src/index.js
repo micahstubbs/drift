@@ -4108,7 +4108,8 @@
     var __hasProp = {}.hasOwnProperty;
 
     var __extends = function (child, parent) {
-      for (var key in parent) {
+      var key;
+      for (key in parent) {
         if (__hasProp.call(parent, key)) {
           child[key] = parent[key];
         }
