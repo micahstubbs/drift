@@ -29,7 +29,6 @@
     "no-sequences": "off",
     "no-unused-expressions": "off",
     "no-nested-ternary": "off",
-    "yoda": "off",
     "no-unreachable": "off",
     "no-alert": "off",
     "dot-notation": "off",
