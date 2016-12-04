@@ -4109,8 +4109,9 @@
 
     var __extends = function (child, parent) {
       for (var key in parent) {
-        if (__hasProp.call(parent, key))
+        if (__hasProp.call(parent, key)) {
           child[key] = parent[key];
+        }
       }
       function ctor() {
         this.constructor = child;
