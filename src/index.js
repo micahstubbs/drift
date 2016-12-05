@@ -599,10 +599,14 @@
                 output.error(new Flow.Error('Error evaluating cell', error));
                 return output.end();
               }
-              if (result != null ? (_ref = result._flow_) != null ? _ref.render : void 0 : void 0) {
-                return output.data(result._flow_.render(function () {
-                  return output.end();
-                }));
+              if (result != null) {
+                if ((_ref = result._flow_) != null) {
+                  if (_ref.render) {
+                    return output.data(result._flow_.render(function () {
+                      return output.end();
+                    }));
+                  }
+                }
               }
               return output.data(Flow.ObjectBrowser(_, function () {
                 return output.end();
@@ -5246,7 +5250,24 @@
           var serverError;
           _.status('server', 'error', path);
           response = xhr.responseJSON;
-          cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
+          if (meta = response != null) {
+            if (
+              response.__meta &&
+              (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError')
+            ) {
+              cause = (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError);
+            } else {
+              if (error != null && error.message) {
+                cause = new Flow.Error(error.message);
+              } else {
+                if (status === 'error' && xhr.status === 0) {
+                  cause = new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.');
+                } else {
+                  cause = new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
+                }
+              }
+            }
+          }
           return go(new Flow.Error(`Error calling ${method} ${path}${optsToString(opts)}`, cause));
         });
       };
@@ -6095,7 +6116,20 @@
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         value = source[i];
-        target[i] = value === 'NaN' ? void 0 : value === 'Infinity' ? Number.POSITIVE_INFINITY : value === '-Infinity' ? Number.NEGATIVE_INFINITY : value;
+        //
+        switch (value) {
+          case 'NaN':
+            target[i] = void 0;
+            break;
+          case 'Infinity':
+            target[i] = Number.POSITIVE_INFINITY;
+            break;
+          case '-Infinity':
+            target[i] = Number.NEGATIVE_INFINITY;
+            break;
+          default:
+            target[i] = value;
+        }
       }
       return target;
     };
@@ -6255,7 +6289,15 @@
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         element = source[i];
-        target[i] = element != null ? lodash.isNumber(element) ? format6fi(element) : element : void 0;
+        if (element != null) {
+          if (lodash.isNumber(element)) {
+            target[i] = format6fi(element);
+          } else {
+            target[i] = element;
+          }
+        } else {
+          target[i] = void 0;
+        }
       }
       return target;
     };
@@ -6270,7 +6312,23 @@
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         element = source[i];
-        target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : element : void 0;
+        if (element != null) {
+          if ((_ref = element.__meta) != null) {
+            if (_ref.schema_type === 'Key<Model>') {
+              target[i] = `<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>`;
+            } else {
+              if ((_ref1 = element.__meta) != null) {
+                if (_ref1.schema_type === 'Key<Frame>') {
+                  target[i] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>`;
+                } else {
+                  target[i] = element;
+                }
+              } else {
+                target[i] = void 0;
+              }
+            }
+          }
+        }
       }
       return target;
     };
@@ -6703,16 +6761,20 @@
         if (_isFuture(obj)) {
           return _async(inspect, obj);
         }
-        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
-          inspections = [];
-          for (attr in inspectors) {
-            if ({}.hasOwnProperty.call(inspectors, attr)) {
-              f = inspectors[attr];
-              inspections.push(inspect$2(attr, obj));
+        if (inspectors = obj != null) {
+          if ((_ref1 = obj._flow_) != null) {
+            if (_ref1.inspect) {
+              inspections = [];
+              for (attr in inspectors) {
+                if ({}.hasOwnProperty.call(inspectors, attr)) {
+                  f = inspectors[attr];
+                  inspections.push(inspect$2(attr, obj));
+                }
+              }
+              render_(inspections, H2O.InspectsOutput, inspections);
+              return inspections;
             }
           }
-          render_(inspections, H2O.InspectsOutput, inspections);
-          return inspections;
         }
         return {};
       };
@@ -6722,8 +6784,12 @@
         if (_isFuture(obj)) {
           return _async(ls, obj);
         }
-        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
-          return lodash.keys(inspectors);
+        if (inspectors = obj != null) {
+          if ((_ref1 = obj._flow_) != null) {
+            if (_ref1.inspect) {
+              return lodash.keys(inspectors);
+            }
+          }
         }
         return [];
       };
@@ -7106,7 +7172,15 @@
             for (k in obj) {
               if ({}.hasOwnProperty.call(obj, k)) {
                 v = obj[k];
-                _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
+                if (v === null) {
+                  _results.push(createList(k, [void 0]));
+                } else {
+                  if (lodash.isNumber(v)) {
+                    _results.push(createList(k, [format6fi(v)]));
+                  } else {
+                    _results.push(createList(k, [v]));
+                  }
+                }
               }
             }
             return _results;
@@ -7184,7 +7258,7 @@
       }();
       inspectObject = function (inspections, name, origin, obj) {
         var attrs;
-        var blacklistedAttributes;
+        let blacklistedAttributes;
         var k;
         var meta;
         var record;
@@ -7194,7 +7268,13 @@
         var _ref1;
         var _ref2;
         schemaType = (_ref1 = obj.__meta) != null ? _ref1.schema_type : void 0;
-        blacklistedAttributes = schemaType ? (attrs = blacklistedAttributesBySchema[schemaType]) ? attrs : {} : {};
+        // default value
+        blacklistedAttributes = {};
+        if (schemaType) {
+          if ((attrs = blacklistedAttributesBySchema[schemaType])) {
+            blacklistedAttributes = attrs;
+          }
+        }
         if (transform = schemaTransforms[schemaType]) {
           obj = transform(obj);
         }
@@ -11928,7 +12008,19 @@
         case 'double':
           isReal = true;
       }
-      _text = Flow.Dataflow.signal(isArrayValued ? ((_ref = parameter.actual_value) != null ? _ref : []).join(', ') : (_ref1 = parameter.actual_value) != null ? _ref1 : '');
+      if (isArrayValued) {
+        if ((_ref = parameter.actual_value) != null) {
+          _text = Flow.Dataflow.signal(_ref.join(', '));
+        } else {
+          _text = Flow.Dataflow.signal([].join(', '));
+        }
+      } else {
+        if ((_ref1 = parameter.actual_value) != null) {
+          _text = Flow.Dataflow.signal(_ref1);
+        } else {
+          _text = Flow.Dataflow.signal('');
+        }
+      }
       _textGrided = Flow.Dataflow.signal(`${_text()};`);
       textToValues = function (text) {
         var parsed;
@@ -13111,7 +13203,17 @@
               _results = [];
               for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
                 column = _ref1[i];
-                cell = i < errorColumnIndex ? i === rowIndex ? yellow : rowIndex < totalRowIndex ? normal : bold : bold;
+                // default value
+                cell = bold;
+                if (i < errorColumnIndex) {
+                  if (i === rowIndex) {
+                    cell = yellow;
+                  } else {
+                    if (rowIndex < totalRowIndex) {
+                      cell = normal;
+                    }
+                  }
+                }
                 _results.push(cell(i === errorColumnIndex ? format4f(column[rowIndex]) : column[rowIndex]));
               }
               return _results;
@@ -13175,14 +13277,26 @@
             }
             if (output = _model.output) {
               if (output.model_category === 'Multinomial') {
-                if (confusionMatrix = (_ref = output.training_metrics) != null ? (_ref1 = _ref.cm) != null ? _ref1.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref = output.training_metrics) != null) {
+                  if ((_ref1 = _ref.cm) != null) {
+                    if (_ref1.table) {
+                      renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
-                if (confusionMatrix = (_ref2 = output.validation_metrics) != null ? (_ref3 = _ref2.cm) != null ? _ref3.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref2 = output.validation_metrics) != null) {
+                  if ((_ref3 = _ref2.cm) != null) {
+                    if (_ref3.table) {
+                      renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
-                if (confusionMatrix = (_ref4 = output.cross_validation_metrics) != null ? (_ref5 = _ref4.cm) != null ? _ref5.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref4 = output.cross_validation_metrics) != null) {
+                  if ((_ref5 = _ref4.cm) != null) {
+                    if (_ref5.table) {
+                      renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
               }
             }
@@ -13246,14 +13360,26 @@
             }
             if (output = _model.output) {
               if (output.model_category === 'Multinomial') {
-                if (confusionMatrix = (_ref6 = output.training_metrics) != null ? (_ref7 = _ref6.cm) != null ? _ref7.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref6 = output.training_metrics) != null) {
+                  if ((_ref7 = _ref6.cm) != null) {
+                    if (_ref7.table) {
+                      renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
-                if (confusionMatrix = (_ref8 = output.validation_metrics) != null ? (_ref9 = _ref8.cm) != null ? _ref9.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref8 = output.validation_metrics) != null) {
+                  if ((_ref9 = _ref8.cm) != null) {
+                    if (_ref9.table) {
+                      renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
-                if (confusionMatrix = (_ref10 = output.cross_validation_metrics) != null ? (_ref11 = _ref10.cm) != null ? _ref11.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref10 = output.cross_validation_metrics) != null) {
+                  if ((_ref11 = _ref10.cm) != null) {
+                    if (_ref11.table) {
+                      renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
               }
             }
@@ -13308,14 +13434,26 @@
             }
             if (output = _model.output) {
               if (output.model_category === 'Multinomial') {
-                if (confusionMatrix = (_ref12 = output.training_metrics) != null ? (_ref13 = _ref12.cm) != null ? _ref13.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref12 = output.training_metrics) != null) {
+                  if ((_ref13 = _ref12.cm) != null) {
+                    if (_ref13.table) {
+                      renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
-                if (confusionMatrix = (_ref14 = output.validation_metrics) != null ? (_ref15 = _ref14.cm) != null ? _ref15.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref14 = output.validation_metrics) != null) {
+                  if ((_ref15 = _ref14.cm) != null) {
+                    if (_ref15.table) {
+                      renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
-                if (confusionMatrix = (_ref16 = output.cross_validation_metrics) != null ? (_ref17 = _ref16.cm) != null ? _ref17.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref16 = output.cross_validation_metrics) != null) {
+                  if ((_ref17 = _ref16.cm) != null) {
+                    if (_ref17.table) {
+                      renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
               }
             }
@@ -13346,14 +13484,26 @@
             }
             if (output = _model.output) {
               if (output.model_category === 'Multinomial') {
-                if (confusionMatrix = (_ref18 = output.training_metrics) != null ? (_ref19 = _ref18.cm) != null ? _ref19.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref18 = output.training_metrics) != null) {
+                  if ((_ref19 = _ref18.cm) != null) {
+                    if (_ref19.table) {
+                      renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
-                if (confusionMatrix = (_ref20 = output.validation_metrics) != null ? (_ref21 = _ref20.cm) != null ? _ref21.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+                if ((_ref20 = output.validation_metrics) != null) {
+                  if ((_ref21 = _ref20.cm) != null) {
+                    if (_ref21.table) {
+                      renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
-                if (confusionMatrix = (_ref22 = output.cross_validation_metrics) != null ? (_ref23 = _ref22.cm) != null ? _ref23.table : void 0 : void 0) {
-                  renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+                if (confusionMatrix = (_ref22 = output.cross_validation_metrics) != null) {
+                  if ((_ref23 = _ref22.cm) != null) {
+                    if (_ref23.table) {
+                      renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+                    }
+                  }
                 }
               }
             }
@@ -13818,7 +13968,16 @@
         header: 1,
         data: -1
       };
-      _headerOption = Flow.Dataflow.signal(_result.check_header === 0 ? 'auto' : _result.check_header === -1 ? 'data' : 'header');
+      switch (_result.check_header) {
+        case 0:
+          _headerOption = Flow.Dataflow.signal('auto');
+          break;
+        case -1:
+          _headerOption = Flow.Dataflow.signal('data');
+          break;
+        default:
+          _headerOption = Flow.Dataflow.signal('header');
+      }
       _deleteOnDone = Flow.Dataflow.signal(true);
       _columnNameSearchTerm = Flow.Dataflow.signal('');
       _preview = Flow.Dataflow.signal(_result);
@@ -14245,8 +14404,24 @@
       var _selectedModels;
       var _selectedModelsCaption;
       _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${Flow.Util.uuid()}`);
-      _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
-      _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
+      if (opt.models) {
+        _selectedModels = opt.models;
+      } else {
+        if (opt.model) {
+          _selectedModels = [opt.model];
+        } else {
+          _selectedModels = [];
+        }
+      }
+      if (opt.frames) {
+        _selectedFrames = opt.frames;
+      } else {
+        if (opt.frame) {
+          _selectedFrames = [opt.frame];
+        } else {
+          _selectedFrames = [];
+        }
+      }
       _selectedModelsCaption = _selectedModels.join(', ');
       _selectedFramesCaption = _selectedFrames.join(', ');
       _exception = Flow.Dataflow.signal(null);
@@ -14313,7 +14488,19 @@
         var hasFrameAndModel;
         var hasValidOptions;
         hasFrameAndModel = frame && model || _hasFrames && model || _hasModels && frame || _hasModels && hasExemplarIndex;
-        hasValidOptions = hasReconError ? computeReconstructionError ? true : computeDeepFeaturesHiddenLayer ? !lodash.isNaN(deepFeaturesHiddenLayerValue) : true : true;
+        if (hasReconError) {
+          if (computeReconstructionError) {
+            hasValidOptions = true;
+          } else {
+            if (computeDeepFeaturesHiddenLayer) {
+              hasValidOptions = !lodash.isNaN(deepFeaturesHiddenLayerValue);
+            } else {
+              hasValidOptions = true;
+            }
+          }
+        } else {
+          hasValidOptions = true;
+        }
         return hasFrameAndModel && hasValidOptions;
       });
       if (!_hasFrames) {
