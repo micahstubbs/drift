@@ -23,7 +23,6 @@
     "no-cond-assign": "off",
     "wrap-iife": "off",
     "max-len":"off",
-    "no-unneeded-ternary": "off",
     "default-case": "off",
     "no-sequences": "off",
     "no-unused-expressions": "off",
