@@ -20,7 +20,6 @@
     "no-shadow": "off",
     "no-unused-vars": "off",
     "no-return-assign": "off",
-    "no-cond-assign": "off",
     "wrap-iife": "off",
     "max-len":"off",
     "default-case": "off",
