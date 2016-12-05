@@ -1,6 +1,7 @@
     {
   "extends": "airbnb",
   "rules": {
+    "no-nested-ternary": "off",
     "prefer-rest-params": "off",
     "no-throw-literal": "off",
     "no-use-before-define": "off",
@@ -27,6 +28,6 @@
     "no-unused-expressions": "off",
     "no-alert": "off",
     "camelcase": "off",
-    "no-cond-assign": ["error", "except-parens"]
+    "no-cond-assign": "off"
   }
 }
