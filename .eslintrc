@@ -28,7 +28,6 @@
     "no-sequences": "off",
     "no-unused-expressions": "off",
     "no-nested-ternary": "off",
-    "no-unreachable": "off",
     "no-alert": "off",
     "camelcase": "off"
   }
