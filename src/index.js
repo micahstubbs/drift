@@ -2509,7 +2509,7 @@
             return previewArray(element);
           }
           return type;
-          break;
+          // break; // no-unreachable
         default:
           if (recurse) {
             return previewObject(element);
@@ -5658,7 +5658,7 @@
                   }
                 }
                 return _results;
-                break;
+                // break; // no-unreachable
               case 'Beta':
                 _results1 = [];
                 for (_j = 0, _len1 = builders.length; _j < _len1; _j++) {
@@ -5668,7 +5668,7 @@
                   }
                 }
                 return _results1;
-                break;
+                // break; // no-unreachable
               default:
                 return builders;
             }
@@ -6908,13 +6908,13 @@
               return value.name;
             }
             return void 0;
-            break;
+            // break; // no-unreachable
           case 'VecSpecifier':
             if (value != null) {
               return value.column_name;
             }
             return void 0;
-            break;
+            // break; // no-unreachable
           default:
             if (value != null) {
               return value;
@@ -8484,7 +8484,7 @@
               return getJob(arg.key);
             }
             return assist(getJob);
-            break;
+            // break; // no-unreachable
           default:
             return assist(getJob);
         }
@@ -10644,7 +10644,7 @@
         };
         cloneModel = function () {
           return alert('Not implemented');
-          return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model_id.name)}`);
+          // return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model_id.name)}`);
         };
         view = function () {
           return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(model_id.name)}`);
@@ -12874,13 +12874,13 @@
                   return actual_value.name;
                 }
                 return null;
-                break;
+                // break; // no-unreachable
               case 'VecSpecifier':
                 if (actual_value) {
                   return actual_value.column_name;
                 }
                 return null;
-                break;
+                // break; // no-unreachable
               case 'string[]':
               case 'byte[]':
               case 'short[]':
@@ -12892,7 +12892,7 @@
                   return actual_value.join(', ');
                 }
                 return null;
-                break;
+                // break; // no-unreachable
               default:
                 return actual_value;
             }
@@ -13548,7 +13548,7 @@
         };
         cloneModel = function () {
           return alert('Not implemented');
-          return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model.model_id.name)}`);
+          // return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model.model_id.name)}`);
         };
         view = function () {
           return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(model.model_id.name)}`);
