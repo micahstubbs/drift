@@ -26,7 +26,6 @@
     "default-case": "off",
     "no-sequences": "off",
     "no-unused-expressions": "off",
-    "no-nested-ternary": "off",
     "no-alert": "off",
     "camelcase": "off"
   }
