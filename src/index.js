@@ -4275,8 +4275,8 @@
         id: opts.id || guid,
         label: Flow.Dataflow.signal(opts.label || ' '),
         description: Flow.Dataflow.signal(opts.description || ' '),
-        visible: Flow.Dataflow.signal(opts.visible === false ? false : true),
-        disable: Flow.Dataflow.signal(opts.disable === true ? true : false),
+        visible: Flow.Dataflow.signal(opts.visible !== false),
+        disable: Flow.Dataflow.signal(opts.disable === true),
         template: `flow-form-${type}`,
         templateOf(control) {
           return control.template;
@@ -4301,7 +4301,7 @@
     checkbox = function (opts) {
       var self;
       self = control('checkbox', opts);
-      self.value = wrapValue(opts.value, opts.value ? true : false);
+      self.value = wrapValue(opts.value, opts.value);
       return self;
     };
     dropdown = function (opts) {
@@ -8049,7 +8049,15 @@
             part = splits[i];
             g = i !== 0 ? `(> ${randomVecKey} ${part.min})` : null;
             l = i !== splits.length - 1 ? `(<= ${randomVecKey} ${part.max})` : null;
-            sliceExpr = g && l ? `(& ${g} ${l})` : l ? l : g;
+            if (g && l) {
+              sliceExpr = `(& ${g} ${l})`;
+            } else {
+              if (l) {
+                sliceExpr = l;
+              } else {
+                sliceExpr = g;
+              }
+            }
             statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);
           }
           statements.push(`(rm ${randomVecKey})`);
@@ -8163,7 +8171,7 @@
         return render_(result, H2O.BindFramesOutput, key, result);
       };
       requestExportFrame = function (frameKey, path, opts, go) {
-        return _.requestExportFrame(frameKey, path, opts.overwrite ? true : false, function (error, result) {
+        return _.requestExportFrame(frameKey, path, opts.overwrite, function (error, result) {
           if (error) {
             return go(error);
           }
@@ -8404,7 +8412,7 @@
         return render_(result, H2O.ImportModelOutput, result);
       };
       requestImportModel = function (path, opts, go) {
-        return _.requestImportModel(path, opts.overwrite ? true : false, function (error, result) {
+        return _.requestImportModel(path, opts.overwrite, function (error, result) {
           if (error) {
             return go(error);
           }
@@ -8421,7 +8429,7 @@
         return render_(result, H2O.ExportModelOutput, result);
       };
       requestExportModel = function (modelKey, path, opts, go) {
-        return _.requestExportModel(modelKey, path, opts.overwrite ? true : false, function (error, result) {
+        return _.requestExportModel(modelKey, path, opts.overwrite, function (error, result) {
           if (error) {
             return go(error);
           }
@@ -10022,7 +10030,7 @@
       _models = Flow.Dataflow.signal([]);
       _selectedModelKey = Flow.Dataflow.signal(null);
       _path = Flow.Dataflow.signal(null);
-      _overwrite = Flow.Dataflow.signal(opt.overwrite ? true : false);
+      _overwrite = Flow.Dataflow.signal(opt.overwrite);
       _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, function (modelKey, path) {
         return modelKey && path;
       });
@@ -11066,7 +11074,7 @@
         opt = {};
       }
       _path = Flow.Dataflow.signal(path);
-      _overwrite = Flow.Dataflow.signal(opt.overwrite ? true : false);
+      _overwrite = Flow.Dataflow.signal(opt.overwrite);
       _canImportModel = Flow.Dataflow.lift(_path, function (path) {
         return path && path.length;
       });
@@ -11278,7 +11286,7 @@
         label: _frame.label,
         vectors: _frame.vectors,
         view,
-        canPlot: _frame.metadata.plot ? true : false,
+        canPlot: _frame.metadata.plot,
         plot,
         template: 'flow-inspect-output'
       };
@@ -11305,7 +11313,7 @@
           description: table.metadata.description,
           inspect,
           grid,
-          canPlot: table.metadata.plot ? true : false,
+          canPlot: table.metadata.plot,
           plot
         };
       };
@@ -14244,8 +14252,8 @@
       _exception = Flow.Dataflow.signal(null);
       _selectedFrame = Flow.Dataflow.signal(null);
       _selectedModel = Flow.Dataflow.signal(null);
-      _hasFrames = _selectedFrames.length ? true : false;
-      _hasModels = _selectedModels.length ? true : false;
+      _hasFrames = _selectedFrames.length;
+      _hasModels = _selectedModels.length;
       _frames = Flow.Dataflow.signals([]);
       _models = Flow.Dataflow.signals([]);
       _isDeepLearning = Flow.Dataflow.lift(_selectedModel, function (model) {
@@ -14438,7 +14446,7 @@
         frame = prediction.frame, model = prediction.model;
       }
       _plots = Flow.Dataflow.signals([]);
-      _canInspect = prediction.__meta ? true : false;
+      _canInspect = prediction.__meta;
       renderPlot = function (title, prediction, render) {
         var combineWithFrame;
         var container;
@@ -14566,7 +14574,7 @@
         var _ref;
         _modelKey = prediction.model.name;
         _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
-        _hasFrame = _frameKey ? true : false;
+        _hasFrame = _frameKey;
         _isChecked = Flow.Dataflow.signal(false);
         Flow.Dataflow.react(_isChecked, function () {
           var checkedViews;
