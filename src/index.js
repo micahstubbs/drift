@@ -12472,7 +12472,7 @@
         }
       };
       parameterTemplateOf = function (control) {
-        return `'flow-${control.kind}-model-parameter`;
+        return `flow-${control.kind}-model-parameter`;
       };
       findFormField = function (name) {
         return lodash.find(_form, function (field) {
