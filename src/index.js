@@ -4,6 +4,7 @@ import { h2oStackTraceOutput } from './h2oStackTraceOutput';
 import { h2oSplitFrameInput } from './h2oSplitFrameInput';
 import { h2oScalaIntpOutput } from './h2oScalaIntpOutput';
 import { h2oScalaCodeOutput } from './h2oScalaCodeOutput';
+import { h2oRDDsOutput } from './h2oRDDsOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -8914,7 +8915,7 @@ import { h2oScalaCodeOutput } from './h2oScalaCodeOutput';
         return _fork(requestRemoveAll);
       };
       extendRDDs = function (rdds) {
-        render_(rdds, H2O.RDDsOutput, rdds);
+        render_(rdds, h2oRDDsOutput, rdds);
         return rdds;
       };
       requestRDDs = function (go) {
@@ -14746,27 +14747,6 @@ import { h2oScalaCodeOutput } from './h2oScalaCodeOutput';
         nodes: _nodes,
         activeNode: _activeNode,
         template: 'flow-profile-output'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.RDDsOutput = function (_, _go, _rDDs) {
-      var createRDDView;
-      var _rDDViews;
-      _rDDViews = Flow.Dataflow.signal([]);
-      createRDDView = function (rDD) {
-        return {
-          id: rDD.rdd_id,
-          name: rDD.name,
-          partitions: rDD.partitions
-        };
-      };
-      _rDDViews(lodash.map(_rDDs, createRDDView));
-      lodash.defer(_go);
-      return {
-        rDDViews: _rDDViews,
-        hasRDDs: _rDDs.length > 0,
-        template: 'flow-rdds-output'
       };
     };
   }.call(this));
