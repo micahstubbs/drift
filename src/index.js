@@ -28,6 +28,7 @@ import { h2oImportModelInput } from './h2oImportModelInput';
 import { h2oImportFilesOutput } from './h2oImportFilesOutput';
 import { h2oImportFilesInput } from './h2oImportFilesInput';
 import { h2oH2OFrameOutput } from './h2oH2OFrameOutput';
+import { h2oGridsOutput } from './h2oGridsOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -7323,7 +7324,7 @@ import { h2oH2OFrameOutput } from './h2oH2OFrameOutput';
         return render_(grid, H2O.GridOutput, grid);
       };
       extendGrids = function (grids) {
-        return render_(grids, H2O.GridsOutput, grids);
+        return render_(grids, h2oGridsOutput, grids);
       };
       extendModels = function (models) {
         var algos;
@@ -10803,40 +10804,6 @@ import { h2oH2OFrameOutput } from './h2oH2OFrameOutput';
         inspectHistory,
         inspectAll,
         template: 'flow-grid-output'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.GridsOutput = function (_, _go, _grids) {
-      var buildModel;
-      var createGridView;
-      var initialize;
-      var _gridViews;
-      _gridViews = Flow.Dataflow.signal([]);
-      createGridView = function (grid) {
-        var view;
-        view = function () {
-          return _.insertAndExecuteCell('cs', `getGrid ${Flow.Prelude.stringify(grid.grid_id.name)}`);
-        };
-        return {
-          key: grid.grid_id.name,
-          size: grid.model_ids.length,
-          view
-        };
-      };
-      buildModel = function () {
-        return _.insertAndExecuteCell('cs', 'buildModel');
-      };
-      initialize = function (grids) {
-        _gridViews(lodash.map(grids, createGridView));
-        return lodash.defer(_go);
-      };
-      initialize(_grids);
-      return {
-        gridViews: _gridViews,
-        hasGrids: _grids.length > 0,
-        buildModel,
-        template: 'flow-grids-output'
       };
     };
   }.call(this));
