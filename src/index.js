@@ -17,6 +17,7 @@ import { h2oNoAssist } from './h2oNoAssist';
 import { h2oNetworkTestOutput } from './h2oNetworkTestOutput';
 import { h2oModelsOutput } from './h2oModelsOutput';
 import { h2oModelOutput } from './h2oModelOutput';
+import { h2oMergeFramesOutput } from './h2oMergeFramesOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -6898,7 +6899,7 @@ import { h2oModelOutput } from './h2oModelOutput';
         return result;
       };
       extendMergeFramesResult = function (result) {
-        render_(result, H2O.MergeFramesOutput, result);
+        render_(result, h2oMergeFramesOutput, result);
         return result;
       };
       extendPartialDependence = function (result) {
@@ -11844,22 +11845,6 @@ import { h2oModelOutput } from './h2oModelOutput';
         merge: _merge,
         canMerge: _canMerge,
         template: 'flow-merge-frames-input'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.MergeFramesOutput = function (_, _go, _mergeFramesResult) {
-      var _frameKey;
-      var _viewFrame;
-      _frameKey = _mergeFramesResult.key;
-      _viewFrame = function () {
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(_frameKey)}`);
-      };
-      lodash.defer(_go);
-      return {
-        frameKey: _frameKey,
-        viewFrame: _viewFrame,
-        template: 'flow-merge-frames-output'
       };
     };
   }.call(this));
