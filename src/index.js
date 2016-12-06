@@ -9960,7 +9960,6 @@ import { h2oDataFramesOutput } from './h2oDataFramesOutput';
       };
     };
   }.call(this));
-  (function () {}.call(this));
   // anonymous IIFE
   (function () {
     var createOptions;
