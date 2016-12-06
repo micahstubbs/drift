@@ -23,6 +23,8 @@ import { h2oLogFileOutput } from './h2oLogFileOutput';
 import { h2oJobsOutput } from './h2oJobsOutput';
 import { h2oInspectsOutput } from './h2oInspectsOutput';
 import { h2oInspectOutput } from './h2oInspectOutput';
+import { h2oImportModelOutput } from './h2oImportModelOutput';
+import { h2oImportModelInput } from './h2oImportModelInput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -9115,7 +9117,7 @@ import { h2oInspectOutput } from './h2oInspectOutput';
           case imputeColumn:
             return _fork(proceed, H2O.ImputeInput, args);
           case importModel:
-            return _fork(proceed, H2O.ImportModelInput, args);
+            return _fork(proceed, h2oImportModelInput, args);
           case exportModel:
             return _fork(proceed, H2O.ExportModelInput, args);
           default:
@@ -11090,46 +11092,7 @@ import { h2oInspectOutput } from './h2oInspectOutput';
       };
     };
   }.call(this));
-  (function () {
-    H2O.ImportModelInput = function (_, _go, path, opt) {
-      var importModel;
-      var _canImportModel;
-      var _overwrite;
-      var _path;
-      if (opt == null) {
-        opt = {};
-      }
-      _path = Flow.Dataflow.signal(path);
-      _overwrite = Flow.Dataflow.signal(opt.overwrite);
-      _canImportModel = Flow.Dataflow.lift(_path, function (path) {
-        return path && path.length;
-      });
-      importModel = function () {
-        return _.insertAndExecuteCell('cs', `importModel ${Flow.Prelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
-      };
-      lodash.defer(_go);
-      return {
-        path: _path,
-        overwrite: _overwrite,
-        canImportModel: _canImportModel,
-        importModel,
-        template: 'flow-import-model-input'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.ImportModelOutput = function (_, _go, result) {
-      var viewModel;
-      viewModel = function () {
-        return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(result.models[0].model_id.name)}`);
-      };
-      lodash.defer(_go);
-      return {
-        viewModel,
-        template: 'flow-import-model-output'
-      };
-    };
-  }.call(this));
+  // anonymous IIFE
   (function () {
     var createOptions;
     var _allCombineMethods;
