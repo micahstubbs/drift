@@ -22,6 +22,7 @@ import { h2oMergeFramesInput } from './h2oMergeFramesInput';
 import { h2oLogFileOutput } from './h2oLogFileOutput';
 import { h2oJobsOutput } from './h2oJobsOutput';
 import { h2oInspectsOutput } from './h2oInspectsOutput';
+import { h2oInspectOutput } from './h2oInspectOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -6783,7 +6784,7 @@ import { h2oInspectsOutput } from './h2oInspectsOutput';
           return;
         }
         root._cache_[key] = inspection = f();
-        render_(inspection, H2O.InspectOutput, inspection);
+        render_(inspection, h2oInspectOutput, inspection);
         return inspection;
       };
       _plot = function (render, go) {
@@ -11293,27 +11294,6 @@ import { h2oInspectsOutput } from './h2oInspectsOutput';
         canImpute: _canImpute,
         impute,
         template: 'flow-impute-input'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.InspectOutput = function (_, _go, _frame) {
-      var plot;
-      var view;
-      view = function () {
-        return _.insertAndExecuteCell('cs', `grid inspect ${Flow.Prelude.stringify(_frame.label)}, ${_frame.metadata.origin}`);
-      };
-      plot = function () {
-        return _.insertAndExecuteCell('cs', _frame.metadata.plot);
-      };
-      lodash.defer(_go);
-      return {
-        label: _frame.label,
-        vectors: _frame.vectors,
-        view,
-        canPlot: _frame.metadata.plot,
-        plot,
-        template: 'flow-inspect-output'
       };
     };
   }.call(this));
