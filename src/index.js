@@ -27,6 +27,7 @@ import { h2oImportModelOutput } from './h2oImportModelOutput';
 import { h2oImportModelInput } from './h2oImportModelInput';
 import { h2oImportFilesOutput } from './h2oImportFilesOutput';
 import { h2oImportFilesInput } from './h2oImportFilesInput';
+import { h2oH2OFrameOutput } from './h2oH2OFrameOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -8967,7 +8968,7 @@ import { h2oImportFilesInput } from './h2oImportFilesInput';
         return _fork(requestDataFrames);
       };
       extendAsH2OFrame = function (result) {
-        render_(result, H2O.H2OFrameOutput, result);
+        render_(result, h2oH2OFrameOutput, result);
         return result;
       };
       requestAsH2OFrameFromRDD = function (rdd_id, name, go) {
@@ -10836,22 +10837,6 @@ import { h2oImportFilesInput } from './h2oImportFilesInput';
         hasGrids: _grids.length > 0,
         buildModel,
         template: 'flow-grids-output'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.H2OFrameOutput = function (_, _go, _result) {
-      var createH2oFrameView;
-      var _h2oframeView;
-      _h2oframeView = Flow.Dataflow.signal(null);
-      createH2oFrameView = function (result) {
-        return { h2oframe_id: result.h2oframe_id };
-      };
-      _h2oframeView(createH2oFrameView(_result));
-      lodash.defer(_go);
-      return {
-        h2oframeView: _h2oframeView,
-        template: 'flow-h2oframe-output'
       };
     };
   }.call(this));
