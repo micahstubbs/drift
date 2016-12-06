@@ -25,6 +25,7 @@ import { h2oInspectsOutput } from './h2oInspectsOutput';
 import { h2oInspectOutput } from './h2oInspectOutput';
 import { h2oImportModelOutput } from './h2oImportModelOutput';
 import { h2oImportModelInput } from './h2oImportModelInput';
+import { h2oImportFilesOutput } from './h2oImportFilesOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -8542,7 +8543,7 @@ import { h2oImportModelInput } from './h2oImportModelInput';
         }
       };
       extendImportResults = function (importResults) {
-        return render_(importResults, H2O.ImportFilesOutput, importResults);
+        return render_(importResults, h2oImportFilesOutput, importResults);
       };
       requestImportFiles = function (paths, go) {
         return _.requestImportFiles(paths, function (error, importResults) {
@@ -11051,44 +11052,6 @@ import { h2oImportModelInput } from './h2oImportModelInput';
         selectedFileCount: _selectedFileCount,
         importSelectedFiles,
         template: 'flow-import-files'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.ImportFilesOutput = function (_, _go, _importResults) {
-      var createImportView;
-      var parse;
-      var _allFrames;
-      var _canParse;
-      var _importViews;
-      var _title;
-      _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, function (result) {
-        return result.destination_frames;
-      })));
-      _canParse = _allFrames.length > 0;
-      _title = `${_allFrames.length} / ${_importResults.length} files imported.`;
-      createImportView = function (result) {
-        return {
-          files: result.files,
-          template: 'flow-import-file-output'
-        };
-      };
-      _importViews = lodash.map(_importResults, createImportView);
-      parse = function () {
-        var paths;
-        paths = lodash.map(_allFrames, Flow.Prelude.stringify);
-        return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${paths.join(',')} ]`);
-      };
-      lodash.defer(_go);
-      return {
-        title: _title,
-        importViews: _importViews,
-        canParse: _canParse,
-        parse,
-        template: 'flow-import-files-output',
-        templateOf(view) {
-          return view.template;
-        }
       };
     };
   }.call(this));
