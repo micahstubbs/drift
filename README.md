@@ -1,6 +1,6 @@
 # drift
 
-an ES2015 port of [h2o-flow](https://github.com/h2oai/h2o-flow)
+a work-in-progress ES2015 port of [h2o-flow](https://github.com/h2oai/h2o-flow)
 
 ## development
 
