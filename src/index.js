@@ -34,6 +34,7 @@ import { h2oFramesOutput } from './h2oFramesOutput';
 import { h2oFrameOutput } from './h2oFrameOutput';
 import { h2oFrameDataOutput } from './h2oFrameDataOutput';
 import { flowFileUploadDialog } from './flowFileUploadDialog';
+import { flowFileOpenDialog } from './flowFileOpenDialog';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -1711,7 +1712,7 @@ import { flowFileUploadDialog } from './flowFileUploadDialog';
         });
       };
       promptForNotebook = function () {
-        return _.dialog(Flow.FileOpenDialog, function (result) {
+        return _.dialog(flowFileOpenDialog, function (result) {
           var error;
           var filename;
           var _ref;
@@ -10109,68 +10110,6 @@ import { flowFileUploadDialog } from './flowFileUploadDialog';
     H2O.ExportModelOutput = function (_, _go, result) {
       lodash.defer(_go);
       return { template: 'flow-export-model-output' };
-    };
-  }.call(this));
-  (function () {
-    Flow.FileOpenDialog = function (_, _go) {
-      var accept;
-      var checkIfNameIsInUse;
-      var decline;
-      var uploadFile;
-      var _canAccept;
-      var _file;
-      var _form;
-      var _overwrite;
-      _overwrite = Flow.Dataflow.signal(false);
-      _form = Flow.Dataflow.signal(null);
-      _file = Flow.Dataflow.signal(null);
-      _canAccept = Flow.Dataflow.lift(_file, function (file) {
-        if (file != null ? file.name : void 0) {
-          return H2O.Util.validateFileExtension(file.name, '.flow');
-        }
-        return false;
-      });
-      checkIfNameIsInUse = function (name, go) {
-        return _.requestObjectExists('notebook', name, function (error, exists) {
-          return go(exists);
-        });
-      };
-      uploadFile = function (basename) {
-        return _.requestUploadObject('notebook', basename, new FormData(_form()), function (error, filename) {
-          return _go({
-            error,
-            filename
-          });
-        });
-      };
-      accept = function () {
-        var basename;
-        var file;
-        if (file = _file()) {
-          basename = H2O.Util.getFileBaseName(file.name, '.flow');
-          if (_overwrite()) {
-            return uploadFile(basename);
-          }
-          return checkIfNameIsInUse(basename, function (isNameInUse) {
-            if (isNameInUse) {
-              return _overwrite(true);
-            }
-            return uploadFile(basename);
-          });
-        }
-      };
-      decline = function () {
-        return _go(null);
-      };
-      return {
-        form: _form,
-        file: _file,
-        overwrite: _overwrite,
-        canAccept: _canAccept,
-        accept,
-        decline,
-        template: 'file-open-dialog'
-      };
     };
   }.call(this));
   // anonymous IIFE
