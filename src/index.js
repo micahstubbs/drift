@@ -46,6 +46,7 @@ import { h2oCreateFrameInput } from './h2oCreateFrameInput';
 import { h2oColumnSummaryOutput } from './h2oColumnSummaryOutput';
 import { h2oCloudOutput } from './h2oCloudOutput';
 import { h2oCancelJobOutput } from './h2oCancelJobOutput';
+import { h2oBindFramesOutput } from './h2oBindFramesOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -8217,7 +8218,7 @@ import { h2oCancelJobOutput } from './h2oCancelJobOutput';
         return render_(result, h2oExportFrameOutput, result);
       };
       extendBindFrames = function (key, result) {
-        return render_(result, H2O.BindFramesOutput, key, result);
+        return render_(result, h2oBindFramesOutput, key, result);
       };
       requestExportFrame = function (frameKey, path, opts, go) {
         return _.requestExportFrame(frameKey, path, opts.overwrite, function (error, result) {
@@ -9411,19 +9412,6 @@ import { h2oCancelJobOutput } from './h2oCancelJobOutput';
         canBuildModel: _canBuildModel,
         buildModel,
         template: 'flow-automodel-input'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.BindFramesOutput = function (_, _go, key, result) {
-      var viewFrame;
-      viewFrame = function () {
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(key)}`);
-      };
-      lodash.defer(_go);
-      return {
-        viewFrame,
-        template: 'flow-bind-frames-output'
       };
     };
   }.call(this));
