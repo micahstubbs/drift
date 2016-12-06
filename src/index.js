@@ -41,6 +41,7 @@ import { h2oExportFrameOutput } from './h2oExportFrameOutput';
 import { h2oExportFrameInput } from './h2oExportFrameInput';
 import { h2oDeleteObjectsOutput } from './h2oDeleteObjectsOutput';
 import { h2oDataFrameOutput } from './h2oDataFrameOutput';
+import { h2oDataFramesOutput } from './h2oDataFramesOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -8966,7 +8967,7 @@ import { h2oDataFrameOutput } from './h2oDataFrameOutput';
         return _fork(requestRDDs);
       };
       extendDataFrames = function (dataframes) {
-        render_(dataframes, H2O.DataFramesOutput, dataframes);
+        render_(dataframes, h2oDataFramesOutput, dataframes);
         return dataframes;
       };
       requestDataFrames = function (go) {
@@ -9960,26 +9961,6 @@ import { h2oDataFrameOutput } from './h2oDataFrameOutput';
     };
   }.call(this));
   (function () {}.call(this));
-  (function () {
-    H2O.DataFramesOutput = function (_, _go, _dataFrames) {
-      var createDataFrameView;
-      var _dataFramesViews;
-      _dataFramesViews = Flow.Dataflow.signal([]);
-      createDataFrameView = function (dataFrame) {
-        return {
-          dataframe_id: dataFrame.dataframe_id,
-          partitions: dataFrame.partitions
-        };
-      };
-      _dataFramesViews(lodash.map(_dataFrames, createDataFrameView));
-      lodash.defer(_go);
-      return {
-        dataFrameViews: _dataFramesViews,
-        hasDataFrames: _dataFrames.length > 0,
-        template: 'flow-dataframes-output'
-      };
-    };
-  }.call(this));
   // anonymous IIFE
   (function () {
     var createOptions;
