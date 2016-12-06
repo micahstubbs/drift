@@ -15105,6 +15105,5 @@ import { h2oTimelineOutput } from './h2oTimelineOutput';
         template: 'flow-stacktrace-output'
       };
     };
-  }.call(this));
-  // (function () {}.call(this)); 
+  }.call(this)); 
 }).call(this);
