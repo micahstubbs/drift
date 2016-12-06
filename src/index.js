@@ -9,6 +9,7 @@ import { h2oProfileOutput } from './h2oProfileOutput';
 import { h2oPredictsOutput } from './h2oPredictsOutput';
 import { h2oPredictOutput } from './h2oPredictOutput';
 import { h2oPredictInput } from './h2oPredictInput';
+import { h2oPlotOutput } from './h2oPlotOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -6782,7 +6783,7 @@ import { h2oPredictInput } from './h2oPredictInput';
         });
       };
       extendPlot = function (vis) {
-        return render_(vis, H2O.PlotOutput, vis.element);
+        return render_(vis, h2oPlotOutput, vis.element);
       };
       createPlot = function (f, go) {
         return _plot(f(lightning), function (error, vis) {
@@ -14216,15 +14217,6 @@ import { h2oPredictInput } from './h2oPredictInput';
         plot,
         canPlot: _canPlot,
         template: 'flow-plot-input'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.PlotOutput = function (_, _go, _plot) {
-      lodash.defer(_go);
-      return {
-        plot: _plot,
-        template: 'flow-plot-output'
       };
     };
   }.call(this));
