@@ -1,4 +1,6 @@
 export function h2oPredictOutput(_, _go, prediction) {
+  var lodash = window._;
+  var Flow = window.Flow;
   var frame;
   var inspect;
   var model;
