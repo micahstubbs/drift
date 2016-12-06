@@ -2,6 +2,7 @@ import { h2oSplitFrameOutput } from './h2oSplitFrameOutput';
 import { h2oTimelineOutput } from './h2oTimelineOutput';
 import { h2oStackTraceOutput } from './h2oStackTraceOutput';
 import { h2oSplitFrameInput } from './h2oSplitFrameInput';
+import { h2oScalaIntpOutput } from './h2oScalaIntpOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -9015,7 +9016,7 @@ import { h2oSplitFrameInput } from './h2oSplitFrameInput';
         });
       };
       extendScalaIntp = function (result) {
-        render_(result, H2O.ScalaIntpOutput, result);
+        render_(result, h2oScalaIntpOutput, result);
         return result;
       };
       getScalaIntp = function () {
@@ -14798,22 +14799,6 @@ import { h2oSplitFrameInput } from './h2oSplitFrameInput';
       return {
         scalaCodeView: _scalaCodeView,
         template: 'flow-scala-code-output'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.ScalaIntpOutput = function (_, _go, _result) {
-      var createScalaIntpView;
-      var _scalaIntpView;
-      _scalaIntpView = Flow.Dataflow.signal(null);
-      createScalaIntpView = function (result) {
-        return { session_id: result.session_id };
-      };
-      _scalaIntpView(createScalaIntpView(_result));
-      lodash.defer(_go);
-      return {
-        scalaIntpView: _scalaIntpView,
-        template: 'flow-scala-intp-output'
       };
     };
   }.call(this));
