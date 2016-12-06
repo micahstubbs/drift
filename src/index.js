@@ -45,6 +45,7 @@ import { h2oDataFramesOutput } from './h2oDataFramesOutput';
 import { h2oCreateFrameInput } from './h2oCreateFrameInput';
 import { h2oColumnSummaryOutput } from './h2oColumnSummaryOutput';
 import { h2oCloudOutput } from './h2oCloudOutput';
+import { h2oCancelJobOutput } from './h2oCancelJobOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -7114,7 +7115,7 @@ import { h2oCloudOutput } from './h2oCloudOutput';
         return render_(jobs, h2oJobsOutput, jobs);
       };
       extendCancelJob = function (cancellation) {
-        return render_(cancellation, H2O.CancelJobOutput, cancellation);
+        return render_(cancellation, h2oCancelJobOutput, cancellation);
       };
       extendDeletedKeys = function (keys) {
         return render_(keys, h2oDeleteObjectsOutput, keys);
@@ -9424,12 +9425,6 @@ import { h2oCloudOutput } from './h2oCloudOutput';
         viewFrame,
         template: 'flow-bind-frames-output'
       };
-    };
-  }.call(this));
-  (function () {
-    H2O.CancelJobOutput = function (_, _go, _cancellation) {
-      lodash.defer(_go);
-      return { template: 'flow-cancel-job-output' };
     };
   }.call(this));
   // anonymous IIFE
