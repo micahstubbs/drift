@@ -1,4 +1,6 @@
 export function h2oPartialDependenceInput(_, _go) {
+  var lodash = window._;
+  var Flow = window.Flow;
   var _canCompute;
   var _compute;
   var _destinationKey;
