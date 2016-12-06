@@ -1,5 +1,6 @@
 import { h2oSplitFrameOutput } from './h2oSplitFrameOutput';
 import { h2oTimelineOutput } from './h2oTimelineOutput';
+import { h2oStackTraceOutput } from './h2oStackTraceOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -6852,7 +6853,7 @@ import { h2oTimelineOutput } from './h2oTimelineOutput';
         return render_(timeline, h2oTimelineOutput, timeline);
       };
       extendStackTrace = function (stackTrace) {
-        return render_(stackTrace, H2O.StackTraceOutput, stackTrace);
+        return render_(stackTrace, h2oStackTraceOutput, stackTrace);
       };
       extendLogFile = function (cloud, nodeIndex, fileType, logFile) {
         return render_(logFile, H2O.LogFileOutput, cloud, nodeIndex, fileType, logFile);
@@ -15042,68 +15043,5 @@ import { h2oTimelineOutput } from './h2oTimelineOutput';
       };
     };
   }.call(this));
-  (function () {
-    H2O.StackTraceOutput = function (_, _go, _stackTrace) {
-      var createNode;
-      var createThread;
-      var node;
-      var _activeNode;
-      var _nodes;
-      _activeNode = Flow.Dataflow.signal(null);
-      createThread = function (thread) {
-        var lines;
-        lines = thread.split('\n');
-        return {
-          title: lodash.head(lines),
-          stackTrace: lodash.tail(lines).join('\n')
-        };
-      };
-      createNode = function (node) {
-        var display;
-        var self;
-        var thread;
-        display = function () {
-          return _activeNode(self);
-        };
-        return self = {
-          name: node.node,
-          timestamp: new Date(node.time),
-          threads: (function () {
-            var _i;
-            var _len;
-            var _ref;
-            var _results;
-            _ref = node.thread_traces;
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              thread = _ref[_i];
-              _results.push(createThread(thread));
-            }
-            return _results;
-          }()),
-          display
-        };
-      };
-      _nodes = (function () {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
-        _ref = _stackTrace.traces;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          node = _ref[_i];
-          _results.push(createNode(node));
-        }
-        return _results;
-      }());
-      _activeNode(lodash.head(_nodes));
-      lodash.defer(_go);
-      return {
-        nodes: _nodes,
-        activeNode: _activeNode,
-        template: 'flow-stacktrace-output'
-      };
-    };
-  }.call(this)); 
+  // (function () {}.call(this)); 
 }).call(this);
