@@ -15041,7 +15041,6 @@ import { h2oSplitFrameOutput } from './h2oSplitFrameOutput';
       };
     };
   }.call(this));
-  // (function () {}.call(this));
   (function () {
     H2O.StackTraceOutput = function (_, _go, _stackTrace) {
       var createNode;
