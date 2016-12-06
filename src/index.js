@@ -3,6 +3,7 @@ import { h2oTimelineOutput } from './h2oTimelineOutput';
 import { h2oStackTraceOutput } from './h2oStackTraceOutput';
 import { h2oSplitFrameInput } from './h2oSplitFrameInput';
 import { h2oScalaIntpOutput } from './h2oScalaIntpOutput';
+import { h2oScalaCodeOutput } from './h2oScalaCodeOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -9001,7 +9002,7 @@ import { h2oScalaIntpOutput } from './h2oScalaIntpOutput';
         });
       };
       extendScalaCode = function (result) {
-        render_(result, H2O.ScalaCodeOutput, result);
+        render_(result, h2oScalaCodeOutput, result);
         return result;
       };
       runScalaCode = function (session_id, code) {
@@ -14766,39 +14767,6 @@ import { h2oScalaIntpOutput } from './h2oScalaIntpOutput';
         rDDViews: _rDDViews,
         hasRDDs: _rDDs.length > 0,
         template: 'flow-rdds-output'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.ScalaCodeOutput = function (_, _go, _result) {
-      var createScalaCodeView;
-      var _scalaCodeView;
-      var _scalaLinkText;
-      var _scalaResponseVisible;
-      _scalaCodeView = Flow.Dataflow.signal(null);
-      _scalaResponseVisible = Flow.Dataflow.signal(false);
-      _scalaLinkText = Flow.Dataflow.signal('Show Scala Response');
-      createScalaCodeView = function (result) {
-        return {
-          output: result.output,
-          response: result.response,
-          status: result.status,
-          scalaResponseVisible: _scalaResponseVisible,
-          scalaLinkText: _scalaLinkText,
-          toggleVisibility() {
-            _scalaResponseVisible(!_scalaResponseVisible());
-            if (_scalaResponseVisible()) {
-              return _scalaLinkText('Hide Scala Response');
-            }
-            return _scalaLinkText('Show Scala Response');
-          }
-        };
-      };
-      _scalaCodeView(createScalaCodeView(_result));
-      lodash.defer(_go);
-      return {
-        scalaCodeView: _scalaCodeView,
-        template: 'flow-scala-code-output'
       };
     };
   }.call(this));
