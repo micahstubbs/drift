@@ -21,6 +21,7 @@ import { h2oMergeFramesOutput } from './h2oMergeFramesOutput';
 import { h2oMergeFramesInput } from './h2oMergeFramesInput';
 import { h2oLogFileOutput } from './h2oLogFileOutput';
 import { h2oJobsOutput } from './h2oJobsOutput';
+import { h2oInspectsOutput } from './h2oInspectsOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -6735,7 +6736,7 @@ import { h2oJobsOutput } from './h2oJobsOutput';
               inspections.push(inspect$2(attr, obj));
             }
           }
-          render_(inspections, H2O.InspectsOutput, inspections);
+          render_(inspections, h2oInspectsOutput, inspections);
           return inspections;
         }
         return {};
@@ -11316,39 +11317,7 @@ import { h2oJobsOutput } from './h2oJobsOutput';
       };
     };
   }.call(this));
-  (function () {
-    H2O.InspectsOutput = function (_, _go, _tables) {
-      var createTableView;
-      createTableView = function (table) {
-        var grid;
-        var inspect;
-        var plot;
-        inspect = function () {
-          return _.insertAndExecuteCell('cs', `inspect ${Flow.Prelude.stringify(table.label)}, ${table.metadata.origin}`);
-        };
-        grid = function () {
-          return _.insertAndExecuteCell('cs', `grid inspect ${Flow.Prelude.stringify(table.label)}, ${table.metadata.origin}`);
-        };
-        plot = function () {
-          return _.insertAndExecuteCell('cs', table.metadata.plot);
-        };
-        return {
-          label: table.label,
-          description: table.metadata.description,
-          inspect,
-          grid,
-          canPlot: table.metadata.plot,
-          plot
-        };
-      };
-      lodash.defer(_go);
-      return {
-        hasTables: _tables.length > 0,
-        tables: lodash.map(_tables, createTableView),
-        template: 'flow-inspects-output'
-      };
-    };
-  }.call(this));
+  // anonymous IIFE
   (function () {
     var getJobOutputStatusColor;
     var getJobProgressPercent;
