@@ -39,6 +39,7 @@ import { h2oExportModelOutput } from './h2oExportModelOutput';
 import { h2oExportModelInput } from './h2oExportModelInput';
 import { h2oExportFrameOutput } from './h2oExportFrameOutput';
 import { h2oExportFrameInput } from './h2oExportFrameInput';
+import { h2oDeleteObjectsOutput } from './h2oDeleteObjectsOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -7111,7 +7112,7 @@ import { h2oExportFrameInput } from './h2oExportFrameInput';
         return render_(cancellation, H2O.CancelJobOutput, cancellation);
       };
       extendDeletedKeys = function (keys) {
-        return render_(keys, H2O.DeleteObjectsOutput, keys);
+        return render_(keys, h2oDeleteObjectsOutput, keys);
       };
       inspectTwoDimTable_ = function (origin, tableName, table) {
         return function () {
@@ -9990,16 +9991,6 @@ import { h2oExportFrameInput } from './h2oExportFrameInput';
         dataFrameViews: _dataFramesViews,
         hasDataFrames: _dataFrames.length > 0,
         template: 'flow-dataframes-output'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.DeleteObjectsOutput = function (_, _go, _keys) {
-      lodash.defer(_go);
-      return {
-        hasKeys: _keys.length > 0,
-        keys: _keys,
-        template: 'flow-delete-objects-output'
       };
     };
   }.call(this));
