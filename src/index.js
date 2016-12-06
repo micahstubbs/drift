@@ -40,6 +40,7 @@ import { h2oExportModelInput } from './h2oExportModelInput';
 import { h2oExportFrameOutput } from './h2oExportFrameOutput';
 import { h2oExportFrameInput } from './h2oExportFrameInput';
 import { h2oDeleteObjectsOutput } from './h2oDeleteObjectsOutput';
+import { h2oDataFrameOutput } from './h2oDataFrameOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -9012,7 +9013,7 @@ import { h2oDeleteObjectsOutput } from './h2oDeleteObjectsOutput';
         return _fork(requestAsH2OFrameFromDF, df_id, name);
       };
       extendAsDataFrame = function (result) {
-        render_(result, H2O.DataFrameOutput, result);
+        render_(result, h2oDataFrameOutput, result);
         return result;
       };
       requestAsDataFrame = function (hf_id, name, go) {
@@ -9958,22 +9959,7 @@ import { h2oDeleteObjectsOutput } from './h2oDeleteObjectsOutput';
       };
     };
   }.call(this));
-  (function () {
-    H2O.DataFrameOutput = function (_, _go, _result) {
-      var createDataFrameView;
-      var _dataFrameView;
-      _dataFrameView = Flow.Dataflow.signal(null);
-      createDataFrameView = function (result) {
-        return { dataframe_id: result.dataframe_id };
-      };
-      _dataFrameView(createDataFrameView(_result));
-      lodash.defer(_go);
-      return {
-        dataFrameView: _dataFrameView,
-        template: 'flow-dataframe-output'
-      };
-    };
-  }.call(this));
+  (function () {}.call(this));
   (function () {
     H2O.DataFramesOutput = function (_, _go, _dataFrames) {
       var createDataFrameView;
