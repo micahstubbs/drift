@@ -33,6 +33,7 @@ import { h2oGridOutput } from './h2oGridOutput';
 import { h2oFramesOutput } from './h2oFramesOutput';
 import { h2oFrameOutput } from './h2oFrameOutput';
 import { h2oFrameDataOutput } from './h2oFrameDataOutput';
+import { flowFileUploadDialog } from './flowFileUploadDialog';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -1725,7 +1726,7 @@ import { h2oFrameDataOutput } from './h2oFrameDataOutput';
         });
       };
       uploadFile = function () {
-        return _.dialog(Flow.FileUploadDialog, function (result) {
+        return _.dialog(flowFileUploadDialog, function (result) {
           var error;
           var _ref;
           if (result) {
@@ -10169,41 +10170,6 @@ import { h2oFrameDataOutput } from './h2oFrameDataOutput';
         accept,
         decline,
         template: 'file-open-dialog'
-      };
-    };
-  }.call(this));
-  (function () {
-    Flow.FileUploadDialog = function (_, _go) {
-      var accept;
-      var decline;
-      var uploadFile;
-      var _file;
-      var _form;
-      _form = Flow.Dataflow.signal(null);
-      _file = Flow.Dataflow.signal(null);
-      uploadFile = function (key) {
-        return _.requestUploadFile(key, new FormData(_form()), function (error, result) {
-          return _go({
-            error,
-            result
-          });
-        });
-      };
-      accept = function () {
-        var file;
-        if (file = _file()) {
-          return uploadFile(file.name);
-        }
-      };
-      decline = function () {
-        return _go(null);
-      };
-      return {
-        form: _form,
-        file: _file,
-        accept,
-        decline,
-        template: 'file-upload-dialog'
       };
     };
   }.call(this));
