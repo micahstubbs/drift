@@ -15043,5 +15043,4 @@ import { h2oStackTraceOutput } from './h2oStackTraceOutput';
       };
     };
   }.call(this));
-  // (function () {}.call(this)); 
 }).call(this);
