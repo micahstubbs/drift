@@ -37,6 +37,7 @@ import { flowFileUploadDialog } from './flowFileUploadDialog';
 import { flowFileOpenDialog } from './flowFileOpenDialog';
 import { h2oExportModelOutput } from './h2oExportModelOutput';
 import { h2oExportModelInput } from './h2oExportModelInput';
+import { h2oExportFrameOutput } from './h2oExportFrameOutput';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -8205,7 +8206,7 @@ import { h2oExportModelInput } from './h2oExportModelInput';
         return assist(deleteFrame);
       };
       extendExportFrame = function (result) {
-        return render_(result, H2O.ExportFrameOutput, result);
+        return render_(result, h2oExportFrameOutput, result);
       };
       extendBindFrames = function (key, result) {
         return render_(result, H2O.BindFramesOutput, key, result);
@@ -10048,12 +10049,6 @@ import { h2oExportModelInput } from './h2oExportModelInput';
         exportFrame,
         template: 'flow-export-frame-input'
       };
-    };
-  }.call(this));
-  (function () {
-    H2O.ExportFrameOutput = function (_, _go, result) {
-      lodash.defer(_go);
-      return { template: 'flow-export-frame-output' };
     };
   }.call(this));
   // anonymous IIFE
