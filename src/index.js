@@ -13,7 +13,8 @@ import { h2oPlotOutput } from './h2oPlotOutput';
 import { h2oPlotInput } from './h2oPlotInput';
 import { h2oPartialDependenceOutput } from './h2oPartialDependenceOutput';
 import { h2oPartialDependenceInput } from './h2oPartialDependenceInput';
-import { h2oNoAssist } from './h2oNoAssist'; 
+import { h2oNoAssist } from './h2oNoAssist';
+import { h2oNetworkTestOutput } from './h2oNetworkTestOutput'; 
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -6881,7 +6882,7 @@ import { h2oNoAssist } from './h2oNoAssist';
       };
       extendNetworkTest = function (testResult) {
         inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
-        return render_(testResult, H2O.NetworkTestOutput, testResult);
+        return render_(testResult, h2oNetworkTestOutput, testResult);
       };
       extendProfile = function (profile) {
         return render_(profile, h2oProfileOutput, profile);
@@ -13662,27 +13663,6 @@ import { h2oNoAssist } from './h2oNoAssist';
         checkAllModels: _checkAllModels,
         inspect: inspectAll,
         template: 'flow-models-output'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.NetworkTestOutput = function (_, _go, _testResult) {
-      var render;
-      var _result;
-      _result = Flow.Dataflow.signal(null);
-      render = _.plot(function (g) {
-        return g(g.select(), g.from(_.inspect('result', _testResult)));
-      });
-      render(function (error, vis) {
-        if (error) {
-          return console.debug(error);
-        }
-        return _result(vis.element);
-      });
-      lodash.defer(_go);
-      return {
-        result: _result,
-        template: 'flow-network-test-output'
       };
     };
   }.call(this));
