@@ -12,7 +12,8 @@ import { h2oPredictInput } from './h2oPredictInput';
 import { h2oPlotOutput } from './h2oPlotOutput';
 import { h2oPlotInput } from './h2oPlotInput';
 import { h2oPartialDependenceOutput } from './h2oPartialDependenceOutput';
-import { h2oPartialDependenceInput } from './h2oPartialDependenceInput'; 
+import { h2oPartialDependenceInput } from './h2oPartialDependenceInput';
+import { h2oNoAssist } from './h2oNoAssist'; 
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -9109,7 +9110,7 @@ import { h2oPartialDependenceInput } from './h2oPartialDependenceInput';
           case exportModel:
             return _fork(proceed, H2O.ExportModelInput, args);
           default:
-            return _fork(proceed, H2O.NoAssist, []);
+            return _fork(proceed, h2oNoAssist, []);
         }
       };
       Flow.Dataflow.link(_.ready, function () {
@@ -13682,17 +13683,6 @@ import { h2oPartialDependenceInput } from './h2oPartialDependenceInput';
       return {
         result: _result,
         template: 'flow-network-test-output'
-      };
-    };
-  }.call(this));
-  (function () {
-    H2O.NoAssist = function (_, _go) {
-      lodash.defer(_go);
-      return {
-        showAssist() {
-          return _.insertAndExecuteCell('cs', 'assist');
-        },
-        template: 'flow-no-assist'
       };
     };
   }.call(this));
