@@ -4974,6 +4974,934 @@
     };
   };
 
+  function modelInput() {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createCheckboxControl;
+    var createControl;
+    var createControlFromParameter;
+    var createDropdownControl;
+    var createGridableValues;
+    var createListControl;
+    var createTextboxControl;
+    createControl = function (kind, parameter) {
+      var _hasError;
+      var _hasInfo;
+      var _hasMessage;
+      var _hasWarning;
+      var _isGrided;
+      var _isNotGrided;
+      var _isVisible;
+      var _message;
+      _hasError = Flow.Dataflow.signal(false);
+      _hasWarning = Flow.Dataflow.signal(false);
+      _hasInfo = Flow.Dataflow.signal(false);
+      _message = Flow.Dataflow.signal('');
+      _hasMessage = Flow.Dataflow.lift(_message, function (message) {
+        if (message) {
+          return true;
+        }
+        return false;
+      });
+      _isVisible = Flow.Dataflow.signal(true);
+      _isGrided = Flow.Dataflow.signal(false);
+      _isNotGrided = Flow.Dataflow.lift(_isGrided, function (value) {
+        return !value;
+      });
+      return {
+        kind,
+        name: parameter.name,
+        label: parameter.label,
+        description: parameter.help,
+        isRequired: parameter.required,
+        hasError: _hasError,
+        hasWarning: _hasWarning,
+        hasInfo: _hasInfo,
+        message: _message,
+        hasMessage: _hasMessage,
+        isVisible: _isVisible,
+        isGridable: parameter.gridable,
+        isGrided: _isGrided,
+        isNotGrided: _isNotGrided
+      };
+    };
+    createTextboxControl = function (parameter, type) {
+      var control;
+      var isArrayValued;
+      var isInt;
+      var isReal;
+      var textToValues;
+      var _ref;
+      var _ref1;
+      var _text;
+      var _textGrided;
+      var _value;
+      var _valueGrided;
+      isArrayValued = isInt = isReal = false;
+      switch (type) {
+        case 'byte[]':
+        case 'short[]':
+        case 'int[]':
+        case 'long[]':
+          isArrayValued = true;
+          isInt = true;
+          break;
+        case 'float[]':
+        case 'double[]':
+          isArrayValued = true;
+          isReal = true;
+          break;
+        case 'byte':
+        case 'short':
+        case 'int':
+        case 'long':
+          isInt = true;
+          break;
+        case 'float':
+        case 'double':
+          isReal = true;
+      }
+      _text = Flow.Dataflow.signal(isArrayValued ? ((_ref = parameter.actual_value) != null ? _ref : []).join(', ') : (_ref1 = parameter.actual_value) != null ? _ref1 : '');
+      _textGrided = Flow.Dataflow.signal(`${ _text() };`);
+      textToValues = function (text) {
+        var parsed;
+        var vals;
+        var value;
+        var _i;
+        var _len;
+        var _ref2;
+        if (isArrayValued) {
+          vals = [];
+          _ref2 = text.split(/\s*,\s*/g);
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            value = _ref2[_i];
+            if (isInt) {
+              if (!lodash.isNaN(parsed = parseInt(value, 10))) {
+                vals.push(parsed);
+              }
+            } else if (isReal) {
+              if (!lodash.isNaN(parsed = parseFloat(value))) {
+                vals.push(parsed);
+              }
+            } else {
+              vals.push(value);
+            }
+          }
+          return vals;
+        }
+        return text;
+      };
+      _value = Flow.Dataflow.lift(_text, textToValues);
+      _valueGrided = Flow.Dataflow.lift(_textGrided, function (text) {
+        var part;
+        var token;
+        var _i;
+        var _len;
+        var _ref2;
+        lodash.values = [];
+        _ref2 = `${ text }`.split(/\s*;\s*/g);
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          part = _ref2[_i];
+          if (token = part.trim()) {
+            lodash.values.push(textToValues(token));
+          }
+        }
+        return lodash.values;
+      });
+      control = createControl('textbox', parameter);
+      control.text = _text;
+      control.textGrided = _textGrided;
+      control.value = _value;
+      control.valueGrided = _valueGrided;
+      control.isArrayValued = isArrayValued;
+      return control;
+    };
+    createGridableValues = function (values, defaultValue) {
+      return lodash.map(values, function (value) {
+        return {
+          label: value,
+          value: Flow.Dataflow.signal(true)
+        };
+      });
+    };
+    createDropdownControl = function (parameter) {
+      var control;
+      var _value;
+      _value = Flow.Dataflow.signal(parameter.actual_value);
+      control = createControl('dropdown', parameter);
+      control.values = Flow.Dataflow.signals(parameter.values);
+      control.value = _value;
+      control.gridedValues = Flow.Dataflow.lift(control.values, function (values) {
+        return createGridableValues(values);
+      });
+      return control;
+    };
+    createListControl = function (parameter) {
+      var MaxItemsPerPage;
+      var blockSelectionUpdates;
+      var changeSelection;
+      var control;
+      var createEntry;
+      var deselectFiltered;
+      var filterItems;
+      var goToNextPage;
+      var goToPreviousPage;
+      var incrementSelectionCount;
+      var selectFiltered;
+      var _canGoToNextPage;
+      var _canGoToPreviousPage;
+      var _currentPage;
+      var _entries;
+      var _filteredItems;
+      var _hasFilteredItems;
+      var _ignoreNATerm;
+      var _isUpdatingSelectionCount;
+      var _lastUsedIgnoreNaTerm;
+      var _lastUsedSearchTerm;
+      var _maxPages;
+      var _searchCaption;
+      var _searchTerm;
+      var _selectionCount;
+      var _values;
+      var _visibleItems;
+      MaxItemsPerPage = 100;
+      _searchTerm = Flow.Dataflow.signal('');
+      _ignoreNATerm = Flow.Dataflow.signal('');
+      _values = Flow.Dataflow.signal([]);
+      _selectionCount = Flow.Dataflow.signal(0);
+      _isUpdatingSelectionCount = false;
+      blockSelectionUpdates = function (f) {
+        _isUpdatingSelectionCount = true;
+        f();
+        return _isUpdatingSelectionCount = false;
+      };
+      incrementSelectionCount = function (amount) {
+        return _selectionCount(_selectionCount() + amount);
+      };
+      createEntry = function (value) {
+        var isSelected;
+        isSelected = Flow.Dataflow.signal(false);
+        Flow.Dataflow.react(isSelected, function (isSelected) {
+          if (!_isUpdatingSelectionCount) {
+            if (isSelected) {
+              incrementSelectionCount(1);
+            } else {
+              incrementSelectionCount(-1);
+            }
+          }
+        });
+        return {
+          isSelected,
+          value: value.value,
+          type: value.type,
+          missingLabel: value.missingLabel,
+          missingPercent: value.missingPercent
+        };
+      };
+      _entries = Flow.Dataflow.lift(_values, function (values) {
+        return lodash.map(values, createEntry);
+      });
+      _filteredItems = Flow.Dataflow.signal([]);
+      _visibleItems = Flow.Dataflow.signal([]);
+      _hasFilteredItems = Flow.Dataflow.lift(_filteredItems, function (entries) {
+        return entries.length > 0;
+      });
+      _currentPage = Flow.Dataflow.signal(0);
+      _maxPages = Flow.Dataflow.lift(_filteredItems, function (entries) {
+        return Math.ceil(entries.length / MaxItemsPerPage);
+      });
+      _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, function (index) {
+        return index > 0;
+      });
+      _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, function (maxPages, index) {
+        return index < maxPages - 1;
+      });
+      _searchCaption = Flow.Dataflow.lift(_entries, _filteredItems, _selectionCount, _currentPage, _maxPages, function (entries, filteredItems, selectionCount, currentPage, maxPages) {
+        var caption;
+        caption = maxPages === 0 ? '' : `Showing page ${ currentPage + 1 } of ${ maxPages }.`;
+        if (filteredItems.length !== entries.length) {
+          caption += ` Filtered ${ filteredItems.length } of ${ entries.length }.`;
+        }
+        if (selectionCount !== 0) {
+          caption += ` ${ selectionCount } ignored.`;
+        }
+        return caption;
+      });
+      Flow.Dataflow.react(_entries, function () {
+        return filterItems(true);
+      });
+      _lastUsedSearchTerm = null;
+      _lastUsedIgnoreNaTerm = null;
+      filterItems = function (force) {
+        var entry;
+        var filteredItems;
+        var hide;
+        var i;
+        var ignoreNATerm;
+        var missingPercent;
+        var searchTerm;
+        var start;
+        var _i;
+        var _len;
+        var _ref;
+        if (force == null) {
+          force = false;
+        }
+        searchTerm = _searchTerm().trim();
+        ignoreNATerm = _ignoreNATerm().trim();
+        if (force || searchTerm !== _lastUsedSearchTerm || ignoreNATerm !== _lastUsedIgnoreNaTerm) {
+          filteredItems = [];
+          _ref = _entries();
+          for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+            entry = _ref[i];
+            missingPercent = parseFloat(ignoreNATerm);
+            hide = false;
+            if (searchTerm !== '' && entry.value.toLowerCase().indexOf(searchTerm.toLowerCase()) === -1) {
+              hide = true;
+            } else if (!lodash.isNaN(missingPercent) && missingPercent !== 0 && entry.missingPercent <= missingPercent) {
+              hide = true;
+            }
+            if (!hide) {
+              filteredItems.push(entry);
+            }
+          }
+          _lastUsedSearchTerm = searchTerm;
+          _lastUsedIgnoreNaTerm = ignoreNATerm;
+          _currentPage(0);
+          _filteredItems(filteredItems);
+        }
+        start = _currentPage() * MaxItemsPerPage;
+        _visibleItems(_filteredItems().slice(start, start + MaxItemsPerPage));
+      };
+      changeSelection = function (source, value) {
+        var entry;
+        var _i;
+        var _len;
+        for (_i = 0, _len = source.length; _i < _len; _i++) {
+          entry = source[_i];
+          entry.isSelected(value);
+        }
+      };
+      selectFiltered = function () {
+        var entries;
+        entries = _filteredItems();
+        blockSelectionUpdates(function () {
+          return changeSelection(entries, true);
+        });
+        return _selectionCount(entries.length);
+      };
+      deselectFiltered = function () {
+        blockSelectionUpdates(function () {
+          return changeSelection(_filteredItems(), false);
+        });
+        return _selectionCount(0);
+      };
+      goToPreviousPage = function () {
+        if (_canGoToPreviousPage()) {
+          _currentPage(_currentPage() - 1);
+          filterItems();
+        }
+      };
+      goToNextPage = function () {
+        if (_canGoToNextPage()) {
+          _currentPage(_currentPage() + 1);
+          filterItems();
+        }
+      };
+      Flow.Dataflow.react(_searchTerm, lodash.throttle(filterItems, 500));
+      Flow.Dataflow.react(_ignoreNATerm, lodash.throttle(filterItems, 500));
+      control = createControl('list', parameter);
+      control.values = _values;
+      control.entries = _visibleItems;
+      control.hasFilteredItems = _hasFilteredItems;
+      control.searchCaption = _searchCaption;
+      control.searchTerm = _searchTerm;
+      control.ignoreNATerm = _ignoreNATerm;
+      control.value = _entries;
+      control.selectFiltered = selectFiltered;
+      control.deselectFiltered = deselectFiltered;
+      control.goToPreviousPage = goToPreviousPage;
+      control.goToNextPage = goToNextPage;
+      control.canGoToPreviousPage = _canGoToPreviousPage;
+      control.canGoToNextPage = _canGoToNextPage;
+      return control;
+    };
+    createCheckboxControl = function (parameter) {
+      var control;
+      var _value;
+      _value = Flow.Dataflow.signal(parameter.actual_value);
+      control = createControl('checkbox', parameter);
+      control.clientId = lodash.uniqueId();
+      control.value = _value;
+      return control;
+    };
+    createControlFromParameter = function (parameter) {
+      switch (parameter.type) {
+        case 'enum':
+        case 'Key<Frame>':
+        case 'VecSpecifier':
+          return createDropdownControl(parameter);
+        case 'string[]':
+        case 'Key<Frame>[]':
+        case 'Key<Model>[]':
+          return createListControl(parameter);
+        case 'boolean':
+          return createCheckboxControl(parameter);
+        case 'Key<Model>':
+        case 'string':
+        case 'byte':
+        case 'short':
+        case 'int':
+        case 'long':
+        case 'float':
+        case 'double':
+        case 'byte[]':
+        case 'short[]':
+        case 'int[]':
+        case 'long[]':
+        case 'float[]':
+        case 'double[]':
+          return createTextboxControl(parameter, parameter.type);
+        default:
+          console.error('Invalid field', JSON.stringify(parameter, null, 2));
+          return null;
+      }
+    };
+    H2O.ModelBuilderForm = function (_, _algorithm, _parameters) {
+      var collectParameters;
+      var control;
+      var createModel;
+      var criticalControls;
+      var expertControls;
+      var findControl;
+      var findFormField;
+      var parameterTemplateOf;
+      var performValidations;
+      var revalidate;
+      var secondaryControls;
+      var _controlGroups;
+      var _exception;
+      var _form;
+      var _gridId;
+      var _gridMaxModels;
+      var _gridMaxRuntime;
+      var _gridStoppingMetric;
+      var _gridStoppingMetrics;
+      var _gridStoppingRounds;
+      var _gridStoppingTolerance;
+      var _gridStrategies;
+      var _gridStrategy;
+      var _hasValidationFailures;
+      var _i;
+      var _isGridRandomDiscrete;
+      var _isGrided;
+      var _j;
+      var _k;
+      var _len;
+      var _len1;
+      var _len2;
+      var _parametersByLevel;
+      var _revalidate;
+      var _validationFailureMessage;
+      _exception = Flow.Dataflow.signal(null);
+      _validationFailureMessage = Flow.Dataflow.signal('');
+      _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, Flow.Prelude.isTruthy);
+      _gridStrategies = ['Cartesian', 'RandomDiscrete'];
+      _isGrided = Flow.Dataflow.signal(false);
+      _gridId = Flow.Dataflow.signal(`grid-${ Flow.Util.uuid() }`);
+      _gridStrategy = Flow.Dataflow.signal('Cartesian');
+      _isGridRandomDiscrete = Flow.Dataflow.lift(_gridStrategy, function (strategy) {
+        return strategy !== _gridStrategies[0];
+      });
+      _gridMaxModels = Flow.Dataflow.signal(1000);
+      _gridMaxRuntime = Flow.Dataflow.signal(28800);
+      _gridStoppingRounds = Flow.Dataflow.signal(0);
+      _gridStoppingMetrics = ['AUTO', 'deviance', 'logloss', 'MSE', 'AUC', 'lift_top_group', 'r2', 'misclassification'];
+      _gridStoppingMetric = Flow.Dataflow.signal(_gridStoppingMetrics[0]);
+      _gridStoppingTolerance = Flow.Dataflow.signal(0.001);
+      _parametersByLevel = lodash.groupBy(_parameters, function (parameter) {
+        return parameter.level;
+      });
+      _controlGroups = lodash.map(['critical', 'secondary', 'expert'], function (type) {
+        var controls;
+        controls = lodash.filter(lodash.map(_parametersByLevel[type], createControlFromParameter), function (a) {
+          if (a) {
+            return true;
+          }
+          return false;
+        });
+        lodash.forEach(controls, function (control) {
+          return Flow.Dataflow.react(control.isGrided, function () {
+            var isGrided;
+            var _i;
+            var _len;
+            isGrided = false;
+            for (_i = 0, _len = controls.length; _i < _len; _i++) {
+              control = controls[_i];
+              if (control.isGrided()) {
+                _isGrided(isGrided = true);
+                break;
+              }
+            }
+            if (!isGrided) {
+              return _isGrided(false);
+            }
+          });
+        });
+        return controls;
+      });
+      criticalControls = _controlGroups[0], secondaryControls = _controlGroups[1], expertControls = _controlGroups[2];
+      _form = [];
+      if (criticalControls.length) {
+        _form.push({
+          kind: 'group',
+          title: 'Parameters'
+        });
+        for (_i = 0, _len = criticalControls.length; _i < _len; _i++) {
+          control = criticalControls[_i];
+          _form.push(control);
+        }
+      }
+      if (secondaryControls.length) {
+        _form.push({
+          kind: 'group',
+          title: 'Advanced'
+        });
+        for (_j = 0, _len1 = secondaryControls.length; _j < _len1; _j++) {
+          control = secondaryControls[_j];
+          _form.push(control);
+        }
+      }
+      if (expertControls.length) {
+        _form.push({
+          kind: 'group',
+          title: 'Expert'
+        });
+        for (_k = 0, _len2 = expertControls.length; _k < _len2; _k++) {
+          control = expertControls[_k];
+          _form.push(control);
+        }
+      }
+      findControl = function (name) {
+        var controls;
+        var _l;
+        var _len3;
+        var _len4;
+        var _m;
+        for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
+          controls = _controlGroups[_l];
+          for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
+            control = controls[_m];
+            if (control.name === name) {
+              return control;
+            }
+          }
+        }
+      };
+      parameterTemplateOf = function (control) {
+        return `flow-${ control.kind }-model-parameter`;
+      };
+      findFormField = function (name) {
+        return lodash.find(_form, function (field) {
+          return field.name === name;
+        });
+      };
+      (function () {
+        var foldColumnParameter;
+        var ignoredColumnsParameter;
+        var offsetColumnsParameter;
+        var responseColumnParameter;
+        var trainingFrameParameter;
+        var validationFrameParameter;
+        var weightsColumnParameter;
+        var _ref;
+        _ref = lodash.map(['training_frame', 'validation_frame', 'response_column', 'ignored_columns', 'offset_column', 'weights_column', 'fold_column'], findFormField), trainingFrameParameter = _ref[0], validationFrameParameter = _ref[1], responseColumnParameter = _ref[2], ignoredColumnsParameter = _ref[3], offsetColumnsParameter = _ref[4], weightsColumnParameter = _ref[5], foldColumnParameter = _ref[6];
+        if (trainingFrameParameter) {
+          if (responseColumnParameter || ignoredColumnsParameter) {
+            return Flow.Dataflow.act(trainingFrameParameter.value, function (frameKey) {
+              if (frameKey) {
+                _.requestFrameSummaryWithoutData(frameKey, function (error, frame) {
+                  var columnLabels;
+                  var columnValues;
+                  if (!error) {
+                    columnValues = lodash.map(frame.columns, function (column) {
+                      return column.label;
+                    });
+                    columnLabels = lodash.map(frame.columns, function (column) {
+                      var missingPercent;
+                      missingPercent = 100 * column.missing_count / frame.rows;
+                      return {
+                        type: column.type === 'enum' ? `enum(${ column.domain_cardinality })` : column.type,
+                        value: column.label,
+                        missingPercent,
+                        missingLabel: missingPercent === 0 ? '' : `${ Math.round(missingPercent) }% NA`
+                      };
+                    });
+                    if (responseColumnParameter) {
+                      responseColumnParameter.values(columnValues);
+                    }
+                    if (ignoredColumnsParameter) {
+                      ignoredColumnsParameter.values(columnLabels);
+                    }
+                    if (weightsColumnParameter) {
+                      weightsColumnParameter.values(columnValues);
+                    }
+                    if (foldColumnParameter) {
+                      foldColumnParameter.values(columnValues);
+                    }
+                    if (offsetColumnsParameter) {
+                      offsetColumnsParameter.values(columnValues);
+                    }
+                    if (responseColumnParameter && ignoredColumnsParameter) {
+                      return Flow.Dataflow.lift(responseColumnParameter.value, function (responseVariableName) {});
+                    }
+                  }
+                });
+              }
+            });
+          }
+        }
+      })();
+      collectParameters = function (includeUnchangedParameters) {
+        var controls;
+        var entry;
+        var gridStoppingRounds;
+        var hyperParameters;
+        var isGrided;
+        var item;
+        var maxModels;
+        var maxRuntime;
+        var parameters;
+        var searchCriteria;
+        var selectedValues;
+        var stoppingTolerance;
+        var value;
+        var _l;
+        var _len3;
+        var _len4;
+        var _len5;
+        var _m;
+        var _n;
+        var _ref;
+        if (includeUnchangedParameters == null) {
+          includeUnchangedParameters = false;
+        }
+        isGrided = false;
+        parameters = {};
+        hyperParameters = {};
+        for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
+          controls = _controlGroups[_l];
+          for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
+            control = controls[_m];
+            if (control.isGrided()) {
+              isGrided = true;
+              switch (control.kind) {
+                case 'textbox':
+                  hyperParameters[control.name] = control.valueGrided();
+                  break;
+                case 'dropdown':
+                  hyperParameters[control.name] = selectedValues = [];
+                  _ref = control.gridedValues();
+                  for (_n = 0, _len5 = _ref.length; _n < _len5; _n++) {
+                    item = _ref[_n];
+                    if (item.value()) {
+                      selectedValues.push(item.label);
+                    }
+                  }
+                  break;
+                default:
+                  hyperParameters[control.name] = [true, false];
+              }
+            } else {
+              value = control.value();
+              if (control.isVisible() && (includeUnchangedParameters || control.isRequired || control.defaultValue !== value)) {
+                switch (control.kind) {
+                  case 'dropdown':
+                    if (value) {
+                      parameters[control.name] = value;
+                    }
+                    break;
+                  case 'list':
+                    if (value.length) {
+                      selectedValues = function () {
+                        var _len6;
+                        var _o;
+                        var _results;
+                        _results = [];
+                        for (_o = 0, _len6 = value.length; _o < _len6; _o++) {
+                          entry = value[_o];
+                          if (entry.isSelected()) {
+                            _results.push(entry.value);
+                          }
+                        }
+                        return _results;
+                      }();
+                      parameters[control.name] = selectedValues;
+                    }
+                    break;
+                  default:
+                    parameters[control.name] = value;
+                }
+              }
+            }
+          }
+        }
+        if (isGrided) {
+          parameters.grid_id = _gridId();
+          parameters.hyper_parameters = hyperParameters;
+          searchCriteria = { strategy: _gridStrategy() };
+          switch (searchCriteria.strategy) {
+            case 'RandomDiscrete':
+              if (!lodash.isNaN(maxModels = parseInt(_gridMaxModels(), 10))) {
+                searchCriteria.max_models = maxModels;
+              }
+              if (!lodash.isNaN(maxRuntime = parseInt(_gridMaxRuntime(), 10))) {
+                searchCriteria.max_runtime_secs = maxRuntime;
+              }
+              if (!lodash.isNaN(gridStoppingRounds = parseInt(_gridStoppingRounds(), 10))) {
+                searchCriteria.stopping_rounds = gridStoppingRounds;
+              }
+              if (!lodash.isNaN(stoppingTolerance = parseFloat(_gridStoppingTolerance()))) {
+                searchCriteria.stopping_tolerance = stoppingTolerance;
+              }
+              searchCriteria.stopping_metric = _gridStoppingMetric();
+          }
+          parameters.search_criteria = searchCriteria;
+        }
+        return parameters;
+      };
+      performValidations = function (checkForErrors, go) {
+        var parameters;
+        _exception(null);
+        parameters = collectParameters(true);
+        if (parameters.hyper_parameters) {
+          return go();
+        }
+        _validationFailureMessage('');
+        return _.requestModelInputValidation(_algorithm, parameters, function (error, modelBuilder) {
+          var controls;
+          var hasErrors;
+          var validation;
+          var validations;
+          var validationsByControlName;
+          var _l;
+          var _len3;
+          var _len4;
+          var _len5;
+          var _m;
+          var _n;
+          if (error) {
+            return _exception(Flow.Failure(_, new Flow.Error('Error fetching initial model builder state', error)));
+          }
+          hasErrors = false;
+          if (modelBuilder.messages.length) {
+            validationsByControlName = lodash.groupBy(modelBuilder.messages, function (validation) {
+              return validation.field_name;
+            });
+            for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
+              controls = _controlGroups[_l];
+              for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
+                control = controls[_m];
+                if (validations = validationsByControlName[control.name]) {
+                  for (_n = 0, _len5 = validations.length; _n < _len5; _n++) {
+                    validation = validations[_n];
+                    if (validation.message_type === 'TRACE') {
+                      control.isVisible(false);
+                    } else {
+                      control.isVisible(true);
+                      if (checkForErrors) {
+                        switch (validation.message_type) {
+                          case 'INFO':
+                            control.hasInfo(true);
+                            control.message(validation.message);
+                            break;
+                          case 'WARN':
+                            control.hasWarning(true);
+                            control.message(validation.message);
+                            break;
+                          case 'ERRR':
+                            control.hasError(true);
+                            control.message(validation.message);
+                            hasErrors = true;
+                        }
+                      }
+                    }
+                  }
+                } else {
+                  control.isVisible(true);
+                  control.hasInfo(false);
+                  control.hasWarning(false);
+                  control.hasError(false);
+                  control.message('');
+                }
+              }
+            }
+          }
+          if (hasErrors) {
+            return _validationFailureMessage('Your model parameters have one or more errors. Please fix them and try again.');
+          }
+          _validationFailureMessage('');
+          return go();
+        });
+      };
+      createModel = function () {
+        _exception(null);
+        return performValidations(true, function () {
+          var parameters;
+          parameters = collectParameters(false);
+          return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ Flow.Prelude.stringify(parameters) }`);
+        });
+      };
+      _revalidate = function (value) {
+        if (value !== void 0) {
+          return performValidations(false, function () {});
+        }
+      };
+      revalidate = lodash.throttle(_revalidate, 100, { leading: false });
+      performValidations(false, function () {
+        var controls;
+        var _l;
+        var _len3;
+        var _len4;
+        var _m;
+        for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
+          controls = _controlGroups[_l];
+          for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
+            control = controls[_m];
+            Flow.Dataflow.react(control.value, revalidate);
+          }
+        }
+      });
+      return {
+        form: _form,
+        isGrided: _isGrided,
+        gridId: _gridId,
+        gridStrategy: _gridStrategy,
+        gridStrategies: _gridStrategies,
+        isGridRandomDiscrete: _isGridRandomDiscrete,
+        gridMaxModels: _gridMaxModels,
+        gridMaxRuntime: _gridMaxRuntime,
+        gridStoppingRounds: _gridStoppingRounds,
+        gridStoppingMetrics: _gridStoppingMetrics,
+        gridStoppingMetric: _gridStoppingMetric,
+        gridStoppingTolerance: _gridStoppingTolerance,
+        exception: _exception,
+        parameterTemplateOf,
+        createModel,
+        hasValidationFailures: _hasValidationFailures,
+        validationFailureMessage: _validationFailureMessage
+      };
+    };
+    H2O.ModelInput = function (_, _go, _algo, _opts) {
+      var createModel;
+      var populateFramesAndColumns;
+      var _algorithm;
+      var _algorithms;
+      var _canCreateModel;
+      var _exception;
+      var _modelForm;
+      _exception = Flow.Dataflow.signal(null);
+      _algorithms = Flow.Dataflow.signal([]);
+      _algorithm = Flow.Dataflow.signal(null);
+      _canCreateModel = Flow.Dataflow.lift(_algorithm, function (algorithm) {
+        if (algorithm) {
+          return true;
+        }
+        return false;
+      });
+      _modelForm = Flow.Dataflow.signal(null);
+      populateFramesAndColumns = function (frameKey, algorithm, parameters, go) {
+        var classificationParameter;
+        var destinationKeyParameter;
+        destinationKeyParameter = lodash.find(parameters, function (parameter) {
+          return parameter.name === 'model_id';
+        });
+        if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
+          destinationKeyParameter.actual_value = `${ algorithm }-${ Flow.Util.uuid() }`;
+        }
+        classificationParameter = lodash.find(parameters, function (parameter) {
+          return parameter.name === 'do_classification';
+        });
+        if (classificationParameter) {
+          classificationParameter.actual_value = true;
+        }
+        return _.requestFrames(function (error, frames) {
+          var frame;
+          var frameKeys;
+          var frameParameters;
+          var parameter;
+          var _i;
+          var _len;
+          if (error) {
+            // empty
+          } else {
+            frameKeys = function () {
+              var _i;
+              var _len;
+              var _results;
+              _results = [];
+              for (_i = 0, _len = frames.length; _i < _len; _i++) {
+                frame = frames[_i];
+                _results.push(frame.frame_id.name);
+              }
+              return _results;
+            }();
+            frameParameters = lodash.filter(parameters, function (parameter) {
+              return parameter.type === 'Key<Frame>';
+            });
+            for (_i = 0, _len = frameParameters.length; _i < _len; _i++) {
+              parameter = frameParameters[_i];
+              parameter.values = frameKeys;
+              if (parameter.name === 'training_frame') {
+                if (frameKey) {
+                  parameter.actual_value = frameKey;
+                } else {
+                  frameKey = parameter.actual_value;
+                }
+              }
+            }
+            return go();
+          }
+        });
+      };
+      (function () {
+        return _.requestModelBuilders(function (error, modelBuilders) {
+          var frameKey;
+          _algorithms(modelBuilders);
+          _algorithm(_algo ? lodash.find(modelBuilders, function (builder) {
+            return builder.algo === _algo;
+          }) : void 0);
+          frameKey = _opts != null ? _opts.training_frame : void 0;
+          return Flow.Dataflow.act(_algorithm, function (builder) {
+            var algorithm;
+            var parameters;
+            if (builder) {
+              algorithm = builder.algo;
+              parameters = Flow.Prelude.deepClone(builder.parameters);
+              return populateFramesAndColumns(frameKey, algorithm, parameters, function () {
+                return _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters));
+              });
+            }
+            return _modelForm(null);
+          });
+        });
+      })();
+      createModel = function () {
+        return _modelForm().createModel();
+      };
+      lodash.defer(_go);
+      return {
+        parentException: _exception,
+        algorithms: _algorithms,
+        algorithm: _algorithm,
+        modelForm: _modelForm,
+        canCreateModel: _canCreateModel,
+        createModel,
+        template: 'flow-model-input'
+      };
+    };
+  }
+
   // anonymous IIFE
   (function(){var lodash=window._;window.Flow={};window.H2O={};(function(){var checkSparklingWater;var getContextPath;getContextPath=function(){window.Flow.ContextPath='/';return $.ajax({url:window.referrer,type:'GET',success(data,status,xhr){if(xhr.getAllResponseHeaders().indexOf('X-h2o-context-path')!==-1){return window.Flow.ContextPath=xhr.getResponseHeader('X-h2o-context-path');}},async:false});};checkSparklingWater=function(context){context.onSparklingWater=false;return $.ajax({url:`${window.Flow.ContextPath}3/Metadata/endpoints`,type:'GET',dataType:'json',success(response){var route;var _i;var _len;var _ref;var _results;_ref=response.routes;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){route=_ref[_i];if(route.url_pattern==='/3/scalaint'){_results.push(context.onSparklingWater=true);}else{_results.push(void 0);}}return _results;},async:false});};if((typeof window!=='undefined'&&window!==null?window.$:void 0)!=null){$(function(){var context;context={};getContextPath();checkSparklingWater(context);window.flow=Flow.Application(context,H2O.Routines);H2O.Application(context);ko.applyBindings(window.flow);context.ready();return context.initialized();});}}).call(this);// anonymous IIFE
   (function(){Flow.Version='0.4.54';Flow.About=function(_){var _properties;_properties=Flow.Dataflow.signals([]);Flow.Dataflow.link(_.ready,function(){if(Flow.BuildProperties){return _properties(Flow.BuildProperties);}return _.requestAbout(function(error,response){var name;var properties;var value;var _i;var _len;var _ref;var _ref1;properties=[];if(!error){_ref=response.entries;for(_i=0,_len=_ref.length;_i<_len;_i++){_ref1=_ref[_i],name=_ref1.name,value=_ref1.value;properties.push({caption:`H2O ${name}`,value});}}properties.push({caption:'Flow version',value:Flow.Version});return _properties(Flow.BuildProperties=properties);});});return{properties:_properties};};}).call(this);(function(){Flow.AlertDialog=function(_,_message,_opts,_go){var accept;if(_opts==null){_opts={};}lodash.defaults(_opts,{title:'Alert',acceptCaption:'OK'});accept=function(){return _go(true);};return{title:_opts.title,acceptCaption:_opts.acceptCaption,message:Flow.Util.multilineTextToHTML(_message),accept,template:'alert-dialog'};};}).call(this);// anonymous IIFE
@@ -5008,9 +5936,8 @@
   (function(){var createOptions;var _allCombineMethods;var _allMethods;createOptions=function(options){var option;var _i;var _len;var _results;_results=[];for(_i=0,_len=options.length;_i<_len;_i++){option=options[_i];_results.push({caption:option,value:option.toLowerCase()});}return _results;};_allMethods=createOptions(['Mean','Median','Mode']);_allCombineMethods=createOptions(['Interpolate','Average','Low','High']);H2O.ImputeInput=function(_,_go,opts){var impute;var _canGroupByColumns;var _canImpute;var _canUseCombineMethod;var _column;var _columns;var _combineMethod;var _combineMethods;var _frame;var _frames;var _groupByColumns;var _hasFrame;var _method;var _methods;if(opts==null){opts={};}_frames=Flow.Dataflow.signal([]);_frame=Flow.Dataflow.signal(null);_hasFrame=Flow.Dataflow.lift(_frame,function(frame){if(frame){return true;}return false;});_columns=Flow.Dataflow.signal([]);_column=Flow.Dataflow.signal(null);_methods=_allMethods;_method=Flow.Dataflow.signal(_allMethods[0]);_canUseCombineMethod=Flow.Dataflow.lift(_method,function(method){return method.value==='median';});_combineMethods=_allCombineMethods;_combineMethod=Flow.Dataflow.signal(_allCombineMethods[0]);_canGroupByColumns=Flow.Dataflow.lift(_method,function(method){return method.value!=='median';});_groupByColumns=Flow.Dataflow.signals([]);_canImpute=Flow.Dataflow.lift(_frame,_column,function(frame,column){return frame&&column;});impute=function(){var arg;var combineMethod;var groupByColumns;var method;method=_method();arg={frame:_frame(),column:_column(),method:method.value};if(method.value==='median'){if(combineMethod=_combineMethod()){arg.combineMethod=combineMethod.value;}}else{groupByColumns=_groupByColumns();if(groupByColumns.length){arg.groupByColumns=groupByColumns;}}return _.insertAndExecuteCell('cs',`imputeColumn ${JSON.stringify(arg)}`);};_.requestFrames(function(error,frames){var frame;if(error){// empty
   }else{_frames(function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=frames.length;_i<_len;_i++){frame=frames[_i];if(!frame.is_text){_results.push(frame.frame_id.name);}}return _results;}());if(opts.frame){_frame(opts.frame);}}});Flow.Dataflow.react(_frame,function(frame){if(frame){return _.requestFrameSummaryWithoutData(frame,function(error,frame){var column;if(error){// empty
   }else{_columns(function(){var _i;var _len;var _ref;var _results;_ref=frame.columns;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.label);}return _results;}());if(opts.column){_column(opts.column);return delete opts.column;}}});}return _columns([]);});lodash.defer(_go);return{frames:_frames,frame:_frame,hasFrame:_hasFrame,columns:_columns,column:_column,methods:_methods,method:_method,canUseCombineMethod:_canUseCombineMethod,combineMethods:_combineMethods,combineMethod:_combineMethod,canGroupByColumns:_canGroupByColumns,groupByColumns:_groupByColumns,canImpute:_canImpute,impute,template:'flow-impute-input'};};}).call(this);// anonymous IIFE
-  (function(){var getJobOutputStatusColor;var getJobProgressPercent;var jobOutputStatusColors;jobOutputStatusColors={failed:'#d9534f',done:'#ccc',running:'#f0ad4e'};getJobOutputStatusColor=function(status){switch(status){case'DONE':return jobOutputStatusColors.done;case'CREATED':case'RUNNING':return jobOutputStatusColors.running;default:return jobOutputStatusColors.failed;}};getJobProgressPercent=function(progress){return`${Math.ceil(100*progress)}%`;};H2O.JobOutput=function(_,_go,_job){var canView;var cancel;var initialize;var isJobRunning;var messageIcons;var refresh;var updateJob;var view;var _canCancel;var _canView;var _description;var _destinationKey;var _destinationType;var _exception;var _isBusy;var _isLive;var _key;var _messages;var _progress;var _progressMessage;var _remainingTime;var _runTime;var _status;var _statusColor;_isBusy=Flow.Dataflow.signal(false);_isLive=Flow.Dataflow.signal(false);_key=_job.key.name;_description=_job.description;_destinationKey=_job.dest.name;_destinationType=function(){switch(_job.dest.type){case'Key<Frame>':return'Frame';case'Key<Model>':return'Model';case'Key<Grid>':return'Grid';case'Key<PartialDependence>':return'PartialDependence';case'Key<AutoML>':return'Auto Model';case'Key<KeyedVoid>':return'Void';default:return'Unknown';}}();_runTime=Flow.Dataflow.signal(null);_remainingTime=Flow.Dataflow.signal(null);_progress=Flow.Dataflow.signal(null);_progressMessage=Flow.Dataflow.signal(null);_status=Flow.Dataflow.signal(null);_statusColor=Flow.Dataflow.signal(null);_exception=Flow.Dataflow.signal(null);_messages=Flow.Dataflow.signal(null);_canView=Flow.Dataflow.signal(false);_canCancel=Flow.Dataflow.signal(false);isJobRunning=function(job){return job.status==='CREATED'||job.status==='RUNNING';};messageIcons={ERROR:'fa-times-circle red',WARN:'fa-warning orange',INFO:'fa-info-circle'};canView=function(job){switch(_destinationType){case'Model':case'Grid':return job.ready_for_view;default:return!isJobRunning(job);}};updateJob=function(job){var cause;var message;var messages;_runTime(Flow.Util.formatMilliseconds(job.msec));_progress(getJobProgressPercent(job.progress));_remainingTime(job.progress?Flow.Util.formatMilliseconds(Math.round((1-job.progress)*job.msec/job.progress)):'Estimating...');_progressMessage(job.progress_msg);_status(job.status);_statusColor(getJobOutputStatusColor(job.status));if(job.error_count){messages=function(){var _i;var _len;var _ref;var _results;_ref=job.messages;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){message=_ref[_i];if(message.message_type!=='HIDE'){_results.push({icon:messageIcons[message.message_type],message:`${message.field_name}: ${message.message}`});}}return _results;}();_messages(messages);}else if(job.exception){cause=new Error(job.exception);if(job.stacktrace){cause.stack=job.stacktrace;}_exception(Flow.Failure(_,new Flow.Error('Job failure.',cause)));}_canView(canView(job));return _canCancel(isJobRunning(job));};refresh=function(){_isBusy(true);return _.requestJob(_key,function(error,job){_isBusy(false);if(error){_exception(Flow.Failure(_,new Flow.Error('Error fetching jobs',error)));return _isLive(false);}updateJob(job);if(isJobRunning(job)){if(_isLive()){return lodash.delay(refresh,1000);}}else{_isLive(false);if(_go){return lodash.defer(_go);}}});};Flow.Dataflow.act(_isLive,function(isLive){if(isLive){return refresh();}});view=function(){if(!_canView()){return;}switch(_destinationType){case'Frame':return _.insertAndExecuteCell('cs',`getFrameSummary ${Flow.Prelude.stringify(_destinationKey)}`);case'Model':return _.insertAndExecuteCell('cs',`getModel ${Flow.Prelude.stringify(_destinationKey)}`);case'Grid':return _.insertAndExecuteCell('cs',`getGrid ${Flow.Prelude.stringify(_destinationKey)}`);case'PartialDependence':return _.insertAndExecuteCell('cs',`getPartialDependence ${Flow.Prelude.stringify(_destinationKey)}`);case'Auto Model':return _.insertAndExecuteCell('cs','getGrids');case'Void':return alert(`This frame was exported to\n${_job.dest.name}`);}};cancel=function(){return _.requestCancelJob(_key,function(error,result){if(error){return console.debug(error);}return updateJob(_job);});};initialize=function(job){updateJob(job);if(isJobRunning(job)){return _isLive(true);}if(_go){return lodash.defer(_go);}};initialize(_job);return{key:_key,description:_description,destinationKey:_destinationKey,destinationType:_destinationType,runTime:_runTime,remainingTime:_remainingTime,progress:_progress,progressMessage:_progressMessage,status:_status,statusColor:_statusColor,messages:_messages,exception:_exception,isLive:_isLive,canView:_canView,canCancel:_canCancel,cancel,view,template:'flow-job-output'};};}).call(this);// anonymous IIFE
-  (function(){var createCheckboxControl;var createControl;var createControlFromParameter;var createDropdownControl;var createGridableValues;var createListControl;var createTextboxControl;createControl=function(kind,parameter){var _hasError;var _hasInfo;var _hasMessage;var _hasWarning;var _isGrided;var _isNotGrided;var _isVisible;var _message;_hasError=Flow.Dataflow.signal(false);_hasWarning=Flow.Dataflow.signal(false);_hasInfo=Flow.Dataflow.signal(false);_message=Flow.Dataflow.signal('');_hasMessage=Flow.Dataflow.lift(_message,function(message){if(message){return true;}return false;});_isVisible=Flow.Dataflow.signal(true);_isGrided=Flow.Dataflow.signal(false);_isNotGrided=Flow.Dataflow.lift(_isGrided,function(value){return!value;});return{kind,name:parameter.name,label:parameter.label,description:parameter.help,isRequired:parameter.required,hasError:_hasError,hasWarning:_hasWarning,hasInfo:_hasInfo,message:_message,hasMessage:_hasMessage,isVisible:_isVisible,isGridable:parameter.gridable,isGrided:_isGrided,isNotGrided:_isNotGrided};};createTextboxControl=function(parameter,type){var control;var isArrayValued;var isInt;var isReal;var textToValues;var _ref;var _ref1;var _text;var _textGrided;var _value;var _valueGrided;isArrayValued=isInt=isReal=false;switch(type){case'byte[]':case'short[]':case'int[]':case'long[]':isArrayValued=true;isInt=true;break;case'float[]':case'double[]':isArrayValued=true;isReal=true;break;case'byte':case'short':case'int':case'long':isInt=true;break;case'float':case'double':isReal=true;}_text=Flow.Dataflow.signal(isArrayValued?((_ref=parameter.actual_value)!=null?_ref:[]).join(', '):(_ref1=parameter.actual_value)!=null?_ref1:'');_textGrided=Flow.Dataflow.signal(`${_text()};`);textToValues=function(text){var parsed;var vals;var value;var _i;var _len;var _ref2;if(isArrayValued){vals=[];_ref2=text.split(/\s*,\s*/g);for(_i=0,_len=_ref2.length;_i<_len;_i++){value=_ref2[_i];if(isInt){if(!lodash.isNaN(parsed=parseInt(value,10))){vals.push(parsed);}}else if(isReal){if(!lodash.isNaN(parsed=parseFloat(value))){vals.push(parsed);}}else{vals.push(value);}}return vals;}return text;};_value=Flow.Dataflow.lift(_text,textToValues);_valueGrided=Flow.Dataflow.lift(_textGrided,function(text){var part;var token;var _i;var _len;var _ref2;lodash.values=[];_ref2=`${text}`.split(/\s*;\s*/g);for(_i=0,_len=_ref2.length;_i<_len;_i++){part=_ref2[_i];if(token=part.trim()){lodash.values.push(textToValues(token));}}return lodash.values;});control=createControl('textbox',parameter);control.text=_text;control.textGrided=_textGrided;control.value=_value;control.valueGrided=_valueGrided;control.isArrayValued=isArrayValued;return control;};createGridableValues=function(values,defaultValue){return lodash.map(values,function(value){return{label:value,value:Flow.Dataflow.signal(true)};});};createDropdownControl=function(parameter){var control;var _value;_value=Flow.Dataflow.signal(parameter.actual_value);control=createControl('dropdown',parameter);control.values=Flow.Dataflow.signals(parameter.values);control.value=_value;control.gridedValues=Flow.Dataflow.lift(control.values,function(values){return createGridableValues(values);});return control;};createListControl=function(parameter){var MaxItemsPerPage;var blockSelectionUpdates;var changeSelection;var control;var createEntry;var deselectFiltered;var filterItems;var goToNextPage;var goToPreviousPage;var incrementSelectionCount;var selectFiltered;var _canGoToNextPage;var _canGoToPreviousPage;var _currentPage;var _entries;var _filteredItems;var _hasFilteredItems;var _ignoreNATerm;var _isUpdatingSelectionCount;var _lastUsedIgnoreNaTerm;var _lastUsedSearchTerm;var _maxPages;var _searchCaption;var _searchTerm;var _selectionCount;var _values;var _visibleItems;MaxItemsPerPage=100;_searchTerm=Flow.Dataflow.signal('');_ignoreNATerm=Flow.Dataflow.signal('');_values=Flow.Dataflow.signal([]);_selectionCount=Flow.Dataflow.signal(0);_isUpdatingSelectionCount=false;blockSelectionUpdates=function(f){_isUpdatingSelectionCount=true;f();return _isUpdatingSelectionCount=false;};incrementSelectionCount=function(amount){return _selectionCount(_selectionCount()+amount);};createEntry=function(value){var isSelected;isSelected=Flow.Dataflow.signal(false);Flow.Dataflow.react(isSelected,function(isSelected){if(!_isUpdatingSelectionCount){if(isSelected){incrementSelectionCount(1);}else{incrementSelectionCount(-1);}}});return{isSelected,value:value.value,type:value.type,missingLabel:value.missingLabel,missingPercent:value.missingPercent};};_entries=Flow.Dataflow.lift(_values,function(values){return lodash.map(values,createEntry);});_filteredItems=Flow.Dataflow.signal([]);_visibleItems=Flow.Dataflow.signal([]);_hasFilteredItems=Flow.Dataflow.lift(_filteredItems,function(entries){return entries.length>0;});_currentPage=Flow.Dataflow.signal(0);_maxPages=Flow.Dataflow.lift(_filteredItems,function(entries){return Math.ceil(entries.length/MaxItemsPerPage);});_canGoToPreviousPage=Flow.Dataflow.lift(_currentPage,function(index){return index>0;});_canGoToNextPage=Flow.Dataflow.lift(_maxPages,_currentPage,function(maxPages,index){return index<maxPages-1;});_searchCaption=Flow.Dataflow.lift(_entries,_filteredItems,_selectionCount,_currentPage,_maxPages,function(entries,filteredItems,selectionCount,currentPage,maxPages){var caption;caption=maxPages===0?'':`Showing page ${currentPage+1} of ${maxPages}.`;if(filteredItems.length!==entries.length){caption+=` Filtered ${filteredItems.length} of ${entries.length}.`;}if(selectionCount!==0){caption+=` ${selectionCount} ignored.`;}return caption;});Flow.Dataflow.react(_entries,function(){return filterItems(true);});_lastUsedSearchTerm=null;_lastUsedIgnoreNaTerm=null;filterItems=function(force){var entry;var filteredItems;var hide;var i;var ignoreNATerm;var missingPercent;var searchTerm;var start;var _i;var _len;var _ref;if(force==null){force=false;}searchTerm=_searchTerm().trim();ignoreNATerm=_ignoreNATerm().trim();if(force||searchTerm!==_lastUsedSearchTerm||ignoreNATerm!==_lastUsedIgnoreNaTerm){filteredItems=[];_ref=_entries();for(i=_i=0,_len=_ref.length;_i<_len;i=++_i){entry=_ref[i];missingPercent=parseFloat(ignoreNATerm);hide=false;if(searchTerm!==''&&entry.value.toLowerCase().indexOf(searchTerm.toLowerCase())===-1){hide=true;}else if(!lodash.isNaN(missingPercent)&&missingPercent!==0&&entry.missingPercent<=missingPercent){hide=true;}if(!hide){filteredItems.push(entry);}}_lastUsedSearchTerm=searchTerm;_lastUsedIgnoreNaTerm=ignoreNATerm;_currentPage(0);_filteredItems(filteredItems);}start=_currentPage()*MaxItemsPerPage;_visibleItems(_filteredItems().slice(start,start+MaxItemsPerPage));};changeSelection=function(source,value){var entry;var _i;var _len;for(_i=0,_len=source.length;_i<_len;_i++){entry=source[_i];entry.isSelected(value);}};selectFiltered=function(){var entries;entries=_filteredItems();blockSelectionUpdates(function(){return changeSelection(entries,true);});return _selectionCount(entries.length);};deselectFiltered=function(){blockSelectionUpdates(function(){return changeSelection(_filteredItems(),false);});return _selectionCount(0);};goToPreviousPage=function(){if(_canGoToPreviousPage()){_currentPage(_currentPage()-1);filterItems();}};goToNextPage=function(){if(_canGoToNextPage()){_currentPage(_currentPage()+1);filterItems();}};Flow.Dataflow.react(_searchTerm,lodash.throttle(filterItems,500));Flow.Dataflow.react(_ignoreNATerm,lodash.throttle(filterItems,500));control=createControl('list',parameter);control.values=_values;control.entries=_visibleItems;control.hasFilteredItems=_hasFilteredItems;control.searchCaption=_searchCaption;control.searchTerm=_searchTerm;control.ignoreNATerm=_ignoreNATerm;control.value=_entries;control.selectFiltered=selectFiltered;control.deselectFiltered=deselectFiltered;control.goToPreviousPage=goToPreviousPage;control.goToNextPage=goToNextPage;control.canGoToPreviousPage=_canGoToPreviousPage;control.canGoToNextPage=_canGoToNextPage;return control;};createCheckboxControl=function(parameter){var control;var _value;_value=Flow.Dataflow.signal(parameter.actual_value);control=createControl('checkbox',parameter);control.clientId=lodash.uniqueId();control.value=_value;return control;};createControlFromParameter=function(parameter){switch(parameter.type){case'enum':case'Key<Frame>':case'VecSpecifier':return createDropdownControl(parameter);case'string[]':return createListControl(parameter);case'boolean':return createCheckboxControl(parameter);case'Key<Model>':case'string':case'byte':case'short':case'int':case'long':case'float':case'double':case'byte[]':case'short[]':case'int[]':case'long[]':case'float[]':case'double[]':return createTextboxControl(parameter,parameter.type);default:console.error('Invalid field',JSON.stringify(parameter,null,2));return null;}};H2O.ModelBuilderForm=function(_,_algorithm,_parameters){var collectParameters;var control;var createModel;var criticalControls;var expertControls;var findControl;var findFormField;var parameterTemplateOf;var performValidations;var revalidate;var secondaryControls;var _controlGroups;var _exception;var _form;var _gridId;var _gridMaxModels;var _gridMaxRuntime;var _gridStoppingMetric;var _gridStoppingMetrics;var _gridStoppingRounds;var _gridStoppingTolerance;var _gridStrategies;var _gridStrategy;var _hasValidationFailures;var _i;var _isGridRandomDiscrete;var _isGrided;var _j;var _k;var _len;var _len1;var _len2;var _parametersByLevel;var _revalidate;var _validationFailureMessage;_exception=Flow.Dataflow.signal(null);_validationFailureMessage=Flow.Dataflow.signal('');_hasValidationFailures=Flow.Dataflow.lift(_validationFailureMessage,Flow.Prelude.isTruthy);_gridStrategies=['Cartesian','RandomDiscrete'];_isGrided=Flow.Dataflow.signal(false);_gridId=Flow.Dataflow.signal(`grid-${Flow.Util.uuid()}`);_gridStrategy=Flow.Dataflow.signal('Cartesian');_isGridRandomDiscrete=Flow.Dataflow.lift(_gridStrategy,function(strategy){return strategy!==_gridStrategies[0];});_gridMaxModels=Flow.Dataflow.signal(1000);_gridMaxRuntime=Flow.Dataflow.signal(28800);_gridStoppingRounds=Flow.Dataflow.signal(0);_gridStoppingMetrics=['AUTO','deviance','logloss','MSE','AUC','lift_top_group','r2','misclassification'];_gridStoppingMetric=Flow.Dataflow.signal(_gridStoppingMetrics[0]);_gridStoppingTolerance=Flow.Dataflow.signal(0.001);_parametersByLevel=lodash.groupBy(_parameters,function(parameter){return parameter.level;});_controlGroups=lodash.map(['critical','secondary','expert'],function(type){var controls;controls=lodash.filter(lodash.map(_parametersByLevel[type],createControlFromParameter),function(a){if(a){return true;}return false;});lodash.forEach(controls,function(control){return Flow.Dataflow.react(control.isGrided,function(){var isGrided;var _i;var _len;isGrided=false;for(_i=0,_len=controls.length;_i<_len;_i++){control=controls[_i];if(control.isGrided()){_isGrided(isGrided=true);break;}}if(!isGrided){return _isGrided(false);}});});return controls;});criticalControls=_controlGroups[0],secondaryControls=_controlGroups[1],expertControls=_controlGroups[2];_form=[];if(criticalControls.length){_form.push({kind:'group',title:'Parameters'});for(_i=0,_len=criticalControls.length;_i<_len;_i++){control=criticalControls[_i];_form.push(control);}}if(secondaryControls.length){_form.push({kind:'group',title:'Advanced'});for(_j=0,_len1=secondaryControls.length;_j<_len1;_j++){control=secondaryControls[_j];_form.push(control);}}if(expertControls.length){_form.push({kind:'group',title:'Expert'});for(_k=0,_len2=expertControls.length;_k<_len2;_k++){control=expertControls[_k];_form.push(control);}}findControl=function(name){var controls;var _l;var _len3;var _len4;var _m;for(_l=0,_len3=_controlGroups.length;_l<_len3;_l++){controls=_controlGroups[_l];for(_m=0,_len4=controls.length;_m<_len4;_m++){control=controls[_m];if(control.name===name){return control;}}}};parameterTemplateOf=function(control){return`flow-${control.kind}-model-parameter`;};findFormField=function(name){return lodash.find(_form,function(field){return field.name===name;});};(function(){var foldColumnParameter;var ignoredColumnsParameter;var offsetColumnsParameter;var responseColumnParameter;var trainingFrameParameter;var validationFrameParameter;var weightsColumnParameter;var _ref;_ref=lodash.map(['training_frame','validation_frame','response_column','ignored_columns','offset_column','weights_column','fold_column'],findFormField),trainingFrameParameter=_ref[0],validationFrameParameter=_ref[1],responseColumnParameter=_ref[2],ignoredColumnsParameter=_ref[3],offsetColumnsParameter=_ref[4],weightsColumnParameter=_ref[5],foldColumnParameter=_ref[6];if(trainingFrameParameter){if(responseColumnParameter||ignoredColumnsParameter){return Flow.Dataflow.act(trainingFrameParameter.value,function(frameKey){if(frameKey){_.requestFrameSummaryWithoutData(frameKey,function(error,frame){var columnLabels;var columnValues;if(!error){columnValues=lodash.map(frame.columns,function(column){return column.label;});columnLabels=lodash.map(frame.columns,function(column){var missingPercent;missingPercent=100*column.missing_count/frame.rows;return{type:column.type==='enum'?`enum(${column.domain_cardinality})`:column.type,value:column.label,missingPercent,missingLabel:missingPercent===0?'':`${Math.round(missingPercent)}% NA`};});if(responseColumnParameter){responseColumnParameter.values(columnValues);}if(ignoredColumnsParameter){ignoredColumnsParameter.values(columnLabels);}if(weightsColumnParameter){weightsColumnParameter.values(columnValues);}if(foldColumnParameter){foldColumnParameter.values(columnValues);}if(offsetColumnsParameter){offsetColumnsParameter.values(columnValues);}if(responseColumnParameter&&ignoredColumnsParameter){return Flow.Dataflow.lift(responseColumnParameter.value,function(responseVariableName){});}}});}});}}})();collectParameters=function(includeUnchangedParameters){var controls;var entry;var gridStoppingRounds;var hyperParameters;var isGrided;var item;var maxModels;var maxRuntime;var parameters;var searchCriteria;var selectedValues;var stoppingTolerance;var value;var _l;var _len3;var _len4;var _len5;var _m;var _n;var _ref;if(includeUnchangedParameters==null){includeUnchangedParameters=false;}isGrided=false;parameters={};hyperParameters={};for(_l=0,_len3=_controlGroups.length;_l<_len3;_l++){controls=_controlGroups[_l];for(_m=0,_len4=controls.length;_m<_len4;_m++){control=controls[_m];if(control.isGrided()){isGrided=true;switch(control.kind){case'textbox':hyperParameters[control.name]=control.valueGrided();break;case'dropdown':hyperParameters[control.name]=selectedValues=[];_ref=control.gridedValues();for(_n=0,_len5=_ref.length;_n<_len5;_n++){item=_ref[_n];if(item.value()){selectedValues.push(item.label);}}break;default:hyperParameters[control.name]=[true,false];}}else{value=control.value();if(control.isVisible()&&(includeUnchangedParameters||control.isRequired||control.defaultValue!==value)){switch(control.kind){case'dropdown':if(value){parameters[control.name]=value;}break;case'list':if(value.length){selectedValues=function(){var _len6;var _o;var _results;_results=[];for(_o=0,_len6=value.length;_o<_len6;_o++){entry=value[_o];if(entry.isSelected()){_results.push(entry.value);}}return _results;}();parameters[control.name]=selectedValues;}break;default:parameters[control.name]=value;}}}}}if(isGrided){parameters.grid_id=_gridId();parameters.hyper_parameters=hyperParameters;searchCriteria={strategy:_gridStrategy()};switch(searchCriteria.strategy){case'RandomDiscrete':if(!lodash.isNaN(maxModels=parseInt(_gridMaxModels(),10))){searchCriteria.max_models=maxModels;}if(!lodash.isNaN(maxRuntime=parseInt(_gridMaxRuntime(),10))){searchCriteria.max_runtime_secs=maxRuntime;}if(!lodash.isNaN(gridStoppingRounds=parseInt(_gridStoppingRounds(),10))){searchCriteria.stopping_rounds=gridStoppingRounds;}if(!lodash.isNaN(stoppingTolerance=parseFloat(_gridStoppingTolerance()))){searchCriteria.stopping_tolerance=stoppingTolerance;}searchCriteria.stopping_metric=_gridStoppingMetric();}parameters.search_criteria=searchCriteria;}return parameters;};performValidations=function(checkForErrors,go){var parameters;_exception(null);parameters=collectParameters(true);if(parameters.hyper_parameters){return go();}_validationFailureMessage('');return _.requestModelInputValidation(_algorithm,parameters,function(error,modelBuilder){var controls;var hasErrors;var validation;var validations;var validationsByControlName;var _l;var _len3;var _len4;var _len5;var _m;var _n;if(error){return _exception(Flow.Failure(_,new Flow.Error('Error fetching initial model builder state',error)));}hasErrors=false;if(modelBuilder.messages.length){validationsByControlName=lodash.groupBy(modelBuilder.messages,function(validation){return validation.field_name;});for(_l=0,_len3=_controlGroups.length;_l<_len3;_l++){controls=_controlGroups[_l];for(_m=0,_len4=controls.length;_m<_len4;_m++){control=controls[_m];if(validations=validationsByControlName[control.name]){for(_n=0,_len5=validations.length;_n<_len5;_n++){validation=validations[_n];if(validation.message_type==='TRACE'){control.isVisible(false);}else{control.isVisible(true);if(checkForErrors){switch(validation.message_type){case'INFO':control.hasInfo(true);control.message(validation.message);break;case'WARN':control.hasWarning(true);control.message(validation.message);break;case'ERRR':control.hasError(true);control.message(validation.message);hasErrors=true;}}}}}else{control.isVisible(true);control.hasInfo(false);control.hasWarning(false);control.hasError(false);control.message('');}}}}if(hasErrors){return _validationFailureMessage('Your model parameters have one or more errors. Please fix them and try again.');}_validationFailureMessage('');return go();});};createModel=function(){_exception(null);return performValidations(true,function(){var parameters;parameters=collectParameters(false);return _.insertAndExecuteCell('cs',`buildModel \'${_algorithm}\', ${Flow.Prelude.stringify(parameters)}`);});};_revalidate=function(value){if(value!==void 0){return performValidations(false,function(){});}};revalidate=lodash.throttle(_revalidate,100,{leading:false});performValidations(false,function(){var controls;var _l;var _len3;var _len4;var _m;for(_l=0,_len3=_controlGroups.length;_l<_len3;_l++){controls=_controlGroups[_l];for(_m=0,_len4=controls.length;_m<_len4;_m++){control=controls[_m];Flow.Dataflow.react(control.value,revalidate);}}});return{form:_form,isGrided:_isGrided,gridId:_gridId,gridStrategy:_gridStrategy,gridStrategies:_gridStrategies,isGridRandomDiscrete:_isGridRandomDiscrete,gridMaxModels:_gridMaxModels,gridMaxRuntime:_gridMaxRuntime,gridStoppingRounds:_gridStoppingRounds,gridStoppingMetrics:_gridStoppingMetrics,gridStoppingMetric:_gridStoppingMetric,gridStoppingTolerance:_gridStoppingTolerance,exception:_exception,parameterTemplateOf,createModel,hasValidationFailures:_hasValidationFailures,validationFailureMessage:_validationFailureMessage};};H2O.ModelInput=function(_,_go,_algo,_opts){var createModel;var populateFramesAndColumns;var _algorithm;var _algorithms;var _canCreateModel;var _exception;var _modelForm;_exception=Flow.Dataflow.signal(null);_algorithms=Flow.Dataflow.signal([]);_algorithm=Flow.Dataflow.signal(null);_canCreateModel=Flow.Dataflow.lift(_algorithm,function(algorithm){if(algorithm){return true;}return false;});_modelForm=Flow.Dataflow.signal(null);populateFramesAndColumns=function(frameKey,algorithm,parameters,go){var classificationParameter;var destinationKeyParameter;destinationKeyParameter=lodash.find(parameters,function(parameter){return parameter.name==='model_id';});if(destinationKeyParameter&&!destinationKeyParameter.actual_value){destinationKeyParameter.actual_value=`${algorithm}-${Flow.Util.uuid()}`;}classificationParameter=lodash.find(parameters,function(parameter){return parameter.name==='do_classification';});if(classificationParameter){classificationParameter.actual_value=true;}return _.requestFrames(function(error,frames){var frame;var frameKeys;var frameParameters;var parameter;var _i;var _len;if(error){// empty
-  }else{frameKeys=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=frames.length;_i<_len;_i++){frame=frames[_i];_results.push(frame.frame_id.name);}return _results;}();frameParameters=lodash.filter(parameters,function(parameter){return parameter.type==='Key<Frame>';});for(_i=0,_len=frameParameters.length;_i<_len;_i++){parameter=frameParameters[_i];parameter.values=frameKeys;if(parameter.name==='training_frame'){if(frameKey){parameter.actual_value=frameKey;}else{frameKey=parameter.actual_value;}}}return go();}});};(function(){return _.requestModelBuilders(function(error,modelBuilders){var frameKey;_algorithms(modelBuilders);_algorithm(_algo?lodash.find(modelBuilders,function(builder){return builder.algo===_algo;}):void 0);frameKey=_opts!=null?_opts.training_frame:void 0;return Flow.Dataflow.act(_algorithm,function(builder){var algorithm;var parameters;if(builder){algorithm=builder.algo;parameters=Flow.Prelude.deepClone(builder.parameters);return populateFramesAndColumns(frameKey,algorithm,parameters,function(){return _modelForm(H2O.ModelBuilderForm(_,algorithm,parameters));});}return _modelForm(null);});});})();createModel=function(){return _modelForm().createModel();};lodash.defer(_go);return{parentException:_exception,algorithms:_algorithms,algorithm:_algorithm,modelForm:_modelForm,canCreateModel:_canCreateModel,createModel,template:'flow-model-input'};};}).call(this);// anonymous IIFE
+  (function(){var getJobOutputStatusColor;var getJobProgressPercent;var jobOutputStatusColors;jobOutputStatusColors={failed:'#d9534f',done:'#ccc',running:'#f0ad4e'};getJobOutputStatusColor=function(status){switch(status){case'DONE':return jobOutputStatusColors.done;case'CREATED':case'RUNNING':return jobOutputStatusColors.running;default:return jobOutputStatusColors.failed;}};getJobProgressPercent=function(progress){return`${Math.ceil(100*progress)}%`;};H2O.JobOutput=function(_,_go,_job){var canView;var cancel;var initialize;var isJobRunning;var messageIcons;var refresh;var updateJob;var view;var _canCancel;var _canView;var _description;var _destinationKey;var _destinationType;var _exception;var _isBusy;var _isLive;var _key;var _messages;var _progress;var _progressMessage;var _remainingTime;var _runTime;var _status;var _statusColor;_isBusy=Flow.Dataflow.signal(false);_isLive=Flow.Dataflow.signal(false);_key=_job.key.name;_description=_job.description;_destinationKey=_job.dest.name;_destinationType=function(){switch(_job.dest.type){case'Key<Frame>':return'Frame';case'Key<Model>':return'Model';case'Key<Grid>':return'Grid';case'Key<PartialDependence>':return'PartialDependence';case'Key<AutoML>':return'Auto Model';case'Key<KeyedVoid>':return'Void';default:return'Unknown';}}();_runTime=Flow.Dataflow.signal(null);_remainingTime=Flow.Dataflow.signal(null);_progress=Flow.Dataflow.signal(null);_progressMessage=Flow.Dataflow.signal(null);_status=Flow.Dataflow.signal(null);_statusColor=Flow.Dataflow.signal(null);_exception=Flow.Dataflow.signal(null);_messages=Flow.Dataflow.signal(null);_canView=Flow.Dataflow.signal(false);_canCancel=Flow.Dataflow.signal(false);isJobRunning=function(job){return job.status==='CREATED'||job.status==='RUNNING';};messageIcons={ERROR:'fa-times-circle red',WARN:'fa-warning orange',INFO:'fa-info-circle'};canView=function(job){switch(_destinationType){case'Model':case'Grid':return job.ready_for_view;default:return!isJobRunning(job);}};updateJob=function(job){var cause;var message;var messages;_runTime(Flow.Util.formatMilliseconds(job.msec));_progress(getJobProgressPercent(job.progress));_remainingTime(job.progress?Flow.Util.formatMilliseconds(Math.round((1-job.progress)*job.msec/job.progress)):'Estimating...');_progressMessage(job.progress_msg);_status(job.status);_statusColor(getJobOutputStatusColor(job.status));if(job.error_count){messages=function(){var _i;var _len;var _ref;var _results;_ref=job.messages;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){message=_ref[_i];if(message.message_type!=='HIDE'){_results.push({icon:messageIcons[message.message_type],message:`${message.field_name}: ${message.message}`});}}return _results;}();_messages(messages);}else if(job.exception){cause=new Error(job.exception);if(job.stacktrace){cause.stack=job.stacktrace;}_exception(Flow.Failure(_,new Flow.Error('Job failure.',cause)));}_canView(canView(job));return _canCancel(isJobRunning(job));};refresh=function(){_isBusy(true);return _.requestJob(_key,function(error,job){_isBusy(false);if(error){_exception(Flow.Failure(_,new Flow.Error('Error fetching jobs',error)));return _isLive(false);}updateJob(job);if(isJobRunning(job)){if(_isLive()){return lodash.delay(refresh,1000);}}else{_isLive(false);if(_go){return lodash.defer(_go);}}});};Flow.Dataflow.act(_isLive,function(isLive){if(isLive){return refresh();}});view=function(){if(!_canView()){return;}switch(_destinationType){case'Frame':return _.insertAndExecuteCell('cs',`getFrameSummary ${Flow.Prelude.stringify(_destinationKey)}`);case'Model':return _.insertAndExecuteCell('cs',`getModel ${Flow.Prelude.stringify(_destinationKey)}`);case'Grid':return _.insertAndExecuteCell('cs',`getGrid ${Flow.Prelude.stringify(_destinationKey)}`);case'PartialDependence':return _.insertAndExecuteCell('cs',`getPartialDependence ${Flow.Prelude.stringify(_destinationKey)}`);case'Auto Model':return _.insertAndExecuteCell('cs','getGrids');case'Void':return alert(`This frame was exported to\n${_job.dest.name}`);}};cancel=function(){return _.requestCancelJob(_key,function(error,result){if(error){return console.debug(error);}return updateJob(_job);});};initialize=function(job){updateJob(job);if(isJobRunning(job)){return _isLive(true);}if(_go){return lodash.defer(_go);}};initialize(_job);return{key:_key,description:_description,destinationKey:_destinationKey,destinationType:_destinationType,runTime:_runTime,remainingTime:_remainingTime,progress:_progress,progressMessage:_progressMessage,status:_status,statusColor:_statusColor,messages:_messages,exception:_exception,isLive:_isLive,canView:_canView,canCancel:_canCancel,cancel,view,template:'flow-job-output'};};}).call(this);// modelInput
+  modelInput();// anonymous IIFE
   (function(){var MaxItemsPerPage;var dataTypes;var parseDelimiters;var parseTypes;MaxItemsPerPage=15;parseTypes=lodash.map(['AUTO','ARFF','XLS','XLSX','CSV','SVMLight','ORC','AVRO','PARQUET'],function(type){return{type,caption:type};});parseDelimiters=function(){var characterDelimiters;var createDelimiter;var otherDelimiters;var whitespaceDelimiters;var whitespaceSeparators;whitespaceSeparators=['NULL','SOH (start of heading)','STX (start of text)','ETX (end of text)','EOT (end of transmission)','ENQ (enquiry)','ACK (acknowledge)','BEL \'\\a\' (bell)','BS  \'\\b\' (backspace)','HT  \'\\t\' (horizontal tab)','LF  \'\\n\' (new line)','VT  \'\\v\' (vertical tab)','FF  \'\\f\' (form feed)','CR  \'\\r\' (carriage ret)','SO  (shift out)','SI  (shift in)','DLE (data link escape)','DC1 (device control 1) ','DC2 (device control 2)','DC3 (device control 3)','DC4 (device control 4)','NAK (negative ack.)','SYN (synchronous idle)','ETB (end of trans. blk)','CAN (cancel)','EM  (end of medium)','SUB (substitute)','ESC (escape)','FS  (file separator)','GS  (group separator)','RS  (record separator)','US  (unit separator)','\' \' SPACE'];createDelimiter=function(caption,charCode){return{charCode,caption:`${caption}: \'${`00${charCode}`.slice(-2)}\'`};};whitespaceDelimiters=lodash.map(whitespaceSeparators,createDelimiter);characterDelimiters=lodash.times(126-whitespaceSeparators.length,function(i){var charCode;charCode=i+whitespaceSeparators.length;return createDelimiter(String.fromCharCode(charCode),charCode);});otherDelimiters=[{charCode:-1,caption:'AUTO'}];return whitespaceDelimiters.concat(characterDelimiters,otherDelimiters);}();dataTypes=['Unknown','Numeric','Enum','Time','UUID','String','Invalid'];H2O.SetupParseOutput=function(_,_go,_inputs,_result){var filterColumns;var goToNextPage;var goToPreviousPage;var makePage;var parseFiles;var refreshPreview;var _activePage;var _canGoToNextPage;var _canGoToPreviousPage;var _canReconfigure;var _chunkSize;var _columnCount;var _columnNameSearchTerm;var _columns;var _currentPage;var _deleteOnDone;var _delimiter;var _destinationKey;var _filteredColumns;var _headerOption;var _headerOptions;var _inputKey;var _parseType;var _preview;var _sourceKeys;var _useSingleQuotes;var _visibleColumns;_inputKey=_inputs.paths?'paths':'source_frames';_sourceKeys=lodash.map(_result.source_frames,function(src){return src.name;});_parseType=Flow.Dataflow.signal(lodash.find(parseTypes,function(parseType){return parseType.type===_result.parse_type;}));_canReconfigure=Flow.Dataflow.lift(_parseType,function(parseType){return parseType.type!=='SVMLight';});_delimiter=Flow.Dataflow.signal(lodash.find(parseDelimiters,function(delimiter){return delimiter.charCode===_result.separator;}));_useSingleQuotes=Flow.Dataflow.signal(_result.single_quotes);_destinationKey=Flow.Dataflow.signal(_result.destination_frame);_headerOptions={auto:0,header:1,data:-1};_headerOption=Flow.Dataflow.signal(_result.check_header===0?'auto':_result.check_header===-1?'data':'header');_deleteOnDone=Flow.Dataflow.signal(true);_columnNameSearchTerm=Flow.Dataflow.signal('');_preview=Flow.Dataflow.signal(_result);_chunkSize=Flow.Dataflow.lift(_preview,function(preview){return preview.chunk_size;});refreshPreview=function(){var column;var columnTypes;columnTypes=function(){var _i;var _len;var _ref;var _results;_ref=_columns();_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.type());}return _results;}();return _.requestParseSetupPreview(_sourceKeys,_parseType().type,_delimiter().charCode,_useSingleQuotes(),_headerOptions[_headerOption()],columnTypes,function(error,result){if(!error){return _preview(result);}});};_columns=Flow.Dataflow.lift(_preview,function(preview){var columnCount;var columnNames;var columnTypes;var data;var i;var j;var previewData;var row;var rowCount;var rows;var _i;var _j;columnTypes=preview.column_types;columnCount=columnTypes.length;previewData=preview.data;rowCount=previewData.length;columnNames=preview.column_names;rows=new Array(columnCount);for(j=_i=0;columnCount>=0?_i<columnCount:_i>columnCount;j=columnCount>=0?++_i:--_i){data=new Array(rowCount);for(i=_j=0;rowCount>=0?_j<rowCount:_j>rowCount;i=rowCount>=0?++_j:--_j){data[i]=previewData[i][j];}rows[j]=row={index:`${j+1}`,name:Flow.Dataflow.signal(columnNames?columnNames[j]:''),type:Flow.Dataflow.signal(columnTypes[j]),data};}return rows;});_columnCount=Flow.Dataflow.lift(_columns,function(columns){return(columns!=null?columns.length:void 0)||0;});_currentPage=0;Flow.Dataflow.act(_columns,function(columns){return lodash.forEach(columns,function(column){return Flow.Dataflow.react(column.type,function(){_currentPage=_activePage().index;return refreshPreview();});});});Flow.Dataflow.react(_parseType,_delimiter,_useSingleQuotes,_headerOption,function(){_currentPage=0;return refreshPreview();});_filteredColumns=Flow.Dataflow.lift(_columns,function(columns){return columns;});makePage=function(index,columns){return{index,columns};};_activePage=Flow.Dataflow.lift(_columns,function(columns){return makePage(_currentPage,columns);});filterColumns=function(){return _activePage(makePage(0,lodash.filter(_columns(),function(column){return column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase())>-1;})));};Flow.Dataflow.react(_columnNameSearchTerm,lodash.throttle(filterColumns,500));_visibleColumns=Flow.Dataflow.lift(_activePage,function(currentPage){var start;start=currentPage.index*MaxItemsPerPage;return currentPage.columns.slice(start,start+MaxItemsPerPage);});parseFiles=function(){var column;var columnNames;var columnTypes;var headerOption;columnNames=function(){var _i;var _len;var _ref;var _results;_ref=_columns();_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.name());}return _results;}();headerOption=_headerOptions[_headerOption()];if(lodash.every(columnNames,function(columnName){return columnName.trim()==='';})){columnNames=null;headerOption=-1;}columnTypes=function(){var _i;var _len;var _ref;var _results;_ref=_columns();_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.type());}return _results;}();return _.insertAndExecuteCell('cs','parseFiles\n  '+_inputKey+': '+Flow.Prelude.stringify(_inputs[_inputKey])+'\n  destination_frame: '+Flow.Prelude.stringify(_destinationKey())+'\n  parse_type: '+Flow.Prelude.stringify(_parseType().type)+'\n  separator: '+_delimiter().charCode+'\n  number_columns: '+_columnCount()+'\n  single_quotes: '+_useSingleQuotes()+'\n  '+(_canReconfigure()?'column_names: '+Flow.Prelude.stringify(columnNames)+'\n  ':'')+(_canReconfigure()?'column_types: '+Flow.Prelude.stringify(columnTypes)+'\n  ':'')+'delete_on_done: '+_deleteOnDone()+'\n  check_header: '+headerOption+'\n  chunk_size: '+_chunkSize());// eslint-disable-line
   };_canGoToNextPage=Flow.Dataflow.lift(_activePage,function(currentPage){return(currentPage.index+1)*MaxItemsPerPage<currentPage.columns.length;});_canGoToPreviousPage=Flow.Dataflow.lift(_activePage,function(currentPage){return currentPage.index>0;});goToNextPage=function(){var currentPage;currentPage=_activePage();return _activePage(makePage(currentPage.index+1,currentPage.columns));};goToPreviousPage=function(){var currentPage;currentPage=_activePage();if(currentPage.index>0){return _activePage(makePage(currentPage.index-1,currentPage.columns));}};lodash.defer(_go);return{sourceKeys:_inputs[_inputKey],canReconfigure:_canReconfigure,parseTypes,dataTypes,delimiters:parseDelimiters,parseType:_parseType,delimiter:_delimiter,useSingleQuotes:_useSingleQuotes,destinationKey:_destinationKey,headerOption:_headerOption,deleteOnDone:_deleteOnDone,columns:_visibleColumns,parseFiles,columnNameSearchTerm:_columnNameSearchTerm,canGoToNextPage:_canGoToNextPage,canGoToPreviousPage:_canGoToPreviousPage,goToNextPage,goToPreviousPage,template:'flow-parse-raw-input'};};}).call(this);}).call(undefined);
 
