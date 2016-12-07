@@ -58,6 +58,7 @@ import { flowStatus } from './flowStatus';
 import { flowSidebar } from './flowSidebar';
 import { flowRaw } from './flowRaw';
 import { flowHeading } from './flowHeading';
+import { flowForm } from './flowForm';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -769,18 +770,7 @@ import { flowHeading } from './flowHeading';
       };
     };
   }.call(this));
-  (function () {
-    Flow.Form = function (_, _form, _go) {
-      lodash.defer(_go);
-      return {
-        form: _form,
-        template: 'flow-form',
-        templateOf(control) {
-          return control.template;
-        }
-      };
-    };
-  }.call(this));
+  // anonymous IIFE
   (function () {
     var _catalog;
     var _homeContent;
@@ -6416,7 +6406,7 @@ import { flowHeading } from './flowHeading';
         ].concat(args || [])));
       };
       extendGuiForm = function (form) {
-        return render_(form, Flow.Form, form);
+        return render_(form, flowForm, form);
       };
       createGui = function (controls, go) {
         return go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
