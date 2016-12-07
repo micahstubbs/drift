@@ -737,8 +737,7 @@ import { flowForm } from './flowForm';
       };
     };
   }.call(this));
-  (function () {
-  }.call(this));
+  // anonymous IIFE
   (function () {
     var traceCauses;
     traceCauses = function (error, causes) {
