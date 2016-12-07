@@ -50,6 +50,7 @@ import { h2oBindFramesOutput } from './h2oBindFramesOutput';
 import { h2oAutoModelInput } from './h2oAutoModelInput';
 import { h2oAssist } from './h2oAssist';
 import { h2oApplicationContext } from './h2oApplicationContext';
+import { flowSandbox } from './flowSandbox';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -2807,7 +2808,7 @@ import { h2oApplicationContext } from './h2oApplicationContext';
       var _renderers;
       var _sandbox;
       Flow.ApplicationContext(_);
-      _sandbox = Flow.Sandbox(_, routines(_));
+      _sandbox = flowSandbox(_, routines(_));
       _renderers = Flow.Renderers(_, _sandbox);
       Flow.Analytics(_);
       Flow.Growl(_);
@@ -4868,15 +4869,6 @@ import { h2oApplicationContext } from './h2oApplicationContext';
         stringify: JSON.stringify
       };
     }();
-  }.call(this));
-  (function () {
-    Flow.Sandbox = function (_, routines) {
-      return {
-        routines,
-        context: {},
-        results: {}
-      };
-    };
   }.call(this));
   (function () {
     Flow.TUndefined = 'undefined';
