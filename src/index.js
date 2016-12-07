@@ -27,6 +27,7 @@ import { types } from './types/types';
 import { localStorage } from './localStorage/localStorage';
 import { knockout } from './knockout/knockout';
 import { html } from './html/html';
+import { format } from './format/format';
 
 // anonymous IIFE
 (function () {
@@ -3588,54 +3589,6 @@ import { html } from './html/html';
       return FlowError;
     }(Error);
     Flow.Error = FlowError;
-  }.call(this));
-  (function () {
-    var Digits;
-    var formatDate;
-    var formatReal;
-    var formatTime;
-    var significantDigitsBeforeDecimal;
-    var __formatReal;
-    significantDigitsBeforeDecimal = function (value) {
-      return 1 + Math.floor(Math.log(Math.abs(value)) / Math.LN10);
-    };
-    Digits = function (digits, value) {
-      var magnitude;
-      var sd;
-      if (value === 0) {
-        return 0;
-      }
-      sd = significantDigitsBeforeDecimal(value);
-      if (sd >= digits) {
-        return value.toFixed(0);
-      }
-      magnitude = Math.pow(10, digits - sd);
-      return Math.round(value * magnitude) / magnitude;
-    };
-    if (typeof exports === 'undefined' || exports === null) {
-      formatTime = d3.time.format('%Y-%m-%d %H:%M:%S');
-    }
-    formatDate = function (time) {
-      if (time) {
-        return formatTime(new Date(time));
-      }
-      return '-';
-    };
-    __formatReal = {};
-    formatReal = function (precision) {
-      var cached;
-      var format;
-      format = (cached = __formatReal[precision]) ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${precision}f`);
-      return function (value) {
-        return format(value);
-      };
-    };
-    Flow.Format = {
-      Digits,
-      Real: formatReal,
-      Date: formatDate,
-      Time: formatTime
-    };
   }.call(this));
   // anonymous IIFE
   // includes
