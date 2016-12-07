@@ -3763,8 +3763,6 @@ import { html } from './html/html';
       button
     };
   }.call(this));
-  // src/core/modules/html.coffee
-  // 24 matches across 5 files
   html();
   knockout();
   localStorage();
@@ -3785,6 +3783,9 @@ import { html } from './html/html';
       }
     });
   }.call(this));
+  // this is used many places
+  // 179 matches across 29 files, in fact
+  // defer for now
   (function () {
     Flow.Prelude = function () {
       var _always;
