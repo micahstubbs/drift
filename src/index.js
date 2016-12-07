@@ -3590,6 +3590,7 @@ import { format } from './format/format';
     }(Error);
     Flow.Error = FlowError;
   }.call(this));
+  format();
   // anonymous IIFE
   // includes
   // src/core/modules/gui.coffee
