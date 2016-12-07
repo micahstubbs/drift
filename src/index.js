@@ -3762,7 +3762,6 @@ import { html } from './html/html';
       textarea,
       button
     };
-  }.call(this));
   html();
   knockout();
   localStorage();
