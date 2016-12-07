@@ -4,3449 +4,6 @@
   (factory());
 }(this, function () { 'use strict';
 
-  function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
-    var lodash = window._;
-    var computeRatios;
-    var createFrameView;
-    var index;
-    var key;
-    var _frames;
-    var _ratios;
-    computeRatios = function (sourceRatios) {
-      var ratio;
-      var ratios;
-      var total;
-      total = 0;
-      ratios = function () {
-        var _i;
-        var _len;
-        var _results;
-        _results = [];
-        for (_i = 0, _len = sourceRatios.length; _i < _len; _i++) {
-          ratio = sourceRatios[_i];
-          total += ratio;
-          _results.push(ratio);
-        }
-        return _results;
-      }();
-      ratios.push(1 - total);
-      return ratios;
-    };
-    createFrameView = function (key, ratio) {
-      var self;
-      var view;
-      view = function () {
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(key) }`);
-      };
-      return self = {
-        key,
-        ratio,
-        view
-      };
-    };
-    _ratios = computeRatios(_splitFrameResult.ratios);
-    _frames = function () {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
-      _ref = _splitFrameResult.keys;
-      _results = [];
-      for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
-        key = _ref[index];
-        _results.push(createFrameView(key, _ratios[index]));
-      }
-      return _results;
-    }();
-    lodash.defer(_go);
-    return {
-      frames: _frames,
-      template: 'flow-split-frame-output'
-    };
-  };
-
-  function h2oTimelineOutput(_, _go, _timeline) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createEvent;
-    var refresh;
-    var toggleRefresh;
-    var updateTimeline;
-    var _data;
-    var _headers;
-    var _isBusy;
-    var _isLive;
-    var _timestamp;
-    _isLive = Flow.Dataflow.signal(false);
-    _isBusy = Flow.Dataflow.signal(false);
-    _headers = ['HH:MM:SS:MS', 'nanosec', 'Who', 'I/O Type', 'Event', 'Type', 'Bytes'];
-    _data = Flow.Dataflow.signal(null);
-    _timestamp = Flow.Dataflow.signal(Date.now());
-    createEvent = function (event) {
-      switch (event.type) {
-        case 'io':
-          return [event.date, event.nanos, event.node, event.io_flavor || '-', 'I/O', '-', event.data];
-        case 'heartbeat':
-          return [event.date, event.nanos, 'many &#8594;  many', 'UDP', event.type, '-', `${ event.sends } sent ${ event.recvs } received'`];
-        case 'network_msg':
-          return [event.date, event.nanos, `${ event.from } &#8594; ${ event.to }`, event.protocol, event.msg_type, event.is_send ? 'send' : 'receive', event.data];
-        default:
-      }
-    };
-    updateTimeline = function (timeline) {
-      var cell;
-      var event;
-      var grid;
-      var header;
-      var table;
-      var tbody;
-      var td;
-      var th;
-      var thead;
-      var ths;
-      var tr;
-      var trs;
-      var _ref;
-      _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td');
-      grid = _ref[0];
-      table = _ref[1];
-      thead = _ref[2];
-      tbody = _ref[3];
-      tr = _ref[4];
-      th = _ref[5];
-      td = _ref[6];
-      ths = function () {
-        var _i;
-        var _len;
-        var _results;
-        _results = [];
-        for (_i = 0, _len = _headers.length; _i < _len; _i++) {
-          header = _headers[_i];
-          _results.push(th(header));
-        }
-        return _results;
-      }();
-      trs = function () {
-        let _i;
-        let _len;
-        const _ref1 = timeline.events;
-        const _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          event = _ref1[_i];
-          _results.push(tr(function () {
-            let _j;
-            let _len1;
-            const _ref2 = createEvent(event);
-            const _results1 = [];
-            for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-              cell = _ref2[_j];
-              _results1.push(td(cell));
-            }
-            return _results1;
-          }()));
-        }
-        return _results;
-      }();
-      return _data(Flow.HTML.render('div', grid([table([thead(tr(ths)), tbody(trs)])])));
-    };
-    toggleRefresh = function () {
-      return _isLive(!_isLive());
-    };
-    refresh = function () {
-      _isBusy(true);
-      return _.requestTimeline((error, timeline) => {
-        _isBusy(false);
-        if (error) {
-          _exception(Flow.Failure(_, new Flow.Error('Error fetching timeline', error)));
-          return _isLive(false);
-        }
-        updateTimeline(timeline);
-        if (_isLive()) {
-          return lodash.delay(refresh, 2000);
-        }
-      });
-    };
-    Flow.Dataflow.act(_isLive, isLive => {
-      if (isLive) {
-        return refresh();
-      }
-    });
-    updateTimeline(_timeline);
-    lodash.defer(_go);
-    return {
-      data: _data,
-      isLive: _isLive,
-      isBusy: _isBusy,
-      toggleRefresh,
-      refresh,
-      template: 'flow-timeline-output'
-    };
-  };
-
-  function h2oStackTraceOutput(_, _go, _stackTrace) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createNode;
-    var createThread;
-    var node;
-    var _activeNode;
-    var _nodes;
-    _activeNode = Flow.Dataflow.signal(null);
-    createThread = function (thread) {
-      var lines;
-      lines = thread.split('\n');
-      return {
-        title: lodash.head(lines),
-        stackTrace: lodash.tail(lines).join('\n')
-      };
-    };
-    createNode = function (node) {
-      var display;
-      var self;
-      var thread;
-      display = function () {
-        return _activeNode(self);
-      };
-      return self = {
-        name: node.node,
-        timestamp: new Date(node.time),
-        threads: function () {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
-          _ref = node.thread_traces;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            thread = _ref[_i];
-            _results.push(createThread(thread));
-          }
-          return _results;
-        }(),
-        display
-      };
-    };
-    _nodes = function () {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
-      _ref = _stackTrace.traces;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
-        _results.push(createNode(node));
-      }
-      return _results;
-    }();
-    _activeNode(lodash.head(_nodes));
-    lodash.defer(_go);
-    return {
-      nodes: _nodes,
-      activeNode: _activeNode,
-      template: 'flow-stacktrace-output'
-    };
-  };
-
-  function h2oSplitFrameInput(_, _go, _frameKey) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var addSplit;
-    var addSplitRatio;
-    var collectKeys;
-    var collectRatios;
-    var computeSplits;
-    var createSplit;
-    var createSplitName;
-    var format4f;
-    var initialize;
-    var splitFrame;
-    var updateSplitRatiosAndNames;
-    var _frame;
-    var _frames;
-    var _lastSplitKey;
-    var _lastSplitRatio;
-    var _lastSplitRatioText;
-    var _seed;
-    var _splits;
-    var _validationMessage;
-    _frames = Flow.Dataflow.signal([]);
-    _frame = Flow.Dataflow.signal(null);
-    _lastSplitRatio = Flow.Dataflow.signal(1);
-    format4f = function (value) {
-      return value.toPrecision(4).replace(/0+$/, '0');
-    };
-    _lastSplitRatioText = Flow.Dataflow.lift(_lastSplitRatio, function (ratio) {
-      if (lodash.isNaN(ratio)) {
-        return ratio;
-      }
-      return format4f(ratio);
-    });
-    _lastSplitKey = Flow.Dataflow.signal('');
-    _splits = Flow.Dataflow.signals([]);
-    _seed = Flow.Dataflow.signal(Math.random() * 1000000 | 0);
-    Flow.Dataflow.react(_splits, function () {
-      return updateSplitRatiosAndNames();
-    });
-    _validationMessage = Flow.Dataflow.signal('');
-    collectRatios = function () {
-      var entry;
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
-      _ref = _splits();
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        entry = _ref[_i];
-        _results.push(entry.ratio());
-      }
-      return _results;
-    };
-    collectKeys = function () {
-      var entry;
-      var splitKeys;
-      splitKeys = function () {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
-        _ref = _splits();
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          entry = _ref[_i];
-          _results.push(entry.key().trim());
-        }
-        return _results;
-      }();
-      splitKeys.push(_lastSplitKey().trim());
-      return splitKeys;
-    };
-    createSplitName = function (key, ratio) {
-      return `${ key }_${ format4f(ratio) }`;
-    };
-    updateSplitRatiosAndNames = function () {
-      var entry;
-      var frame;
-      var frameKey;
-      var lastSplitRatio;
-      var ratio;
-      var totalRatio;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
-      var _ref;
-      var _ref1;
-      totalRatio = 0;
-      _ref = collectRatios();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        ratio = _ref[_i];
-        totalRatio += ratio;
-      }
-      lastSplitRatio = _lastSplitRatio(1 - totalRatio);
-      frameKey = (frame = _frame()) ? frame : 'frame';
-      _ref1 = _splits();
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        entry = _ref1[_j];
-        entry.key(createSplitName(frameKey, entry.ratio()));
-      }
-      _lastSplitKey(createSplitName(frameKey, _lastSplitRatio()));
-    };
-    computeSplits = function (go) {
-      var key;
-      var ratio;
-      var splitKeys;
-      var splitRatios;
-      var totalRatio;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
-      if (!_frame()) {
-        return go('Frame not specified.');
-      }
-      splitRatios = collectRatios();
-      totalRatio = 0;
-      for (_i = 0, _len = splitRatios.length; _i < _len; _i++) {
-        ratio = splitRatios[_i];
-        if (ratio > 0 && ratio < 1) {
-          totalRatio += ratio;
-        } else {
-          return go('One or more split ratios are invalid. Ratios should between 0 and 1.');
-        }
-      }
-      if (totalRatio >= 1) {
-        return go('Sum of ratios is >= 1.');
-      }
-      splitKeys = collectKeys();
-      for (_j = 0, _len1 = splitKeys.length; _j < _len1; _j++) {
-        key = splitKeys[_j];
-        if (key === '') {
-          return go('One or more keys are empty or invalid.');
-        }
-      }
-      if (splitKeys.length < 2) {
-        return go('Please specify at least two splits.');
-      }
-      if (splitKeys.length !== lodash.unique(splitKeys).length) {
-        return go('Duplicate keys specified.');
-      }
-      return go(null, splitRatios, splitKeys);
-    };
-    createSplit = function (ratio) {
-      var self;
-      var _key;
-      var _ratio;
-      var _ratioText;
-      _ratioText = Flow.Dataflow.signal(`${ ratio }`);
-      _key = Flow.Dataflow.signal('');
-      _ratio = Flow.Dataflow.lift(_ratioText, function (text) {
-        return parseFloat(text);
-      });
-      Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
-      Flow.Prelude.remove = function () {
-        return _splits.remove(self);
-      };
-      return self = {
-        key: _key,
-        ratioText: _ratioText,
-        ratio: _ratio,
-        remove: Flow.Prelude.remove
-      };
-    };
-    addSplitRatio = function (ratio) {
-      return _splits.push(createSplit(ratio));
-    };
-    addSplit = function () {
-      return addSplitRatio(0);
-    };
-    splitFrame = function () {
-      return computeSplits(function (error, splitRatios, splitKeys) {
-        if (error) {
-          return _validationMessage(error);
-        }
-        _validationMessage('');
-        return _.insertAndExecuteCell('cs', `splitFrame ${ Flow.Prelude.stringify(_frame()) }, ${ Flow.Prelude.stringify(splitRatios) }, ${ Flow.Prelude.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
-      });
-    };
-    initialize = function () {
-      _.requestFrames(function (error, frames) {
-        var frame;
-        var frameKeys;
-        if (!error) {
-          frameKeys = function () {
-            var _i;
-            var _len;
-            var _results;
-            _results = [];
-            for (_i = 0, _len = frames.length; _i < _len; _i++) {
-              frame = frames[_i];
-              if (!frame.is_text) {
-                _results.push(frame.frame_id.name);
-              }
-            }
-            return _results;
-          }();
-          frameKeys.sort();
-          _frames(frameKeys);
-          return _frame(_frameKey);
-        }
-      });
-      addSplitRatio(0.75);
-      return lodash.defer(_go);
-    };
-    initialize();
-    return {
-      frames: _frames,
-      frame: _frame,
-      lastSplitRatio: _lastSplitRatio,
-      lastSplitRatioText: _lastSplitRatioText,
-      lastSplitKey: _lastSplitKey,
-      splits: _splits,
-      seed: _seed,
-      addSplit,
-      splitFrame,
-      validationMessage: _validationMessage,
-      template: 'flow-split-frame-input'
-    };
-  };
-
-  function h2oScalaIntpOutput(_, _go, _result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createScalaIntpView;
-    var _scalaIntpView;
-    _scalaIntpView = Flow.Dataflow.signal(null);
-    createScalaIntpView = function (result) {
-      return { session_id: result.session_id };
-    };
-    _scalaIntpView(createScalaIntpView(_result));
-    lodash.defer(_go);
-    return {
-      scalaIntpView: _scalaIntpView,
-      template: 'flow-scala-intp-output'
-    };
-  };
-
-  function h2oScalaCodeOutput(_, _go, _result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createScalaCodeView;
-    var _scalaCodeView;
-    var _scalaLinkText;
-    var _scalaResponseVisible;
-    _scalaCodeView = Flow.Dataflow.signal(null);
-    _scalaResponseVisible = Flow.Dataflow.signal(false);
-    _scalaLinkText = Flow.Dataflow.signal('Show Scala Response');
-    createScalaCodeView = function (result) {
-      return {
-        output: result.output,
-        response: result.response,
-        status: result.status,
-        scalaResponseVisible: _scalaResponseVisible,
-        scalaLinkText: _scalaLinkText,
-        toggleVisibility() {
-          _scalaResponseVisible(!_scalaResponseVisible());
-          if (_scalaResponseVisible()) {
-            return _scalaLinkText('Hide Scala Response');
-          }
-          return _scalaLinkText('Show Scala Response');
-        }
-      };
-    };
-    _scalaCodeView(createScalaCodeView(_result));
-    lodash.defer(_go);
-    return {
-      scalaCodeView: _scalaCodeView,
-      template: 'flow-scala-code-output'
-    };
-  };
-
-  function h2oRDDsOutput(_, _go, _rDDs) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createRDDView;
-    var _rDDViews;
-    _rDDViews = Flow.Dataflow.signal([]);
-    createRDDView = function (rDD) {
-      return {
-        id: rDD.rdd_id,
-        name: rDD.name,
-        partitions: rDD.partitions
-      };
-    };
-    _rDDViews(lodash.map(_rDDs, createRDDView));
-    lodash.defer(_go);
-    return {
-      rDDViews: _rDDViews,
-      hasRDDs: _rDDs.length > 0,
-      template: 'flow-rdds-output'
-    };
-  };
-
-  function h2oProfileOutput(_, _go, _profile) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createNode;
-    var i;
-    var node;
-    var _activeNode;
-    var _nodes;
-    _activeNode = Flow.Dataflow.signal(null);
-    createNode = function (node) {
-      var display;
-      var entries;
-      var entry;
-      var self;
-      display = function () {
-        return _activeNode(self);
-      };
-      entries = function () {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
-        _ref = node.entries;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          entry = _ref[_i];
-          _results.push({
-            stacktrace: entry.stacktrace,
-            caption: `Count: ${ entry.count }`
-          });
-        }
-        return _results;
-      }();
-      return self = {
-        name: node.node_name,
-        caption: `${ node.node_name } at ${ new Date(node.timestamp) }`,
-        entries,
-        display
-      };
-    };
-    _nodes = function () {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
-      _ref = _profile.nodes;
-      _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        node = _ref[i];
-        _results.push(createNode(node));
-      }
-      return _results;
-    }();
-    _activeNode(lodash.head(_nodes));
-    lodash.defer(_go);
-    return {
-      nodes: _nodes,
-      activeNode: _activeNode,
-      template: 'flow-profile-output'
-    };
-  };
-
-  function h2oPredictsOutput(_, _go, opts, _predictions) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var arePredictionsComparable;
-    var comparePredictions;
-    var createPredictionView;
-    var initialize;
-    var inspectAll;
-    var plotMetrics;
-    var plotPredictions;
-    var plotScores;
-    var predict;
-    var _canComparePredictions;
-    var _checkAllPredictions;
-    var _isCheckingAll;
-    var _metricsTable;
-    var _predictionViews;
-    var _predictionsTable;
-    var _rocCurve;
-    var _scoresTable;
-    _predictionViews = Flow.Dataflow.signal([]);
-    _checkAllPredictions = Flow.Dataflow.signal(false);
-    _canComparePredictions = Flow.Dataflow.signal(false);
-    _rocCurve = Flow.Dataflow.signal(null);
-    arePredictionsComparable = function (views) {
-      if (views.length === 0) {
-        return false;
-      }
-      return lodash.every(views, function (view) {
-        return view.modelCategory === 'Binomial';
-      });
-    };
-    _isCheckingAll = false;
-    Flow.Dataflow.react(_checkAllPredictions, function (checkAll) {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
-      _isCheckingAll = true;
-      _ref = _predictionViews();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        view = _ref[_i];
-        view.isChecked(checkAll);
-      }
-      _canComparePredictions(checkAll && arePredictionsComparable(_predictionViews()));
-      _isCheckingAll = false;
-    });
-    createPredictionView = function (prediction) {
-      var inspect;
-      var view;
-      var _frameKey;
-      var _hasFrame;
-      var _isChecked;
-      var _modelKey;
-      var _ref;
-      _modelKey = prediction.model.name;
-      _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
-      _hasFrame = _frameKey;
-      _isChecked = Flow.Dataflow.signal(false);
-      Flow.Dataflow.react(_isChecked, function () {
-        var checkedViews;
-        var view;
-        if (_isCheckingAll) {
-          return;
-        }
-        checkedViews = function () {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
-          _ref1 = _predictionViews();
-          _results = [];
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            view = _ref1[_i];
-            if (view.isChecked()) {
-              _results.push(view);
-            }
-          }
-          return _results;
-        }();
-        return _canComparePredictions(arePredictionsComparable(checkedViews));
-      });
-      view = function () {
-        if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `getPrediction model: ${ Flow.Prelude.stringify(_modelKey) }, frame: ${ Flow.Prelude.stringify(_frameKey) }`);
-        }
-      };
-      inspect = function () {
-        if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ Flow.Prelude.stringify(_modelKey) }, frame: ${ Flow.Prelude.stringify(_frameKey) }`);
-        }
-      };
-      return {
-        modelKey: _modelKey,
-        frameKey: _frameKey,
-        modelCategory: prediction.model_category,
-        isChecked: _isChecked,
-        hasFrame: _hasFrame,
-        view,
-        inspect
-      };
-    };
-    _predictionsTable = _.inspect('predictions', _predictions);
-    _metricsTable = _.inspect('metrics', _predictions);
-    _scoresTable = _.inspect('scores', _predictions);
-    comparePredictions = function () {
-      var selectedKeys;
-      var view;
-      selectedKeys = function () {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
-        _ref = _predictionViews();
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          view = _ref[_i];
-          if (view.isChecked()) {
-            _results.push({
-              model: view.modelKey,
-              frame: view.frameKey
-            });
-          }
-        }
-        return _results;
-      }();
-      return _.insertAndExecuteCell('cs', `getPredictions ${ Flow.Prelude.stringify(selectedKeys) }`);
-    };
-    plotPredictions = function () {
-      return _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
-    };
-    plotScores = function () {
-      return _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
-    };
-    plotMetrics = function () {
-      return _.insertAndExecuteCell('cs', _metricsTable.metadata.plot);
-    };
-    inspectAll = function () {
-      return _.insertAndExecuteCell('cs', `inspect ${ _predictionsTable.metadata.origin }`);
-    };
-    predict = function () {
-      return _.insertAndExecuteCell('cs', 'predict');
-    };
-    initialize = function (predictions) {
-      _predictionViews(lodash.map(predictions, createPredictionView));
-      return lodash.defer(_go);
-    };
-    initialize(_predictions);
-    return {
-      predictionViews: _predictionViews,
-      hasPredictions: _predictions.length > 0,
-      comparePredictions,
-      canComparePredictions: _canComparePredictions,
-      checkAllPredictions: _checkAllPredictions,
-      plotPredictions,
-      plotScores,
-      plotMetrics,
-      inspect: inspectAll,
-      predict,
-      rocCurve: _rocCurve,
-      template: 'flow-predicts-output'
-    };
-  };
-
-  function h2oPredictOutput(_, _go, prediction) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var frame;
-    var inspect;
-    var model;
-    var renderPlot;
-    var table;
-    var tableName;
-    var _canInspect;
-    var _i;
-    var _len;
-    var _plots;
-    var _ref;
-    var _ref1;
-    if (prediction) {
-      frame = prediction.frame, model = prediction.model;
-    }
-    _plots = Flow.Dataflow.signals([]);
-    _canInspect = prediction.__meta;
-    renderPlot = function (title, prediction, render) {
-      var combineWithFrame;
-      var container;
-      container = Flow.Dataflow.signal(null);
-      combineWithFrame = function () {
-        var predictionsFrameName;
-        var targetFrameName;
-        predictionsFrameName = prediction.predictions.frame_id.name;
-        targetFrameName = `combined-${ predictionsFrameName }`;
-        return _.insertAndExecuteCell('cs', `bindFrames ${ Flow.Prelude.stringify(targetFrameName) }, [ ${ Flow.Prelude.stringify(predictionsFrameName) }, ${ Flow.Prelude.stringify(frame.name) } ]`);
-      };
-      render(function (error, vis) {
-        if (error) {
-          return console.debug(error);
-        }
-        $('a', vis.element).on('click', function (e) {
-          var $a;
-          $a = $(e.target);
-          switch ($a.attr('data-type')) {
-            case 'frame':
-              return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
-            case 'model':
-              return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
-          }
-        });
-        return container(vis.element);
-      });
-      return _plots.push({
-        title,
-        plot: container,
-        combineWithFrame,
-        canCombineWithFrame: title === 'Prediction'
-      });
-    };
-    if (prediction) {
-      switch ((_ref = prediction.__meta) != null ? _ref.schema_type : void 0) {
-        case 'ModelMetricsBinomial':
-          if (table = _.inspect('Prediction - Metrics for Thresholds', prediction)) {
-            renderPlot('ROC Curve', prediction, _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            }));
-          }
-      }
-      _ref1 = _.ls(prediction);
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        tableName = _ref1[_i];
-        if (table = _.inspect(tableName, prediction)) {
-          if (table.indices.length > 1) {
-            renderPlot(tableName, prediction, _.plot(function (g) {
-              return g(g.select(), g.from(table));
-            }));
-          } else {
-            renderPlot(tableName, prediction, _.plot(function (g) {
-              return g(g.select(0), g.from(table));
-            }));
-          }
-        }
-      }
-    }
-    inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ Flow.Prelude.stringify(model.name) }, frame: ${ Flow.Prelude.stringify(frame.name) }`);
-    };
-    lodash.defer(_go);
-    return {
-      plots: _plots,
-      inspect,
-      canInspect: _canInspect,
-      template: 'flow-predict-output'
-    };
-  };
-
-  function h2oPredictInput(_, _go, opt) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var predict;
-    var _canPredict;
-    var _computeDeepFeaturesHiddenLayer;
-    var _computeLeafNodeAssignment;
-    var _computeReconstructionError;
-    var _deepFeaturesHiddenLayer;
-    var _deepFeaturesHiddenLayerValue;
-    var _destinationKey;
-    var _exception;
-    var _exemplarIndex;
-    var _exemplarIndexValue;
-    var _frames;
-    var _hasExemplarIndex;
-    var _hasFrames;
-    var _hasLeafNodeAssignment;
-    var _hasModels;
-    var _hasReconError;
-    var _isDeepLearning;
-    var _models;
-    var _ref;
-    var _selectedFrame;
-    var _selectedFrames;
-    var _selectedFramesCaption;
-    var _selectedModel;
-    var _selectedModels;
-    var _selectedModelsCaption;
-    _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
-    _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
-    _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
-    _selectedModelsCaption = _selectedModels.join(', ');
-    _selectedFramesCaption = _selectedFrames.join(', ');
-    _exception = Flow.Dataflow.signal(null);
-    _selectedFrame = Flow.Dataflow.signal(null);
-    _selectedModel = Flow.Dataflow.signal(null);
-    _hasFrames = _selectedFrames.length;
-    _hasModels = _selectedModels.length;
-    _frames = Flow.Dataflow.signals([]);
-    _models = Flow.Dataflow.signals([]);
-    _isDeepLearning = Flow.Dataflow.lift(_selectedModel, function (model) {
-      return model && model.algo === 'deeplearning';
-    });
-    _hasReconError = Flow.Dataflow.lift(_selectedModel, function (model) {
-      var parameter;
-      var _i;
-      var _len;
-      var _ref1;
-      if (model) {
-        if (model.algo === 'deeplearning') {
-          _ref1 = model.parameters;
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            parameter = _ref1[_i];
-            if (parameter.name === 'autoencoder' && parameter.actual_value === true) {
-              return true;
-            }
-          }
-        }
-      }
-      return false;
-    });
-    _hasLeafNodeAssignment = Flow.Dataflow.lift(_selectedModel, function (model) {
-      if (model) {
-        switch (model.algo) {
-          case 'gbm':
-          case 'drf':
-            return true;
-          default:
-            return false;
-        }
-      }
-    });
-    _hasExemplarIndex = Flow.Dataflow.lift(_selectedModel, function (model) {
-      if (model) {
-        switch (model.algo) {
-          case 'aggregator':
-            return true;
-          default:
-            return false;
-        }
-      }
-    });
-    _computeReconstructionError = Flow.Dataflow.signal(false);
-    _computeDeepFeaturesHiddenLayer = Flow.Dataflow.signal(false);
-    _computeLeafNodeAssignment = Flow.Dataflow.signal(false);
-    _deepFeaturesHiddenLayer = Flow.Dataflow.signal(0);
-    _deepFeaturesHiddenLayerValue = Flow.Dataflow.lift(_deepFeaturesHiddenLayer, function (text) {
-      return parseInt(text, 10);
-    });
-    _exemplarIndex = Flow.Dataflow.signal(0);
-    _exemplarIndexValue = Flow.Dataflow.lift(_exemplarIndex, function (text) {
-      return parseInt(text, 10);
-    });
-    _canPredict = Flow.Dataflow.lift(_selectedFrame, _selectedModel, _hasReconError, _computeReconstructionError, _computeDeepFeaturesHiddenLayer, _deepFeaturesHiddenLayerValue, _exemplarIndexValue, _hasExemplarIndex, function (frame, model, hasReconError, computeReconstructionError, computeDeepFeaturesHiddenLayer, deepFeaturesHiddenLayerValue, exemplarIndexValue, hasExemplarIndex) {
-      var hasFrameAndModel;
-      var hasValidOptions;
-      hasFrameAndModel = frame && model || _hasFrames && model || _hasModels && frame || _hasModels && hasExemplarIndex;
-      hasValidOptions = hasReconError ? computeReconstructionError ? true : computeDeepFeaturesHiddenLayer ? !lodash.isNaN(deepFeaturesHiddenLayerValue) : true : true;
-      return hasFrameAndModel && hasValidOptions;
-    });
-    if (!_hasFrames) {
-      _.requestFrames(function (error, frames) {
-        var frame;
-        if (error) {
-          return _exception(new Flow.Error('Error fetching frame list.', error));
-        }
-        return _frames(function () {
-          var _i;
-          var _len;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = frames.length; _i < _len; _i++) {
-            frame = frames[_i];
-            if (!frame.is_text) {
-              _results.push(frame.frame_id.name);
-            }
-          }
-          return _results;
-        }());
-      });
-    }
-    if (!_hasModels) {
-      _.requestModels(function (error, models) {
-        var model;
-        if (error) {
-          return _exception(new Flow.Error('Error fetching model list.', error));
-        }
-        return _models(function () {
-          var _i;
-          var _len;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = models.length; _i < _len; _i++) {
-            model = models[_i];
-            _results.push(model.model_id.name);
-          }
-          return _results;
-        }());
-      });
-    }
-    if (!_selectedModel()) {
-      if (opt.model && lodash.isString(opt.model)) {
-        _.requestModel(opt.model, function (error, model) {
-          return _selectedModel(model);
-        });
-      }
-    }
-    predict = function () {
-      var cs;
-      var destinationKey;
-      var frameArg;
-      var modelArg;
-      if (_hasFrames) {
-        frameArg = _selectedFrames.length > 1 ? _selectedFrames : lodash.head(_selectedFrames);
-        modelArg = _selectedModel();
-      } else if (_hasModels) {
-        modelArg = _selectedModels.length > 1 ? _selectedModels : lodash.head(_selectedModels);
-        frameArg = _selectedFrame();
-      } else {
-        modelArg = _selectedModel();
-        frameArg = _selectedFrame();
-      }
-      destinationKey = _destinationKey();
-      cs = `predict model: ${ Flow.Prelude.stringify(modelArg) }, frame: ${ Flow.Prelude.stringify(frameArg) }`;
-      if (destinationKey) {
-        cs += `, predictions_frame: ${ Flow.Prelude.stringify(destinationKey) }`;
-      }
-      if (_hasReconError()) {
-        if (_computeReconstructionError()) {
-          cs += ', reconstruction_error: true';
-        }
-      }
-      if (_computeDeepFeaturesHiddenLayer()) {
-        cs += `, deep_features_hidden_layer: ${ _deepFeaturesHiddenLayerValue() }`;
-      }
-      if (_hasLeafNodeAssignment()) {
-        if (_computeLeafNodeAssignment()) {
-          cs += ', leaf_node_assignment: true';
-        }
-      }
-      if (_hasExemplarIndex()) {
-        cs += `, exemplar_index: ${ _exemplarIndexValue() }`;
-      }
-      return _.insertAndExecuteCell('cs', cs);
-    };
-    lodash.defer(_go);
-    return {
-      destinationKey: _destinationKey,
-      exception: _exception,
-      hasModels: _hasModels,
-      hasFrames: _hasFrames,
-      canPredict: _canPredict,
-      selectedFramesCaption: _selectedFramesCaption,
-      selectedModelsCaption: _selectedModelsCaption,
-      selectedFrame: _selectedFrame,
-      selectedModel: _selectedModel,
-      frames: _frames,
-      models: _models,
-      predict,
-      isDeepLearning: _isDeepLearning,
-      hasReconError: _hasReconError,
-      hasLeafNodeAssignment: _hasLeafNodeAssignment,
-      hasExemplarIndex: _hasExemplarIndex,
-      computeReconstructionError: _computeReconstructionError,
-      computeDeepFeaturesHiddenLayer: _computeDeepFeaturesHiddenLayer,
-      computeLeafNodeAssignment: _computeLeafNodeAssignment,
-      deepFeaturesHiddenLayer: _deepFeaturesHiddenLayer,
-      exemplarIndex: _exemplarIndex,
-      template: 'flow-predict-input'
-    };
-  };
-
-  function h2oPlotOutput(_, _go, _plot) {
-    var lodash = window._;
-    lodash.defer(_go);
-    return {
-      plot: _plot,
-      template: 'flow-plot-output'
-    };
-  };
-
-  function h2oPlotInput(_, _go, _frame) {
-    var plot;
-    var vector;
-    var _canPlot;
-    var _color;
-    var _type;
-    var _types;
-    var _vectors;
-    var _x;
-    var _y;
-    _types = ['point', 'path', 'rect'];
-    _vectors = function () {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
-      _ref = _frame.vectors;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        vector = _ref[_i];
-        if (vector.type === Flow.TString || vector.type === Flow.TNumber) {
-          _results.push(vector.label);
-        }
-      }
-      return _results;
-    }();
-    _type = Flow.Dataflow.signal(null);
-    _x = Flow.Dataflow.signal(null);
-    _y = Flow.Dataflow.signal(null);
-    _color = Flow.Dataflow.signal(null);
-    _canPlot = Flow.Dataflow.lift(_type, _x, _y, function (type, x, y) {
-      return type && x && y;
-    });
-    plot = function () {
-      var color;
-      var command;
-      command = (color = _color()) ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ Flow.Prelude.stringify(_x()) }, ${ Flow.Prelude.stringify(_y()) }\n    g.color ${ Flow.Prelude.stringify(color) }\n  )\n  g.from inspect ${ Flow.Prelude.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ Flow.Prelude.stringify(_x()) }, ${ Flow.Prelude.stringify(_y()) }\n  )\n  g.from inspect ${ Flow.Prelude.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
-      return _.insertAndExecuteCell('cs', command);
-    };
-    lodash.defer(_go);
-    return {
-      types: _types,
-      type: _type,
-      vectors: _vectors,
-      x: _x,
-      y: _y,
-      color: _color,
-      plot,
-      canPlot: _canPlot,
-      template: 'flow-plot-input'
-    };
-  };
-
-  function h2oPartialDependenceOutput(_, _go, _result) {
-    var data;
-    var i;
-    var renderPlot;
-    var section;
-    var table;
-    var x;
-    var y;
-    var _destinationKey;
-    var _frameId;
-    var _i;
-    var _len;
-    var _modelId;
-    var _plots;
-    var _ref;
-    var _viewFrame;
-    _destinationKey = _result.destination_key;
-    _modelId = _result.model_id.name;
-    _frameId = _result.frame_id.name;
-    renderPlot = function (target, render) {
-      return render(function (error, vis) {
-        if (error) {
-          return console.debug(error);
-        }
-        return target(vis.element);
-      });
-    };
-    _plots = [];
-    _ref = _result.partial_dependence_data;
-    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-      data = _ref[i];
-      if (table = _.inspect(`plot${ i + 1 }`, _result)) {
-        x = data.columns[0].name;
-        y = data.columns[1].name;
-        _plots.push(section = {
-          title: `${ x } vs ${ y }`,
-          plot: Flow.Dataflow.signal(null),
-          frame: Flow.Dataflow.signal(null)
-        });
-        renderPlot(section.plot, _.plot(function (g) {
-          return g(g.path(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.point(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-        }));
-        renderPlot(section.frame, _.plot(function (g) {
-          return g(g.select(), g.from(table));
-        }));
-      }
-    }
-    _viewFrame = function () {
-      return _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ Flow.Prelude.stringify(_destinationKey) }`);
-    };
-    lodash.defer(_go);
-    return {
-      destinationKey: _destinationKey,
-      modelId: _modelId,
-      frameId: _frameId,
-      plots: _plots,
-      viewFrame: _viewFrame,
-      template: 'flow-partial-dependence-output'
-    };
-  };
-
-  function h2oPartialDependenceInput(_, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var _canCompute;
-    var _compute;
-    var _destinationKey;
-    var _exception;
-    var _frames;
-    var _models;
-    var _nbins;
-    var _selectedFrame;
-    var _selectedModel;
-    _exception = Flow.Dataflow.signal(null);
-    _destinationKey = Flow.Dataflow.signal(`ppd-${ Flow.Util.uuid() }`);
-    _frames = Flow.Dataflow.signals([]);
-    _models = Flow.Dataflow.signals([]);
-    _selectedModel = Flow.Dataflow.signals(null);
-    _selectedFrame = Flow.Dataflow.signal(null);
-    _nbins = Flow.Dataflow.signal(20);
-    _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, function (dk, sf, sm, nb) {
-      return dk && sf && sm && nb;
-    });
-    _compute = function () {
-      var cs;
-      var opts;
-      if (!_canCompute()) {
-        return;
-      }
-      opts = {
-        destination_key: _destinationKey(),
-        model_id: _selectedModel(),
-        frame_id: _selectedFrame(),
-        nbins: _nbins()
-      };
-      cs = `buildPartialDependence ${ Flow.Prelude.stringify(opts) }`;
-      return _.insertAndExecuteCell('cs', cs);
-    };
-    _.requestFrames(function (error, frames) {
-      var frame;
-      if (error) {
-        return _exception(new Flow.Error('Error fetching frame list.', error));
-      }
-      return _frames(function () {
-        var _i;
-        var _len;
-        var _results;
-        _results = [];
-        for (_i = 0, _len = frames.length; _i < _len; _i++) {
-          frame = frames[_i];
-          if (!frame.is_text) {
-            _results.push(frame.frame_id.name);
-          }
-        }
-        return _results;
-      }());
-    });
-    _.requestModels(function (error, models) {
-      var model;
-      if (error) {
-        return _exception(new Flow.Error('Error fetching model list.', error));
-      }
-      return _models(function () {
-        var _i;
-        var _len;
-        var _results;
-        _results = [];
-        for (_i = 0, _len = models.length; _i < _len; _i++) {
-          model = models[_i];
-          _results.push(model.model_id.name);
-        }
-        return _results;
-      }());
-    });
-    lodash.defer(_go);
-    return {
-      destinationKey: _destinationKey,
-      frames: _frames,
-      models: _models,
-      selectedModel: _selectedModel,
-      selectedFrame: _selectedFrame,
-      nbins: _nbins,
-      compute: _compute,
-      canCompute: _canCompute,
-      template: 'flow-partial-dependence-input'
-    };
-  };
-
-  function h2oNoAssist(_, _go) {
-    var lodash = window._;
-    lodash.defer(_go);
-    return {
-      showAssist() {
-        return _.insertAndExecuteCell('cs', 'assist');
-      },
-      template: 'flow-no-assist'
-    };
-  };
-
-  function h2oNetworkTestOutput(_, _go, _testResult) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var render;
-    var _result;
-    _result = Flow.Dataflow.signal(null);
-    render = _.plot(function (g) {
-      return g(g.select(), g.from(_.inspect('result', _testResult)));
-    });
-    render(function (error, vis) {
-      if (error) {
-        return console.debug(error);
-      }
-      return _result(vis.element);
-    });
-    lodash.defer(_go);
-    return {
-      result: _result,
-      template: 'flow-network-test-output'
-    };
-  };
-
-  function h2oModelsOutput(_, _go, _models) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var buildModel;
-    var collectSelectedKeys;
-    var compareModels;
-    var createModelView;
-    var deleteModels;
-    var initialize;
-    var inspectAll;
-    var predictUsingModels;
-    var _canCompareModels;
-    var _checkAllModels;
-    var _checkedModelCount;
-    var _hasSelectedModels;
-    var _isCheckingAll;
-    var _modelViews;
-    _modelViews = Flow.Dataflow.signal([]);
-    _checkAllModels = Flow.Dataflow.signal(false);
-    _checkedModelCount = Flow.Dataflow.signal(0);
-    _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
-      return count > 1;
-    });
-    _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
-      return count > 0;
-    });
-    _isCheckingAll = false;
-    Flow.Dataflow.react(_checkAllModels, function (checkAll) {
-      var view;
-      var views;
-      var _i;
-      var _len;
-      _isCheckingAll = true;
-      views = _modelViews();
-      for (_i = 0, _len = views.length; _i < _len; _i++) {
-        view = views[_i];
-        view.isChecked(checkAll);
-      }
-      _checkedModelCount(checkAll ? views.length : 0);
-      _isCheckingAll = false;
-    });
-    createModelView = function (model) {
-      var cloneModel;
-      var inspect;
-      var predict;
-      var view;
-      var _isChecked;
-      _isChecked = Flow.Dataflow.signal(false);
-      Flow.Dataflow.react(_isChecked, function () {
-        var checkedViews;
-        var view;
-        if (_isCheckingAll) {
-          return;
-        }
-        checkedViews = function () {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
-          _ref = _modelViews();
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            view = _ref[_i];
-            if (view.isChecked()) {
-              _results.push(view);
-            }
-          }
-          return _results;
-        }();
-        return _checkedModelCount(checkedViews.length);
-      });
-      predict = function () {
-        return _.insertAndExecuteCell('cs', `predict model: ${ Flow.Prelude.stringify(model.model_id.name) }`);
-      };
-      cloneModel = function () {
-        return alert('Not implemented');
-        // return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model.model_id.name)}`);
-      };
-      view = function () {
-        return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify(model.model_id.name) }`);
-      };
-      inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect getModel ${ Flow.Prelude.stringify(model.model_id.name) }`);
-      };
-      return {
-        key: model.model_id.name,
-        algo: model.algo_full_name,
-        isChecked: _isChecked,
-        predict,
-        clone: cloneModel,
-        inspect,
-        view
-      };
-    };
-    buildModel = function () {
-      return _.insertAndExecuteCell('cs', 'buildModel');
-    };
-    collectSelectedKeys = function () {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
-      _ref = _modelViews();
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        view = _ref[_i];
-        if (view.isChecked()) {
-          _results.push(view.key);
-        }
-      }
-      return _results;
-    };
-    compareModels = function () {
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
-    };
-    predictUsingModels = function () {
-      return _.insertAndExecuteCell('cs', `predict models: ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
-    };
-    deleteModels = function () {
-      return _.confirm('Are you sure you want to delete these models?', {
-        acceptCaption: 'Delete Models',
-        declineCaption: 'Cancel'
-      }, function (accept) {
-        if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModels ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
-        }
-      });
-    };
-    inspectAll = function () {
-      var allKeys;
-      var view;
-      allKeys = function () {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
-        _ref = _modelViews();
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          view = _ref[_i];
-          _results.push(view.key);
-        }
-        return _results;
-      }();
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ Flow.Prelude.stringify(allKeys) }`);
-    };
-    initialize = function (models) {
-      _modelViews(lodash.map(models, createModelView));
-      return lodash.defer(_go);
-    };
-    initialize(_models);
-    return {
-      modelViews: _modelViews,
-      hasModels: _models.length > 0,
-      buildModel,
-      compareModels,
-      predictUsingModels,
-      deleteModels,
-      checkedModelCount: _checkedModelCount,
-      canCompareModels: _canCompareModels,
-      hasSelectedModels: _hasSelectedModels,
-      checkAllModels: _checkAllModels,
-      inspect: inspectAll,
-      template: 'flow-models-output'
-    };
-  };
-
-  function h2oModelOutput(_, _go, _model, refresh) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createOutput;
-    var _isLive;
-    var _output;
-    var _refresh;
-    var _toggleRefresh;
-    _output = Flow.Dataflow.signal(null);
-    createOutput = function (_model) {
-      var cloneModel;
-      var confusionMatrix;
-      var deleteModel;
-      var downloadMojo;
-      var downloadPojo;
-      var exportModel;
-      var format4f;
-      var getAucAsLabel;
-      var getThresholdsAndCriteria;
-      var inspect;
-      var lambdaSearchParameter;
-      var output;
-      var plotter;
-      var predict;
-      var previewPojo;
-      var renderMultinomialConfusionMatrix;
-      var renderPlot;
-      var table;
-      var tableName;
-      var toggle;
-      var _i;
-      var _inputParameters;
-      var _isExpanded;
-      var _isPojoLoaded;
-      var _len;
-      var _plots;
-      var _pojoPreview;
-      var _ref;
-      var _ref1;
-      var _ref10;
-      var _ref11;
-      var _ref12;
-      var _ref13;
-      var _ref14;
-      var _ref15;
-      var _ref16;
-      var _ref17;
-      var _ref18;
-      var _ref19;
-      var _ref2;
-      var _ref20;
-      var _ref21;
-      var _ref22;
-      var _ref23;
-      var _ref24;
-      var _ref25;
-      var _ref3;
-      var _ref4;
-      var _ref5;
-      var _ref6;
-      var _ref7;
-      var _ref8;
-      var _ref9;
-      _isExpanded = Flow.Dataflow.signal(false);
-      _plots = Flow.Dataflow.signals([]);
-      _pojoPreview = Flow.Dataflow.signal(null);
-      _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, function (preview) {
-        if (preview) {
-          return true;
-        }
-        return false;
-      });
-      _inputParameters = lodash.map(_model.parameters, function (parameter) {
-        var actual_value;
-        var default_value;
-        var help;
-        var label;
-        var type;
-        var value;
-        type = parameter.type, default_value = parameter.default_value, actual_value = parameter.actual_value, label = parameter.label, help = parameter.help;
-        value = function () {
-          switch (type) {
-            case 'Key<Frame>':
-            case 'Key<Model>':
-              if (actual_value) {
-                return actual_value.name;
-              }
-              return null;
-            // break; // no-unreachable
-            case 'VecSpecifier':
-              if (actual_value) {
-                return actual_value.column_name;
-              }
-              return null;
-            // break; // no-unreachable
-            case 'string[]':
-            case 'byte[]':
-            case 'short[]':
-            case 'int[]':
-            case 'long[]':
-            case 'float[]':
-            case 'double[]':
-              if (actual_value) {
-                return actual_value.join(', ');
-              }
-              return null;
-            // break; // no-unreachable
-            default:
-              return actual_value;
-          }
-        }();
-        return {
-          label,
-          value,
-          help,
-          isModified: default_value === actual_value
-        };
-      });
-      format4f = function (number) {
-        if (number) {
-          if (number === 'NaN') {
-            return void 0;
-          }
-          return number.toFixed(4).replace(/\.0+$/, '.0');
-        }
-        return number;
-      };
-      getAucAsLabel = function (model, tableName) {
-        var metrics;
-        if (metrics = _.inspect(tableName, model)) {
-          return ` , AUC = ${ metrics.schema.AUC.at(0) }`;
-        }
-        return '';
-      };
-      getThresholdsAndCriteria = function (model, tableName) {
-        var criteria;
-        var criterionTable;
-        var i;
-        var idxVector;
-        var metricVector;
-        var thresholdVector;
-        var thresholds;
-        if (criterionTable = _.inspect(tableName, _model)) {
-          thresholdVector = table.schema.threshold;
-          thresholds = function () {
-            var _i;
-            var _ref;
-            var _results;
-            _results = [];
-            for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
-              _results.push({
-                index: i,
-                value: thresholdVector.at(i)
-              });
-            }
-            return _results;
-          }();
-          metricVector = criterionTable.schema.metric;
-          idxVector = criterionTable.schema.idx;
-          criteria = function () {
-            var _i;
-            var _ref;
-            var _results;
-            _results = [];
-            for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
-              _results.push({
-                index: idxVector.at(i),
-                value: metricVector.valueAt(i)
-              });
-            }
-            return _results;
-          }();
-          return {
-            thresholds,
-            criteria
-          };
-        }
-        return void 0;
-      };
-      renderPlot = function (title, isCollapsed, render, thresholdsAndCriteria) {
-        var container;
-        var linkedFrame;
-        var rocPanel;
-        container = Flow.Dataflow.signal(null);
-        linkedFrame = Flow.Dataflow.signal(null);
-        if (thresholdsAndCriteria) {
-          rocPanel = {
-            thresholds: Flow.Dataflow.signals(thresholdsAndCriteria.thresholds),
-            threshold: Flow.Dataflow.signal(null),
-            criteria: Flow.Dataflow.signals(thresholdsAndCriteria.criteria),
-            criterion: Flow.Dataflow.signal(null)
-          };
-        }
-        render(function (error, vis) {
-          var _autoHighlight;
-          if (error) {
-            return console.debug(error);
-          }
-          $('a', vis.element).on('click', function (e) {
-            var $a;
-            $a = $(e.target);
-            switch ($a.attr('data-type')) {
-              case 'frame':
-                return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
-              case 'model':
-                return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
-            }
-          });
-          container(vis.element);
-          _autoHighlight = true;
-          if (vis.subscribe) {
-            vis.subscribe('markselect', function (_arg) {
-              var currentCriterion;
-              var frame;
-              var indices;
-              var renderTable;
-              var selectedIndex;
-              var subframe;
-              frame = _arg.frame, indices = _arg.indices;
-              subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
-              renderTable = function (g) {
-                return g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
-              };
-              _.plot(renderTable)(function (error, table) {
-                if (!error) {
-                  return linkedFrame(table.element);
-                }
-              });
-              if (rocPanel) {
-                if (indices.length === 1) {
-                  selectedIndex = lodash.head(indices);
-                  _autoHighlight = false;
-                  rocPanel.threshold(lodash.find(rocPanel.thresholds(), function (threshold) {
-                    return threshold.index === selectedIndex;
-                  }));
-                  currentCriterion = rocPanel.criterion();
-                  if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
-                    rocPanel.criterion(lodash.find(rocPanel.criteria(), function (criterion) {
-                      return criterion.index === selectedIndex;
-                    }));
-                  }
-                  _autoHighlight = true;
-                } else {
-                  rocPanel.criterion(null);
-                  rocPanel.threshold(null);
-                }
-              }
-            });
-            vis.subscribe('markdeselect', function () {
-              linkedFrame(null);
-              if (rocPanel) {
-                rocPanel.criterion(null);
-                return rocPanel.threshold(null);
-              }
-            });
-            if (rocPanel) {
-              Flow.Dataflow.react(rocPanel.threshold, function (threshold) {
-                if (threshold && _autoHighlight) {
-                  return vis.highlight([threshold.index]);
-                }
-              });
-              return Flow.Dataflow.react(rocPanel.criterion, function (criterion) {
-                if (criterion && _autoHighlight) {
-                  return vis.highlight([criterion.index]);
-                }
-              });
-            }
-          }
-        });
-        return _plots.push({
-          title,
-          plot: container,
-          frame: linkedFrame,
-          controls: Flow.Dataflow.signal(rocPanel),
-          isCollapsed
-        });
-      };
-      renderMultinomialConfusionMatrix = function (title, cm) {
-        var bold;
-        var cell;
-        var cells;
-        var column;
-        var columnCount;
-        var errorColumnIndex;
-        var headers;
-        var i;
-        var normal;
-        var rowCount;
-        var rowIndex;
-        var rows;
-        var table;
-        var tbody;
-        var totalRowIndex;
-        var tr;
-        var yellow;
-        var _i;
-        var _ref;
-        _ref = Flow.HTML.template('table.flow-confusion-matrix', 'tbody', 'tr', 'td', 'td.strong', 'td.bg-yellow'), table = _ref[0], tbody = _ref[1], tr = _ref[2], normal = _ref[3], bold = _ref[4], yellow = _ref[5];
-        columnCount = cm.columns.length;
-        rowCount = cm.rowcount;
-        headers = lodash.map(cm.columns, function (column, i) {
-          return bold(column.description);
-        });
-        headers.unshift(normal(' '));
-        rows = [tr(headers)];
-        errorColumnIndex = columnCount - 2;
-        totalRowIndex = rowCount - 1;
-        for (rowIndex = _i = 0; rowCount >= 0 ? _i < rowCount : _i > rowCount; rowIndex = rowCount >= 0 ? ++_i : --_i) {
-          cells = function () {
-            var _j;
-            var _len;
-            var _ref1;
-            var _results;
-            _ref1 = cm.data;
-            _results = [];
-            for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
-              column = _ref1[i];
-              cell = i < errorColumnIndex ? i === rowIndex ? yellow : rowIndex < totalRowIndex ? normal : bold : bold;
-              _results.push(cell(i === errorColumnIndex ? format4f(column[rowIndex]) : column[rowIndex]));
-            }
-            return _results;
-          }();
-          cells.unshift(bold(rowIndex === rowCount - 1 ? 'Total' : cm.columns[rowIndex].description));
-          rows.push(tr(cells));
-        }
-        return _plots.push({
-          title: title + (cm.description ? ` ${ cm.description }` : ''),
-          plot: Flow.Dataflow.signal(Flow.HTML.render('div', table(tbody(rows)))),
-          frame: Flow.Dataflow.signal(null),
-          controls: Flow.Dataflow.signal(null),
-          isCollapsed: false
-        });
-      };
-      switch (_model.algo) {
-        case 'kmeans':
-          if (table = _.inspect('output - Scoring History', _model)) {
-            renderPlot('Scoring History', false, _.plot(function (g) {
-              return g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-            }));
-          }
-          break;
-        case 'glm':
-          if (table = _.inspect('output - Scoring History', _model)) {
-            lambdaSearchParameter = lodash.find(_model.parameters, function (parameter) {
-              return parameter.name === 'lambda_search';
-            });
-            if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
-              renderPlot('Scoring History', false, _.plot(function (g) {
-                return g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
-              }));
-            } else {
-              renderPlot('Scoring History', false, _.plot(function (g) {
-                return g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-              }));
-            }
-          }
-          if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - Standardized Coefficient Magnitudes', _model)) {
-            renderPlot('Standardized Coefficient Magnitudes', false, _.plot(function (g) {
-              return g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25));
-            }));
-          }
-          if (output = _model.output) {
-            if (output.model_category === 'Multinomial') {
-              if (confusionMatrix = (_ref = output.training_metrics) != null ? (_ref1 = _ref.cm) != null ? _ref1.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
-              }
-              if (confusionMatrix = (_ref2 = output.validation_metrics) != null ? (_ref3 = _ref2.cm) != null ? _ref3.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
-              }
-              if (confusionMatrix = (_ref4 = output.cross_validation_metrics) != null ? (_ref5 = _ref4.cm) != null ? _ref5.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-              }
-            }
-          }
-          break;
-        case 'deeplearning':
-        case 'deepwater':
-          if (table = _.inspect('output - Scoring History', _model)) {
-            if (table.schema.validation_logloss && table.schema.training_logloss) {
-              renderPlot('Scoring History - logloss', false, _.plot(function (g) {
-                return g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
-              }));
-            } else if (table.schema.training_logloss) {
-              renderPlot('Scoring History - logloss', false, _.plot(function (g) {
-                return g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-              }));
-            }
-            if (table.schema.training_deviance) {
-              if (table.schema.validation_deviance) {
-                renderPlot('Scoring History - Deviance', false, _.plot(function (g) {
-                  return g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
-                }));
-              } else {
-                renderPlot('Scoring History - Deviance', false, _.plot(function (g) {
-                  return g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-                }));
-              }
-            } else if (table.schema.training_mse) {
-              if (table.schema.validation_mse) {
-                renderPlot('Scoring History - MSE', false, _.plot(function (g) {
-                  return g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
-                }));
-              } else {
-                renderPlot('Scoring History - MSE', false, _.plot(function (g) {
-                  return g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-                }));
-              }
-            }
-          }
-          if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`'ROC Curve - Validation Metrics' + ${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`'ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - Variable Importances', _model)) {
-            renderPlot('Variable Importances', false, _.plot(function (g) {
-              return g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
-            }));
-          }
-          if (output = _model.output) {
-            if (output.model_category === 'Multinomial') {
-              if (confusionMatrix = (_ref6 = output.training_metrics) != null ? (_ref7 = _ref6.cm) != null ? _ref7.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
-              }
-              if (confusionMatrix = (_ref8 = output.validation_metrics) != null ? (_ref9 = _ref8.cm) != null ? _ref9.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
-              }
-              if (confusionMatrix = (_ref10 = output.cross_validation_metrics) != null ? (_ref11 = _ref10.cm) != null ? _ref11.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-              }
-            }
-          }
-          break;
-        case 'gbm':
-        case 'drf':
-        case 'svm':
-          if (table = _.inspect('output - Scoring History', _model)) {
-            if (table.schema.validation_logloss && table.schema.training_logloss) {
-              renderPlot('Scoring History - logloss', false, _.plot(function (g) {
-                return g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
-              }));
-            } else if (table.schema.training_logloss) {
-              renderPlot('Scoring History - logloss', false, _.plot(function (g) {
-                return g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-              }));
-            }
-            if (table.schema.training_deviance) {
-              if (table.schema.validation_deviance) {
-                renderPlot('Scoring History - Deviance', false, _.plot(function (g) {
-                  return g(g.path(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
-                }));
-              } else {
-                renderPlot('Scoring History - Deviance', false, _.plot(function (g) {
-                  return g(g.path(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-                }));
-              }
-            }
-          }
-          if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - Variable Importances', _model)) {
-            renderPlot('Variable Importances', false, _.plot(function (g) {
-              return g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
-            }));
-          }
-          if (output = _model.output) {
-            if (output.model_category === 'Multinomial') {
-              if (confusionMatrix = (_ref12 = output.training_metrics) != null ? (_ref13 = _ref12.cm) != null ? _ref13.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
-              }
-              if (confusionMatrix = (_ref14 = output.validation_metrics) != null ? (_ref15 = _ref14.cm) != null ? _ref15.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
-              }
-              if (confusionMatrix = (_ref16 = output.cross_validation_metrics) != null ? (_ref17 = _ref16.cm) != null ? _ref17.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-              }
-            }
-          }
-          break;
-        case 'stackedensemble':
-          if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`'ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
-            plotter = _.plot(function (g) {
-              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-            });
-            renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
-          }
-          if (table = _.inspect('output - Variable Importances', _model)) {
-            renderPlot('Variable Importances', false, _.plot(function (g) {
-              return g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
-            }));
-          }
-          if (output = _model.output) {
-            if (output.model_category === 'Multinomial') {
-              if (confusionMatrix = (_ref18 = output.training_metrics) != null ? (_ref19 = _ref18.cm) != null ? _ref19.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
-              }
-              if (confusionMatrix = (_ref20 = output.validation_metrics) != null ? (_ref21 = _ref20.cm) != null ? _ref21.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
-              }
-              if (confusionMatrix = (_ref22 = output.cross_validation_metrics) != null ? (_ref23 = _ref22.cm) != null ? _ref23.table : void 0 : void 0) {
-                renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-              }
-            }
-          }
-      }
-      if (table = _.inspect('output - training_metrics - Gains/Lift Table', _model)) {
-        renderPlot('Training Metrics - Gains/Lift Table', false, _.plot(function (g) {
-          return g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
-        }));
-      }
-      if (table = _.inspect('output - validation_metrics - Gains/Lift Table', _model)) {
-        renderPlot('Validation Metrics - Gains/Lift Table', false, _.plot(function (g) {
-          return g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
-        }));
-      }
-      if (table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _model)) {
-        renderPlot('Cross Validation Metrics - Gains/Lift Table', false, _.plot(function (g) {
-          return g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
-        }));
-      }
-      _ref24 = _.ls(_model);
-      for (_i = 0, _len = _ref24.length; _i < _len; _i++) {
-        tableName = _ref24[_i];
-        if (!(tableName !== 'parameters')) {
-          continue;
-        }
-        if (output = ((_ref25 = _model.output) != null ? _ref25.model_category : void 0) === 'Multinomial') {
-          if (tableName.indexOf('output - training_metrics - cm') === 0) {
-            continue;
-          } else if (tableName.indexOf('output - validation_metrics - cm') === 0) {
-            continue;
-          } else if (tableName.indexOf('output - cross_validation_metrics - cm') === 0) {
-            continue;
-          }
-        }
-        if (table = _.inspect(tableName, _model)) {
-          renderPlot(tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(function (g) {
-            return g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table));
-          }));
-        }
-      }
-      toggle = function () {
-        return _isExpanded(!_isExpanded());
-      };
-      cloneModel = function () {
-        return alert('Not implemented');
-      };
-      predict = function () {
-        return _.insertAndExecuteCell('cs', `predict model: ${ Flow.Prelude.stringify(_model.model_id.name) }`);
-      };
-      inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect getModel ${ Flow.Prelude.stringify(_model.model_id.name) }`);
-      };
-      previewPojo = function () {
-        return _.requestPojoPreview(_model.model_id.name, function (error, result) {
-          if (error) {
-            return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
-          }
-          return _pojoPreview(`<pre>${ Flow.Util.highlight(result, 'java') }</pre>`);
-        });
-      };
-      downloadPojo = function () {
-        return window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
-      };
-      downloadMojo = function () {
-        return window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
-      };
-      exportModel = function () {
-        return _.insertAndExecuteCell('cs', `exportModel ${ Flow.Prelude.stringify(_model.model_id.name) }`);
-      };
-      deleteModel = function () {
-        return _.confirm('Are you sure you want to delete this model?', {
-          acceptCaption: 'Delete Model',
-          declineCaption: 'Cancel'
-        }, function (accept) {
-          if (accept) {
-            return _.insertAndExecuteCell('cs', `deleteModel ${ Flow.Prelude.stringify(_model.model_id.name) }`);
-          }
-        });
-      };
-      return {
-        key: _model.model_id,
-        algo: _model.algo_full_name,
-        plots: _plots,
-        inputParameters: _inputParameters,
-        isExpanded: _isExpanded,
-        toggle,
-        cloneModel,
-        predict,
-        inspect,
-        previewPojo,
-        downloadPojo,
-        downloadMojo,
-        pojoPreview: _pojoPreview,
-        isPojoLoaded: _isPojoLoaded,
-        exportModel,
-        deleteModel
-      };
-    };
-    _isLive = Flow.Dataflow.signal(false);
-    Flow.Dataflow.act(_isLive, function (isLive) {
-      if (isLive) {
-        return _refresh();
-      }
-    });
-    _refresh = function () {
-      return refresh(function (error, model) {
-        if (!error) {
-          _output(createOutput(model));
-          if (_isLive()) {
-            return lodash.delay(_refresh, 2000);
-          }
-        }
-      });
-    };
-    _toggleRefresh = function () {
-      return _isLive(!_isLive());
-    };
-    _output(createOutput(_model));
-    lodash.defer(_go);
-    return {
-      output: _output,
-      toggleRefresh: _toggleRefresh,
-      isLive: _isLive,
-      template: 'flow-model-output'
-    };
-  };
-
-  function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var _frameKey;
-    var _viewFrame;
-    _frameKey = _mergeFramesResult.key;
-    _viewFrame = function () {
-      return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(_frameKey) }`);
-    };
-    lodash.defer(_go);
-    return {
-      frameKey: _frameKey,
-      viewFrame: _viewFrame,
-      template: 'flow-merge-frames-output'
-    };
-  };
-
-  function h2oMergeFramesInput(_, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var _canMerge;
-    var _destinationKey;
-    var _exception;
-    var _frames;
-    var _includeAllLeftRows;
-    var _includeAllRightRows;
-    var _leftColumns;
-    var _merge;
-    var _rightColumns;
-    var _selectedLeftColumn;
-    var _selectedLeftFrame;
-    var _selectedRightColumn;
-    var _selectedRightFrame;
-    _exception = Flow.Dataflow.signal(null);
-    _destinationKey = Flow.Dataflow.signal(`merged-${ Flow.Util.uuid() }`);
-    _frames = Flow.Dataflow.signals([]);
-    _selectedLeftFrame = Flow.Dataflow.signal(null);
-    _leftColumns = Flow.Dataflow.signals([]);
-    _selectedLeftColumn = Flow.Dataflow.signal(null);
-    _includeAllLeftRows = Flow.Dataflow.signal(false);
-    _selectedRightFrame = Flow.Dataflow.signal(null);
-    _rightColumns = Flow.Dataflow.signals([]);
-    _selectedRightColumn = Flow.Dataflow.signal(null);
-    _includeAllRightRows = Flow.Dataflow.signal(false);
-    _canMerge = Flow.Dataflow.lift(_selectedLeftFrame, _selectedLeftColumn, _selectedRightFrame, _selectedRightColumn, function (lf, lc, rf, rc) {
-      return lf && lc && rf && rc;
-    });
-    Flow.Dataflow.react(_selectedLeftFrame, function (frameKey) {
-      if (frameKey) {
-        return _.requestFrameSummaryWithoutData(frameKey, function (error, frame) {
-          return _leftColumns(lodash.map(frame.columns, function (column, i) {
-            return {
-              label: column.label,
-              index: i
-            };
-          }));
-        });
-      }
-      _selectedLeftColumn(null);
-      return _leftColumns([]);
-    });
-    Flow.Dataflow.react(_selectedRightFrame, function (frameKey) {
-      if (frameKey) {
-        return _.requestFrameSummaryWithoutData(frameKey, function (error, frame) {
-          return _rightColumns(lodash.map(frame.columns, function (column, i) {
-            return {
-              label: column.label,
-              index: i
-            };
-          }));
-        });
-      }
-      _selectedRightColumn(null);
-      return _rightColumns([]);
-    });
-    _merge = function () {
-      var cs;
-      if (!_canMerge()) {
-        return;
-      }
-      cs = `mergeFrames ${ Flow.Prelude.stringify(_destinationKey()) }, ${ Flow.Prelude.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ Flow.Prelude.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
-      return _.insertAndExecuteCell('cs', cs);
-    };
-    _.requestFrames(function (error, frames) {
-      var frame;
-      if (error) {
-        return _exception(new Flow.Error('Error fetching frame list.', error));
-      }
-      return _frames(function () {
-        var _i;
-        var _len;
-        var _results;
-        _results = [];
-        for (_i = 0, _len = frames.length; _i < _len; _i++) {
-          frame = frames[_i];
-          if (!frame.is_text) {
-            _results.push(frame.frame_id.name);
-          }
-        }
-        return _results;
-      }());
-    });
-    lodash.defer(_go);
-    return {
-      destinationKey: _destinationKey,
-      frames: _frames,
-      selectedLeftFrame: _selectedLeftFrame,
-      leftColumns: _leftColumns,
-      selectedLeftColumn: _selectedLeftColumn,
-      includeAllLeftRows: _includeAllLeftRows,
-      selectedRightFrame: _selectedRightFrame,
-      rightColumns: _rightColumns,
-      selectedRightColumn: _selectedRightColumn,
-      includeAllRightRows: _includeAllRightRows,
-      merge: _merge,
-      canMerge: _canMerge,
-      template: 'flow-merge-frames-input'
-    };
-  };
-
-  function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createNode;
-    var initialize;
-    var refresh;
-    var refreshActiveView;
-    var _activeFileType;
-    var _activeNode;
-    var _contents;
-    var _exception;
-    var _fileTypes;
-    var _nodes;
-    _exception = Flow.Dataflow.signal(null);
-    _contents = Flow.Dataflow.signal('');
-    _nodes = Flow.Dataflow.signal([]);
-    _activeNode = Flow.Dataflow.signal(null);
-    _fileTypes = Flow.Dataflow.signal(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'httpd', 'stdout', 'stderr']);
-    _activeFileType = Flow.Dataflow.signal(null);
-    createNode = function (node, index) {
-      return {
-        name: node.ip_port,
-        index
-      };
-    };
-    refreshActiveView = function (node, fileType) {
-      if (node) {
-        return _.requestLogFile(node.index, fileType, function (error, logFile) {
-          if (error) {
-            return _contents(`Error fetching log file: ${ error.message }`);
-          }
-          return _contents(logFile.log);
-        });
-      }
-      return _contents('');
-    };
-    refresh = function () {
-      return refreshActiveView(_activeNode(), _activeFileType());
-    };
-    initialize = function (cloud, nodeIndex, fileType, logFile) {
-      var NODE_INDEX_SELF;
-      var clientNode;
-      var i;
-      var n;
-      var nodes;
-      var _i;
-      var _len;
-      var _ref;
-      _activeFileType(fileType);
-      _contents(logFile.log);
-      nodes = [];
-      if (cloud.is_client) {
-        clientNode = { ip_port: 'driver' };
-        NODE_INDEX_SELF = -1;
-        nodes.push(createNode(clientNode, NODE_INDEX_SELF));
-      }
-      _ref = cloud.nodes;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        n = _ref[i];
-        nodes.push(createNode(n, i));
-      }
-      _nodes(nodes);
-      if (nodeIndex < nodes.length) {
-        _activeNode(nodes[nodeIndex]);
-      }
-      Flow.Dataflow.react(_activeNode, _activeFileType, refreshActiveView);
-      return lodash.defer(_go);
-    };
-    initialize(_cloud, _nodeIndex, _fileType, _logFile);
-    return {
-      nodes: _nodes,
-      activeNode: _activeNode,
-      fileTypes: _fileTypes,
-      activeFileType: _activeFileType,
-      contents: _contents,
-      refresh,
-      template: 'flow-log-file-output'
-    };
-  };
-
-  function h2oJobsOutput(_, _go, jobs) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createJobView;
-    var initialize;
-    var refresh;
-    var toggleRefresh;
-    var _exception;
-    var _hasJobViews;
-    var _isBusy;
-    var _isLive;
-    var _jobViews;
-    _jobViews = Flow.Dataflow.signals([]);
-    _hasJobViews = Flow.Dataflow.lift(_jobViews, function (jobViews) {
-      return jobViews.length > 0;
-    });
-    _isLive = Flow.Dataflow.signal(false);
-    _isBusy = Flow.Dataflow.signal(false);
-    _exception = Flow.Dataflow.signal(null);
-    createJobView = function (job) {
-      var type;
-      var view;
-      view = function () {
-        return _.insertAndExecuteCell('cs', `getJob ${ Flow.Prelude.stringify(job.key.name) }`);
-      };
-      type = function () {
-        switch (job.dest.type) {
-          case 'Key<Frame>':
-            return 'Frame';
-          case 'Key<Model>':
-            return 'Model';
-          case 'Key<Grid>':
-            return 'Grid';
-          case 'Key<PartialDependence>':
-            return 'PartialDependence';
-          default:
-            return 'Unknown';
-        }
-      }();
-      return {
-        destination: job.dest.name,
-        type,
-        description: job.description,
-        startTime: Flow.Format.Time(new Date(job.start_time)),
-        endTime: Flow.Format.Time(new Date(job.start_time + job.msec)),
-        elapsedTime: Flow.Util.formatMilliseconds(job.msec),
-        status: job.status,
-        view
-      };
-    };
-    toggleRefresh = function () {
-      return _isLive(!_isLive());
-    };
-    refresh = function () {
-      _isBusy(true);
-      return _.requestJobs(function (error, jobs) {
-        _isBusy(false);
-        if (error) {
-          _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
-          return _isLive(false);
-        }
-        _jobViews(lodash.map(jobs, createJobView));
-        if (_isLive()) {
-          return lodash.delay(refresh, 2000);
-        }
-      });
-    };
-    Flow.Dataflow.act(_isLive, function (isLive) {
-      if (isLive) {
-        return refresh();
-      }
-    });
-    initialize = function () {
-      _jobViews(lodash.map(jobs, createJobView));
-      return lodash.defer(_go);
-    };
-    initialize();
-    return {
-      jobViews: _jobViews,
-      hasJobViews: _hasJobViews,
-      isLive: _isLive,
-      isBusy: _isBusy,
-      toggleRefresh,
-      refresh,
-      exception: _exception,
-      template: 'flow-jobs-output'
-    };
-  };
-
-  function h2oInspectsOutput(_, _go, _tables) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createTableView;
-    createTableView = function (table) {
-      var grid;
-      var inspect;
-      var plot;
-      inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect ${ Flow.Prelude.stringify(table.label) }, ${ table.metadata.origin }`);
-      };
-      grid = function () {
-        return _.insertAndExecuteCell('cs', `grid inspect ${ Flow.Prelude.stringify(table.label) }, ${ table.metadata.origin }`);
-      };
-      plot = function () {
-        return _.insertAndExecuteCell('cs', table.metadata.plot);
-      };
-      return {
-        label: table.label,
-        description: table.metadata.description,
-        inspect,
-        grid,
-        canPlot: table.metadata.plot,
-        plot
-      };
-    };
-    lodash.defer(_go);
-    return {
-      hasTables: _tables.length > 0,
-      tables: lodash.map(_tables, createTableView),
-      template: 'flow-inspects-output'
-    };
-  };
-
-  function h2oInspectOutput(_, _go, _frame) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var plot;
-    var view;
-    view = function () {
-      return _.insertAndExecuteCell('cs', `grid inspect ${ Flow.Prelude.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
-    };
-    plot = function () {
-      return _.insertAndExecuteCell('cs', _frame.metadata.plot);
-    };
-    lodash.defer(_go);
-    return {
-      label: _frame.label,
-      vectors: _frame.vectors,
-      view,
-      canPlot: _frame.metadata.plot,
-      plot,
-      template: 'flow-inspect-output'
-    };
-  };
-
-  function h2oImportModelInput(_, _go, path, opt) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var importModel;
-    var _canImportModel;
-    var _overwrite;
-    var _path;
-    if (opt == null) {
-      opt = {};
-    }
-    _path = Flow.Dataflow.signal(path);
-    _overwrite = Flow.Dataflow.signal(opt.overwrite);
-    _canImportModel = Flow.Dataflow.lift(_path, function (path) {
-      return path && path.length;
-    });
-    importModel = function () {
-      return _.insertAndExecuteCell('cs', `importModel ${ Flow.Prelude.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
-    };
-    lodash.defer(_go);
-    return {
-      path: _path,
-      overwrite: _overwrite,
-      canImportModel: _canImportModel,
-      importModel,
-      template: 'flow-import-model-input'
-    };
-  };
-
-  function h2oImportFilesOutput(_, _go, _importResults) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createImportView;
-    var parse;
-    var _allFrames;
-    var _canParse;
-    var _importViews;
-    var _title;
-    _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, function (result) {
-      return result.destination_frames;
-    })));
-    _canParse = _allFrames.length > 0;
-    _title = `${ _allFrames.length } / ${ _importResults.length } files imported.`;
-    createImportView = function (result) {
-      return {
-        files: result.files,
-        template: 'flow-import-file-output'
-      };
-    };
-    _importViews = lodash.map(_importResults, createImportView);
-    parse = function () {
-      var paths;
-      paths = lodash.map(_allFrames, Flow.Prelude.stringify);
-      return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ paths.join(',') } ]`);
-    };
-    lodash.defer(_go);
-    return {
-      title: _title,
-      importViews: _importViews,
-      canParse: _canParse,
-      parse,
-      template: 'flow-import-files-output',
-      templateOf(view) {
-        return view.template;
-      }
-    };
-  };
-
-  function h2oImportFilesInput(_, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createFileItem;
-    var createFileItems;
-    var createSelectedFileItem;
-    var deselectAllFiles;
-    var importFiles;
-    var importSelectedFiles;
-    var listPathHints;
-    var processImportResult;
-    var selectAllFiles;
-    var tryImportFiles;
-    var _exception;
-    var _hasErrorMessage;
-    var _hasImportedFiles;
-    var _hasSelectedFiles;
-    var _hasUnselectedFiles;
-    var _importedFileCount;
-    var _importedFiles;
-    var _selectedFileCount;
-    var _selectedFiles;
-    var _selectedFilesDictionary;
-    var _specifiedPath;
-    _specifiedPath = Flow.Dataflow.signal('');
-    _exception = Flow.Dataflow.signal('');
-    _hasErrorMessage = Flow.Dataflow.lift(_exception, function (exception) {
-      if (exception) {
-        return true;
-      }
-      return false;
-    });
-    tryImportFiles = function () {
-      var specifiedPath;
-      specifiedPath = _specifiedPath();
-      return _.requestFileGlob(specifiedPath, -1, function (error, result) {
-        if (error) {
-          return _exception(error.stack);
-        }
-        _exception('');
-        return processImportResult(result);
-      });
-    };
-    _importedFiles = Flow.Dataflow.signals([]);
-    _importedFileCount = Flow.Dataflow.lift(_importedFiles, function (files) {
-      if (files.length) {
-        return `Found ${ Flow.Util.describeCount(files.length, 'file') }:`;
-      }
-      return '';
-    });
-    _hasImportedFiles = Flow.Dataflow.lift(_importedFiles, function (files) {
-      return files.length > 0;
-    });
-    _hasUnselectedFiles = Flow.Dataflow.lift(_importedFiles, function (files) {
-      return lodash.some(files, function (file) {
-        return !file.isSelected();
-      });
-    });
-    _selectedFiles = Flow.Dataflow.signals([]);
-    _selectedFilesDictionary = Flow.Dataflow.lift(_selectedFiles, function (files) {
-      var dictionary;
-      var file;
-      var _i;
-      var _len;
-      dictionary = {};
-      for (_i = 0, _len = files.length; _i < _len; _i++) {
-        file = files[_i];
-        dictionary[file.path] = true;
-      }
-      return dictionary;
-    });
-    _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, function (files) {
-      if (files.length) {
-        return `${ Flow.Util.describeCount(files.length, 'file') } selected:`;
-      }
-      return '(No files selected)';
-    });
-    _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, function (files) {
-      return files.length > 0;
-    });
-    importFiles = function (files) {
-      var paths;
-      paths = lodash.map(files, function (file) {
-        return Flow.Prelude.stringify(file.path);
-      });
-      return _.insertAndExecuteCell('cs', `importFiles [ ${ paths.join(',') } ]`);
-    };
-    importSelectedFiles = function () {
-      return importFiles(_selectedFiles());
-    };
-    createSelectedFileItem = function (path) {
-      var self;
-      return self = {
-        path,
-        deselect() {
-          var file;
-          var _i;
-          var _len;
-          var _ref;
-          _selectedFiles.remove(self);
-          _ref = _importedFiles();
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            file = _ref[_i];
-            if (file.path === path) {
-              file.isSelected(false);
-            }
-          }
-        }
-      };
-    };
-    createFileItem = function (path, isSelected) {
-      var self;
-      self = {
-        path,
-        isSelected: Flow.Dataflow.signal(isSelected),
-        select() {
-          _selectedFiles.push(createSelectedFileItem(self.path));
-          return self.isSelected(true);
-        }
-      };
-      Flow.Dataflow.act(self.isSelected, function (isSelected) {
-        return _hasUnselectedFiles(lodash.some(_importedFiles(), function (file) {
-          return !file.isSelected();
-        }));
-      });
-      return self;
-    };
-    createFileItems = function (result) {
-      return lodash.map(result.matches, function (path) {
-        return createFileItem(path, _selectedFilesDictionary()[path]);
-      });
-    };
-    listPathHints = function (query, process) {
-      return _.requestFileGlob(query, 10, function (error, result) {
-        if (!error) {
-          return process(lodash.map(result.matches, function (value) {
-            return { value };
-          }));
-        }
-      });
-    };
-    selectAllFiles = function () {
-      var dict;
-      var file;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
-      var _ref;
-      var _ref1;
-      dict = {};
-      _ref = _selectedFiles();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        file = _ref[_i];
-        dict[file.path] = true;
-      }
-      _ref1 = _importedFiles();
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        file = _ref1[_j];
-        if (!dict[file.path]) {
-          file.select();
-        }
-      }
-    };
-    deselectAllFiles = function () {
-      var file;
-      var _i;
-      var _len;
-      var _ref;
-      _selectedFiles([]);
-      _ref = _importedFiles();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        file = _ref[_i];
-        file.isSelected(false);
-      }
-    };
-    processImportResult = function (result) {
-      var files;
-      files = createFileItems(result);
-      return _importedFiles(files);
-    };
-    lodash.defer(_go);
-    return {
-      specifiedPath: _specifiedPath,
-      hasErrorMessage: _hasErrorMessage,
-      exception: _exception,
-      tryImportFiles,
-      listPathHints: lodash.throttle(listPathHints, 100),
-      hasImportedFiles: _hasImportedFiles,
-      importedFiles: _importedFiles,
-      importedFileCount: _importedFileCount,
-      selectedFiles: _selectedFiles,
-      selectAllFiles,
-      deselectAllFiles,
-      hasUnselectedFiles: _hasUnselectedFiles,
-      hasSelectedFiles: _hasSelectedFiles,
-      selectedFileCount: _selectedFileCount,
-      importSelectedFiles,
-      template: 'flow-import-files'
-    };
-  };
-
-  function h2oH2OFrameOutput(_, _go, _result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createH2oFrameView;
-    var _h2oframeView;
-    _h2oframeView = Flow.Dataflow.signal(null);
-    createH2oFrameView = function (result) {
-      return { h2oframe_id: result.h2oframe_id };
-    };
-    _h2oframeView(createH2oFrameView(_result));
-    lodash.defer(_go);
-    return {
-      h2oframeView: _h2oframeView,
-      template: 'flow-h2oframe-output'
-    };
-  };
-
-  function h2oGridsOutput(_, _go, _grids) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var buildModel;
-    var createGridView;
-    var initialize;
-    var _gridViews;
-    _gridViews = Flow.Dataflow.signal([]);
-    createGridView = function (grid) {
-      var view;
-      view = function () {
-        return _.insertAndExecuteCell('cs', `getGrid ${ Flow.Prelude.stringify(grid.grid_id.name) }`);
-      };
-      return {
-        key: grid.grid_id.name,
-        size: grid.model_ids.length,
-        view
-      };
-    };
-    buildModel = function () {
-      return _.insertAndExecuteCell('cs', 'buildModel');
-    };
-    initialize = function (grids) {
-      _gridViews(lodash.map(grids, createGridView));
-      return lodash.defer(_go);
-    };
-    initialize(_grids);
-    return {
-      gridViews: _gridViews,
-      hasGrids: _grids.length > 0,
-      buildModel,
-      template: 'flow-grids-output'
-    };
-  };
-
-  function h2oGridOutput(_, _go, _grid) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var buildModel;
-    var collectSelectedKeys;
-    var compareModels;
-    var createModelView;
-    var deleteModels;
-    var initialize;
-    var inspect;
-    var inspectAll;
-    var inspectHistory;
-    var predictUsingModels;
-    var _canCompareModels;
-    var _checkAllModels;
-    var _checkedModelCount;
-    var _errorViews;
-    var _hasErrors;
-    var _hasModels;
-    var _hasSelectedModels;
-    var _isCheckingAll;
-    var _modelViews;
-    _modelViews = Flow.Dataflow.signal([]);
-    _hasModels = _grid.model_ids.length > 0;
-    _errorViews = Flow.Dataflow.signal([]);
-    _hasErrors = _grid.failure_details.length > 0;
-    _checkAllModels = Flow.Dataflow.signal(false);
-    _checkedModelCount = Flow.Dataflow.signal(0);
-    _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
-      return count > 1;
-    });
-    _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
-      return count > 0;
-    });
-    _isCheckingAll = false;
-    Flow.Dataflow.react(_checkAllModels, function (checkAll) {
-      var view;
-      var views;
-      var _i;
-      var _len;
-      _isCheckingAll = true;
-      views = _modelViews();
-      for (_i = 0, _len = views.length; _i < _len; _i++) {
-        view = views[_i];
-        view.isChecked(checkAll);
-      }
-      _checkedModelCount(checkAll ? views.length : 0);
-      _isCheckingAll = false;
-    });
-    createModelView = function (model_id) {
-      var cloneModel;
-      var inspect;
-      var predict;
-      var view;
-      var _isChecked;
-      _isChecked = Flow.Dataflow.signal(false);
-      Flow.Dataflow.react(_isChecked, function () {
-        var checkedViews;
-        var view;
-        if (_isCheckingAll) {
-          return;
-        }
-        checkedViews = function () {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
-          _ref = _modelViews();
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            view = _ref[_i];
-            if (view.isChecked()) {
-              _results.push(view);
-            }
-          }
-          return _results;
-        }();
-        return _checkedModelCount(checkedViews.length);
-      });
-      predict = function () {
-        return _.insertAndExecuteCell('cs', `predict model: ${ Flow.Prelude.stringify(model_id.name) }`);
-      };
-      cloneModel = function () {
-        return alert('Not implemented');
-        // return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model_id.name)}`);
-      };
-      view = function () {
-        return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify(model_id.name) }`);
-      };
-      inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect getModel ${ Flow.Prelude.stringify(model_id.name) }`);
-      };
-      return {
-        key: model_id.name,
-        isChecked: _isChecked,
-        predict,
-        clone: cloneModel,
-        inspect,
-        view
-      };
-    };
-    buildModel = function () {
-      return _.insertAndExecuteCell('cs', 'buildModel');
-    };
-    collectSelectedKeys = function () {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
-      _ref = _modelViews();
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        view = _ref[_i];
-        if (view.isChecked()) {
-          _results.push(view.key);
-        }
-      }
-      return _results;
-    };
-    compareModels = function () {
-      return _.insertAndExecuteCell('cs', `'inspect getModels ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
-    };
-    predictUsingModels = function () {
-      return _.insertAndExecuteCell('cs', `predict models: ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
-    };
-    deleteModels = function () {
-      return _.confirm('Are you sure you want to delete these models?', {
-        acceptCaption: 'Delete Models',
-        declineCaption: 'Cancel'
-      }, function (accept) {
-        if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModels ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
-        }
-      });
-    };
-    inspect = function () {
-      var summary;
-      summary = _.inspect('summary', _grid);
-      return _.insertAndExecuteCell('cs', `grid inspect \'summary\', ${ summary.metadata.origin }`);
-    };
-    inspectHistory = function () {
-      var history;
-      history = _.inspect('scoring_history', _grid);
-      return _.insertAndExecuteCell('cs', `grid inspect \'scoring_history\', ${ history.metadata.origin }`);
-    };
-    inspectAll = function () {
-      var allKeys;
-      var view;
-      allKeys = function () {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
-        _ref = _modelViews();
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          view = _ref[_i];
-          _results.push(view.key);
-        }
-        return _results;
-      }();
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ Flow.Prelude.stringify(allKeys) }`);
-    };
-    initialize = function (grid) {
-      var errorViews;
-      var i;
-      _modelViews(lodash.map(grid.model_ids, createModelView));
-      errorViews = function () {
-        var _i;
-        var _ref;
-        var _results;
-        _results = [];
-        for (i = _i = 0, _ref = grid.failure_details.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
-          _results.push({
-            title: `Error ${ i + 1 }`,
-            detail: grid.failure_details[i],
-            params: `Parameters: [ ${ grid.failed_raw_params[i].join(', ') } ]`,
-            stacktrace: grid.failure_stack_traces[i]
-          });
-        }
-        return _results;
-      }();
-      _errorViews(errorViews);
-      return lodash.defer(_go);
-    };
-    initialize(_grid);
-    return {
-      modelViews: _modelViews,
-      hasModels: _hasModels,
-      errorViews: _errorViews,
-      hasErrors: _hasErrors,
-      buildModel,
-      compareModels,
-      predictUsingModels,
-      deleteModels,
-      checkedModelCount: _checkedModelCount,
-      canCompareModels: _canCompareModels,
-      hasSelectedModels: _hasSelectedModels,
-      checkAllModels: _checkAllModels,
-      inspect,
-      inspectHistory,
-      inspectAll,
-      template: 'flow-grid-output'
-    };
-  };
-
-  function h2oFramesOutput(_, _go, _frames) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var collectSelectedKeys;
-    var createFrameView;
-    var deleteFrames;
-    var importFiles;
-    var predictOnFrames;
-    var _checkAllFrames;
-    var _frameViews;
-    var _hasSelectedFrames;
-    var _isCheckingAll;
-    _frameViews = Flow.Dataflow.signal([]);
-    _checkAllFrames = Flow.Dataflow.signal(false);
-    _hasSelectedFrames = Flow.Dataflow.signal(false);
-    _isCheckingAll = false;
-    Flow.Dataflow.react(_checkAllFrames, function (checkAll) {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
-      _isCheckingAll = true;
-      _ref = _frameViews();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        view = _ref[_i];
-        view.isChecked(checkAll);
-      }
-      _hasSelectedFrames(checkAll);
-      _isCheckingAll = false;
-    });
-    createFrameView = function (frame) {
-      var columnLabels;
-      var createModel;
-      var inspect;
-      var predict;
-      var view;
-      var _isChecked;
-      _isChecked = Flow.Dataflow.signal(false);
-      Flow.Dataflow.react(_isChecked, function () {
-        var checkedViews;
-        var view;
-        if (_isCheckingAll) {
-          return;
-        }
-        checkedViews = function () {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
-          _ref = _frameViews();
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            view = _ref[_i];
-            if (view.isChecked()) {
-              _results.push(view);
-            }
-          }
-          return _results;
-        }();
-        return _hasSelectedFrames(checkedViews.length > 0);
-      });
-      columnLabels = lodash.head(lodash.map(frame.columns, function (column) {
-        return column.label;
-      }), 15);
-      view = function () {
-        if (frame.is_text) {
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ Flow.Prelude.stringify(frame.frame_id.name) } ]`);
-        }
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(frame.frame_id.name) }`);
-      };
-      predict = function () {
-        return _.insertAndExecuteCell('cs', `predict frame: ${ Flow.Prelude.stringify(frame.frame_id.name) }`);
-      };
-      inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ Flow.Prelude.stringify(frame.frame_id.name) }`);
-      };
-      createModel = function () {
-        return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ Flow.Prelude.stringify(frame.frame_id.name) }`);
-      };
-      return {
-        key: frame.frame_id.name,
-        isChecked: _isChecked,
-        size: Flow.Util.formatBytes(frame.byte_size),
-        rowCount: frame.rows,
-        columnCount: frame.columns,
-        isText: frame.is_text,
-        view,
-        predict,
-        inspect,
-        createModel
-      };
-    };
-    importFiles = function () {
-      return _.insertAndExecuteCell('cs', 'importFiles');
-    };
-    collectSelectedKeys = function () {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
-      _ref = _frameViews();
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        view = _ref[_i];
-        if (view.isChecked()) {
-          _results.push(view.key);
-        }
-      }
-      return _results;
-    };
-    predictOnFrames = function () {
-      return _.insertAndExecuteCell('cs', `predict frames: ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
-    };
-    deleteFrames = function () {
-      return _.confirm('Are you sure you want to delete these frames?', {
-        acceptCaption: 'Delete Frames',
-        declineCaption: 'Cancel'
-      }, function (accept) {
-        if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteFrames ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
-        }
-      });
-    };
-    _frameViews(lodash.map(_frames, createFrameView));
-    lodash.defer(_go);
-    return {
-      frameViews: _frameViews,
-      hasFrames: _frames.length > 0,
-      importFiles,
-      predictOnFrames,
-      deleteFrames,
-      hasSelectedFrames: _hasSelectedFrames,
-      checkAllFrames: _checkAllFrames,
-      template: 'flow-frames-output'
-    };
-  };
-
-  function h2oFrameOutput(_, _go, _frame) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var MaxItemsPerPage;
-    var createModel;
-    var deleteFrame;
-    var download;
-    var exportFrame;
-    var goToNextPage;
-    var goToPreviousPage;
-    var inspect;
-    var inspectData;
-    var predict;
-    var refreshColumns;
-    var renderFrame;
-    var renderGrid;
-    var renderPlot;
-    var splitFrame;
-    var _canGoToNextPage;
-    var _canGoToPreviousPage;
-    var _chunkSummary;
-    var _columnNameSearchTerm;
-    var _currentPage;
-    var _distributionSummary;
-    var _grid;
-    var _lastUsedSearchTerm;
-    var _maxPages;
-    MaxItemsPerPage = 20;
-    _grid = Flow.Dataflow.signal(null);
-    _chunkSummary = Flow.Dataflow.signal(null);
-    _distributionSummary = Flow.Dataflow.signal(null);
-    _columnNameSearchTerm = Flow.Dataflow.signal(null);
-    _currentPage = Flow.Dataflow.signal(0);
-    _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
-    _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, function (index) {
-      return index > 0;
-    });
-    _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, function (maxPages, index) {
-      return index < maxPages - 1;
-    });
-    renderPlot = function (container, render) {
-      return render(function (error, vis) {
-        if (error) {
-          return console.debug(error);
-        }
-        return container(vis.element);
-      });
-    };
-    renderGrid = function (render) {
-      return render(function (error, vis) {
-        if (error) {
-          return console.debug(error);
-        }
-        $('a', vis.element).on('click', function (e) {
-          var $a;
-          $a = $(e.target);
-          switch ($a.attr('data-type')) {
-            case 'summary-link':
-              return _.insertAndExecuteCell('cs', `getColumnSummary ${ Flow.Prelude.stringify(_frame.frame_id.name) }, ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
-            case 'as-factor-link':
-              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ Flow.Prelude.stringify(_frame.frame_id.name) }, column: ${ Flow.Prelude.stringify($a.attr('data-key')) }, type: \'enum\'`);
-            case 'as-numeric-link':
-              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ Flow.Prelude.stringify(_frame.frame_id.name) }, column: ${ Flow.Prelude.stringify($a.attr('data-key')) }, type: \'int\'`);
-          }
-        });
-        return _grid(vis.element);
-      });
-    };
-    createModel = function () {
-      return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
-    };
-    inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
-    };
-    inspectData = function () {
-      return _.insertAndExecuteCell('cs', `getFrameData ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
-    };
-    splitFrame = function () {
-      return _.insertAndExecuteCell('cs', `assist splitFrame, ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
-    };
-    predict = function () {
-      return _.insertAndExecuteCell('cs', `predict frame: ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
-    };
-    download = function () {
-      return window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
-    };
-    exportFrame = function () {
-      return _.insertAndExecuteCell('cs', `exportFrame ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
-    };
-    deleteFrame = function () {
-      return _.confirm('Are you sure you want to delete this frame?', {
-        acceptCaption: 'Delete Frame',
-        declineCaption: 'Cancel'
-      }, function (accept) {
-        if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteFrame ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
-        }
-      });
-    };
-    renderFrame = function (frame) {
-      renderGrid(_.plot(function (g) {
-        return g(g.select(), g.from(_.inspect('columns', frame)));
-      }));
-      renderPlot(_chunkSummary, _.plot(function (g) {
-        return g(g.select(), g.from(_.inspect('Chunk compression summary', frame)));
-      }));
-      return renderPlot(_distributionSummary, _.plot(function (g) {
-        return g(g.select(), g.from(_.inspect('Frame distribution summary', frame)));
-      }));
-    };
-    _lastUsedSearchTerm = null;
-    refreshColumns = function (pageIndex) {
-      var itemCount;
-      var searchTerm;
-      var startIndex;
-      searchTerm = _columnNameSearchTerm();
-      if (searchTerm !== _lastUsedSearchTerm) {
-        pageIndex = 0;
-      }
-      startIndex = pageIndex * MaxItemsPerPage;
-      itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-      return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, function (error, frame) {
-        if (error) {
-          // empty
-        } else {
-          _lastUsedSearchTerm = searchTerm;
-          _currentPage(pageIndex);
-          return renderFrame(frame);
-        }
-      });
-    };
-    goToPreviousPage = function () {
-      var currentPage;
-      currentPage = _currentPage();
-      if (currentPage > 0) {
-        refreshColumns(currentPage - 1);
-      }
-    };
-    goToNextPage = function () {
-      var currentPage;
-      currentPage = _currentPage();
-      if (currentPage < _maxPages() - 1) {
-        refreshColumns(currentPage + 1);
-      }
-    };
-    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
-    renderFrame(_frame);
-    lodash.defer(_go);
-    return {
-      key: _frame.frame_id.name,
-      rowCount: _frame.rows,
-      columnCount: _frame.total_column_count,
-      size: Flow.Util.formatBytes(_frame.byte_size),
-      chunkSummary: _chunkSummary,
-      distributionSummary: _distributionSummary,
-      columnNameSearchTerm: _columnNameSearchTerm,
-      grid: _grid,
-      inspect,
-      createModel,
-      inspectData,
-      splitFrame,
-      predict,
-      download,
-      exportFrame,
-      canGoToPreviousPage: _canGoToPreviousPage,
-      canGoToNextPage: _canGoToNextPage,
-      goToPreviousPage,
-      goToNextPage,
-      deleteFrame,
-      template: 'flow-frame-output'
-    };
-  };
-
-  function h2oFrameDataOutput(_, _go, _frame) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var MaxItemsPerPage;
-    var goToNextPage;
-    var goToPreviousPage;
-    var refreshColumns;
-    var renderFrame;
-    var renderPlot;
-    var _canGoToNextPage;
-    var _canGoToPreviousPage;
-    var _columnNameSearchTerm;
-    var _currentPage;
-    var _data;
-    var _lastUsedSearchTerm;
-    var _maxPages;
-    MaxItemsPerPage = 20;
-    _data = Flow.Dataflow.signal(null);
-    _columnNameSearchTerm = Flow.Dataflow.signal(null);
-    _currentPage = Flow.Dataflow.signal(0);
-    _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
-    _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, function (index) {
-      return index > 0;
-    });
-    _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, function (maxPages, index) {
-      return index < maxPages - 1;
-    });
-    renderPlot = function (container, render) {
-      return render(function (error, vis) {
-        if (error) {
-          return console.debug(error);
-        }
-        return container(vis.element);
-      });
-    };
-    renderFrame = function (frame) {
-      return renderPlot(_data, _.plot(function (g) {
-        return g(g.select(), g.from(_.inspect('data', frame)));
-      }));
-    };
-    _lastUsedSearchTerm = null;
-    refreshColumns = function (pageIndex) {
-      var itemCount;
-      var searchTerm;
-      var startIndex;
-      searchTerm = _columnNameSearchTerm();
-      if (searchTerm !== _lastUsedSearchTerm) {
-        pageIndex = 0;
-      }
-      startIndex = pageIndex * MaxItemsPerPage;
-      itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-      return _.requestFrameDataE(_frame.frame_id.name, searchTerm, startIndex, itemCount, function (error, frame) {
-        if (error) {
-          // empty
-        } else {
-          _lastUsedSearchTerm = searchTerm;
-          _currentPage(pageIndex);
-          return renderFrame(frame);
-        }
-      });
-    };
-    goToPreviousPage = function () {
-      var currentPage;
-      currentPage = _currentPage();
-      if (currentPage > 0) {
-        refreshColumns(currentPage - 1);
-      }
-    };
-    goToNextPage = function () {
-      var currentPage;
-      currentPage = _currentPage();
-      if (currentPage < _maxPages() - 1) {
-        refreshColumns(currentPage + 1);
-      }
-    };
-    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
-    renderFrame(_frame);
-    lodash.defer(_go);
-    return {
-      key: _frame.frame_id.name,
-      data: _data,
-      columnNameSearchTerm: _columnNameSearchTerm,
-      canGoToPreviousPage: _canGoToPreviousPage,
-      canGoToNextPage: _canGoToNextPage,
-      goToPreviousPage,
-      goToNextPage,
-      template: 'flow-frame-data-output'
-    };
-  };
-
   function flowFileUploadDialog(_, _go) {
     var Flow = window.Flow;
     var accept;
@@ -3541,724 +98,6 @@
       accept,
       decline,
       template: 'file-open-dialog'
-    };
-  };
-
-  function h2oExportModelOutput(_, _go, result) {
-    var lodash = window._;
-    lodash.defer(_go);
-    return { template: 'flow-export-model-output' };
-  };
-
-  function h2oExportModelInput(_, _go, modelKey, path, opt) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var exportModel;
-    var _canExportModel;
-    var _models;
-    var _overwrite;
-    var _path;
-    var _selectedModelKey;
-    if (opt == null) {
-      opt = {};
-    }
-    _models = Flow.Dataflow.signal([]);
-    _selectedModelKey = Flow.Dataflow.signal(null);
-    _path = Flow.Dataflow.signal(null);
-    _overwrite = Flow.Dataflow.signal(opt.overwrite);
-    _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, function (modelKey, path) {
-      return modelKey && path;
-    });
-    exportModel = function () {
-      return _.insertAndExecuteCell('cs', `exportModel ${ Flow.Prelude.stringify(_selectedModelKey()) }, ${ Flow.Prelude.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
-    };
-    _.requestModels(function (error, models) {
-      var model;
-      if (error) {
-        // empty
-      } else {
-        _models(function () {
-          var _i;
-          var _len;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = models.length; _i < _len; _i++) {
-            model = models[_i];
-            _results.push(model.model_id.name);
-          }
-          return _results;
-        }());
-        return _selectedModelKey(modelKey);
-      }
-    });
-    lodash.defer(_go);
-    return {
-      models: _models,
-      selectedModelKey: _selectedModelKey,
-      path: _path,
-      overwrite: _overwrite,
-      canExportModel: _canExportModel,
-      exportModel,
-      template: 'flow-export-model-input'
-    };
-  };
-
-  function h2oExportFrameOutput(_, _go, result) {
-    var lodash = window._;
-    lodash.defer(_go);
-    return { template: 'flow-export-frame-output' };
-  };
-
-  function h2oExportFrameInput(_, _go, frameKey, path, opt) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var exportFrame;
-    var _canExportFrame;
-    var _frames;
-    var _overwrite;
-    var _path;
-    var _selectedFrame;
-    _frames = Flow.Dataflow.signal([]);
-    _selectedFrame = Flow.Dataflow.signal(frameKey);
-    _path = Flow.Dataflow.signal(null);
-    _overwrite = Flow.Dataflow.signal(true);
-    _canExportFrame = Flow.Dataflow.lift(_selectedFrame, _path, function (frame, path) {
-      return frame && path;
-    });
-    exportFrame = function () {
-      return _.insertAndExecuteCell('cs', `exportFrame ${ Flow.Prelude.stringify(_selectedFrame()) }, ${ Flow.Prelude.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
-    };
-    _.requestFrames(function (error, frames) {
-      var frame;
-      if (error) {
-        // empty
-      } else {
-        _frames(function () {
-          var _i;
-          var _len;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = frames.length; _i < _len; _i++) {
-            frame = frames[_i];
-            _results.push(frame.frame_id.name);
-          }
-          return _results;
-        }());
-        return _selectedFrame(frameKey);
-      }
-    });
-    lodash.defer(_go);
-    return {
-      frames: _frames,
-      selectedFrame: _selectedFrame,
-      path: _path,
-      overwrite: _overwrite,
-      canExportFrame: _canExportFrame,
-      exportFrame,
-      template: 'flow-export-frame-input'
-    };
-  };
-
-  function h2oDeleteObjectsOutput(_, _go, _keys) {
-    var lodash = window._;
-    lodash.defer(_go);
-    return {
-      hasKeys: _keys.length > 0,
-      keys: _keys,
-      template: 'flow-delete-objects-output'
-    };
-  };
-
-  function h2oDataFrameOutput(_, _go, _result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createDataFrameView;
-    var _dataFrameView;
-    _dataFrameView = Flow.Dataflow.signal(null);
-    createDataFrameView = function (result) {
-      return { dataframe_id: result.dataframe_id };
-    };
-    _dataFrameView(createDataFrameView(_result));
-    lodash.defer(_go);
-    return {
-      dataFrameView: _dataFrameView,
-      template: 'flow-dataframe-output'
-    };
-  };
-
-  function h2oDataFramesOutput(_, _go, _dataFrames) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createDataFrameView;
-    var _dataFramesViews;
-    _dataFramesViews = Flow.Dataflow.signal([]);
-    createDataFrameView = function (dataFrame) {
-      return {
-        dataframe_id: dataFrame.dataframe_id,
-        partitions: dataFrame.partitions
-      };
-    };
-    _dataFramesViews(lodash.map(_dataFrames, createDataFrameView));
-    lodash.defer(_go);
-    return {
-      dataFrameViews: _dataFramesViews,
-      hasDataFrames: _dataFrames.length > 0,
-      template: 'flow-dataframes-output'
-    };
-  };
-
-  function h2oCreateFrameInput(_, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createFrame;
-    var _binaryFraction;
-    var _binaryOnesFraction;
-    var _categoricalFraction;
-    var _columns;
-    var _factors;
-    var _hasResponse;
-    var _integerFraction;
-    var _integerRange;
-    var _key;
-    var _missingFraction;
-    var _randomize;
-    var _realRange;
-    var _responseFactors;
-    var _rows;
-    var _seed;
-    var _seed_for_column_types;
-    var _stringFraction;
-    var _timeFraction;
-    var _value;
-    _key = Flow.Dataflow.signal('');
-    _rows = Flow.Dataflow.signal(10000);
-    _columns = Flow.Dataflow.signal(100);
-    _seed = Flow.Dataflow.signal(7595850248774472000);
-    _seed_for_column_types = Flow.Dataflow.signal(-1);
-    _randomize = Flow.Dataflow.signal(true);
-    _value = Flow.Dataflow.signal(0);
-    _realRange = Flow.Dataflow.signal(100);
-    _categoricalFraction = Flow.Dataflow.signal(0.1);
-    _factors = Flow.Dataflow.signal(5);
-    _integerFraction = Flow.Dataflow.signal(0.5);
-    _binaryFraction = Flow.Dataflow.signal(0.1);
-    _binaryOnesFraction = Flow.Dataflow.signal(0.02);
-    _timeFraction = Flow.Dataflow.signal(0);
-    _stringFraction = Flow.Dataflow.signal(0);
-    _integerRange = Flow.Dataflow.signal(1);
-    _missingFraction = Flow.Dataflow.signal(0.01);
-    _responseFactors = Flow.Dataflow.signal(2);
-    _hasResponse = Flow.Dataflow.signal(false);
-    createFrame = function () {
-      var opts;
-      opts = {
-        dest: _key(),
-        rows: _rows(),
-        cols: _columns(),
-        seed: _seed(),
-        seed_for_column_types: _seed_for_column_types(),
-        randomize: _randomize(),
-        value: _value(),
-        real_range: _realRange(),
-        categorical_fraction: _categoricalFraction(),
-        factors: _factors(),
-        integer_fraction: _integerFraction(),
-        binary_fraction: _binaryFraction(),
-        binary_ones_fraction: _binaryOnesFraction(),
-        time_fraction: _timeFraction(),
-        string_fraction: _stringFraction(),
-        integer_range: _integerRange(),
-        missing_fraction: _missingFraction(),
-        response_factors: _responseFactors(),
-        has_response: _hasResponse()
-      };
-      return _.insertAndExecuteCell('cs', `createFrame ${ Flow.Prelude.stringify(opts) }`);
-    };
-    lodash.defer(_go);
-    return {
-      key: _key,
-      rows: _rows,
-      columns: _columns,
-      seed: _seed,
-      seed_for_column_types: _seed_for_column_types,
-      randomize: _randomize,
-      value: _value,
-      realRange: _realRange,
-      categoricalFraction: _categoricalFraction,
-      factors: _factors,
-      integerFraction: _integerFraction,
-      binaryFraction: _binaryFraction,
-      binaryOnesFraction: _binaryOnesFraction,
-      timeFraction: _timeFraction,
-      stringFraction: _stringFraction,
-      integerRange: _integerRange,
-      missingFraction: _missingFraction,
-      responseFactors: _responseFactors,
-      hasResponse: _hasResponse,
-      createFrame,
-      template: 'flow-create-frame-input'
-    };
-  };
-
-  function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var column;
-    var impute;
-    var inspect;
-    var renderPlot;
-    var table;
-    var _characteristicsPlot;
-    var _distributionPlot;
-    var _domainPlot;
-    var _summaryPlot;
-    column = lodash.head(frame.columns);
-    _characteristicsPlot = Flow.Dataflow.signal(null);
-    _summaryPlot = Flow.Dataflow.signal(null);
-    _distributionPlot = Flow.Dataflow.signal(null);
-    _domainPlot = Flow.Dataflow.signal(null);
-    renderPlot = function (target, render) {
-      return render(function (error, vis) {
-        if (error) {
-          return console.debug(error);
-        }
-        return target(vis.element);
-      });
-    };
-    if (table = _.inspect('characteristics', frame)) {
-      renderPlot(_characteristicsPlot, _.plot(function (g) {
-        return g(g.rect(g.position(g.stack(g.avg('percent'), 0), 'All'), g.fillColor('characteristic')), g.groupBy(g.factor(g.value('All')), 'characteristic'), g.from(table));
-      }));
-    }
-    if (table = _.inspect('distribution', frame)) {
-      renderPlot(_distributionPlot, _.plot(function (g) {
-        return g(g.rect(g.position('interval', 'count'), g.width(g.value(1))), g.from(table));
-      }));
-    }
-    if (table = _.inspect('summary', frame)) {
-      renderPlot(_summaryPlot, _.plot(function (g) {
-        return g(g.schema(g.position('min', 'q1', 'q2', 'q3', 'max', 'column')), g.from(table));
-      }));
-    }
-    if (table = _.inspect('domain', frame)) {
-      renderPlot(_domainPlot, _.plot(function (g) {
-        return g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000));
-      }));
-    }
-    impute = function () {
-      return _.insertAndExecuteCell('cs', `imputeColumn frame: ${ Flow.Prelude.stringify(frameKey) }, column: ${ Flow.Prelude.stringify(columnName) }`);
-    };
-    inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ Flow.Prelude.stringify(frameKey) }, ${ Flow.Prelude.stringify(columnName) }`);
-    };
-    lodash.defer(_go);
-    return {
-      label: column.label,
-      characteristicsPlot: _characteristicsPlot,
-      summaryPlot: _summaryPlot,
-      distributionPlot: _distributionPlot,
-      domainPlot: _domainPlot,
-      impute,
-      inspect,
-      template: 'flow-column-summary-output'
-    };
-  };
-
-  function h2oCloudOutput(_, _go, _cloud) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var avg;
-    var createGrid;
-    var createNodeRow;
-    var createTotalRow;
-    var format3f;
-    var formatMilliseconds;
-    var formatThreads;
-    var prettyPrintBytes;
-    var refresh;
-    var sum;
-    var toggleExpansion;
-    var toggleRefresh;
-    var updateCloud;
-    var _exception;
-    var _hasConsensus;
-    var _headers;
-    var _isBusy;
-    var _isExpanded;
-    var _isHealthy;
-    var _isLive;
-    var _isLocked;
-    var _name;
-    var _nodeCounts;
-    var _nodes;
-    var _size;
-    var _sizes;
-    var _uptime;
-    var _version;
-    _exception = Flow.Dataflow.signal(null);
-    _isLive = Flow.Dataflow.signal(false);
-    _isBusy = Flow.Dataflow.signal(false);
-    _isExpanded = Flow.Dataflow.signal(false);
-    _name = Flow.Dataflow.signal();
-    _size = Flow.Dataflow.signal();
-    _uptime = Flow.Dataflow.signal();
-    _version = Flow.Dataflow.signal();
-    _nodeCounts = Flow.Dataflow.signal();
-    _hasConsensus = Flow.Dataflow.signal();
-    _isLocked = Flow.Dataflow.signal();
-    _isHealthy = Flow.Dataflow.signal();
-    _nodes = Flow.Dataflow.signals();
-    formatMilliseconds = function (ms) {
-      return Flow.Util.fromNow(new Date(new Date().getTime() - ms));
-    };
-    format3f = d3.format('.3f');
-    _sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    prettyPrintBytes = function (bytes) {
-      var i;
-      if (bytes === 0) {
-        return '-';
-      }
-      i = Math.floor(Math.log(bytes) / Math.log(1024));
-      return `${ (bytes / Math.pow(1024, i)).toFixed(2) } ${ _sizes[i] }`;
-    };
-    formatThreads = function (fjs) {
-      var i;
-      var max_lo;
-      var s;
-      var _i;
-      var _j;
-      var _k;
-      var _ref;
-      for (max_lo = _i = 120; _i > 0; max_lo = --_i) {
-        if (fjs[max_lo - 1] !== -1) {
-          break;
-        }
-      }
-      s = '[';
-      for (i = _j = 0; max_lo >= 0 ? _j < max_lo : _j > max_lo; i = max_lo >= 0 ? ++_j : --_j) {
-        s += Math.max(fjs[i], 0);
-        s += '/';
-      }
-      s += '.../';
-      for (i = _k = 120, _ref = fjs.length - 1; _ref >= 120 ? _k < _ref : _k > _ref; i = _ref >= 120 ? ++_k : --_k) {
-        s += fjs[i];
-        s += '/';
-      }
-      s += fjs[fjs.length - 1];
-      s += ']';
-      return s;
-    };
-    sum = function (nodes, attrOf) {
-      var node;
-      var total;
-      var _i;
-      var _len;
-      total = 0;
-      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-        node = nodes[_i];
-        total += attrOf(node);
-      }
-      return total;
-    };
-    avg = function (nodes, attrOf) {
-      return sum(nodes, attrOf) / nodes.length;
-    };
-    _headers = [['&nbsp;', true], ['Name', true], ['Ping', true], ['Cores', true], ['Load', true], ['My CPU %', true], ['Sys CPU %', true], ['GFLOPS', true], ['Memory Bandwidth', true], ['Data (Used/Total)', true], ['Data (% Cached)', true], ['GC (Free / Total / Max)', true], ['Disk (Free / Max)', true], ['Disk (% Free)', true], ['PID', false], ['Keys', false], ['TCP', false], ['FD', false], ['RPCs', false], ['Threads', false], ['Tasks', false]];
-    createNodeRow = function (node) {
-      return [node.healthy, node.ip_port, moment(new Date(node.last_ping)).fromNow(), node.num_cpus, format3f(node.sys_load), node.my_cpu_pct, node.sys_cpu_pct, format3f(node.gflops), `${ prettyPrintBytes(node.mem_bw) } / s`, `${ prettyPrintBytes(node.mem_value_size) } / ${ prettyPrintBytes(node.total_value_size) }`, `${ Math.floor(node.mem_value_size * 100 / node.total_value_size) }%`, `${ prettyPrintBytes(node.free_mem) } / ${ prettyPrintBytes(node.tot_mem) } / ${ prettyPrintBytes(node.max_mem) }`, `${ prettyPrintBytes(node.free_disk) } / ${ prettyPrintBytes(node.max_disk) }`, `${ Math.floor(node.free_disk * 100 / node.max_disk) }%`, node.pid, node.num_keys, node.tcps_active, node.open_fds, node.rpcs_active, formatThreads(node.fjthrds), formatThreads(node.fjqueue)];
-    };
-    createTotalRow = function (cloud) {
-      var nodes;
-      nodes = cloud.nodes;
-      return [cloud.cloud_healthy, 'TOTAL', '-', sum(nodes, node => node.num_cpus), format3f(sum(nodes, node => node.sys_load)), '-', '-', `${ format3f(sum(nodes, node => node.gflops)) }`, `${ prettyPrintBytes(sum(nodes, node => node.mem_bw)) } / s`, `${ prettyPrintBytes(sum(nodes, node => node.mem_value_size)) } / ${ prettyPrintBytes(sum(nodes, node => node.total_value_size)) }`, `${ Math.floor(avg(nodes, node => node.mem_value_size * 100 / node.total_value_size)) }%`, `${ prettyPrintBytes(sum(nodes, node => node.free_mem)) } / ${ prettyPrintBytes(sum(nodes, node => node.tot_mem)) } / ${ prettyPrintBytes(sum(nodes, node => node.max_mem)) }`, `${ prettyPrintBytes(sum(nodes, node => node.free_disk)) } / ${ prettyPrintBytes(sum(nodes, node => node.max_disk)) }`, `${ Math.floor(avg(nodes, node => node.free_disk * 100 / node.max_disk)) }%`, '-', sum(nodes, node => node.num_keys), sum(nodes, node => node.tcps_active), sum(nodes, node => node.open_fds), sum(nodes, node => node.rpcs_active), '-', '-'];
-    };
-    createGrid = function (cloud, isExpanded) {
-      var caption;
-      var cell;
-      var danger;
-      var grid;
-      var i;
-      var nodeRows;
-      var row;
-      var showAlways;
-      var success;
-      var table;
-      var tbody;
-      var td;
-      var tds;
-      var th;
-      var thead;
-      var ths;
-      var tr;
-      var trs;
-      var _ref;
-      _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'i.fa.fa-check-circle.text-success', 'i.fa.fa-exclamation-circle.text-danger'), grid = _ref[0], table = _ref[1], thead = _ref[2], tbody = _ref[3], tr = _ref[4], th = _ref[5], td = _ref[6], success = _ref[7], danger = _ref[8];
-      nodeRows = lodash.map(cloud.nodes, createNodeRow);
-      nodeRows.push(createTotalRow(cloud));
-      ths = function () {
-        var _i;
-        var _len;
-        var _ref1;
-        var _results;
-        _results = [];
-        for (_i = 0, _len = _headers.length; _i < _len; _i++) {
-          _ref1 = _headers[_i], caption = _ref1[0], showAlways = _ref1[1];
-          if (showAlways || isExpanded) {
-            _results.push(th(caption));
-          }
-        }
-        return _results;
-      }();
-      trs = function () {
-        var _i;
-        var _len;
-        var _results;
-        _results = [];
-        for (_i = 0, _len = nodeRows.length; _i < _len; _i++) {
-          row = nodeRows[_i];
-          tds = function () {
-            var _j;
-            var _len1;
-            var _results1;
-            _results1 = [];
-            for (i = _j = 0, _len1 = row.length; _j < _len1; i = ++_j) {
-              cell = row[i];
-              if (_headers[i][1] || isExpanded) {
-                if (i === 0) {
-                  _results1.push(td(cell ? success() : danger()));
-                } else {
-                  _results1.push(td(cell));
-                }
-              }
-            }
-            return _results1;
-          }();
-          _results.push(tr(tds));
-        }
-        return _results;
-      }();
-      return Flow.HTML.render('div', grid([table([thead(tr(ths)), tbody(trs)])]));
-    };
-    updateCloud = function (cloud, isExpanded) {
-      _name(cloud.cloud_name);
-      _version(cloud.version);
-      _hasConsensus(cloud.consensus);
-      _uptime(formatMilliseconds(cloud.cloud_uptime_millis));
-      _nodeCounts(`${ cloud.cloud_size - cloud.bad_nodes } / ${ cloud.cloud_size }`);
-      _isLocked(cloud.locked);
-      _isHealthy(cloud.cloud_healthy);
-      return _nodes(createGrid(cloud, isExpanded));
-    };
-    toggleRefresh = function () {
-      return _isLive(!_isLive());
-    };
-    refresh = function () {
-      _isBusy(true);
-      return _.requestCloud(function (error, cloud) {
-        _isBusy(false);
-        if (error) {
-          _exception(Flow.Failure(_, new Flow.Error('Error fetching cloud status', error)));
-          return _isLive(false);
-        }
-        updateCloud(_cloud = cloud, _isExpanded());
-        if (_isLive()) {
-          return lodash.delay(refresh, 2000);
-        }
-      });
-    };
-    Flow.Dataflow.act(_isLive, function (isLive) {
-      if (isLive) {
-        return refresh();
-      }
-    });
-    toggleExpansion = function () {
-      return _isExpanded(!_isExpanded());
-    };
-    Flow.Dataflow.act(_isExpanded, function (isExpanded) {
-      return updateCloud(_cloud, isExpanded);
-    });
-    updateCloud(_cloud, _isExpanded());
-    lodash.defer(_go);
-    return {
-      name: _name,
-      size: _size,
-      uptime: _uptime,
-      version: _version,
-      nodeCounts: _nodeCounts,
-      hasConsensus: _hasConsensus,
-      isLocked: _isLocked,
-      isHealthy: _isHealthy,
-      nodes: _nodes,
-      isLive: _isLive,
-      isBusy: _isBusy,
-      toggleRefresh,
-      refresh,
-      isExpanded: _isExpanded,
-      toggleExpansion,
-      template: 'flow-cloud-output'
-    };
-  };
-
-  function h2oCancelJobOutput(_, _go, _cancellation) {
-    var lodash = window._;
-    lodash.defer(_go);
-    return { template: 'flow-cancel-job-output' };
-  };
-
-  function h2oBindFramesOutput(_, _go, key, result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var viewFrame;
-    viewFrame = function () {
-      return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(key) }`);
-    };
-    lodash.defer(_go);
-    return {
-      viewFrame,
-      template: 'flow-bind-frames-output'
-    };
-  };
-
-  function h2oAutoModelInput(_, _go, opts) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var buildModel;
-    var defaultMaxRunTime;
-    var _canBuildModel;
-    var _column;
-    var _columns;
-    var _frame;
-    var _frames;
-    var _hasFrame;
-    var _maxRunTime;
-    if (opts == null) {
-      opts = {};
-    }
-    _frames = Flow.Dataflow.signal([]);
-    _frame = Flow.Dataflow.signal(null);
-    _hasFrame = Flow.Dataflow.lift(_frame, function (frame) {
-      if (frame) {
-        return true;
-      }
-      return false;
-    });
-    _columns = Flow.Dataflow.signal([]);
-    _column = Flow.Dataflow.signal(null);
-    _canBuildModel = Flow.Dataflow.lift(_frame, _column, function (frame, column) {
-      return frame && column;
-    });
-    defaultMaxRunTime = 3600;
-    _maxRunTime = Flow.Dataflow.signal(defaultMaxRunTime);
-    buildModel = function () {
-      var arg;
-      var maxRunTime;
-      var parsed;
-      maxRunTime = defaultMaxRunTime;
-      if (!lodash.isNaN(parsed = parseInt(_maxRunTime(), 10))) {
-        maxRunTime = parsed;
-      }
-      arg = {
-        frame: _frame(),
-        column: _column(),
-        maxRunTime
-      };
-      return _.insertAndExecuteCell('cs', `buildAutoModel ${ JSON.stringify(arg) }`);
-    };
-    _.requestFrames(function (error, frames) {
-      var frame;
-      if (error) {
-        // empty
-      } else {
-        _frames(function () {
-          var _i;
-          var _len;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = frames.length; _i < _len; _i++) {
-            frame = frames[_i];
-            if (!frame.is_text) {
-              _results.push(frame.frame_id.name);
-            }
-          }
-          return _results;
-        }());
-        if (opts.frame) {
-          _frame(opts.frame);
-        }
-      }
-    });
-    Flow.Dataflow.react(_frame, function (frame) {
-      if (frame) {
-        return _.requestFrameSummaryWithoutData(frame, function (error, frame) {
-          var column;
-          if (error) {
-            // empty
-          } else {
-            _columns(function () {
-              var _i;
-              var _len;
-              var _ref;
-              var _results;
-              _ref = frame.columns;
-              _results = [];
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                column = _ref[_i];
-                _results.push(column.label);
-              }
-              return _results;
-            }());
-            if (opts.column) {
-              _column(opts.column);
-              return delete opts.column;
-            }
-          }
-        });
-      }
-      return _columns([]);
-    });
-    lodash.defer(_go);
-    return {
-      frames: _frames,
-      frame: _frame,
-      hasFrame: _hasFrame,
-      columns: _columns,
-      column: _column,
-      maxRunTime: _maxRunTime,
-      canBuildModel: _canBuildModel,
-      buildModel,
-      template: 'flow-automodel-input'
-    };
-  };
-
-  function h2oAssist(_, _go, _items) {
-    var lodash = window._;
-    var createAssistItem;
-    var item;
-    var name;
-    createAssistItem = function (name, item) {
-      return {
-        name,
-        description: item.description,
-        icon: `fa fa-${ item.icon } flow-icon`,
-        execute() {
-          return _.insertAndExecuteCell('cs', name);
-        }
-      };
-    };
-    lodash.defer(_go);
-    return {
-      routines: function () {
-        var _results;
-        _results = [];
-        for (name in _items) {
-          if ({}.hasOwnProperty.call(_items, name)) {
-            item = _items[name];
-            _results.push(createAssistItem(name, item));
-          }
-        }
-        return _results;
-      }(),
-      template: 'flow-assist'
     };
   };
 
@@ -4647,18 +486,6 @@
     };
     render.isCode = false;
     return render;
-  };
-
-  function flowForm(_, _form, _go) {
-    var lodash = window._;
-    lodash.defer(_go);
-    return {
-      form: _form,
-      template: 'flow-form',
-      templateOf(control) {
-        return control.template;
-      }
-    };
   };
 
   function flowCoffeescript(_, guid, sandbox) {
@@ -6577,6 +2404,4065 @@
     };
   }
 
+  function h2oInspectsOutput(_, _go, _tables) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createTableView;
+    createTableView = function (table) {
+      var grid;
+      var inspect;
+      var plot;
+      inspect = function () {
+        return _.insertAndExecuteCell('cs', `inspect ${ Flow.Prelude.stringify(table.label) }, ${ table.metadata.origin }`);
+      };
+      grid = function () {
+        return _.insertAndExecuteCell('cs', `grid inspect ${ Flow.Prelude.stringify(table.label) }, ${ table.metadata.origin }`);
+      };
+      plot = function () {
+        return _.insertAndExecuteCell('cs', table.metadata.plot);
+      };
+      return {
+        label: table.label,
+        description: table.metadata.description,
+        inspect,
+        grid,
+        canPlot: table.metadata.plot,
+        plot
+      };
+    };
+    lodash.defer(_go);
+    return {
+      hasTables: _tables.length > 0,
+      tables: lodash.map(_tables, createTableView),
+      template: 'flow-inspects-output'
+    };
+  };
+
+  function h2oInspectOutput(_, _go, _frame) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var plot;
+    var view;
+    view = function () {
+      return _.insertAndExecuteCell('cs', `grid inspect ${ Flow.Prelude.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
+    };
+    plot = function () {
+      return _.insertAndExecuteCell('cs', _frame.metadata.plot);
+    };
+    lodash.defer(_go);
+    return {
+      label: _frame.label,
+      vectors: _frame.vectors,
+      view,
+      canPlot: _frame.metadata.plot,
+      plot,
+      template: 'flow-inspect-output'
+    };
+  };
+
+  function h2oPlotOutput(_, _go, _plot) {
+    var lodash = window._;
+    lodash.defer(_go);
+    return {
+      plot: _plot,
+      template: 'flow-plot-output'
+    };
+  };
+
+  function h2oPlotInput(_, _go, _frame) {
+    var plot;
+    var vector;
+    var _canPlot;
+    var _color;
+    var _type;
+    var _types;
+    var _vectors;
+    var _x;
+    var _y;
+    _types = ['point', 'path', 'rect'];
+    _vectors = function () {
+      var _i;
+      var _len;
+      var _ref;
+      var _results;
+      _ref = _frame.vectors;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        vector = _ref[_i];
+        if (vector.type === Flow.TString || vector.type === Flow.TNumber) {
+          _results.push(vector.label);
+        }
+      }
+      return _results;
+    }();
+    _type = Flow.Dataflow.signal(null);
+    _x = Flow.Dataflow.signal(null);
+    _y = Flow.Dataflow.signal(null);
+    _color = Flow.Dataflow.signal(null);
+    _canPlot = Flow.Dataflow.lift(_type, _x, _y, function (type, x, y) {
+      return type && x && y;
+    });
+    plot = function () {
+      var color;
+      var command;
+      command = (color = _color()) ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ Flow.Prelude.stringify(_x()) }, ${ Flow.Prelude.stringify(_y()) }\n    g.color ${ Flow.Prelude.stringify(color) }\n  )\n  g.from inspect ${ Flow.Prelude.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ Flow.Prelude.stringify(_x()) }, ${ Flow.Prelude.stringify(_y()) }\n  )\n  g.from inspect ${ Flow.Prelude.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      return _.insertAndExecuteCell('cs', command);
+    };
+    lodash.defer(_go);
+    return {
+      types: _types,
+      type: _type,
+      vectors: _vectors,
+      x: _x,
+      y: _y,
+      color: _color,
+      plot,
+      canPlot: _canPlot,
+      template: 'flow-plot-input'
+    };
+  };
+
+  function h2oCloudOutput(_, _go, _cloud) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var avg;
+    var createGrid;
+    var createNodeRow;
+    var createTotalRow;
+    var format3f;
+    var formatMilliseconds;
+    var formatThreads;
+    var prettyPrintBytes;
+    var refresh;
+    var sum;
+    var toggleExpansion;
+    var toggleRefresh;
+    var updateCloud;
+    var _exception;
+    var _hasConsensus;
+    var _headers;
+    var _isBusy;
+    var _isExpanded;
+    var _isHealthy;
+    var _isLive;
+    var _isLocked;
+    var _name;
+    var _nodeCounts;
+    var _nodes;
+    var _size;
+    var _sizes;
+    var _uptime;
+    var _version;
+    _exception = Flow.Dataflow.signal(null);
+    _isLive = Flow.Dataflow.signal(false);
+    _isBusy = Flow.Dataflow.signal(false);
+    _isExpanded = Flow.Dataflow.signal(false);
+    _name = Flow.Dataflow.signal();
+    _size = Flow.Dataflow.signal();
+    _uptime = Flow.Dataflow.signal();
+    _version = Flow.Dataflow.signal();
+    _nodeCounts = Flow.Dataflow.signal();
+    _hasConsensus = Flow.Dataflow.signal();
+    _isLocked = Flow.Dataflow.signal();
+    _isHealthy = Flow.Dataflow.signal();
+    _nodes = Flow.Dataflow.signals();
+    formatMilliseconds = function (ms) {
+      return Flow.Util.fromNow(new Date(new Date().getTime() - ms));
+    };
+    format3f = d3.format('.3f');
+    _sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    prettyPrintBytes = function (bytes) {
+      var i;
+      if (bytes === 0) {
+        return '-';
+      }
+      i = Math.floor(Math.log(bytes) / Math.log(1024));
+      return `${ (bytes / Math.pow(1024, i)).toFixed(2) } ${ _sizes[i] }`;
+    };
+    formatThreads = function (fjs) {
+      var i;
+      var max_lo;
+      var s;
+      var _i;
+      var _j;
+      var _k;
+      var _ref;
+      for (max_lo = _i = 120; _i > 0; max_lo = --_i) {
+        if (fjs[max_lo - 1] !== -1) {
+          break;
+        }
+      }
+      s = '[';
+      for (i = _j = 0; max_lo >= 0 ? _j < max_lo : _j > max_lo; i = max_lo >= 0 ? ++_j : --_j) {
+        s += Math.max(fjs[i], 0);
+        s += '/';
+      }
+      s += '.../';
+      for (i = _k = 120, _ref = fjs.length - 1; _ref >= 120 ? _k < _ref : _k > _ref; i = _ref >= 120 ? ++_k : --_k) {
+        s += fjs[i];
+        s += '/';
+      }
+      s += fjs[fjs.length - 1];
+      s += ']';
+      return s;
+    };
+    sum = function (nodes, attrOf) {
+      var node;
+      var total;
+      var _i;
+      var _len;
+      total = 0;
+      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+        node = nodes[_i];
+        total += attrOf(node);
+      }
+      return total;
+    };
+    avg = function (nodes, attrOf) {
+      return sum(nodes, attrOf) / nodes.length;
+    };
+    _headers = [['&nbsp;', true], ['Name', true], ['Ping', true], ['Cores', true], ['Load', true], ['My CPU %', true], ['Sys CPU %', true], ['GFLOPS', true], ['Memory Bandwidth', true], ['Data (Used/Total)', true], ['Data (% Cached)', true], ['GC (Free / Total / Max)', true], ['Disk (Free / Max)', true], ['Disk (% Free)', true], ['PID', false], ['Keys', false], ['TCP', false], ['FD', false], ['RPCs', false], ['Threads', false], ['Tasks', false]];
+    createNodeRow = function (node) {
+      return [node.healthy, node.ip_port, moment(new Date(node.last_ping)).fromNow(), node.num_cpus, format3f(node.sys_load), node.my_cpu_pct, node.sys_cpu_pct, format3f(node.gflops), `${ prettyPrintBytes(node.mem_bw) } / s`, `${ prettyPrintBytes(node.mem_value_size) } / ${ prettyPrintBytes(node.total_value_size) }`, `${ Math.floor(node.mem_value_size * 100 / node.total_value_size) }%`, `${ prettyPrintBytes(node.free_mem) } / ${ prettyPrintBytes(node.tot_mem) } / ${ prettyPrintBytes(node.max_mem) }`, `${ prettyPrintBytes(node.free_disk) } / ${ prettyPrintBytes(node.max_disk) }`, `${ Math.floor(node.free_disk * 100 / node.max_disk) }%`, node.pid, node.num_keys, node.tcps_active, node.open_fds, node.rpcs_active, formatThreads(node.fjthrds), formatThreads(node.fjqueue)];
+    };
+    createTotalRow = function (cloud) {
+      var nodes;
+      nodes = cloud.nodes;
+      return [cloud.cloud_healthy, 'TOTAL', '-', sum(nodes, node => node.num_cpus), format3f(sum(nodes, node => node.sys_load)), '-', '-', `${ format3f(sum(nodes, node => node.gflops)) }`, `${ prettyPrintBytes(sum(nodes, node => node.mem_bw)) } / s`, `${ prettyPrintBytes(sum(nodes, node => node.mem_value_size)) } / ${ prettyPrintBytes(sum(nodes, node => node.total_value_size)) }`, `${ Math.floor(avg(nodes, node => node.mem_value_size * 100 / node.total_value_size)) }%`, `${ prettyPrintBytes(sum(nodes, node => node.free_mem)) } / ${ prettyPrintBytes(sum(nodes, node => node.tot_mem)) } / ${ prettyPrintBytes(sum(nodes, node => node.max_mem)) }`, `${ prettyPrintBytes(sum(nodes, node => node.free_disk)) } / ${ prettyPrintBytes(sum(nodes, node => node.max_disk)) }`, `${ Math.floor(avg(nodes, node => node.free_disk * 100 / node.max_disk)) }%`, '-', sum(nodes, node => node.num_keys), sum(nodes, node => node.tcps_active), sum(nodes, node => node.open_fds), sum(nodes, node => node.rpcs_active), '-', '-'];
+    };
+    createGrid = function (cloud, isExpanded) {
+      var caption;
+      var cell;
+      var danger;
+      var grid;
+      var i;
+      var nodeRows;
+      var row;
+      var showAlways;
+      var success;
+      var table;
+      var tbody;
+      var td;
+      var tds;
+      var th;
+      var thead;
+      var ths;
+      var tr;
+      var trs;
+      var _ref;
+      _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'i.fa.fa-check-circle.text-success', 'i.fa.fa-exclamation-circle.text-danger'), grid = _ref[0], table = _ref[1], thead = _ref[2], tbody = _ref[3], tr = _ref[4], th = _ref[5], td = _ref[6], success = _ref[7], danger = _ref[8];
+      nodeRows = lodash.map(cloud.nodes, createNodeRow);
+      nodeRows.push(createTotalRow(cloud));
+      ths = function () {
+        var _i;
+        var _len;
+        var _ref1;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = _headers.length; _i < _len; _i++) {
+          _ref1 = _headers[_i], caption = _ref1[0], showAlways = _ref1[1];
+          if (showAlways || isExpanded) {
+            _results.push(th(caption));
+          }
+        }
+        return _results;
+      }();
+      trs = function () {
+        var _i;
+        var _len;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = nodeRows.length; _i < _len; _i++) {
+          row = nodeRows[_i];
+          tds = function () {
+            var _j;
+            var _len1;
+            var _results1;
+            _results1 = [];
+            for (i = _j = 0, _len1 = row.length; _j < _len1; i = ++_j) {
+              cell = row[i];
+              if (_headers[i][1] || isExpanded) {
+                if (i === 0) {
+                  _results1.push(td(cell ? success() : danger()));
+                } else {
+                  _results1.push(td(cell));
+                }
+              }
+            }
+            return _results1;
+          }();
+          _results.push(tr(tds));
+        }
+        return _results;
+      }();
+      return Flow.HTML.render('div', grid([table([thead(tr(ths)), tbody(trs)])]));
+    };
+    updateCloud = function (cloud, isExpanded) {
+      _name(cloud.cloud_name);
+      _version(cloud.version);
+      _hasConsensus(cloud.consensus);
+      _uptime(formatMilliseconds(cloud.cloud_uptime_millis));
+      _nodeCounts(`${ cloud.cloud_size - cloud.bad_nodes } / ${ cloud.cloud_size }`);
+      _isLocked(cloud.locked);
+      _isHealthy(cloud.cloud_healthy);
+      return _nodes(createGrid(cloud, isExpanded));
+    };
+    toggleRefresh = function () {
+      return _isLive(!_isLive());
+    };
+    refresh = function () {
+      _isBusy(true);
+      return _.requestCloud(function (error, cloud) {
+        _isBusy(false);
+        if (error) {
+          _exception(Flow.Failure(_, new Flow.Error('Error fetching cloud status', error)));
+          return _isLive(false);
+        }
+        updateCloud(_cloud = cloud, _isExpanded());
+        if (_isLive()) {
+          return lodash.delay(refresh, 2000);
+        }
+      });
+    };
+    Flow.Dataflow.act(_isLive, function (isLive) {
+      if (isLive) {
+        return refresh();
+      }
+    });
+    toggleExpansion = function () {
+      return _isExpanded(!_isExpanded());
+    };
+    Flow.Dataflow.act(_isExpanded, function (isExpanded) {
+      return updateCloud(_cloud, isExpanded);
+    });
+    updateCloud(_cloud, _isExpanded());
+    lodash.defer(_go);
+    return {
+      name: _name,
+      size: _size,
+      uptime: _uptime,
+      version: _version,
+      nodeCounts: _nodeCounts,
+      hasConsensus: _hasConsensus,
+      isLocked: _isLocked,
+      isHealthy: _isHealthy,
+      nodes: _nodes,
+      isLive: _isLive,
+      isBusy: _isBusy,
+      toggleRefresh,
+      refresh,
+      isExpanded: _isExpanded,
+      toggleExpansion,
+      template: 'flow-cloud-output'
+    };
+  };
+
+  function h2oTimelineOutput(_, _go, _timeline) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createEvent;
+    var refresh;
+    var toggleRefresh;
+    var updateTimeline;
+    var _data;
+    var _headers;
+    var _isBusy;
+    var _isLive;
+    var _timestamp;
+    _isLive = Flow.Dataflow.signal(false);
+    _isBusy = Flow.Dataflow.signal(false);
+    _headers = ['HH:MM:SS:MS', 'nanosec', 'Who', 'I/O Type', 'Event', 'Type', 'Bytes'];
+    _data = Flow.Dataflow.signal(null);
+    _timestamp = Flow.Dataflow.signal(Date.now());
+    createEvent = function (event) {
+      switch (event.type) {
+        case 'io':
+          return [event.date, event.nanos, event.node, event.io_flavor || '-', 'I/O', '-', event.data];
+        case 'heartbeat':
+          return [event.date, event.nanos, 'many &#8594;  many', 'UDP', event.type, '-', `${ event.sends } sent ${ event.recvs } received'`];
+        case 'network_msg':
+          return [event.date, event.nanos, `${ event.from } &#8594; ${ event.to }`, event.protocol, event.msg_type, event.is_send ? 'send' : 'receive', event.data];
+        default:
+      }
+    };
+    updateTimeline = function (timeline) {
+      var cell;
+      var event;
+      var grid;
+      var header;
+      var table;
+      var tbody;
+      var td;
+      var th;
+      var thead;
+      var ths;
+      var tr;
+      var trs;
+      var _ref;
+      _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td');
+      grid = _ref[0];
+      table = _ref[1];
+      thead = _ref[2];
+      tbody = _ref[3];
+      tr = _ref[4];
+      th = _ref[5];
+      td = _ref[6];
+      ths = function () {
+        var _i;
+        var _len;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = _headers.length; _i < _len; _i++) {
+          header = _headers[_i];
+          _results.push(th(header));
+        }
+        return _results;
+      }();
+      trs = function () {
+        let _i;
+        let _len;
+        const _ref1 = timeline.events;
+        const _results = [];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          event = _ref1[_i];
+          _results.push(tr(function () {
+            let _j;
+            let _len1;
+            const _ref2 = createEvent(event);
+            const _results1 = [];
+            for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+              cell = _ref2[_j];
+              _results1.push(td(cell));
+            }
+            return _results1;
+          }()));
+        }
+        return _results;
+      }();
+      return _data(Flow.HTML.render('div', grid([table([thead(tr(ths)), tbody(trs)])])));
+    };
+    toggleRefresh = function () {
+      return _isLive(!_isLive());
+    };
+    refresh = function () {
+      _isBusy(true);
+      return _.requestTimeline((error, timeline) => {
+        _isBusy(false);
+        if (error) {
+          _exception(Flow.Failure(_, new Flow.Error('Error fetching timeline', error)));
+          return _isLive(false);
+        }
+        updateTimeline(timeline);
+        if (_isLive()) {
+          return lodash.delay(refresh, 2000);
+        }
+      });
+    };
+    Flow.Dataflow.act(_isLive, isLive => {
+      if (isLive) {
+        return refresh();
+      }
+    });
+    updateTimeline(_timeline);
+    lodash.defer(_go);
+    return {
+      data: _data,
+      isLive: _isLive,
+      isBusy: _isBusy,
+      toggleRefresh,
+      refresh,
+      template: 'flow-timeline-output'
+    };
+  };
+
+  function h2oStackTraceOutput(_, _go, _stackTrace) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createNode;
+    var createThread;
+    var node;
+    var _activeNode;
+    var _nodes;
+    _activeNode = Flow.Dataflow.signal(null);
+    createThread = function (thread) {
+      var lines;
+      lines = thread.split('\n');
+      return {
+        title: lodash.head(lines),
+        stackTrace: lodash.tail(lines).join('\n')
+      };
+    };
+    createNode = function (node) {
+      var display;
+      var self;
+      var thread;
+      display = function () {
+        return _activeNode(self);
+      };
+      return self = {
+        name: node.node,
+        timestamp: new Date(node.time),
+        threads: function () {
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = node.thread_traces;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            thread = _ref[_i];
+            _results.push(createThread(thread));
+          }
+          return _results;
+        }(),
+        display
+      };
+    };
+    _nodes = function () {
+      var _i;
+      var _len;
+      var _ref;
+      var _results;
+      _ref = _stackTrace.traces;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        _results.push(createNode(node));
+      }
+      return _results;
+    }();
+    _activeNode(lodash.head(_nodes));
+    lodash.defer(_go);
+    return {
+      nodes: _nodes,
+      activeNode: _activeNode,
+      template: 'flow-stacktrace-output'
+    };
+  };
+
+  function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createNode;
+    var initialize;
+    var refresh;
+    var refreshActiveView;
+    var _activeFileType;
+    var _activeNode;
+    var _contents;
+    var _exception;
+    var _fileTypes;
+    var _nodes;
+    _exception = Flow.Dataflow.signal(null);
+    _contents = Flow.Dataflow.signal('');
+    _nodes = Flow.Dataflow.signal([]);
+    _activeNode = Flow.Dataflow.signal(null);
+    _fileTypes = Flow.Dataflow.signal(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'httpd', 'stdout', 'stderr']);
+    _activeFileType = Flow.Dataflow.signal(null);
+    createNode = function (node, index) {
+      return {
+        name: node.ip_port,
+        index
+      };
+    };
+    refreshActiveView = function (node, fileType) {
+      if (node) {
+        return _.requestLogFile(node.index, fileType, function (error, logFile) {
+          if (error) {
+            return _contents(`Error fetching log file: ${ error.message }`);
+          }
+          return _contents(logFile.log);
+        });
+      }
+      return _contents('');
+    };
+    refresh = function () {
+      return refreshActiveView(_activeNode(), _activeFileType());
+    };
+    initialize = function (cloud, nodeIndex, fileType, logFile) {
+      var NODE_INDEX_SELF;
+      var clientNode;
+      var i;
+      var n;
+      var nodes;
+      var _i;
+      var _len;
+      var _ref;
+      _activeFileType(fileType);
+      _contents(logFile.log);
+      nodes = [];
+      if (cloud.is_client) {
+        clientNode = { ip_port: 'driver' };
+        NODE_INDEX_SELF = -1;
+        nodes.push(createNode(clientNode, NODE_INDEX_SELF));
+      }
+      _ref = cloud.nodes;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        n = _ref[i];
+        nodes.push(createNode(n, i));
+      }
+      _nodes(nodes);
+      if (nodeIndex < nodes.length) {
+        _activeNode(nodes[nodeIndex]);
+      }
+      Flow.Dataflow.react(_activeNode, _activeFileType, refreshActiveView);
+      return lodash.defer(_go);
+    };
+    initialize(_cloud, _nodeIndex, _fileType, _logFile);
+    return {
+      nodes: _nodes,
+      activeNode: _activeNode,
+      fileTypes: _fileTypes,
+      activeFileType: _activeFileType,
+      contents: _contents,
+      refresh,
+      template: 'flow-log-file-output'
+    };
+  };
+
+  function h2oNetworkTestOutput(_, _go, _testResult) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var render;
+    var _result;
+    _result = Flow.Dataflow.signal(null);
+    render = _.plot(function (g) {
+      return g(g.select(), g.from(_.inspect('result', _testResult)));
+    });
+    render(function (error, vis) {
+      if (error) {
+        return console.debug(error);
+      }
+      return _result(vis.element);
+    });
+    lodash.defer(_go);
+    return {
+      result: _result,
+      template: 'flow-network-test-output'
+    };
+  };
+
+  function h2oProfileOutput(_, _go, _profile) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createNode;
+    var i;
+    var node;
+    var _activeNode;
+    var _nodes;
+    _activeNode = Flow.Dataflow.signal(null);
+    createNode = function (node) {
+      var display;
+      var entries;
+      var entry;
+      var self;
+      display = function () {
+        return _activeNode(self);
+      };
+      entries = function () {
+        var _i;
+        var _len;
+        var _ref;
+        var _results;
+        _ref = node.entries;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          entry = _ref[_i];
+          _results.push({
+            stacktrace: entry.stacktrace,
+            caption: `Count: ${ entry.count }`
+          });
+        }
+        return _results;
+      }();
+      return self = {
+        name: node.node_name,
+        caption: `${ node.node_name } at ${ new Date(node.timestamp) }`,
+        entries,
+        display
+      };
+    };
+    _nodes = function () {
+      var _i;
+      var _len;
+      var _ref;
+      var _results;
+      _ref = _profile.nodes;
+      _results = [];
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        node = _ref[i];
+        _results.push(createNode(node));
+      }
+      return _results;
+    }();
+    _activeNode(lodash.head(_nodes));
+    lodash.defer(_go);
+    return {
+      nodes: _nodes,
+      activeNode: _activeNode,
+      template: 'flow-profile-output'
+    };
+  };
+
+  function h2oFramesOutput(_, _go, _frames) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var collectSelectedKeys;
+    var createFrameView;
+    var deleteFrames;
+    var importFiles;
+    var predictOnFrames;
+    var _checkAllFrames;
+    var _frameViews;
+    var _hasSelectedFrames;
+    var _isCheckingAll;
+    _frameViews = Flow.Dataflow.signal([]);
+    _checkAllFrames = Flow.Dataflow.signal(false);
+    _hasSelectedFrames = Flow.Dataflow.signal(false);
+    _isCheckingAll = false;
+    Flow.Dataflow.react(_checkAllFrames, function (checkAll) {
+      var view;
+      var _i;
+      var _len;
+      var _ref;
+      _isCheckingAll = true;
+      _ref = _frameViews();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        view = _ref[_i];
+        view.isChecked(checkAll);
+      }
+      _hasSelectedFrames(checkAll);
+      _isCheckingAll = false;
+    });
+    createFrameView = function (frame) {
+      var columnLabels;
+      var createModel;
+      var inspect;
+      var predict;
+      var view;
+      var _isChecked;
+      _isChecked = Flow.Dataflow.signal(false);
+      Flow.Dataflow.react(_isChecked, function () {
+        var checkedViews;
+        var view;
+        if (_isCheckingAll) {
+          return;
+        }
+        checkedViews = function () {
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = _frameViews();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            view = _ref[_i];
+            if (view.isChecked()) {
+              _results.push(view);
+            }
+          }
+          return _results;
+        }();
+        return _hasSelectedFrames(checkedViews.length > 0);
+      });
+      columnLabels = lodash.head(lodash.map(frame.columns, function (column) {
+        return column.label;
+      }), 15);
+      view = function () {
+        if (frame.is_text) {
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ Flow.Prelude.stringify(frame.frame_id.name) } ]`);
+        }
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(frame.frame_id.name) }`);
+      };
+      predict = function () {
+        return _.insertAndExecuteCell('cs', `predict frame: ${ Flow.Prelude.stringify(frame.frame_id.name) }`);
+      };
+      inspect = function () {
+        return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ Flow.Prelude.stringify(frame.frame_id.name) }`);
+      };
+      createModel = function () {
+        return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ Flow.Prelude.stringify(frame.frame_id.name) }`);
+      };
+      return {
+        key: frame.frame_id.name,
+        isChecked: _isChecked,
+        size: Flow.Util.formatBytes(frame.byte_size),
+        rowCount: frame.rows,
+        columnCount: frame.columns,
+        isText: frame.is_text,
+        view,
+        predict,
+        inspect,
+        createModel
+      };
+    };
+    importFiles = function () {
+      return _.insertAndExecuteCell('cs', 'importFiles');
+    };
+    collectSelectedKeys = function () {
+      var view;
+      var _i;
+      var _len;
+      var _ref;
+      var _results;
+      _ref = _frameViews();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        view = _ref[_i];
+        if (view.isChecked()) {
+          _results.push(view.key);
+        }
+      }
+      return _results;
+    };
+    predictOnFrames = function () {
+      return _.insertAndExecuteCell('cs', `predict frames: ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
+    };
+    deleteFrames = function () {
+      return _.confirm('Are you sure you want to delete these frames?', {
+        acceptCaption: 'Delete Frames',
+        declineCaption: 'Cancel'
+      }, function (accept) {
+        if (accept) {
+          return _.insertAndExecuteCell('cs', `deleteFrames ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
+        }
+      });
+    };
+    _frameViews(lodash.map(_frames, createFrameView));
+    lodash.defer(_go);
+    return {
+      frameViews: _frameViews,
+      hasFrames: _frames.length > 0,
+      importFiles,
+      predictOnFrames,
+      deleteFrames,
+      hasSelectedFrames: _hasSelectedFrames,
+      checkAllFrames: _checkAllFrames,
+      template: 'flow-frames-output'
+    };
+  };
+
+  function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
+    var lodash = window._;
+    var computeRatios;
+    var createFrameView;
+    var index;
+    var key;
+    var _frames;
+    var _ratios;
+    computeRatios = function (sourceRatios) {
+      var ratio;
+      var ratios;
+      var total;
+      total = 0;
+      ratios = function () {
+        var _i;
+        var _len;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = sourceRatios.length; _i < _len; _i++) {
+          ratio = sourceRatios[_i];
+          total += ratio;
+          _results.push(ratio);
+        }
+        return _results;
+      }();
+      ratios.push(1 - total);
+      return ratios;
+    };
+    createFrameView = function (key, ratio) {
+      var self;
+      var view;
+      view = function () {
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(key) }`);
+      };
+      return self = {
+        key,
+        ratio,
+        view
+      };
+    };
+    _ratios = computeRatios(_splitFrameResult.ratios);
+    _frames = function () {
+      var _i;
+      var _len;
+      var _ref;
+      var _results;
+      _ref = _splitFrameResult.keys;
+      _results = [];
+      for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
+        key = _ref[index];
+        _results.push(createFrameView(key, _ratios[index]));
+      }
+      return _results;
+    }();
+    lodash.defer(_go);
+    return {
+      frames: _frames,
+      template: 'flow-split-frame-output'
+    };
+  };
+
+  function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var _frameKey;
+    var _viewFrame;
+    _frameKey = _mergeFramesResult.key;
+    _viewFrame = function () {
+      return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(_frameKey) }`);
+    };
+    lodash.defer(_go);
+    return {
+      frameKey: _frameKey,
+      viewFrame: _viewFrame,
+      template: 'flow-merge-frames-output'
+    };
+  };
+
+  function h2oPartialDependenceOutput(_, _go, _result) {
+    var data;
+    var i;
+    var renderPlot;
+    var section;
+    var table;
+    var x;
+    var y;
+    var _destinationKey;
+    var _frameId;
+    var _i;
+    var _len;
+    var _modelId;
+    var _plots;
+    var _ref;
+    var _viewFrame;
+    _destinationKey = _result.destination_key;
+    _modelId = _result.model_id.name;
+    _frameId = _result.frame_id.name;
+    renderPlot = function (target, render) {
+      return render(function (error, vis) {
+        if (error) {
+          return console.debug(error);
+        }
+        return target(vis.element);
+      });
+    };
+    _plots = [];
+    _ref = _result.partial_dependence_data;
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      data = _ref[i];
+      if (table = _.inspect(`plot${ i + 1 }`, _result)) {
+        x = data.columns[0].name;
+        y = data.columns[1].name;
+        _plots.push(section = {
+          title: `${ x } vs ${ y }`,
+          plot: Flow.Dataflow.signal(null),
+          frame: Flow.Dataflow.signal(null)
+        });
+        renderPlot(section.plot, _.plot(function (g) {
+          return g(g.path(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.point(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+        }));
+        renderPlot(section.frame, _.plot(function (g) {
+          return g(g.select(), g.from(table));
+        }));
+      }
+    }
+    _viewFrame = function () {
+      return _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ Flow.Prelude.stringify(_destinationKey) }`);
+    };
+    lodash.defer(_go);
+    return {
+      destinationKey: _destinationKey,
+      modelId: _modelId,
+      frameId: _frameId,
+      plots: _plots,
+      viewFrame: _viewFrame,
+      template: 'flow-partial-dependence-output'
+    };
+  };
+
+  function h2oJobsOutput(_, _go, jobs) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createJobView;
+    var initialize;
+    var refresh;
+    var toggleRefresh;
+    var _exception;
+    var _hasJobViews;
+    var _isBusy;
+    var _isLive;
+    var _jobViews;
+    _jobViews = Flow.Dataflow.signals([]);
+    _hasJobViews = Flow.Dataflow.lift(_jobViews, function (jobViews) {
+      return jobViews.length > 0;
+    });
+    _isLive = Flow.Dataflow.signal(false);
+    _isBusy = Flow.Dataflow.signal(false);
+    _exception = Flow.Dataflow.signal(null);
+    createJobView = function (job) {
+      var type;
+      var view;
+      view = function () {
+        return _.insertAndExecuteCell('cs', `getJob ${ Flow.Prelude.stringify(job.key.name) }`);
+      };
+      type = function () {
+        switch (job.dest.type) {
+          case 'Key<Frame>':
+            return 'Frame';
+          case 'Key<Model>':
+            return 'Model';
+          case 'Key<Grid>':
+            return 'Grid';
+          case 'Key<PartialDependence>':
+            return 'PartialDependence';
+          default:
+            return 'Unknown';
+        }
+      }();
+      return {
+        destination: job.dest.name,
+        type,
+        description: job.description,
+        startTime: Flow.Format.Time(new Date(job.start_time)),
+        endTime: Flow.Format.Time(new Date(job.start_time + job.msec)),
+        elapsedTime: Flow.Util.formatMilliseconds(job.msec),
+        status: job.status,
+        view
+      };
+    };
+    toggleRefresh = function () {
+      return _isLive(!_isLive());
+    };
+    refresh = function () {
+      _isBusy(true);
+      return _.requestJobs(function (error, jobs) {
+        _isBusy(false);
+        if (error) {
+          _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
+          return _isLive(false);
+        }
+        _jobViews(lodash.map(jobs, createJobView));
+        if (_isLive()) {
+          return lodash.delay(refresh, 2000);
+        }
+      });
+    };
+    Flow.Dataflow.act(_isLive, function (isLive) {
+      if (isLive) {
+        return refresh();
+      }
+    });
+    initialize = function () {
+      _jobViews(lodash.map(jobs, createJobView));
+      return lodash.defer(_go);
+    };
+    initialize();
+    return {
+      jobViews: _jobViews,
+      hasJobViews: _hasJobViews,
+      isLive: _isLive,
+      isBusy: _isBusy,
+      toggleRefresh,
+      refresh,
+      exception: _exception,
+      template: 'flow-jobs-output'
+    };
+  };
+
+  function h2oCancelJobOutput(_, _go, _cancellation) {
+    var lodash = window._;
+    lodash.defer(_go);
+    return { template: 'flow-cancel-job-output' };
+  };
+
+  function h2oDeleteObjectsOutput(_, _go, _keys) {
+    var lodash = window._;
+    lodash.defer(_go);
+    return {
+      hasKeys: _keys.length > 0,
+      keys: _keys,
+      template: 'flow-delete-objects-output'
+    };
+  };
+
+  function h2oModelOutput(_, _go, _model, refresh) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createOutput;
+    var _isLive;
+    var _output;
+    var _refresh;
+    var _toggleRefresh;
+    _output = Flow.Dataflow.signal(null);
+    createOutput = function (_model) {
+      var cloneModel;
+      var confusionMatrix;
+      var deleteModel;
+      var downloadMojo;
+      var downloadPojo;
+      var exportModel;
+      var format4f;
+      var getAucAsLabel;
+      var getThresholdsAndCriteria;
+      var inspect;
+      var lambdaSearchParameter;
+      var output;
+      var plotter;
+      var predict;
+      var previewPojo;
+      var renderMultinomialConfusionMatrix;
+      var renderPlot;
+      var table;
+      var tableName;
+      var toggle;
+      var _i;
+      var _inputParameters;
+      var _isExpanded;
+      var _isPojoLoaded;
+      var _len;
+      var _plots;
+      var _pojoPreview;
+      var _ref;
+      var _ref1;
+      var _ref10;
+      var _ref11;
+      var _ref12;
+      var _ref13;
+      var _ref14;
+      var _ref15;
+      var _ref16;
+      var _ref17;
+      var _ref18;
+      var _ref19;
+      var _ref2;
+      var _ref20;
+      var _ref21;
+      var _ref22;
+      var _ref23;
+      var _ref24;
+      var _ref25;
+      var _ref3;
+      var _ref4;
+      var _ref5;
+      var _ref6;
+      var _ref7;
+      var _ref8;
+      var _ref9;
+      _isExpanded = Flow.Dataflow.signal(false);
+      _plots = Flow.Dataflow.signals([]);
+      _pojoPreview = Flow.Dataflow.signal(null);
+      _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, function (preview) {
+        if (preview) {
+          return true;
+        }
+        return false;
+      });
+      _inputParameters = lodash.map(_model.parameters, function (parameter) {
+        var actual_value;
+        var default_value;
+        var help;
+        var label;
+        var type;
+        var value;
+        type = parameter.type, default_value = parameter.default_value, actual_value = parameter.actual_value, label = parameter.label, help = parameter.help;
+        value = function () {
+          switch (type) {
+            case 'Key<Frame>':
+            case 'Key<Model>':
+              if (actual_value) {
+                return actual_value.name;
+              }
+              return null;
+            // break; // no-unreachable
+            case 'VecSpecifier':
+              if (actual_value) {
+                return actual_value.column_name;
+              }
+              return null;
+            // break; // no-unreachable
+            case 'string[]':
+            case 'byte[]':
+            case 'short[]':
+            case 'int[]':
+            case 'long[]':
+            case 'float[]':
+            case 'double[]':
+              if (actual_value) {
+                return actual_value.join(', ');
+              }
+              return null;
+            // break; // no-unreachable
+            default:
+              return actual_value;
+          }
+        }();
+        return {
+          label,
+          value,
+          help,
+          isModified: default_value === actual_value
+        };
+      });
+      format4f = function (number) {
+        if (number) {
+          if (number === 'NaN') {
+            return void 0;
+          }
+          return number.toFixed(4).replace(/\.0+$/, '.0');
+        }
+        return number;
+      };
+      getAucAsLabel = function (model, tableName) {
+        var metrics;
+        if (metrics = _.inspect(tableName, model)) {
+          return ` , AUC = ${ metrics.schema.AUC.at(0) }`;
+        }
+        return '';
+      };
+      getThresholdsAndCriteria = function (model, tableName) {
+        var criteria;
+        var criterionTable;
+        var i;
+        var idxVector;
+        var metricVector;
+        var thresholdVector;
+        var thresholds;
+        if (criterionTable = _.inspect(tableName, _model)) {
+          thresholdVector = table.schema.threshold;
+          thresholds = function () {
+            var _i;
+            var _ref;
+            var _results;
+            _results = [];
+            for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
+              _results.push({
+                index: i,
+                value: thresholdVector.at(i)
+              });
+            }
+            return _results;
+          }();
+          metricVector = criterionTable.schema.metric;
+          idxVector = criterionTable.schema.idx;
+          criteria = function () {
+            var _i;
+            var _ref;
+            var _results;
+            _results = [];
+            for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
+              _results.push({
+                index: idxVector.at(i),
+                value: metricVector.valueAt(i)
+              });
+            }
+            return _results;
+          }();
+          return {
+            thresholds,
+            criteria
+          };
+        }
+        return void 0;
+      };
+      renderPlot = function (title, isCollapsed, render, thresholdsAndCriteria) {
+        var container;
+        var linkedFrame;
+        var rocPanel;
+        container = Flow.Dataflow.signal(null);
+        linkedFrame = Flow.Dataflow.signal(null);
+        if (thresholdsAndCriteria) {
+          rocPanel = {
+            thresholds: Flow.Dataflow.signals(thresholdsAndCriteria.thresholds),
+            threshold: Flow.Dataflow.signal(null),
+            criteria: Flow.Dataflow.signals(thresholdsAndCriteria.criteria),
+            criterion: Flow.Dataflow.signal(null)
+          };
+        }
+        render(function (error, vis) {
+          var _autoHighlight;
+          if (error) {
+            return console.debug(error);
+          }
+          $('a', vis.element).on('click', function (e) {
+            var $a;
+            $a = $(e.target);
+            switch ($a.attr('data-type')) {
+              case 'frame':
+                return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
+              case 'model':
+                return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
+            }
+          });
+          container(vis.element);
+          _autoHighlight = true;
+          if (vis.subscribe) {
+            vis.subscribe('markselect', function (_arg) {
+              var currentCriterion;
+              var frame;
+              var indices;
+              var renderTable;
+              var selectedIndex;
+              var subframe;
+              frame = _arg.frame, indices = _arg.indices;
+              subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
+              renderTable = function (g) {
+                return g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
+              };
+              _.plot(renderTable)(function (error, table) {
+                if (!error) {
+                  return linkedFrame(table.element);
+                }
+              });
+              if (rocPanel) {
+                if (indices.length === 1) {
+                  selectedIndex = lodash.head(indices);
+                  _autoHighlight = false;
+                  rocPanel.threshold(lodash.find(rocPanel.thresholds(), function (threshold) {
+                    return threshold.index === selectedIndex;
+                  }));
+                  currentCriterion = rocPanel.criterion();
+                  if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
+                    rocPanel.criterion(lodash.find(rocPanel.criteria(), function (criterion) {
+                      return criterion.index === selectedIndex;
+                    }));
+                  }
+                  _autoHighlight = true;
+                } else {
+                  rocPanel.criterion(null);
+                  rocPanel.threshold(null);
+                }
+              }
+            });
+            vis.subscribe('markdeselect', function () {
+              linkedFrame(null);
+              if (rocPanel) {
+                rocPanel.criterion(null);
+                return rocPanel.threshold(null);
+              }
+            });
+            if (rocPanel) {
+              Flow.Dataflow.react(rocPanel.threshold, function (threshold) {
+                if (threshold && _autoHighlight) {
+                  return vis.highlight([threshold.index]);
+                }
+              });
+              return Flow.Dataflow.react(rocPanel.criterion, function (criterion) {
+                if (criterion && _autoHighlight) {
+                  return vis.highlight([criterion.index]);
+                }
+              });
+            }
+          }
+        });
+        return _plots.push({
+          title,
+          plot: container,
+          frame: linkedFrame,
+          controls: Flow.Dataflow.signal(rocPanel),
+          isCollapsed
+        });
+      };
+      renderMultinomialConfusionMatrix = function (title, cm) {
+        var bold;
+        var cell;
+        var cells;
+        var column;
+        var columnCount;
+        var errorColumnIndex;
+        var headers;
+        var i;
+        var normal;
+        var rowCount;
+        var rowIndex;
+        var rows;
+        var table;
+        var tbody;
+        var totalRowIndex;
+        var tr;
+        var yellow;
+        var _i;
+        var _ref;
+        _ref = Flow.HTML.template('table.flow-confusion-matrix', 'tbody', 'tr', 'td', 'td.strong', 'td.bg-yellow'), table = _ref[0], tbody = _ref[1], tr = _ref[2], normal = _ref[3], bold = _ref[4], yellow = _ref[5];
+        columnCount = cm.columns.length;
+        rowCount = cm.rowcount;
+        headers = lodash.map(cm.columns, function (column, i) {
+          return bold(column.description);
+        });
+        headers.unshift(normal(' '));
+        rows = [tr(headers)];
+        errorColumnIndex = columnCount - 2;
+        totalRowIndex = rowCount - 1;
+        for (rowIndex = _i = 0; rowCount >= 0 ? _i < rowCount : _i > rowCount; rowIndex = rowCount >= 0 ? ++_i : --_i) {
+          cells = function () {
+            var _j;
+            var _len;
+            var _ref1;
+            var _results;
+            _ref1 = cm.data;
+            _results = [];
+            for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
+              column = _ref1[i];
+              cell = i < errorColumnIndex ? i === rowIndex ? yellow : rowIndex < totalRowIndex ? normal : bold : bold;
+              _results.push(cell(i === errorColumnIndex ? format4f(column[rowIndex]) : column[rowIndex]));
+            }
+            return _results;
+          }();
+          cells.unshift(bold(rowIndex === rowCount - 1 ? 'Total' : cm.columns[rowIndex].description));
+          rows.push(tr(cells));
+        }
+        return _plots.push({
+          title: title + (cm.description ? ` ${ cm.description }` : ''),
+          plot: Flow.Dataflow.signal(Flow.HTML.render('div', table(tbody(rows)))),
+          frame: Flow.Dataflow.signal(null),
+          controls: Flow.Dataflow.signal(null),
+          isCollapsed: false
+        });
+      };
+      switch (_model.algo) {
+        case 'kmeans':
+          if (table = _.inspect('output - Scoring History', _model)) {
+            renderPlot('Scoring History', false, _.plot(function (g) {
+              return g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+            }));
+          }
+          break;
+        case 'glm':
+          if (table = _.inspect('output - Scoring History', _model)) {
+            lambdaSearchParameter = lodash.find(_model.parameters, function (parameter) {
+              return parameter.name === 'lambda_search';
+            });
+            if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
+              renderPlot('Scoring History', false, _.plot(function (g) {
+                return g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+              }));
+            } else {
+              renderPlot('Scoring History', false, _.plot(function (g) {
+                return g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+              }));
+            }
+          }
+          if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - Standardized Coefficient Magnitudes', _model)) {
+            renderPlot('Standardized Coefficient Magnitudes', false, _.plot(function (g) {
+              return g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25));
+            }));
+          }
+          if (output = _model.output) {
+            if (output.model_category === 'Multinomial') {
+              if (confusionMatrix = (_ref = output.training_metrics) != null ? (_ref1 = _ref.cm) != null ? _ref1.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+              }
+              if (confusionMatrix = (_ref2 = output.validation_metrics) != null ? (_ref3 = _ref2.cm) != null ? _ref3.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+              }
+              if (confusionMatrix = (_ref4 = output.cross_validation_metrics) != null ? (_ref5 = _ref4.cm) != null ? _ref5.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+              }
+            }
+          }
+          break;
+        case 'deeplearning':
+        case 'deepwater':
+          if (table = _.inspect('output - Scoring History', _model)) {
+            if (table.schema.validation_logloss && table.schema.training_logloss) {
+              renderPlot('Scoring History - logloss', false, _.plot(function (g) {
+                return g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+              }));
+            } else if (table.schema.training_logloss) {
+              renderPlot('Scoring History - logloss', false, _.plot(function (g) {
+                return g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+              }));
+            }
+            if (table.schema.training_deviance) {
+              if (table.schema.validation_deviance) {
+                renderPlot('Scoring History - Deviance', false, _.plot(function (g) {
+                  return g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+                }));
+              } else {
+                renderPlot('Scoring History - Deviance', false, _.plot(function (g) {
+                  return g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+                }));
+              }
+            } else if (table.schema.training_mse) {
+              if (table.schema.validation_mse) {
+                renderPlot('Scoring History - MSE', false, _.plot(function (g) {
+                  return g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+                }));
+              } else {
+                renderPlot('Scoring History - MSE', false, _.plot(function (g) {
+                  return g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+                }));
+              }
+            }
+          }
+          if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`'ROC Curve - Validation Metrics' + ${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`'ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - Variable Importances', _model)) {
+            renderPlot('Variable Importances', false, _.plot(function (g) {
+              return g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
+            }));
+          }
+          if (output = _model.output) {
+            if (output.model_category === 'Multinomial') {
+              if (confusionMatrix = (_ref6 = output.training_metrics) != null ? (_ref7 = _ref6.cm) != null ? _ref7.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+              }
+              if (confusionMatrix = (_ref8 = output.validation_metrics) != null ? (_ref9 = _ref8.cm) != null ? _ref9.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+              }
+              if (confusionMatrix = (_ref10 = output.cross_validation_metrics) != null ? (_ref11 = _ref10.cm) != null ? _ref11.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+              }
+            }
+          }
+          break;
+        case 'gbm':
+        case 'drf':
+        case 'svm':
+          if (table = _.inspect('output - Scoring History', _model)) {
+            if (table.schema.validation_logloss && table.schema.training_logloss) {
+              renderPlot('Scoring History - logloss', false, _.plot(function (g) {
+                return g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+              }));
+            } else if (table.schema.training_logloss) {
+              renderPlot('Scoring History - logloss', false, _.plot(function (g) {
+                return g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+              }));
+            }
+            if (table.schema.training_deviance) {
+              if (table.schema.validation_deviance) {
+                renderPlot('Scoring History - Deviance', false, _.plot(function (g) {
+                  return g(g.path(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+                }));
+              } else {
+                renderPlot('Scoring History - Deviance', false, _.plot(function (g) {
+                  return g(g.path(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+                }));
+              }
+            }
+          }
+          if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - Variable Importances', _model)) {
+            renderPlot('Variable Importances', false, _.plot(function (g) {
+              return g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
+            }));
+          }
+          if (output = _model.output) {
+            if (output.model_category === 'Multinomial') {
+              if (confusionMatrix = (_ref12 = output.training_metrics) != null ? (_ref13 = _ref12.cm) != null ? _ref13.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+              }
+              if (confusionMatrix = (_ref14 = output.validation_metrics) != null ? (_ref15 = _ref14.cm) != null ? _ref15.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+              }
+              if (confusionMatrix = (_ref16 = output.cross_validation_metrics) != null ? (_ref17 = _ref16.cm) != null ? _ref17.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+              }
+            }
+          }
+          break;
+        case 'stackedensemble':
+          if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`'ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
+            plotter = _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            });
+            renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+          }
+          if (table = _.inspect('output - Variable Importances', _model)) {
+            renderPlot('Variable Importances', false, _.plot(function (g) {
+              return g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
+            }));
+          }
+          if (output = _model.output) {
+            if (output.model_category === 'Multinomial') {
+              if (confusionMatrix = (_ref18 = output.training_metrics) != null ? (_ref19 = _ref18.cm) != null ? _ref19.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+              }
+              if (confusionMatrix = (_ref20 = output.validation_metrics) != null ? (_ref21 = _ref20.cm) != null ? _ref21.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+              }
+              if (confusionMatrix = (_ref22 = output.cross_validation_metrics) != null ? (_ref23 = _ref22.cm) != null ? _ref23.table : void 0 : void 0) {
+                renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+              }
+            }
+          }
+      }
+      if (table = _.inspect('output - training_metrics - Gains/Lift Table', _model)) {
+        renderPlot('Training Metrics - Gains/Lift Table', false, _.plot(function (g) {
+          return g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
+        }));
+      }
+      if (table = _.inspect('output - validation_metrics - Gains/Lift Table', _model)) {
+        renderPlot('Validation Metrics - Gains/Lift Table', false, _.plot(function (g) {
+          return g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
+        }));
+      }
+      if (table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _model)) {
+        renderPlot('Cross Validation Metrics - Gains/Lift Table', false, _.plot(function (g) {
+          return g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
+        }));
+      }
+      _ref24 = _.ls(_model);
+      for (_i = 0, _len = _ref24.length; _i < _len; _i++) {
+        tableName = _ref24[_i];
+        if (!(tableName !== 'parameters')) {
+          continue;
+        }
+        if (output = ((_ref25 = _model.output) != null ? _ref25.model_category : void 0) === 'Multinomial') {
+          if (tableName.indexOf('output - training_metrics - cm') === 0) {
+            continue;
+          } else if (tableName.indexOf('output - validation_metrics - cm') === 0) {
+            continue;
+          } else if (tableName.indexOf('output - cross_validation_metrics - cm') === 0) {
+            continue;
+          }
+        }
+        if (table = _.inspect(tableName, _model)) {
+          renderPlot(tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(function (g) {
+            return g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table));
+          }));
+        }
+      }
+      toggle = function () {
+        return _isExpanded(!_isExpanded());
+      };
+      cloneModel = function () {
+        return alert('Not implemented');
+      };
+      predict = function () {
+        return _.insertAndExecuteCell('cs', `predict model: ${ Flow.Prelude.stringify(_model.model_id.name) }`);
+      };
+      inspect = function () {
+        return _.insertAndExecuteCell('cs', `inspect getModel ${ Flow.Prelude.stringify(_model.model_id.name) }`);
+      };
+      previewPojo = function () {
+        return _.requestPojoPreview(_model.model_id.name, function (error, result) {
+          if (error) {
+            return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
+          }
+          return _pojoPreview(`<pre>${ Flow.Util.highlight(result, 'java') }</pre>`);
+        });
+      };
+      downloadPojo = function () {
+        return window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
+      };
+      downloadMojo = function () {
+        return window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
+      };
+      exportModel = function () {
+        return _.insertAndExecuteCell('cs', `exportModel ${ Flow.Prelude.stringify(_model.model_id.name) }`);
+      };
+      deleteModel = function () {
+        return _.confirm('Are you sure you want to delete this model?', {
+          acceptCaption: 'Delete Model',
+          declineCaption: 'Cancel'
+        }, function (accept) {
+          if (accept) {
+            return _.insertAndExecuteCell('cs', `deleteModel ${ Flow.Prelude.stringify(_model.model_id.name) }`);
+          }
+        });
+      };
+      return {
+        key: _model.model_id,
+        algo: _model.algo_full_name,
+        plots: _plots,
+        inputParameters: _inputParameters,
+        isExpanded: _isExpanded,
+        toggle,
+        cloneModel,
+        predict,
+        inspect,
+        previewPojo,
+        downloadPojo,
+        downloadMojo,
+        pojoPreview: _pojoPreview,
+        isPojoLoaded: _isPojoLoaded,
+        exportModel,
+        deleteModel
+      };
+    };
+    _isLive = Flow.Dataflow.signal(false);
+    Flow.Dataflow.act(_isLive, function (isLive) {
+      if (isLive) {
+        return _refresh();
+      }
+    });
+    _refresh = function () {
+      return refresh(function (error, model) {
+        if (!error) {
+          _output(createOutput(model));
+          if (_isLive()) {
+            return lodash.delay(_refresh, 2000);
+          }
+        }
+      });
+    };
+    _toggleRefresh = function () {
+      return _isLive(!_isLive());
+    };
+    _output(createOutput(_model));
+    lodash.defer(_go);
+    return {
+      output: _output,
+      toggleRefresh: _toggleRefresh,
+      isLive: _isLive,
+      template: 'flow-model-output'
+    };
+  };
+
+  function h2oGridOutput(_, _go, _grid) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var buildModel;
+    var collectSelectedKeys;
+    var compareModels;
+    var createModelView;
+    var deleteModels;
+    var initialize;
+    var inspect;
+    var inspectAll;
+    var inspectHistory;
+    var predictUsingModels;
+    var _canCompareModels;
+    var _checkAllModels;
+    var _checkedModelCount;
+    var _errorViews;
+    var _hasErrors;
+    var _hasModels;
+    var _hasSelectedModels;
+    var _isCheckingAll;
+    var _modelViews;
+    _modelViews = Flow.Dataflow.signal([]);
+    _hasModels = _grid.model_ids.length > 0;
+    _errorViews = Flow.Dataflow.signal([]);
+    _hasErrors = _grid.failure_details.length > 0;
+    _checkAllModels = Flow.Dataflow.signal(false);
+    _checkedModelCount = Flow.Dataflow.signal(0);
+    _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
+      return count > 1;
+    });
+    _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
+      return count > 0;
+    });
+    _isCheckingAll = false;
+    Flow.Dataflow.react(_checkAllModels, function (checkAll) {
+      var view;
+      var views;
+      var _i;
+      var _len;
+      _isCheckingAll = true;
+      views = _modelViews();
+      for (_i = 0, _len = views.length; _i < _len; _i++) {
+        view = views[_i];
+        view.isChecked(checkAll);
+      }
+      _checkedModelCount(checkAll ? views.length : 0);
+      _isCheckingAll = false;
+    });
+    createModelView = function (model_id) {
+      var cloneModel;
+      var inspect;
+      var predict;
+      var view;
+      var _isChecked;
+      _isChecked = Flow.Dataflow.signal(false);
+      Flow.Dataflow.react(_isChecked, function () {
+        var checkedViews;
+        var view;
+        if (_isCheckingAll) {
+          return;
+        }
+        checkedViews = function () {
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = _modelViews();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            view = _ref[_i];
+            if (view.isChecked()) {
+              _results.push(view);
+            }
+          }
+          return _results;
+        }();
+        return _checkedModelCount(checkedViews.length);
+      });
+      predict = function () {
+        return _.insertAndExecuteCell('cs', `predict model: ${ Flow.Prelude.stringify(model_id.name) }`);
+      };
+      cloneModel = function () {
+        return alert('Not implemented');
+        // return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model_id.name)}`);
+      };
+      view = function () {
+        return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify(model_id.name) }`);
+      };
+      inspect = function () {
+        return _.insertAndExecuteCell('cs', `inspect getModel ${ Flow.Prelude.stringify(model_id.name) }`);
+      };
+      return {
+        key: model_id.name,
+        isChecked: _isChecked,
+        predict,
+        clone: cloneModel,
+        inspect,
+        view
+      };
+    };
+    buildModel = function () {
+      return _.insertAndExecuteCell('cs', 'buildModel');
+    };
+    collectSelectedKeys = function () {
+      var view;
+      var _i;
+      var _len;
+      var _ref;
+      var _results;
+      _ref = _modelViews();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        view = _ref[_i];
+        if (view.isChecked()) {
+          _results.push(view.key);
+        }
+      }
+      return _results;
+    };
+    compareModels = function () {
+      return _.insertAndExecuteCell('cs', `'inspect getModels ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
+    };
+    predictUsingModels = function () {
+      return _.insertAndExecuteCell('cs', `predict models: ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
+    };
+    deleteModels = function () {
+      return _.confirm('Are you sure you want to delete these models?', {
+        acceptCaption: 'Delete Models',
+        declineCaption: 'Cancel'
+      }, function (accept) {
+        if (accept) {
+          return _.insertAndExecuteCell('cs', `deleteModels ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
+        }
+      });
+    };
+    inspect = function () {
+      var summary;
+      summary = _.inspect('summary', _grid);
+      return _.insertAndExecuteCell('cs', `grid inspect \'summary\', ${ summary.metadata.origin }`);
+    };
+    inspectHistory = function () {
+      var history;
+      history = _.inspect('scoring_history', _grid);
+      return _.insertAndExecuteCell('cs', `grid inspect \'scoring_history\', ${ history.metadata.origin }`);
+    };
+    inspectAll = function () {
+      var allKeys;
+      var view;
+      allKeys = function () {
+        var _i;
+        var _len;
+        var _ref;
+        var _results;
+        _ref = _modelViews();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          view = _ref[_i];
+          _results.push(view.key);
+        }
+        return _results;
+      }();
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ Flow.Prelude.stringify(allKeys) }`);
+    };
+    initialize = function (grid) {
+      var errorViews;
+      var i;
+      _modelViews(lodash.map(grid.model_ids, createModelView));
+      errorViews = function () {
+        var _i;
+        var _ref;
+        var _results;
+        _results = [];
+        for (i = _i = 0, _ref = grid.failure_details.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
+          _results.push({
+            title: `Error ${ i + 1 }`,
+            detail: grid.failure_details[i],
+            params: `Parameters: [ ${ grid.failed_raw_params[i].join(', ') } ]`,
+            stacktrace: grid.failure_stack_traces[i]
+          });
+        }
+        return _results;
+      }();
+      _errorViews(errorViews);
+      return lodash.defer(_go);
+    };
+    initialize(_grid);
+    return {
+      modelViews: _modelViews,
+      hasModels: _hasModels,
+      errorViews: _errorViews,
+      hasErrors: _hasErrors,
+      buildModel,
+      compareModels,
+      predictUsingModels,
+      deleteModels,
+      checkedModelCount: _checkedModelCount,
+      canCompareModels: _canCompareModels,
+      hasSelectedModels: _hasSelectedModels,
+      checkAllModels: _checkAllModels,
+      inspect,
+      inspectHistory,
+      inspectAll,
+      template: 'flow-grid-output'
+    };
+  };
+
+  function h2oGridsOutput(_, _go, _grids) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var buildModel;
+    var createGridView;
+    var initialize;
+    var _gridViews;
+    _gridViews = Flow.Dataflow.signal([]);
+    createGridView = function (grid) {
+      var view;
+      view = function () {
+        return _.insertAndExecuteCell('cs', `getGrid ${ Flow.Prelude.stringify(grid.grid_id.name) }`);
+      };
+      return {
+        key: grid.grid_id.name,
+        size: grid.model_ids.length,
+        view
+      };
+    };
+    buildModel = function () {
+      return _.insertAndExecuteCell('cs', 'buildModel');
+    };
+    initialize = function (grids) {
+      _gridViews(lodash.map(grids, createGridView));
+      return lodash.defer(_go);
+    };
+    initialize(_grids);
+    return {
+      gridViews: _gridViews,
+      hasGrids: _grids.length > 0,
+      buildModel,
+      template: 'flow-grids-output'
+    };
+  };
+
+  function h2oModelsOutput(_, _go, _models) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var buildModel;
+    var collectSelectedKeys;
+    var compareModels;
+    var createModelView;
+    var deleteModels;
+    var initialize;
+    var inspectAll;
+    var predictUsingModels;
+    var _canCompareModels;
+    var _checkAllModels;
+    var _checkedModelCount;
+    var _hasSelectedModels;
+    var _isCheckingAll;
+    var _modelViews;
+    _modelViews = Flow.Dataflow.signal([]);
+    _checkAllModels = Flow.Dataflow.signal(false);
+    _checkedModelCount = Flow.Dataflow.signal(0);
+    _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
+      return count > 1;
+    });
+    _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
+      return count > 0;
+    });
+    _isCheckingAll = false;
+    Flow.Dataflow.react(_checkAllModels, function (checkAll) {
+      var view;
+      var views;
+      var _i;
+      var _len;
+      _isCheckingAll = true;
+      views = _modelViews();
+      for (_i = 0, _len = views.length; _i < _len; _i++) {
+        view = views[_i];
+        view.isChecked(checkAll);
+      }
+      _checkedModelCount(checkAll ? views.length : 0);
+      _isCheckingAll = false;
+    });
+    createModelView = function (model) {
+      var cloneModel;
+      var inspect;
+      var predict;
+      var view;
+      var _isChecked;
+      _isChecked = Flow.Dataflow.signal(false);
+      Flow.Dataflow.react(_isChecked, function () {
+        var checkedViews;
+        var view;
+        if (_isCheckingAll) {
+          return;
+        }
+        checkedViews = function () {
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = _modelViews();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            view = _ref[_i];
+            if (view.isChecked()) {
+              _results.push(view);
+            }
+          }
+          return _results;
+        }();
+        return _checkedModelCount(checkedViews.length);
+      });
+      predict = function () {
+        return _.insertAndExecuteCell('cs', `predict model: ${ Flow.Prelude.stringify(model.model_id.name) }`);
+      };
+      cloneModel = function () {
+        return alert('Not implemented');
+        // return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model.model_id.name)}`);
+      };
+      view = function () {
+        return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify(model.model_id.name) }`);
+      };
+      inspect = function () {
+        return _.insertAndExecuteCell('cs', `inspect getModel ${ Flow.Prelude.stringify(model.model_id.name) }`);
+      };
+      return {
+        key: model.model_id.name,
+        algo: model.algo_full_name,
+        isChecked: _isChecked,
+        predict,
+        clone: cloneModel,
+        inspect,
+        view
+      };
+    };
+    buildModel = function () {
+      return _.insertAndExecuteCell('cs', 'buildModel');
+    };
+    collectSelectedKeys = function () {
+      var view;
+      var _i;
+      var _len;
+      var _ref;
+      var _results;
+      _ref = _modelViews();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        view = _ref[_i];
+        if (view.isChecked()) {
+          _results.push(view.key);
+        }
+      }
+      return _results;
+    };
+    compareModels = function () {
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
+    };
+    predictUsingModels = function () {
+      return _.insertAndExecuteCell('cs', `predict models: ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
+    };
+    deleteModels = function () {
+      return _.confirm('Are you sure you want to delete these models?', {
+        acceptCaption: 'Delete Models',
+        declineCaption: 'Cancel'
+      }, function (accept) {
+        if (accept) {
+          return _.insertAndExecuteCell('cs', `deleteModels ${ Flow.Prelude.stringify(collectSelectedKeys()) }`);
+        }
+      });
+    };
+    inspectAll = function () {
+      var allKeys;
+      var view;
+      allKeys = function () {
+        var _i;
+        var _len;
+        var _ref;
+        var _results;
+        _ref = _modelViews();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          view = _ref[_i];
+          _results.push(view.key);
+        }
+        return _results;
+      }();
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ Flow.Prelude.stringify(allKeys) }`);
+    };
+    initialize = function (models) {
+      _modelViews(lodash.map(models, createModelView));
+      return lodash.defer(_go);
+    };
+    initialize(_models);
+    return {
+      modelViews: _modelViews,
+      hasModels: _models.length > 0,
+      buildModel,
+      compareModels,
+      predictUsingModels,
+      deleteModels,
+      checkedModelCount: _checkedModelCount,
+      canCompareModels: _canCompareModels,
+      hasSelectedModels: _hasSelectedModels,
+      checkAllModels: _checkAllModels,
+      inspect: inspectAll,
+      template: 'flow-models-output'
+    };
+  };
+
+  function h2oPredictsOutput(_, _go, opts, _predictions) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var arePredictionsComparable;
+    var comparePredictions;
+    var createPredictionView;
+    var initialize;
+    var inspectAll;
+    var plotMetrics;
+    var plotPredictions;
+    var plotScores;
+    var predict;
+    var _canComparePredictions;
+    var _checkAllPredictions;
+    var _isCheckingAll;
+    var _metricsTable;
+    var _predictionViews;
+    var _predictionsTable;
+    var _rocCurve;
+    var _scoresTable;
+    _predictionViews = Flow.Dataflow.signal([]);
+    _checkAllPredictions = Flow.Dataflow.signal(false);
+    _canComparePredictions = Flow.Dataflow.signal(false);
+    _rocCurve = Flow.Dataflow.signal(null);
+    arePredictionsComparable = function (views) {
+      if (views.length === 0) {
+        return false;
+      }
+      return lodash.every(views, function (view) {
+        return view.modelCategory === 'Binomial';
+      });
+    };
+    _isCheckingAll = false;
+    Flow.Dataflow.react(_checkAllPredictions, function (checkAll) {
+      var view;
+      var _i;
+      var _len;
+      var _ref;
+      _isCheckingAll = true;
+      _ref = _predictionViews();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        view = _ref[_i];
+        view.isChecked(checkAll);
+      }
+      _canComparePredictions(checkAll && arePredictionsComparable(_predictionViews()));
+      _isCheckingAll = false;
+    });
+    createPredictionView = function (prediction) {
+      var inspect;
+      var view;
+      var _frameKey;
+      var _hasFrame;
+      var _isChecked;
+      var _modelKey;
+      var _ref;
+      _modelKey = prediction.model.name;
+      _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
+      _hasFrame = _frameKey;
+      _isChecked = Flow.Dataflow.signal(false);
+      Flow.Dataflow.react(_isChecked, function () {
+        var checkedViews;
+        var view;
+        if (_isCheckingAll) {
+          return;
+        }
+        checkedViews = function () {
+          var _i;
+          var _len;
+          var _ref1;
+          var _results;
+          _ref1 = _predictionViews();
+          _results = [];
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            view = _ref1[_i];
+            if (view.isChecked()) {
+              _results.push(view);
+            }
+          }
+          return _results;
+        }();
+        return _canComparePredictions(arePredictionsComparable(checkedViews));
+      });
+      view = function () {
+        if (_hasFrame) {
+          return _.insertAndExecuteCell('cs', `getPrediction model: ${ Flow.Prelude.stringify(_modelKey) }, frame: ${ Flow.Prelude.stringify(_frameKey) }`);
+        }
+      };
+      inspect = function () {
+        if (_hasFrame) {
+          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ Flow.Prelude.stringify(_modelKey) }, frame: ${ Flow.Prelude.stringify(_frameKey) }`);
+        }
+      };
+      return {
+        modelKey: _modelKey,
+        frameKey: _frameKey,
+        modelCategory: prediction.model_category,
+        isChecked: _isChecked,
+        hasFrame: _hasFrame,
+        view,
+        inspect
+      };
+    };
+    _predictionsTable = _.inspect('predictions', _predictions);
+    _metricsTable = _.inspect('metrics', _predictions);
+    _scoresTable = _.inspect('scores', _predictions);
+    comparePredictions = function () {
+      var selectedKeys;
+      var view;
+      selectedKeys = function () {
+        var _i;
+        var _len;
+        var _ref;
+        var _results;
+        _ref = _predictionViews();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          view = _ref[_i];
+          if (view.isChecked()) {
+            _results.push({
+              model: view.modelKey,
+              frame: view.frameKey
+            });
+          }
+        }
+        return _results;
+      }();
+      return _.insertAndExecuteCell('cs', `getPredictions ${ Flow.Prelude.stringify(selectedKeys) }`);
+    };
+    plotPredictions = function () {
+      return _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
+    };
+    plotScores = function () {
+      return _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
+    };
+    plotMetrics = function () {
+      return _.insertAndExecuteCell('cs', _metricsTable.metadata.plot);
+    };
+    inspectAll = function () {
+      return _.insertAndExecuteCell('cs', `inspect ${ _predictionsTable.metadata.origin }`);
+    };
+    predict = function () {
+      return _.insertAndExecuteCell('cs', 'predict');
+    };
+    initialize = function (predictions) {
+      _predictionViews(lodash.map(predictions, createPredictionView));
+      return lodash.defer(_go);
+    };
+    initialize(_predictions);
+    return {
+      predictionViews: _predictionViews,
+      hasPredictions: _predictions.length > 0,
+      comparePredictions,
+      canComparePredictions: _canComparePredictions,
+      checkAllPredictions: _checkAllPredictions,
+      plotPredictions,
+      plotScores,
+      plotMetrics,
+      inspect: inspectAll,
+      predict,
+      rocCurve: _rocCurve,
+      template: 'flow-predicts-output'
+    };
+  };
+
+  function h2oPredictOutput(_, _go, prediction) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var frame;
+    var inspect;
+    var model;
+    var renderPlot;
+    var table;
+    var tableName;
+    var _canInspect;
+    var _i;
+    var _len;
+    var _plots;
+    var _ref;
+    var _ref1;
+    if (prediction) {
+      frame = prediction.frame, model = prediction.model;
+    }
+    _plots = Flow.Dataflow.signals([]);
+    _canInspect = prediction.__meta;
+    renderPlot = function (title, prediction, render) {
+      var combineWithFrame;
+      var container;
+      container = Flow.Dataflow.signal(null);
+      combineWithFrame = function () {
+        var predictionsFrameName;
+        var targetFrameName;
+        predictionsFrameName = prediction.predictions.frame_id.name;
+        targetFrameName = `combined-${ predictionsFrameName }`;
+        return _.insertAndExecuteCell('cs', `bindFrames ${ Flow.Prelude.stringify(targetFrameName) }, [ ${ Flow.Prelude.stringify(predictionsFrameName) }, ${ Flow.Prelude.stringify(frame.name) } ]`);
+      };
+      render(function (error, vis) {
+        if (error) {
+          return console.debug(error);
+        }
+        $('a', vis.element).on('click', function (e) {
+          var $a;
+          $a = $(e.target);
+          switch ($a.attr('data-type')) {
+            case 'frame':
+              return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
+            case 'model':
+              return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
+          }
+        });
+        return container(vis.element);
+      });
+      return _plots.push({
+        title,
+        plot: container,
+        combineWithFrame,
+        canCombineWithFrame: title === 'Prediction'
+      });
+    };
+    if (prediction) {
+      switch ((_ref = prediction.__meta) != null ? _ref.schema_type : void 0) {
+        case 'ModelMetricsBinomial':
+          if (table = _.inspect('Prediction - Metrics for Thresholds', prediction)) {
+            renderPlot('ROC Curve', prediction, _.plot(function (g) {
+              return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+            }));
+          }
+      }
+      _ref1 = _.ls(prediction);
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        tableName = _ref1[_i];
+        if (table = _.inspect(tableName, prediction)) {
+          if (table.indices.length > 1) {
+            renderPlot(tableName, prediction, _.plot(function (g) {
+              return g(g.select(), g.from(table));
+            }));
+          } else {
+            renderPlot(tableName, prediction, _.plot(function (g) {
+              return g(g.select(0), g.from(table));
+            }));
+          }
+        }
+      }
+    }
+    inspect = function () {
+      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ Flow.Prelude.stringify(model.name) }, frame: ${ Flow.Prelude.stringify(frame.name) }`);
+    };
+    lodash.defer(_go);
+    return {
+      plots: _plots,
+      inspect,
+      canInspect: _canInspect,
+      template: 'flow-predict-output'
+    };
+  };
+
+  function h2oH2OFrameOutput(_, _go, _result) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createH2oFrameView;
+    var _h2oframeView;
+    _h2oframeView = Flow.Dataflow.signal(null);
+    createH2oFrameView = function (result) {
+      return { h2oframe_id: result.h2oframe_id };
+    };
+    _h2oframeView(createH2oFrameView(_result));
+    lodash.defer(_go);
+    return {
+      h2oframeView: _h2oframeView,
+      template: 'flow-h2oframe-output'
+    };
+  };
+
+  function h2oFrameOutput(_, _go, _frame) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var MaxItemsPerPage;
+    var createModel;
+    var deleteFrame;
+    var download;
+    var exportFrame;
+    var goToNextPage;
+    var goToPreviousPage;
+    var inspect;
+    var inspectData;
+    var predict;
+    var refreshColumns;
+    var renderFrame;
+    var renderGrid;
+    var renderPlot;
+    var splitFrame;
+    var _canGoToNextPage;
+    var _canGoToPreviousPage;
+    var _chunkSummary;
+    var _columnNameSearchTerm;
+    var _currentPage;
+    var _distributionSummary;
+    var _grid;
+    var _lastUsedSearchTerm;
+    var _maxPages;
+    MaxItemsPerPage = 20;
+    _grid = Flow.Dataflow.signal(null);
+    _chunkSummary = Flow.Dataflow.signal(null);
+    _distributionSummary = Flow.Dataflow.signal(null);
+    _columnNameSearchTerm = Flow.Dataflow.signal(null);
+    _currentPage = Flow.Dataflow.signal(0);
+    _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
+    _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, function (index) {
+      return index > 0;
+    });
+    _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, function (maxPages, index) {
+      return index < maxPages - 1;
+    });
+    renderPlot = function (container, render) {
+      return render(function (error, vis) {
+        if (error) {
+          return console.debug(error);
+        }
+        return container(vis.element);
+      });
+    };
+    renderGrid = function (render) {
+      return render(function (error, vis) {
+        if (error) {
+          return console.debug(error);
+        }
+        $('a', vis.element).on('click', function (e) {
+          var $a;
+          $a = $(e.target);
+          switch ($a.attr('data-type')) {
+            case 'summary-link':
+              return _.insertAndExecuteCell('cs', `getColumnSummary ${ Flow.Prelude.stringify(_frame.frame_id.name) }, ${ Flow.Prelude.stringify($a.attr('data-key')) }`);
+            case 'as-factor-link':
+              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ Flow.Prelude.stringify(_frame.frame_id.name) }, column: ${ Flow.Prelude.stringify($a.attr('data-key')) }, type: \'enum\'`);
+            case 'as-numeric-link':
+              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ Flow.Prelude.stringify(_frame.frame_id.name) }, column: ${ Flow.Prelude.stringify($a.attr('data-key')) }, type: \'int\'`);
+          }
+        });
+        return _grid(vis.element);
+      });
+    };
+    createModel = function () {
+      return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
+    };
+    inspect = function () {
+      return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
+    };
+    inspectData = function () {
+      return _.insertAndExecuteCell('cs', `getFrameData ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
+    };
+    splitFrame = function () {
+      return _.insertAndExecuteCell('cs', `assist splitFrame, ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
+    };
+    predict = function () {
+      return _.insertAndExecuteCell('cs', `predict frame: ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
+    };
+    download = function () {
+      return window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
+    };
+    exportFrame = function () {
+      return _.insertAndExecuteCell('cs', `exportFrame ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
+    };
+    deleteFrame = function () {
+      return _.confirm('Are you sure you want to delete this frame?', {
+        acceptCaption: 'Delete Frame',
+        declineCaption: 'Cancel'
+      }, function (accept) {
+        if (accept) {
+          return _.insertAndExecuteCell('cs', `deleteFrame ${ Flow.Prelude.stringify(_frame.frame_id.name) }`);
+        }
+      });
+    };
+    renderFrame = function (frame) {
+      renderGrid(_.plot(function (g) {
+        return g(g.select(), g.from(_.inspect('columns', frame)));
+      }));
+      renderPlot(_chunkSummary, _.plot(function (g) {
+        return g(g.select(), g.from(_.inspect('Chunk compression summary', frame)));
+      }));
+      return renderPlot(_distributionSummary, _.plot(function (g) {
+        return g(g.select(), g.from(_.inspect('Frame distribution summary', frame)));
+      }));
+    };
+    _lastUsedSearchTerm = null;
+    refreshColumns = function (pageIndex) {
+      var itemCount;
+      var searchTerm;
+      var startIndex;
+      searchTerm = _columnNameSearchTerm();
+      if (searchTerm !== _lastUsedSearchTerm) {
+        pageIndex = 0;
+      }
+      startIndex = pageIndex * MaxItemsPerPage;
+      itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
+      return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, function (error, frame) {
+        if (error) {
+          // empty
+        } else {
+          _lastUsedSearchTerm = searchTerm;
+          _currentPage(pageIndex);
+          return renderFrame(frame);
+        }
+      });
+    };
+    goToPreviousPage = function () {
+      var currentPage;
+      currentPage = _currentPage();
+      if (currentPage > 0) {
+        refreshColumns(currentPage - 1);
+      }
+    };
+    goToNextPage = function () {
+      var currentPage;
+      currentPage = _currentPage();
+      if (currentPage < _maxPages() - 1) {
+        refreshColumns(currentPage + 1);
+      }
+    };
+    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
+    renderFrame(_frame);
+    lodash.defer(_go);
+    return {
+      key: _frame.frame_id.name,
+      rowCount: _frame.rows,
+      columnCount: _frame.total_column_count,
+      size: Flow.Util.formatBytes(_frame.byte_size),
+      chunkSummary: _chunkSummary,
+      distributionSummary: _distributionSummary,
+      columnNameSearchTerm: _columnNameSearchTerm,
+      grid: _grid,
+      inspect,
+      createModel,
+      inspectData,
+      splitFrame,
+      predict,
+      download,
+      exportFrame,
+      canGoToPreviousPage: _canGoToPreviousPage,
+      canGoToNextPage: _canGoToNextPage,
+      goToPreviousPage,
+      goToNextPage,
+      deleteFrame,
+      template: 'flow-frame-output'
+    };
+  };
+
+  function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var column;
+    var impute;
+    var inspect;
+    var renderPlot;
+    var table;
+    var _characteristicsPlot;
+    var _distributionPlot;
+    var _domainPlot;
+    var _summaryPlot;
+    column = lodash.head(frame.columns);
+    _characteristicsPlot = Flow.Dataflow.signal(null);
+    _summaryPlot = Flow.Dataflow.signal(null);
+    _distributionPlot = Flow.Dataflow.signal(null);
+    _domainPlot = Flow.Dataflow.signal(null);
+    renderPlot = function (target, render) {
+      return render(function (error, vis) {
+        if (error) {
+          return console.debug(error);
+        }
+        return target(vis.element);
+      });
+    };
+    if (table = _.inspect('characteristics', frame)) {
+      renderPlot(_characteristicsPlot, _.plot(function (g) {
+        return g(g.rect(g.position(g.stack(g.avg('percent'), 0), 'All'), g.fillColor('characteristic')), g.groupBy(g.factor(g.value('All')), 'characteristic'), g.from(table));
+      }));
+    }
+    if (table = _.inspect('distribution', frame)) {
+      renderPlot(_distributionPlot, _.plot(function (g) {
+        return g(g.rect(g.position('interval', 'count'), g.width(g.value(1))), g.from(table));
+      }));
+    }
+    if (table = _.inspect('summary', frame)) {
+      renderPlot(_summaryPlot, _.plot(function (g) {
+        return g(g.schema(g.position('min', 'q1', 'q2', 'q3', 'max', 'column')), g.from(table));
+      }));
+    }
+    if (table = _.inspect('domain', frame)) {
+      renderPlot(_domainPlot, _.plot(function (g) {
+        return g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000));
+      }));
+    }
+    impute = function () {
+      return _.insertAndExecuteCell('cs', `imputeColumn frame: ${ Flow.Prelude.stringify(frameKey) }, column: ${ Flow.Prelude.stringify(columnName) }`);
+    };
+    inspect = function () {
+      return _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ Flow.Prelude.stringify(frameKey) }, ${ Flow.Prelude.stringify(columnName) }`);
+    };
+    lodash.defer(_go);
+    return {
+      label: column.label,
+      characteristicsPlot: _characteristicsPlot,
+      summaryPlot: _summaryPlot,
+      distributionPlot: _distributionPlot,
+      domainPlot: _domainPlot,
+      impute,
+      inspect,
+      template: 'flow-column-summary-output'
+    };
+  };
+
+  function h2oExportFrameOutput(_, _go, result) {
+    var lodash = window._;
+    lodash.defer(_go);
+    return { template: 'flow-export-frame-output' };
+  };
+
+  function h2oBindFramesOutput(_, _go, key, result) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var viewFrame;
+    viewFrame = function () {
+      return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(key) }`);
+    };
+    lodash.defer(_go);
+    return {
+      viewFrame,
+      template: 'flow-bind-frames-output'
+    };
+  };
+
+  function h2oExportModelOutput(_, _go, result) {
+    var lodash = window._;
+    lodash.defer(_go);
+    return { template: 'flow-export-model-output' };
+  };
+
+  function h2oImportFilesOutput(_, _go, _importResults) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createImportView;
+    var parse;
+    var _allFrames;
+    var _canParse;
+    var _importViews;
+    var _title;
+    _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, function (result) {
+      return result.destination_frames;
+    })));
+    _canParse = _allFrames.length > 0;
+    _title = `${ _allFrames.length } / ${ _importResults.length } files imported.`;
+    createImportView = function (result) {
+      return {
+        files: result.files,
+        template: 'flow-import-file-output'
+      };
+    };
+    _importViews = lodash.map(_importResults, createImportView);
+    parse = function () {
+      var paths;
+      paths = lodash.map(_allFrames, Flow.Prelude.stringify);
+      return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ paths.join(',') } ]`);
+    };
+    lodash.defer(_go);
+    return {
+      title: _title,
+      importViews: _importViews,
+      canParse: _canParse,
+      parse,
+      template: 'flow-import-files-output',
+      templateOf(view) {
+        return view.template;
+      }
+    };
+  };
+
+  function h2oRDDsOutput(_, _go, _rDDs) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createRDDView;
+    var _rDDViews;
+    _rDDViews = Flow.Dataflow.signal([]);
+    createRDDView = function (rDD) {
+      return {
+        id: rDD.rdd_id,
+        name: rDD.name,
+        partitions: rDD.partitions
+      };
+    };
+    _rDDViews(lodash.map(_rDDs, createRDDView));
+    lodash.defer(_go);
+    return {
+      rDDViews: _rDDViews,
+      hasRDDs: _rDDs.length > 0,
+      template: 'flow-rdds-output'
+    };
+  };
+
+  function h2oDataFramesOutput(_, _go, _dataFrames) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createDataFrameView;
+    var _dataFramesViews;
+    _dataFramesViews = Flow.Dataflow.signal([]);
+    createDataFrameView = function (dataFrame) {
+      return {
+        dataframe_id: dataFrame.dataframe_id,
+        partitions: dataFrame.partitions
+      };
+    };
+    _dataFramesViews(lodash.map(_dataFrames, createDataFrameView));
+    lodash.defer(_go);
+    return {
+      dataFrameViews: _dataFramesViews,
+      hasDataFrames: _dataFrames.length > 0,
+      template: 'flow-dataframes-output'
+    };
+  };
+
+  function h2oScalaCodeOutput(_, _go, _result) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createScalaCodeView;
+    var _scalaCodeView;
+    var _scalaLinkText;
+    var _scalaResponseVisible;
+    _scalaCodeView = Flow.Dataflow.signal(null);
+    _scalaResponseVisible = Flow.Dataflow.signal(false);
+    _scalaLinkText = Flow.Dataflow.signal('Show Scala Response');
+    createScalaCodeView = function (result) {
+      return {
+        output: result.output,
+        response: result.response,
+        status: result.status,
+        scalaResponseVisible: _scalaResponseVisible,
+        scalaLinkText: _scalaLinkText,
+        toggleVisibility() {
+          _scalaResponseVisible(!_scalaResponseVisible());
+          if (_scalaResponseVisible()) {
+            return _scalaLinkText('Hide Scala Response');
+          }
+          return _scalaLinkText('Show Scala Response');
+        }
+      };
+    };
+    _scalaCodeView(createScalaCodeView(_result));
+    lodash.defer(_go);
+    return {
+      scalaCodeView: _scalaCodeView,
+      template: 'flow-scala-code-output'
+    };
+  };
+
+  function h2oScalaIntpOutput(_, _go, _result) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createScalaIntpView;
+    var _scalaIntpView;
+    _scalaIntpView = Flow.Dataflow.signal(null);
+    createScalaIntpView = function (result) {
+      return { session_id: result.session_id };
+    };
+    _scalaIntpView(createScalaIntpView(_result));
+    lodash.defer(_go);
+    return {
+      scalaIntpView: _scalaIntpView,
+      template: 'flow-scala-intp-output'
+    };
+  };
+
+  function h2oAssist(_, _go, _items) {
+    var lodash = window._;
+    var createAssistItem;
+    var item;
+    var name;
+    createAssistItem = function (name, item) {
+      return {
+        name,
+        description: item.description,
+        icon: `fa fa-${ item.icon } flow-icon`,
+        execute() {
+          return _.insertAndExecuteCell('cs', name);
+        }
+      };
+    };
+    lodash.defer(_go);
+    return {
+      routines: function () {
+        var _results;
+        _results = [];
+        for (name in _items) {
+          if ({}.hasOwnProperty.call(_items, name)) {
+            item = _items[name];
+            _results.push(createAssistItem(name, item));
+          }
+        }
+        return _results;
+      }(),
+      template: 'flow-assist'
+    };
+  };
+
+  function h2oImportFilesInput(_, _go) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createFileItem;
+    var createFileItems;
+    var createSelectedFileItem;
+    var deselectAllFiles;
+    var importFiles;
+    var importSelectedFiles;
+    var listPathHints;
+    var processImportResult;
+    var selectAllFiles;
+    var tryImportFiles;
+    var _exception;
+    var _hasErrorMessage;
+    var _hasImportedFiles;
+    var _hasSelectedFiles;
+    var _hasUnselectedFiles;
+    var _importedFileCount;
+    var _importedFiles;
+    var _selectedFileCount;
+    var _selectedFiles;
+    var _selectedFilesDictionary;
+    var _specifiedPath;
+    _specifiedPath = Flow.Dataflow.signal('');
+    _exception = Flow.Dataflow.signal('');
+    _hasErrorMessage = Flow.Dataflow.lift(_exception, function (exception) {
+      if (exception) {
+        return true;
+      }
+      return false;
+    });
+    tryImportFiles = function () {
+      var specifiedPath;
+      specifiedPath = _specifiedPath();
+      return _.requestFileGlob(specifiedPath, -1, function (error, result) {
+        if (error) {
+          return _exception(error.stack);
+        }
+        _exception('');
+        return processImportResult(result);
+      });
+    };
+    _importedFiles = Flow.Dataflow.signals([]);
+    _importedFileCount = Flow.Dataflow.lift(_importedFiles, function (files) {
+      if (files.length) {
+        return `Found ${ Flow.Util.describeCount(files.length, 'file') }:`;
+      }
+      return '';
+    });
+    _hasImportedFiles = Flow.Dataflow.lift(_importedFiles, function (files) {
+      return files.length > 0;
+    });
+    _hasUnselectedFiles = Flow.Dataflow.lift(_importedFiles, function (files) {
+      return lodash.some(files, function (file) {
+        return !file.isSelected();
+      });
+    });
+    _selectedFiles = Flow.Dataflow.signals([]);
+    _selectedFilesDictionary = Flow.Dataflow.lift(_selectedFiles, function (files) {
+      var dictionary;
+      var file;
+      var _i;
+      var _len;
+      dictionary = {};
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        dictionary[file.path] = true;
+      }
+      return dictionary;
+    });
+    _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, function (files) {
+      if (files.length) {
+        return `${ Flow.Util.describeCount(files.length, 'file') } selected:`;
+      }
+      return '(No files selected)';
+    });
+    _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, function (files) {
+      return files.length > 0;
+    });
+    importFiles = function (files) {
+      var paths;
+      paths = lodash.map(files, function (file) {
+        return Flow.Prelude.stringify(file.path);
+      });
+      return _.insertAndExecuteCell('cs', `importFiles [ ${ paths.join(',') } ]`);
+    };
+    importSelectedFiles = function () {
+      return importFiles(_selectedFiles());
+    };
+    createSelectedFileItem = function (path) {
+      var self;
+      return self = {
+        path,
+        deselect() {
+          var file;
+          var _i;
+          var _len;
+          var _ref;
+          _selectedFiles.remove(self);
+          _ref = _importedFiles();
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            file = _ref[_i];
+            if (file.path === path) {
+              file.isSelected(false);
+            }
+          }
+        }
+      };
+    };
+    createFileItem = function (path, isSelected) {
+      var self;
+      self = {
+        path,
+        isSelected: Flow.Dataflow.signal(isSelected),
+        select() {
+          _selectedFiles.push(createSelectedFileItem(self.path));
+          return self.isSelected(true);
+        }
+      };
+      Flow.Dataflow.act(self.isSelected, function (isSelected) {
+        return _hasUnselectedFiles(lodash.some(_importedFiles(), function (file) {
+          return !file.isSelected();
+        }));
+      });
+      return self;
+    };
+    createFileItems = function (result) {
+      return lodash.map(result.matches, function (path) {
+        return createFileItem(path, _selectedFilesDictionary()[path]);
+      });
+    };
+    listPathHints = function (query, process) {
+      return _.requestFileGlob(query, 10, function (error, result) {
+        if (!error) {
+          return process(lodash.map(result.matches, function (value) {
+            return { value };
+          }));
+        }
+      });
+    };
+    selectAllFiles = function () {
+      var dict;
+      var file;
+      var _i;
+      var _j;
+      var _len;
+      var _len1;
+      var _ref;
+      var _ref1;
+      dict = {};
+      _ref = _selectedFiles();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        dict[file.path] = true;
+      }
+      _ref1 = _importedFiles();
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        file = _ref1[_j];
+        if (!dict[file.path]) {
+          file.select();
+        }
+      }
+    };
+    deselectAllFiles = function () {
+      var file;
+      var _i;
+      var _len;
+      var _ref;
+      _selectedFiles([]);
+      _ref = _importedFiles();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        file.isSelected(false);
+      }
+    };
+    processImportResult = function (result) {
+      var files;
+      files = createFileItems(result);
+      return _importedFiles(files);
+    };
+    lodash.defer(_go);
+    return {
+      specifiedPath: _specifiedPath,
+      hasErrorMessage: _hasErrorMessage,
+      exception: _exception,
+      tryImportFiles,
+      listPathHints: lodash.throttle(listPathHints, 100),
+      hasImportedFiles: _hasImportedFiles,
+      importedFiles: _importedFiles,
+      importedFileCount: _importedFileCount,
+      selectedFiles: _selectedFiles,
+      selectAllFiles,
+      deselectAllFiles,
+      hasUnselectedFiles: _hasUnselectedFiles,
+      hasSelectedFiles: _hasSelectedFiles,
+      selectedFileCount: _selectedFileCount,
+      importSelectedFiles,
+      template: 'flow-import-files'
+    };
+  };
+
+  function h2oAutoModelInput(_, _go, opts) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var buildModel;
+    var defaultMaxRunTime;
+    var _canBuildModel;
+    var _column;
+    var _columns;
+    var _frame;
+    var _frames;
+    var _hasFrame;
+    var _maxRunTime;
+    if (opts == null) {
+      opts = {};
+    }
+    _frames = Flow.Dataflow.signal([]);
+    _frame = Flow.Dataflow.signal(null);
+    _hasFrame = Flow.Dataflow.lift(_frame, function (frame) {
+      if (frame) {
+        return true;
+      }
+      return false;
+    });
+    _columns = Flow.Dataflow.signal([]);
+    _column = Flow.Dataflow.signal(null);
+    _canBuildModel = Flow.Dataflow.lift(_frame, _column, function (frame, column) {
+      return frame && column;
+    });
+    defaultMaxRunTime = 3600;
+    _maxRunTime = Flow.Dataflow.signal(defaultMaxRunTime);
+    buildModel = function () {
+      var arg;
+      var maxRunTime;
+      var parsed;
+      maxRunTime = defaultMaxRunTime;
+      if (!lodash.isNaN(parsed = parseInt(_maxRunTime(), 10))) {
+        maxRunTime = parsed;
+      }
+      arg = {
+        frame: _frame(),
+        column: _column(),
+        maxRunTime
+      };
+      return _.insertAndExecuteCell('cs', `buildAutoModel ${ JSON.stringify(arg) }`);
+    };
+    _.requestFrames(function (error, frames) {
+      var frame;
+      if (error) {
+        // empty
+      } else {
+        _frames(function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = frames.length; _i < _len; _i++) {
+            frame = frames[_i];
+            if (!frame.is_text) {
+              _results.push(frame.frame_id.name);
+            }
+          }
+          return _results;
+        }());
+        if (opts.frame) {
+          _frame(opts.frame);
+        }
+      }
+    });
+    Flow.Dataflow.react(_frame, function (frame) {
+      if (frame) {
+        return _.requestFrameSummaryWithoutData(frame, function (error, frame) {
+          var column;
+          if (error) {
+            // empty
+          } else {
+            _columns(function () {
+              var _i;
+              var _len;
+              var _ref;
+              var _results;
+              _ref = frame.columns;
+              _results = [];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                column = _ref[_i];
+                _results.push(column.label);
+              }
+              return _results;
+            }());
+            if (opts.column) {
+              _column(opts.column);
+              return delete opts.column;
+            }
+          }
+        });
+      }
+      return _columns([]);
+    });
+    lodash.defer(_go);
+    return {
+      frames: _frames,
+      frame: _frame,
+      hasFrame: _hasFrame,
+      columns: _columns,
+      column: _column,
+      maxRunTime: _maxRunTime,
+      canBuildModel: _canBuildModel,
+      buildModel,
+      template: 'flow-automodel-input'
+    };
+  };
+
+  function h2oPredictInput(_, _go, opt) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var predict;
+    var _canPredict;
+    var _computeDeepFeaturesHiddenLayer;
+    var _computeLeafNodeAssignment;
+    var _computeReconstructionError;
+    var _deepFeaturesHiddenLayer;
+    var _deepFeaturesHiddenLayerValue;
+    var _destinationKey;
+    var _exception;
+    var _exemplarIndex;
+    var _exemplarIndexValue;
+    var _frames;
+    var _hasExemplarIndex;
+    var _hasFrames;
+    var _hasLeafNodeAssignment;
+    var _hasModels;
+    var _hasReconError;
+    var _isDeepLearning;
+    var _models;
+    var _ref;
+    var _selectedFrame;
+    var _selectedFrames;
+    var _selectedFramesCaption;
+    var _selectedModel;
+    var _selectedModels;
+    var _selectedModelsCaption;
+    _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
+    _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
+    _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
+    _selectedModelsCaption = _selectedModels.join(', ');
+    _selectedFramesCaption = _selectedFrames.join(', ');
+    _exception = Flow.Dataflow.signal(null);
+    _selectedFrame = Flow.Dataflow.signal(null);
+    _selectedModel = Flow.Dataflow.signal(null);
+    _hasFrames = _selectedFrames.length;
+    _hasModels = _selectedModels.length;
+    _frames = Flow.Dataflow.signals([]);
+    _models = Flow.Dataflow.signals([]);
+    _isDeepLearning = Flow.Dataflow.lift(_selectedModel, function (model) {
+      return model && model.algo === 'deeplearning';
+    });
+    _hasReconError = Flow.Dataflow.lift(_selectedModel, function (model) {
+      var parameter;
+      var _i;
+      var _len;
+      var _ref1;
+      if (model) {
+        if (model.algo === 'deeplearning') {
+          _ref1 = model.parameters;
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            parameter = _ref1[_i];
+            if (parameter.name === 'autoencoder' && parameter.actual_value === true) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    });
+    _hasLeafNodeAssignment = Flow.Dataflow.lift(_selectedModel, function (model) {
+      if (model) {
+        switch (model.algo) {
+          case 'gbm':
+          case 'drf':
+            return true;
+          default:
+            return false;
+        }
+      }
+    });
+    _hasExemplarIndex = Flow.Dataflow.lift(_selectedModel, function (model) {
+      if (model) {
+        switch (model.algo) {
+          case 'aggregator':
+            return true;
+          default:
+            return false;
+        }
+      }
+    });
+    _computeReconstructionError = Flow.Dataflow.signal(false);
+    _computeDeepFeaturesHiddenLayer = Flow.Dataflow.signal(false);
+    _computeLeafNodeAssignment = Flow.Dataflow.signal(false);
+    _deepFeaturesHiddenLayer = Flow.Dataflow.signal(0);
+    _deepFeaturesHiddenLayerValue = Flow.Dataflow.lift(_deepFeaturesHiddenLayer, function (text) {
+      return parseInt(text, 10);
+    });
+    _exemplarIndex = Flow.Dataflow.signal(0);
+    _exemplarIndexValue = Flow.Dataflow.lift(_exemplarIndex, function (text) {
+      return parseInt(text, 10);
+    });
+    _canPredict = Flow.Dataflow.lift(_selectedFrame, _selectedModel, _hasReconError, _computeReconstructionError, _computeDeepFeaturesHiddenLayer, _deepFeaturesHiddenLayerValue, _exemplarIndexValue, _hasExemplarIndex, function (frame, model, hasReconError, computeReconstructionError, computeDeepFeaturesHiddenLayer, deepFeaturesHiddenLayerValue, exemplarIndexValue, hasExemplarIndex) {
+      var hasFrameAndModel;
+      var hasValidOptions;
+      hasFrameAndModel = frame && model || _hasFrames && model || _hasModels && frame || _hasModels && hasExemplarIndex;
+      hasValidOptions = hasReconError ? computeReconstructionError ? true : computeDeepFeaturesHiddenLayer ? !lodash.isNaN(deepFeaturesHiddenLayerValue) : true : true;
+      return hasFrameAndModel && hasValidOptions;
+    });
+    if (!_hasFrames) {
+      _.requestFrames(function (error, frames) {
+        var frame;
+        if (error) {
+          return _exception(new Flow.Error('Error fetching frame list.', error));
+        }
+        return _frames(function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = frames.length; _i < _len; _i++) {
+            frame = frames[_i];
+            if (!frame.is_text) {
+              _results.push(frame.frame_id.name);
+            }
+          }
+          return _results;
+        }());
+      });
+    }
+    if (!_hasModels) {
+      _.requestModels(function (error, models) {
+        var model;
+        if (error) {
+          return _exception(new Flow.Error('Error fetching model list.', error));
+        }
+        return _models(function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = models.length; _i < _len; _i++) {
+            model = models[_i];
+            _results.push(model.model_id.name);
+          }
+          return _results;
+        }());
+      });
+    }
+    if (!_selectedModel()) {
+      if (opt.model && lodash.isString(opt.model)) {
+        _.requestModel(opt.model, function (error, model) {
+          return _selectedModel(model);
+        });
+      }
+    }
+    predict = function () {
+      var cs;
+      var destinationKey;
+      var frameArg;
+      var modelArg;
+      if (_hasFrames) {
+        frameArg = _selectedFrames.length > 1 ? _selectedFrames : lodash.head(_selectedFrames);
+        modelArg = _selectedModel();
+      } else if (_hasModels) {
+        modelArg = _selectedModels.length > 1 ? _selectedModels : lodash.head(_selectedModels);
+        frameArg = _selectedFrame();
+      } else {
+        modelArg = _selectedModel();
+        frameArg = _selectedFrame();
+      }
+      destinationKey = _destinationKey();
+      cs = `predict model: ${ Flow.Prelude.stringify(modelArg) }, frame: ${ Flow.Prelude.stringify(frameArg) }`;
+      if (destinationKey) {
+        cs += `, predictions_frame: ${ Flow.Prelude.stringify(destinationKey) }`;
+      }
+      if (_hasReconError()) {
+        if (_computeReconstructionError()) {
+          cs += ', reconstruction_error: true';
+        }
+      }
+      if (_computeDeepFeaturesHiddenLayer()) {
+        cs += `, deep_features_hidden_layer: ${ _deepFeaturesHiddenLayerValue() }`;
+      }
+      if (_hasLeafNodeAssignment()) {
+        if (_computeLeafNodeAssignment()) {
+          cs += ', leaf_node_assignment: true';
+        }
+      }
+      if (_hasExemplarIndex()) {
+        cs += `, exemplar_index: ${ _exemplarIndexValue() }`;
+      }
+      return _.insertAndExecuteCell('cs', cs);
+    };
+    lodash.defer(_go);
+    return {
+      destinationKey: _destinationKey,
+      exception: _exception,
+      hasModels: _hasModels,
+      hasFrames: _hasFrames,
+      canPredict: _canPredict,
+      selectedFramesCaption: _selectedFramesCaption,
+      selectedModelsCaption: _selectedModelsCaption,
+      selectedFrame: _selectedFrame,
+      selectedModel: _selectedModel,
+      frames: _frames,
+      models: _models,
+      predict,
+      isDeepLearning: _isDeepLearning,
+      hasReconError: _hasReconError,
+      hasLeafNodeAssignment: _hasLeafNodeAssignment,
+      hasExemplarIndex: _hasExemplarIndex,
+      computeReconstructionError: _computeReconstructionError,
+      computeDeepFeaturesHiddenLayer: _computeDeepFeaturesHiddenLayer,
+      computeLeafNodeAssignment: _computeLeafNodeAssignment,
+      deepFeaturesHiddenLayer: _deepFeaturesHiddenLayer,
+      exemplarIndex: _exemplarIndex,
+      template: 'flow-predict-input'
+    };
+  };
+
+  function h2oCreateFrameInput(_, _go) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createFrame;
+    var _binaryFraction;
+    var _binaryOnesFraction;
+    var _categoricalFraction;
+    var _columns;
+    var _factors;
+    var _hasResponse;
+    var _integerFraction;
+    var _integerRange;
+    var _key;
+    var _missingFraction;
+    var _randomize;
+    var _realRange;
+    var _responseFactors;
+    var _rows;
+    var _seed;
+    var _seed_for_column_types;
+    var _stringFraction;
+    var _timeFraction;
+    var _value;
+    _key = Flow.Dataflow.signal('');
+    _rows = Flow.Dataflow.signal(10000);
+    _columns = Flow.Dataflow.signal(100);
+    _seed = Flow.Dataflow.signal(7595850248774472000);
+    _seed_for_column_types = Flow.Dataflow.signal(-1);
+    _randomize = Flow.Dataflow.signal(true);
+    _value = Flow.Dataflow.signal(0);
+    _realRange = Flow.Dataflow.signal(100);
+    _categoricalFraction = Flow.Dataflow.signal(0.1);
+    _factors = Flow.Dataflow.signal(5);
+    _integerFraction = Flow.Dataflow.signal(0.5);
+    _binaryFraction = Flow.Dataflow.signal(0.1);
+    _binaryOnesFraction = Flow.Dataflow.signal(0.02);
+    _timeFraction = Flow.Dataflow.signal(0);
+    _stringFraction = Flow.Dataflow.signal(0);
+    _integerRange = Flow.Dataflow.signal(1);
+    _missingFraction = Flow.Dataflow.signal(0.01);
+    _responseFactors = Flow.Dataflow.signal(2);
+    _hasResponse = Flow.Dataflow.signal(false);
+    createFrame = function () {
+      var opts;
+      opts = {
+        dest: _key(),
+        rows: _rows(),
+        cols: _columns(),
+        seed: _seed(),
+        seed_for_column_types: _seed_for_column_types(),
+        randomize: _randomize(),
+        value: _value(),
+        real_range: _realRange(),
+        categorical_fraction: _categoricalFraction(),
+        factors: _factors(),
+        integer_fraction: _integerFraction(),
+        binary_fraction: _binaryFraction(),
+        binary_ones_fraction: _binaryOnesFraction(),
+        time_fraction: _timeFraction(),
+        string_fraction: _stringFraction(),
+        integer_range: _integerRange(),
+        missing_fraction: _missingFraction(),
+        response_factors: _responseFactors(),
+        has_response: _hasResponse()
+      };
+      return _.insertAndExecuteCell('cs', `createFrame ${ Flow.Prelude.stringify(opts) }`);
+    };
+    lodash.defer(_go);
+    return {
+      key: _key,
+      rows: _rows,
+      columns: _columns,
+      seed: _seed,
+      seed_for_column_types: _seed_for_column_types,
+      randomize: _randomize,
+      value: _value,
+      realRange: _realRange,
+      categoricalFraction: _categoricalFraction,
+      factors: _factors,
+      integerFraction: _integerFraction,
+      binaryFraction: _binaryFraction,
+      binaryOnesFraction: _binaryOnesFraction,
+      timeFraction: _timeFraction,
+      stringFraction: _stringFraction,
+      integerRange: _integerRange,
+      missingFraction: _missingFraction,
+      responseFactors: _responseFactors,
+      hasResponse: _hasResponse,
+      createFrame,
+      template: 'flow-create-frame-input'
+    };
+  };
+
+  function h2oSplitFrameInput(_, _go, _frameKey) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var addSplit;
+    var addSplitRatio;
+    var collectKeys;
+    var collectRatios;
+    var computeSplits;
+    var createSplit;
+    var createSplitName;
+    var format4f;
+    var initialize;
+    var splitFrame;
+    var updateSplitRatiosAndNames;
+    var _frame;
+    var _frames;
+    var _lastSplitKey;
+    var _lastSplitRatio;
+    var _lastSplitRatioText;
+    var _seed;
+    var _splits;
+    var _validationMessage;
+    _frames = Flow.Dataflow.signal([]);
+    _frame = Flow.Dataflow.signal(null);
+    _lastSplitRatio = Flow.Dataflow.signal(1);
+    format4f = function (value) {
+      return value.toPrecision(4).replace(/0+$/, '0');
+    };
+    _lastSplitRatioText = Flow.Dataflow.lift(_lastSplitRatio, function (ratio) {
+      if (lodash.isNaN(ratio)) {
+        return ratio;
+      }
+      return format4f(ratio);
+    });
+    _lastSplitKey = Flow.Dataflow.signal('');
+    _splits = Flow.Dataflow.signals([]);
+    _seed = Flow.Dataflow.signal(Math.random() * 1000000 | 0);
+    Flow.Dataflow.react(_splits, function () {
+      return updateSplitRatiosAndNames();
+    });
+    _validationMessage = Flow.Dataflow.signal('');
+    collectRatios = function () {
+      var entry;
+      var _i;
+      var _len;
+      var _ref;
+      var _results;
+      _ref = _splits();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
+        _results.push(entry.ratio());
+      }
+      return _results;
+    };
+    collectKeys = function () {
+      var entry;
+      var splitKeys;
+      splitKeys = function () {
+        var _i;
+        var _len;
+        var _ref;
+        var _results;
+        _ref = _splits();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          entry = _ref[_i];
+          _results.push(entry.key().trim());
+        }
+        return _results;
+      }();
+      splitKeys.push(_lastSplitKey().trim());
+      return splitKeys;
+    };
+    createSplitName = function (key, ratio) {
+      return `${ key }_${ format4f(ratio) }`;
+    };
+    updateSplitRatiosAndNames = function () {
+      var entry;
+      var frame;
+      var frameKey;
+      var lastSplitRatio;
+      var ratio;
+      var totalRatio;
+      var _i;
+      var _j;
+      var _len;
+      var _len1;
+      var _ref;
+      var _ref1;
+      totalRatio = 0;
+      _ref = collectRatios();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        ratio = _ref[_i];
+        totalRatio += ratio;
+      }
+      lastSplitRatio = _lastSplitRatio(1 - totalRatio);
+      frameKey = (frame = _frame()) ? frame : 'frame';
+      _ref1 = _splits();
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        entry = _ref1[_j];
+        entry.key(createSplitName(frameKey, entry.ratio()));
+      }
+      _lastSplitKey(createSplitName(frameKey, _lastSplitRatio()));
+    };
+    computeSplits = function (go) {
+      var key;
+      var ratio;
+      var splitKeys;
+      var splitRatios;
+      var totalRatio;
+      var _i;
+      var _j;
+      var _len;
+      var _len1;
+      if (!_frame()) {
+        return go('Frame not specified.');
+      }
+      splitRatios = collectRatios();
+      totalRatio = 0;
+      for (_i = 0, _len = splitRatios.length; _i < _len; _i++) {
+        ratio = splitRatios[_i];
+        if (ratio > 0 && ratio < 1) {
+          totalRatio += ratio;
+        } else {
+          return go('One or more split ratios are invalid. Ratios should between 0 and 1.');
+        }
+      }
+      if (totalRatio >= 1) {
+        return go('Sum of ratios is >= 1.');
+      }
+      splitKeys = collectKeys();
+      for (_j = 0, _len1 = splitKeys.length; _j < _len1; _j++) {
+        key = splitKeys[_j];
+        if (key === '') {
+          return go('One or more keys are empty or invalid.');
+        }
+      }
+      if (splitKeys.length < 2) {
+        return go('Please specify at least two splits.');
+      }
+      if (splitKeys.length !== lodash.unique(splitKeys).length) {
+        return go('Duplicate keys specified.');
+      }
+      return go(null, splitRatios, splitKeys);
+    };
+    createSplit = function (ratio) {
+      var self;
+      var _key;
+      var _ratio;
+      var _ratioText;
+      _ratioText = Flow.Dataflow.signal(`${ ratio }`);
+      _key = Flow.Dataflow.signal('');
+      _ratio = Flow.Dataflow.lift(_ratioText, function (text) {
+        return parseFloat(text);
+      });
+      Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
+      Flow.Prelude.remove = function () {
+        return _splits.remove(self);
+      };
+      return self = {
+        key: _key,
+        ratioText: _ratioText,
+        ratio: _ratio,
+        remove: Flow.Prelude.remove
+      };
+    };
+    addSplitRatio = function (ratio) {
+      return _splits.push(createSplit(ratio));
+    };
+    addSplit = function () {
+      return addSplitRatio(0);
+    };
+    splitFrame = function () {
+      return computeSplits(function (error, splitRatios, splitKeys) {
+        if (error) {
+          return _validationMessage(error);
+        }
+        _validationMessage('');
+        return _.insertAndExecuteCell('cs', `splitFrame ${ Flow.Prelude.stringify(_frame()) }, ${ Flow.Prelude.stringify(splitRatios) }, ${ Flow.Prelude.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
+      });
+    };
+    initialize = function () {
+      _.requestFrames(function (error, frames) {
+        var frame;
+        var frameKeys;
+        if (!error) {
+          frameKeys = function () {
+            var _i;
+            var _len;
+            var _results;
+            _results = [];
+            for (_i = 0, _len = frames.length; _i < _len; _i++) {
+              frame = frames[_i];
+              if (!frame.is_text) {
+                _results.push(frame.frame_id.name);
+              }
+            }
+            return _results;
+          }();
+          frameKeys.sort();
+          _frames(frameKeys);
+          return _frame(_frameKey);
+        }
+      });
+      addSplitRatio(0.75);
+      return lodash.defer(_go);
+    };
+    initialize();
+    return {
+      frames: _frames,
+      frame: _frame,
+      lastSplitRatio: _lastSplitRatio,
+      lastSplitRatioText: _lastSplitRatioText,
+      lastSplitKey: _lastSplitKey,
+      splits: _splits,
+      seed: _seed,
+      addSplit,
+      splitFrame,
+      validationMessage: _validationMessage,
+      template: 'flow-split-frame-input'
+    };
+  };
+
+  function h2oMergeFramesInput(_, _go) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var _canMerge;
+    var _destinationKey;
+    var _exception;
+    var _frames;
+    var _includeAllLeftRows;
+    var _includeAllRightRows;
+    var _leftColumns;
+    var _merge;
+    var _rightColumns;
+    var _selectedLeftColumn;
+    var _selectedLeftFrame;
+    var _selectedRightColumn;
+    var _selectedRightFrame;
+    _exception = Flow.Dataflow.signal(null);
+    _destinationKey = Flow.Dataflow.signal(`merged-${ Flow.Util.uuid() }`);
+    _frames = Flow.Dataflow.signals([]);
+    _selectedLeftFrame = Flow.Dataflow.signal(null);
+    _leftColumns = Flow.Dataflow.signals([]);
+    _selectedLeftColumn = Flow.Dataflow.signal(null);
+    _includeAllLeftRows = Flow.Dataflow.signal(false);
+    _selectedRightFrame = Flow.Dataflow.signal(null);
+    _rightColumns = Flow.Dataflow.signals([]);
+    _selectedRightColumn = Flow.Dataflow.signal(null);
+    _includeAllRightRows = Flow.Dataflow.signal(false);
+    _canMerge = Flow.Dataflow.lift(_selectedLeftFrame, _selectedLeftColumn, _selectedRightFrame, _selectedRightColumn, function (lf, lc, rf, rc) {
+      return lf && lc && rf && rc;
+    });
+    Flow.Dataflow.react(_selectedLeftFrame, function (frameKey) {
+      if (frameKey) {
+        return _.requestFrameSummaryWithoutData(frameKey, function (error, frame) {
+          return _leftColumns(lodash.map(frame.columns, function (column, i) {
+            return {
+              label: column.label,
+              index: i
+            };
+          }));
+        });
+      }
+      _selectedLeftColumn(null);
+      return _leftColumns([]);
+    });
+    Flow.Dataflow.react(_selectedRightFrame, function (frameKey) {
+      if (frameKey) {
+        return _.requestFrameSummaryWithoutData(frameKey, function (error, frame) {
+          return _rightColumns(lodash.map(frame.columns, function (column, i) {
+            return {
+              label: column.label,
+              index: i
+            };
+          }));
+        });
+      }
+      _selectedRightColumn(null);
+      return _rightColumns([]);
+    });
+    _merge = function () {
+      var cs;
+      if (!_canMerge()) {
+        return;
+      }
+      cs = `mergeFrames ${ Flow.Prelude.stringify(_destinationKey()) }, ${ Flow.Prelude.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ Flow.Prelude.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
+      return _.insertAndExecuteCell('cs', cs);
+    };
+    _.requestFrames(function (error, frames) {
+      var frame;
+      if (error) {
+        return _exception(new Flow.Error('Error fetching frame list.', error));
+      }
+      return _frames(function () {
+        var _i;
+        var _len;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = frames.length; _i < _len; _i++) {
+          frame = frames[_i];
+          if (!frame.is_text) {
+            _results.push(frame.frame_id.name);
+          }
+        }
+        return _results;
+      }());
+    });
+    lodash.defer(_go);
+    return {
+      destinationKey: _destinationKey,
+      frames: _frames,
+      selectedLeftFrame: _selectedLeftFrame,
+      leftColumns: _leftColumns,
+      selectedLeftColumn: _selectedLeftColumn,
+      includeAllLeftRows: _includeAllLeftRows,
+      selectedRightFrame: _selectedRightFrame,
+      rightColumns: _rightColumns,
+      selectedRightColumn: _selectedRightColumn,
+      includeAllRightRows: _includeAllRightRows,
+      merge: _merge,
+      canMerge: _canMerge,
+      template: 'flow-merge-frames-input'
+    };
+  };
+
+  function h2oPartialDependenceInput(_, _go) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var _canCompute;
+    var _compute;
+    var _destinationKey;
+    var _exception;
+    var _frames;
+    var _models;
+    var _nbins;
+    var _selectedFrame;
+    var _selectedModel;
+    _exception = Flow.Dataflow.signal(null);
+    _destinationKey = Flow.Dataflow.signal(`ppd-${ Flow.Util.uuid() }`);
+    _frames = Flow.Dataflow.signals([]);
+    _models = Flow.Dataflow.signals([]);
+    _selectedModel = Flow.Dataflow.signals(null);
+    _selectedFrame = Flow.Dataflow.signal(null);
+    _nbins = Flow.Dataflow.signal(20);
+    _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, function (dk, sf, sm, nb) {
+      return dk && sf && sm && nb;
+    });
+    _compute = function () {
+      var cs;
+      var opts;
+      if (!_canCompute()) {
+        return;
+      }
+      opts = {
+        destination_key: _destinationKey(),
+        model_id: _selectedModel(),
+        frame_id: _selectedFrame(),
+        nbins: _nbins()
+      };
+      cs = `buildPartialDependence ${ Flow.Prelude.stringify(opts) }`;
+      return _.insertAndExecuteCell('cs', cs);
+    };
+    _.requestFrames(function (error, frames) {
+      var frame;
+      if (error) {
+        return _exception(new Flow.Error('Error fetching frame list.', error));
+      }
+      return _frames(function () {
+        var _i;
+        var _len;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = frames.length; _i < _len; _i++) {
+          frame = frames[_i];
+          if (!frame.is_text) {
+            _results.push(frame.frame_id.name);
+          }
+        }
+        return _results;
+      }());
+    });
+    _.requestModels(function (error, models) {
+      var model;
+      if (error) {
+        return _exception(new Flow.Error('Error fetching model list.', error));
+      }
+      return _models(function () {
+        var _i;
+        var _len;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = models.length; _i < _len; _i++) {
+          model = models[_i];
+          _results.push(model.model_id.name);
+        }
+        return _results;
+      }());
+    });
+    lodash.defer(_go);
+    return {
+      destinationKey: _destinationKey,
+      frames: _frames,
+      models: _models,
+      selectedModel: _selectedModel,
+      selectedFrame: _selectedFrame,
+      nbins: _nbins,
+      compute: _compute,
+      canCompute: _canCompute,
+      template: 'flow-partial-dependence-input'
+    };
+  };
+
+  function h2oExportFrameInput(_, _go, frameKey, path, opt) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var exportFrame;
+    var _canExportFrame;
+    var _frames;
+    var _overwrite;
+    var _path;
+    var _selectedFrame;
+    _frames = Flow.Dataflow.signal([]);
+    _selectedFrame = Flow.Dataflow.signal(frameKey);
+    _path = Flow.Dataflow.signal(null);
+    _overwrite = Flow.Dataflow.signal(true);
+    _canExportFrame = Flow.Dataflow.lift(_selectedFrame, _path, function (frame, path) {
+      return frame && path;
+    });
+    exportFrame = function () {
+      return _.insertAndExecuteCell('cs', `exportFrame ${ Flow.Prelude.stringify(_selectedFrame()) }, ${ Flow.Prelude.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    };
+    _.requestFrames(function (error, frames) {
+      var frame;
+      if (error) {
+        // empty
+      } else {
+        _frames(function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = frames.length; _i < _len; _i++) {
+            frame = frames[_i];
+            _results.push(frame.frame_id.name);
+          }
+          return _results;
+        }());
+        return _selectedFrame(frameKey);
+      }
+    });
+    lodash.defer(_go);
+    return {
+      frames: _frames,
+      selectedFrame: _selectedFrame,
+      path: _path,
+      overwrite: _overwrite,
+      canExportFrame: _canExportFrame,
+      exportFrame,
+      template: 'flow-export-frame-input'
+    };
+  };
+
+  function h2oImportModelInput(_, _go, path, opt) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var importModel;
+    var _canImportModel;
+    var _overwrite;
+    var _path;
+    if (opt == null) {
+      opt = {};
+    }
+    _path = Flow.Dataflow.signal(path);
+    _overwrite = Flow.Dataflow.signal(opt.overwrite);
+    _canImportModel = Flow.Dataflow.lift(_path, function (path) {
+      return path && path.length;
+    });
+    importModel = function () {
+      return _.insertAndExecuteCell('cs', `importModel ${ Flow.Prelude.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    };
+    lodash.defer(_go);
+    return {
+      path: _path,
+      overwrite: _overwrite,
+      canImportModel: _canImportModel,
+      importModel,
+      template: 'flow-import-model-input'
+    };
+  };
+
+  function h2oExportModelInput(_, _go, modelKey, path, opt) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var exportModel;
+    var _canExportModel;
+    var _models;
+    var _overwrite;
+    var _path;
+    var _selectedModelKey;
+    if (opt == null) {
+      opt = {};
+    }
+    _models = Flow.Dataflow.signal([]);
+    _selectedModelKey = Flow.Dataflow.signal(null);
+    _path = Flow.Dataflow.signal(null);
+    _overwrite = Flow.Dataflow.signal(opt.overwrite);
+    _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, function (modelKey, path) {
+      return modelKey && path;
+    });
+    exportModel = function () {
+      return _.insertAndExecuteCell('cs', `exportModel ${ Flow.Prelude.stringify(_selectedModelKey()) }, ${ Flow.Prelude.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    };
+    _.requestModels(function (error, models) {
+      var model;
+      if (error) {
+        // empty
+      } else {
+        _models(function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = models.length; _i < _len; _i++) {
+            model = models[_i];
+            _results.push(model.model_id.name);
+          }
+          return _results;
+        }());
+        return _selectedModelKey(modelKey);
+      }
+    });
+    lodash.defer(_go);
+    return {
+      models: _models,
+      selectedModelKey: _selectedModelKey,
+      path: _path,
+      overwrite: _overwrite,
+      canExportModel: _canExportModel,
+      exportModel,
+      template: 'flow-export-model-input'
+    };
+  };
+
+  function h2oNoAssist(_, _go) {
+    var lodash = window._;
+    lodash.defer(_go);
+    return {
+      showAssist() {
+        return _.insertAndExecuteCell('cs', 'assist');
+      },
+      template: 'flow-no-assist'
+    };
+  };
+
+  function routines(){var lodash=window._;var Flow=window.Flow;var combineTables;var computeFalsePositiveRate;var computeTruePositiveRate;var concatArrays;var convertColumnToVector;var convertTableToFrame;var createArrays;var createDataframe;var createFactor;var createList;var createTempKey;var createVector;var format4f;var format6fi;var formatConfusionMatrix;var formulateGetPredictionsOrigin;var getTwoDimData;var lightning;var parseAndFormatArray;var parseAndFormatObjectArray;var parseNaNs;var parseNulls;var parseNumbers;var repeatValues;var _assistance;var __slice=[].slice;lightning=(typeof window!=='undefined'&&window!==null?window.plot:void 0)!=null?window.plot:{};if(lightning.settings){lightning.settings.axisLabelFont='11px "Source Code Pro", monospace';lightning.settings.axisTitleFont='bold 11px "Source Code Pro", monospace';}createTempKey=function(){return`flow_${Flow.Util.uuid().replace(/\-/g,'')}`;};createVector=lightning.createVector;createFactor=lightning.createFactor;createList=lightning.createList;createDataframe=lightning.createFrame;_assistance={importFiles:{description:'Import file(s) into H<sub>2</sub>O',icon:'files-o'},getFrames:{description:'Get a list of frames in H<sub>2</sub>O',icon:'table'},splitFrame:{description:'Split a frame into two or more frames',icon:'scissors'},mergeFrames:{description:'Merge two frames into one',icon:'link'},getModels:{description:'Get a list of models in H<sub>2</sub>O',icon:'cubes'},getGrids:{description:'Get a list of grid search results in H<sub>2</sub>O',icon:'th'},getPredictions:{description:'Get a list of predictions in H<sub>2</sub>O',icon:'bolt'},getJobs:{description:'Get a list of jobs running in H<sub>2</sub>O',icon:'tasks'},buildModel:{description:'Build a model',icon:'cube'},importModel:{description:'Import a saved model',icon:'cube'},predict:{description:'Make a prediction',icon:'bolt'}};parseNumbers=function(source){var i;var target;var value;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){value=source[i];target[i]=value==='NaN'?void 0:value==='Infinity'?Number.POSITIVE_INFINITY:value==='-Infinity'?Number.NEGATIVE_INFINITY:value;}return target;};convertColumnToVector=function(column,data){switch(column.type){case'byte':case'short':case'int':case'integer':case'long':return createVector(column.name,Flow.TNumber,parseNumbers(data));case'float':case'double':return createVector(column.name,Flow.TNumber,parseNumbers(data),format4f);case'string':return createFactor(column.name,Flow.TString,data);case'matrix':return createList(column.name,data,formatConfusionMatrix);default:return createList(column.name,data);}};convertTableToFrame=function(table,tableName,metadata){var column;var i;var vectors;vectors=function(){var _i;var _len;var _ref;var _results;_ref=table.columns;_results=[];for(i=_i=0,_len=_ref.length;_i<_len;i=++_i){column=_ref[i];_results.push(convertColumnToVector(column,table.data[i]));}return _results;}();return createDataframe(tableName,vectors,lodash.range(table.rowcount),null,metadata);};getTwoDimData=function(table,columnName){var columnIndex;columnIndex=lodash.findIndex(table.columns,function(column){return column.name===columnName;});if(columnIndex>=0){return table.data[columnIndex];}return void 0;};format4f=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(4).replace(/\.0+$/,'.0');}return number;};format6fi=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(6).replace(/\.0+$/,'');}return number;};combineTables=function(tables){var columnCount;var columnData;var data;var element;var i;var index;var leader;var rowCount;var table;var _i;var _j;var _k;var _l;var _len;var _len1;var _len2;var _ref;leader=lodash.head(tables);rowCount=0;columnCount=leader.data.length;data=new Array(columnCount);for(_i=0,_len=tables.length;_i<_len;_i++){table=tables[_i];rowCount+=table.rowcount;}for(i=_j=0;columnCount>=0?_j<columnCount:_j>columnCount;i=columnCount>=0?++_j:--_j){data[i]=columnData=new Array(rowCount);index=0;for(_k=0,_len1=tables.length;_k<_len1;_k++){table=tables[_k];_ref=table.data[i];for(_l=0,_len2=_ref.length;_l<_len2;_l++){element=_ref[_l];columnData[index++]=element;}}}return{name:leader.name,columns:leader.columns,data,rowcount:rowCount};};createArrays=function(count,length){var i;var _i;var _results;_results=[];for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){_results.push(new Array(length));}return _results;};parseNaNs=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element==='NaN'?void 0:element;}return target;};parseNulls=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?element:void 0;}return target;};parseAndFormatArray=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?lodash.isNumber(element)?format6fi(element):element:void 0;}return target;};parseAndFormatObjectArray=function(source){var element;var i;var target;var _i;var _len;var _ref;var _ref1;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?((_ref=element.__meta)!=null?_ref.schema_type:void 0)==='Key<Model>'?`<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>`:((_ref1=element.__meta)!=null?_ref1.schema_type:void 0)==='Key<Frame>'?`<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>`:element:void 0;}return target;};repeatValues=function(count,value){var i;var target;var _i;target=new Array(count);for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){target[i]=value;}return target;};concatArrays=function(arrays){var a;switch(arrays.length){case 0:return[];case 1:return lodash.head(arrays);default:a=lodash.head(arrays);return a.concat(...lodash.tail(arrays));}};computeTruePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return tp/(tp+fn);};computeFalsePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return fp/(fp+tn);};formatConfusionMatrix=function(cm){var domain;var fn;var fnr;var fp;var fpr;var normal;var strong;var table;var tbody;var tn;var tp;var tr;var yellow;var _ref;var _ref1;var _ref2;var _ref3;_ref=cm.matrix,(_ref1=_ref[0],tn=_ref1[0],fp=_ref1[1]),(_ref2=_ref[1],fn=_ref2[0],tp=_ref2[1]);fnr=fn/(tp+fn);fpr=fp/(fp+tn);domain=cm.domain;_ref3=Flow.HTML.template('table.flow-matrix','tbody','tr','td.strong.flow-center','td','td.bg-yellow'),table=_ref3[0],tbody=_ref3[1],tr=_ref3[2],strong=_ref3[3],normal=_ref3[4],yellow=_ref3[5];return table([tbody([tr([strong('Actual/Predicted'),strong(domain[0]),strong(domain[1]),strong('Error'),strong('Rate')]),tr([strong(domain[0]),yellow(tn),normal(fp),normal(format4f(fpr)),normal(`${fp} / ${fp+tn}`)]),tr([strong(domain[1]),normal(fn),yellow(tp),normal(format4f(fnr)),normal(`${fn} / ${tp+fn}`)]),tr([strong('Total'),strong(tn+fn),strong(tp+fp),strong(format4f((fn+fp)/(fp+tn+tp+fn))),strong(`${fn}${fp} / ${fp+tn+tp+fn}`)])])]);};formulateGetPredictionsOrigin=function(opts){var frameKey;var modelKey;var opt;var sanitizedOpt;var sanitizedOpts;if(lodash.isArray(opts)){sanitizedOpts=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=opts.length;_i<_len;_i++){opt=opts[_i];sanitizedOpt={};if(opt.model){sanitizedOpt.model=opt.model;}if(opt.frame){sanitizedOpt.frame=opt.frame;}_results.push(sanitizedOpt);}return _results;}();return`getPredictions ${Flow.Prelude.stringify(sanitizedOpts)}`;}modelKey=opts.model,frameKey=opts.frame;if(modelKey&&frameKey){return`getPredictions model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`;}else if(modelKey){return`getPredictions model: ${Flow.Prelude.stringify(modelKey)}`;}else if(frameKey){return`getPredictions frame: ${Flow.Prelude.stringify(frameKey)}`;}return'getPredictions()';};H2O.Routines=function(_){var asDataFrame;var asH2OFrameFromDF;var asH2OFrameFromRDD;var assist;var attrname;var bindFrames;var blacklistedAttributesBySchema;var buildAutoModel;var buildModel;var buildPartialDependence;var cancelJob;var changeColumnType;var computeSplits;var createFrame;var createGui;var createPlot;var deleteAll;var deleteFrame;var deleteFrames;var deleteModel;var deleteModels;var dump;var dumpFuture;var exportFrame;var exportModel;var extendAsDataFrame;var extendAsH2OFrame;var extendBindFrames;var extendCancelJob;var extendCloud;var extendColumnSummary;var extendDataFrames;var extendDeletedKeys;var extendExportFrame;var extendExportModel;var extendFrame;var extendFrameData;var extendFrameSummary;var extendFrames;var extendGrid;var extendGrids;var extendGuiForm;var extendImportModel;var extendImportResults;var extendJob;var extendJobs;var extendLogFile;var extendMergeFramesResult;var extendModel;var extendModels;var extendNetworkTest;var extendParseResult;var extendParseSetupResults;var extendPartialDependence;var extendPlot;var extendPrediction;var extendPredictions;var extendProfile;var extendRDDs;var extendScalaCode;var extendScalaIntp;var extendSplitFrameResult;var extendStackTrace;var extendTimeline;var f;var findColumnIndexByColumnLabel;var findColumnIndicesByColumnLabels;var flow_;var getCloud;var getColumnSummary;var getDataFrames;var getFrame;var getFrameData;var getFrameSummary;var getFrames;var getGrid;var getGrids;var getJob;var getJobs;var getLogFile;var getModel;var getModelParameterValue;var getModels;var getPartialDependence;var getPrediction;var getPredictions;var getProfile;var getRDDs;var getScalaIntp;var getStackTrace;var getTimeline;var grid;var gui;var importFiles;var importModel;var imputeColumn;var initAssistanceSparklingWater;var inspect;var inspect$1;var inspect$2;var inspectFrameColumns;var inspectFrameData;var inspectModelParameters;var inspectNetworkTestResult;var inspectObject;var inspectObjectArray_;var inspectParametersAcrossModels;var inspectRawArray_;var inspectRawObject_;var inspectTwoDimTable_;var inspect_;var loadScript;var ls;var mergeFrames;var name;var parseFiles;var plot;var predict;var proceed;var read;var render_;var requestAsDataFrame;var requestAsH2OFrameFromDF;var requestAsH2OFrameFromRDD;var requestAutoModelBuild;var requestBindFrames;var requestCancelJob;var requestChangeColumnType;var requestCloud;var requestColumnSummary;var requestCreateFrame;var requestDataFrames;var requestDeleteFrame;var requestDeleteFrames;var requestDeleteModel;var requestDeleteModels;var requestExportFrame;var requestExportModel;var requestFrame;var requestFrameData;var requestFrameSummary;var requestFrameSummarySlice;var requestFrames;var requestGrid;var requestGrids;var requestImportAndParseFiles;var requestImportAndParseSetup;var requestImportFiles;var requestImportModel;var requestImputeColumn;var requestJob;var requestJobs;var requestLogFile;var requestMergeFrames;var requestModel;var requestModelBuild;var requestModels;var requestModelsByKeys;var requestNetworkTest;var requestParseFiles;var requestParseSetup;var requestPartialDependence;var requestPartialDependenceData;var requestPredict;var requestPrediction;var requestPredictions;var requestPredicts;var requestProfile;var requestRDDs;var requestRemoveAll;var requestScalaCode;var requestScalaIntp;var requestSplitFrame;var requestStackTrace;var requestTimeline;var routines;var routinesOnSw;var runScalaCode;var schemaTransforms;var setupParse;var splitFrame;var testNetwork;var transformBinomialMetrics;var unwrapPrediction;var _apply;var _async;var _call;var _fork;var _get;var _isFuture;var _join;var _plot;var _ref;var _schemaHacks;_fork=function(){var args;var f;f=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.fork(f,args);};_join=function(){var args;var go;var _i;args=arguments.length>=2?__slice.call(arguments,0,_i=arguments.length-1):(_i=0,[]),go=arguments[_i++];return Flow.Async.join(args,Flow.Async.applicate(go));};_call=function(){var args;var go;go=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.join(args,Flow.Async.applicate(go));};_apply=function(go,args){return Flow.Async.join(args,go);};_isFuture=Flow.Async.isFuture;_async=Flow.Async.async;_get=Flow.Async.get;proceed=function(func,args,go){return go(null,render_({},function(){return func(...[_].concat(args||[]));}));};proceed=function(func,args,go){return go(null,render_(...[{},func].concat(args||[])));};extendGuiForm=function(form){return render_(form,flowForm,form);};createGui=function(controls,go){return go(null,extendGuiForm(Flow.Dataflow.signals(controls||[])));};gui=function(controls){return _fork(createGui,controls);};_ref=Flow.Gui;for(name in _ref){if({}.hasOwnProperty.call(_ref,name)){f=_ref[name];gui[name]=f;}}flow_=function(raw){return raw._flow_||(raw._flow_={_cache_:{}});};render_=function(raw,render){flow_(raw).render=render;return raw;};render_=function(){var args;var raw;var render;raw=arguments[0],render=arguments[1],args=arguments.length>=3?__slice.call(arguments,2):[];flow_(raw).render=function(go){return render(...[_,go].concat(args));};return raw;};inspect_=function(raw,inspectors){var attr;var root;root=flow_(raw);if(root.inspect==null){root.inspect={};}for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];root.inspect[attr]=f;}}return raw;};inspect=function(a,b){if(arguments.length===1){return inspect$1(a);}return inspect$2(a,b);};inspect$1=function(obj){var attr;var inspections;var inspectors;var _ref1;if(_isFuture(obj)){return _async(inspect,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){inspections=[];for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];inspections.push(inspect$2(attr,obj));}}render_(inspections,h2oInspectsOutput,inspections);return inspections;}return{};};ls=function(obj){var inspectors;var _ref1;if(_isFuture(obj)){return _async(ls,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){return lodash.keys(inspectors);}return[];};inspect$2=function(attr,obj){var cached;var inspection;var inspectors;var key;var root;if(!attr){return;}if(_isFuture(obj)){return _async(inspect,attr,obj);}if(!obj){return;}if(!(root=obj._flow_)){return;}if(!(inspectors=root.inspect)){return;}if(cached=root._cache_[key=`inspect_${attr}`]){return cached;}if(!(f=inspectors[attr])){return;}if(!lodash.isFunction(f)){return;}root._cache_[key]=inspection=f();render_(inspection,h2oInspectOutput,inspection);return inspection;};_plot=function(render,go){return render(function(error,vis){if(error){return go(new Flow.Error('Error rendering vis.',error));}return go(null,vis);});};extendPlot=function(vis){return render_(vis,h2oPlotOutput,vis.element);};createPlot=function(f,go){return _plot(f(lightning),function(error,vis){if(error){return go(error);}return go(null,extendPlot(vis));});};plot=function(f){if(_isFuture(f)){return _fork(proceed,h2oPlotInput,f);}else if(lodash.isFunction(f)){return _fork(createPlot,f);}return assist(plot);};grid=function(f){return plot(function(g){return g(g.select(),g.from(f));});};transformBinomialMetrics=function(metrics){var cms;var domain;var fns;var fps;var i;var scores;var tns;var tp;var tps;if(scores=metrics.thresholds_and_metric_scores){domain=metrics.domain;tps=getTwoDimData(scores,'tps');tns=getTwoDimData(scores,'tns');fps=getTwoDimData(scores,'fps');fns=getTwoDimData(scores,'fns');cms=function(){var _i;var _len;var _results;_results=[];for(i=_i=0,_len=tps.length;_i<_len;i=++_i){tp=tps[i];_results.push({domain,matrix:[[tns[i],fps[i]],[fns[i],tp]]});}return _results;}();scores.columns.push({name:'CM',description:'CM',format:'matrix',type:'matrix'});scores.data.push(cms);}return metrics;};extendCloud=function(cloud){return render_(cloud,h2oCloudOutput,cloud);};extendTimeline=function(timeline){return render_(timeline,h2oTimelineOutput,timeline);};extendStackTrace=function(stackTrace){return render_(stackTrace,h2oStackTraceOutput,stackTrace);};extendLogFile=function(cloud,nodeIndex,fileType,logFile){return render_(logFile,h2oLogFileOutput,cloud,nodeIndex,fileType,logFile);};inspectNetworkTestResult=function(testResult){return function(){return convertTableToFrame(testResult.table,testResult.table.name,{description:testResult.table.name,origin:'testNetwork'});};};extendNetworkTest=function(testResult){inspect_(testResult,{result:inspectNetworkTestResult(testResult)});return render_(testResult,h2oNetworkTestOutput,testResult);};extendProfile=function(profile){return render_(profile,h2oProfileOutput,profile);};extendFrames=function(frames){render_(frames,h2oFramesOutput,frames);return frames;};extendSplitFrameResult=function(result){render_(result,h2oSplitFrameOutput,result);return result;};extendMergeFramesResult=function(result){render_(result,h2oMergeFramesOutput,result);return result;};extendPartialDependence=function(result){var data;var i;var inspections;var origin;var _i;var _len;var _ref1;inspections={};_ref1=result.partial_dependence_data;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){data=_ref1[i];origin=`getPartialDependence ${Flow.Prelude.stringify(result.destination_key)}`;inspections[`plot${i+1}`]=inspectTwoDimTable_(origin,`plot${i+1}`,data);}inspect_(result,inspections);render_(result,h2oPartialDependenceOutput,result);return result;};getModelParameterValue=function(type,value){switch(type){case'Key<Frame>':case'Key<Model>':if(value!=null){return value.name;}return void 0;// break; // no-unreachable
+  case'VecSpecifier':if(value!=null){return value.column_name;}return void 0;// break; // no-unreachable
+  default:if(value!=null){return value;}return void 0;}};inspectParametersAcrossModels=function(models){return function(){var data;var i;var leader;var model;var modelKeys;var parameter;var vectors;leader=lodash.head(models);vectors=function(){var _i;var _len;var _ref1;var _results;_ref1=leader.parameters;_results=[];for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){parameter=_ref1[i];data=function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=models.length;_j<_len1;_j++){model=models[_j];_results1.push(getModelParameterValue(parameter.type,model.parameters[i].actual_value));}return _results1;}();switch(parameter.type){case'enum':case'Frame':case'string':_results.push(createFactor(parameter.label,Flow.TString,data));break;case'byte':case'short':case'int':case'long':case'float':case'double':_results.push(createVector(parameter.label,Flow.TNumber,data));break;case'string[]':case'byte[]':case'short[]':case'int[]':case'long[]':case'float[]':case'double[]':_results.push(createList(parameter.label,data,function(a){if(a){return a;}return void 0;}));break;case'boolean':_results.push(createList(parameter.label,data,function(a){if(a){return'true';}return'false';}));break;default:_results.push(createList(parameter.label,data));}}return _results;}();modelKeys=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.model_id.name);}return _results;}();return createDataframe('parameters',vectors,lodash.range(models.length),null,{description:`Parameters for models ${modelKeys.join(', ')}`,origin:`getModels ${Flow.Prelude.stringify(modelKeys)}`});};};inspectModelParameters=function(model){return function(){var attr;var attrs;var data;var i;var parameter;var parameters;var vectors;parameters=model.parameters;attrs=['label','type','level','actual_value','default_value'];vectors=function(){var _i;var _j;var _len;var _len1;var _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];data=new Array(parameters.length);for(i=_j=0,_len1=parameters.length;_j<_len1;i=++_j){parameter=parameters[i];data[i]=attr==='actual_value'?getModelParameterValue(parameter.type,parameter[attr]):parameter[attr];}_results.push(createList(attr,data));}return _results;}();return createDataframe('parameters',vectors,lodash.range(parameters.length),null,{description:`Parameters for model \'${model.model_id.name}\'`,origin:`getModel ${Flow.Prelude.stringify(model.model_id.name)}`});};};extendJob=function(job){return render_(job,H2O.JobOutput,job);};extendJobs=function(jobs){var job;var _i;var _len;for(_i=0,_len=jobs.length;_i<_len;_i++){job=jobs[_i];extendJob(job);}return render_(jobs,h2oJobsOutput,jobs);};extendCancelJob=function(cancellation){return render_(cancellation,h2oCancelJobOutput,cancellation);};extendDeletedKeys=function(keys){return render_(keys,h2oDeleteObjectsOutput,keys);};inspectTwoDimTable_=function(origin,tableName,table){return function(){return convertTableToFrame(table,tableName,{description:table.description||'',origin});};};inspectRawArray_=function(name,origin,description,array){return function(){return createDataframe(name,[createList(name,parseAndFormatArray(array))],lodash.range(array.length),null,{description:'',origin});};};inspectObjectArray_=function(name,origin,description,array){return function(){return createDataframe(name,[createList(name,parseAndFormatObjectArray(array))],lodash.range(array.length),null,{description:'',origin});};};inspectRawObject_=function(name,origin,description,obj){return function(){var k;var v;var vectors;vectors=function(){var _results;_results=[];for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];_results.push(createList(k,[v===null?void 0:lodash.isNumber(v)?format6fi(v):v]));}}return _results;}();return createDataframe(name,vectors,lodash.range(1),null,{description:'',origin});};};_schemaHacks={KMeansOutput:{fields:'names domains help'},GBMOutput:{fields:'names domains help'},GLMOutput:{fields:'names domains help'},DRFOutput:{fields:'names domains help'},DeepLearningModelOutput:{fields:'names domains help'},NaiveBayesOutput:{fields:'names domains help pcond'},PCAOutput:{fields:'names domains help'},ModelMetricsBinomialGLM:{fields:null,transform:transformBinomialMetrics},ModelMetricsBinomial:{fields:null,transform:transformBinomialMetrics},ModelMetricsMultinomialGLM:{fields:null},ModelMetricsMultinomial:{fields:null},ModelMetricsRegressionGLM:{fields:null},ModelMetricsRegression:{fields:null},ModelMetricsClustering:{fields:null},ModelMetricsAutoEncoder:{fields:null},ConfusionMatrix:{fields:null}};blacklistedAttributesBySchema=function(){var attrs;var dict;var dicts;var field;var schema;var _i;var _len;var _ref1;dicts={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];dicts[schema]=dict={__meta:true};if(attrs.fields){_ref1=Flow.Prelude.words(attrs.fields);for(_i=0,_len=_ref1.length;_i<_len;_i++){field=_ref1[_i];dict[field]=true;}}}}return dicts;}();schemaTransforms=function(){var attrs;var schema;var transform;var transforms;transforms={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];if(transform=attrs.transform){transforms[schema]=transform;}}}return transforms;}();inspectObject=function(inspections,name,origin,obj){var attrs;var blacklistedAttributes;var k;var meta;var record;var schemaType;var transform;var v;var _ref1;var _ref2;schemaType=(_ref1=obj.__meta)!=null?_ref1.schema_type:void 0;blacklistedAttributes=schemaType?(attrs=blacklistedAttributesBySchema[schemaType])?attrs:{}:{};if(transform=schemaTransforms[schemaType]){obj=transform(obj);}record={};inspections[name]=inspectRawObject_(name,origin,name,record);for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];if(!blacklistedAttributes[k]){if(v===null){record[k]=null;}else{if(((_ref2=v.__meta)!=null?_ref2.schema_type:void 0)==='TwoDimTable'){inspections[`${name} - ${v.name}`]=inspectTwoDimTable_(origin,`${name} - ${v.name}`,v);}else{if(lodash.isArray(v)){if(k==='cross_validation_models'||k==='cross_validation_predictions'||name==='output'&&(k==='weights'||k==='biases')){inspections[k]=inspectObjectArray_(k,origin,k,v);}else{inspections[k]=inspectRawArray_(k,origin,k,v);}}else if(lodash.isObject(v)){if(meta=v.__meta){if(meta.schema_type==='Key<Frame>'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Key<Model>'){record[k]=`<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Frame'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;}else{inspectObject(inspections,`${name} - ${k}`,origin,v);}}else{console.log(`WARNING: dropping [${k}] from inspection:`,v);}}else{record[k]=lodash.isNumber(v)?format6fi(v):v;}}}}}}};extendModel=function(model){var refresh;lodash.extend=function(model){var inspections;var origin;var table;var tableName;var _i;var _len;var _ref1;inspections={};inspections.parameters=inspectModelParameters(model);origin=`getModel ${Flow.Prelude.stringify(model.model_id.name)}`;inspectObject(inspections,'output',origin,model.output);if(model.__meta.schema_type==='NaiveBayesModel'){if(lodash.isArray(model.output.pcond)){_ref1=model.output.pcond;for(_i=0,_len=_ref1.length;_i<_len;_i++){table=_ref1[_i];tableName=`output - pcond - ${table.name}`;inspections[tableName]=inspectTwoDimTable_(origin,tableName,table);}}}inspect_(model,inspections);return model;};refresh=function(go){return _.requestModel(model.model_id.name,function(error,model){if(error){return go(error);}return go(null,lodash.extend(model));});};lodash.extend(model);return render_(model,h2oModelOutput,model,refresh);};extendGrid=function(grid,opts){var inspections;var origin;origin=`getGrid ${Flow.Prelude.stringify(grid.grid_id.name)}`;if(opts){origin+=`, ${Flow.Prelude.stringify(opts)}`;}inspections={summary:inspectTwoDimTable_(origin,'summary',grid.summary_table),scoring_history:inspectTwoDimTable_(origin,'scoring_history',grid.scoring_history)};inspect_(grid,inspections);return render_(grid,h2oGridOutput,grid);};extendGrids=function(grids){return render_(grids,h2oGridsOutput,grids);};extendModels=function(models){var algos;var inspections;var model;inspections={};algos=lodash.unique(function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.algo);}return _results;}());if(algos.length===1){inspections.parameters=inspectParametersAcrossModels(models);}inspect_(models,inspections);return render_(models,h2oModelsOutput,models);};read=function(value){if(value==='NaN'){return null;}return value;};extendPredictions=function(opts,predictions){render_(predictions,h2oPredictsOutput,opts,predictions);return predictions;};extendPrediction=function(result){var frameKey;var inspections;var modelKey;var prediction;var predictionFrame;var _ref1;modelKey=result.model.name;frameKey=(_ref1=result.frame)!=null?_ref1.name:void 0;prediction=lodash.head(result.model_metrics);predictionFrame=result.predictions_frame;inspections={};if(prediction){inspectObject(inspections,'Prediction',`getPrediction model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`,prediction);}else{prediction={};inspectObject(inspections,'Prediction',`getPrediction model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`,{prediction_frame:predictionFrame});}inspect_(prediction,inspections);return render_(prediction,h2oPredictOutput,prediction);};inspectFrameColumns=function(tableLabel,frameKey,frame,frameColumns){return function(){var actionsData;var attr;var attrs;var column;var i;var labelVector;var title;var toColumnSummaryLink;var toConversionLink;var typeVector;var vectors;attrs=['label','type','missing_count|Missing','zero_count|Zeros','positive_infinity_count|+Inf','negative_infinity_count|-Inf','min','max','mean','sigma','cardinality'];toColumnSummaryLink=function(label){return`<a href=\'#\' data-type=\'summary-link\' data-key=${Flow.Prelude.stringify(label)}>${lodash.escape(label)}</a>`;};toConversionLink=function(value){var label;var type;var _ref1;_ref1=value.split('\0'),type=_ref1[0],label=_ref1[1];switch(type){case'enum':return`<a href=\'#\' data-type=\'as-numeric-link\' data-key=${Flow.Prelude.stringify(label)}>Convert to numeric</a>`;case'int':case'string':return`<a href=\'#\' data-type=\'as-factor-link\' data-key=${Flow.Prelude.stringify(label)}>Convert to enum</a>'`;default:return void 0;}};vectors=function(){var _i;var _len;var _ref1;var _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];_ref1=attr.split('|'),name=_ref1[0],title=_ref1[1];title=title!=null?title:name;switch(name){case'min':_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.mins));}return _results1;}(),format4f));break;case'max':_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.maxs));}return _results1;}(),format4f));break;case'cardinality':_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column.type==='enum'?column.domain_cardinality:void 0);}return _results1;}()));break;case'label':_results.push(createFactor(title,Flow.TString,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}(),null,toColumnSummaryLink));break;case'type':_results.push(createFactor(title,Flow.TString,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}()));break;case'mean':case'sigma':_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}(),format4f));break;default:_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}()));}}return _results;}();labelVector=vectors[0],typeVector=vectors[1];actionsData=function(){var _i;var _ref1;var _results;_results=[];for(i=_i=0,_ref1=frameColumns.length;_ref1>=0?_i<_ref1:_i>_ref1;i=_ref1>=0?++_i:--_i){_results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);}return _results;}();vectors.push(createFactor('Actions',Flow.TString,actionsData,null,toConversionLink));return createDataframe(tableLabel,vectors,lodash.range(frameColumns.length),null,{description:`A list of ${tableLabel} in the H2O Frame.`,origin:`getFrameSummary ${Flow.Prelude.stringify(frameKey)}`,plot:`plot inspect \'${tableLabel}\', getFrameSummary ${Flow.Prelude.stringify(frameKey)}`});};};inspectFrameData=function(frameKey,frame){return function(){var column;var domain;var frameColumns;var index;var rowIndex;var vectors;frameColumns=frame.columns;vectors=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=frameColumns.length;_i<_len;_i++){column=frameColumns[_i];switch(column.type){case'int':case'real':_results.push(createVector(column.label,Flow.TNumber,parseNaNs(column.data),format4f));break;case'enum':domain=column.domain;_results.push(createFactor(column.label,Flow.TString,function(){var _j;var _len1;var _ref1;var _results1;_ref1=column.data;_results1=[];for(_j=0,_len1=_ref1.length;_j<_len1;_j++){index=_ref1[_j];_results1.push(index!=null?domain[index]:void 0);}return _results1;}()));break;case'time':_results.push(createVector(column.label,Flow.TNumber,parseNaNs(column.data)));break;case'string':case'uuid':_results.push(createList(column.label,parseNulls(column.string_data)));break;default:_results.push(createList(column.label,parseNulls(column.data)));}}return _results;}();vectors.unshift(createVector('Row',Flow.TNumber,function(){var _i;var _ref1;var _ref2;var _results;_results=[];for(rowIndex=_i=_ref1=frame.row_offset,_ref2=frame.row_count;_ref1<=_ref2?_i<_ref2:_i>_ref2;rowIndex=_ref1<=_ref2?++_i:--_i){_results.push(rowIndex+1);}return _results;}()));return createDataframe('data',vectors,lodash.range(frame.row_count-frame.row_offset),null,{description:'A partial list of rows in the H2O Frame.',origin:`getFrameData ${Flow.Prelude.stringify(frameKey)}`});};};extendFrameData=function(frameKey,frame){var inspections;var origin;inspections={data:inspectFrameData(frameKey,frame)};origin=`getFrameData ${Flow.Prelude.stringify(frameKey)}`;inspect_(frame,inspections);return render_(frame,h2oFrameDataOutput,frame);};extendFrame=function(frameKey,frame){var column;var enumColumns;var inspections;var origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns),data:inspectFrameData(frameKey,frame)};enumColumns=function(){var _i;var _len;var _ref1;var _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;}();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${Flow.Prelude.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendFrameSummary=function(frameKey,frame){var column;var enumColumns;var inspections;var origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns)};enumColumns=function(){var _i;var _len;var _ref1;var _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;}();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${Flow.Prelude.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendColumnSummary=function(frameKey,frame,columnName){var column;var inspectCharacteristics;var inspectDistribution;var inspectDomain;var inspectPercentiles;var inspectSummary;var inspections;var rowCount;column=lodash.head(frame.columns);rowCount=frame.rows;inspectPercentiles=function(){var vectors;vectors=[createVector('percentile',Flow.TNumber,frame.default_percentiles),createVector('value',Flow.TNumber,column.percentiles)];return createDataframe('percentiles',vectors,lodash.range(frame.default_percentiles.length),null,{description:`Percentiles for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspectDistribution=function(){var base;var binCount;var binIndex;var bins;var count;var countData;var i;var interval;var intervalData;var m;var minBinCount;var n;var rows;var stride;var vectors;var width;var widthData;var _i;var _j;var _k;var _l;var _len;var _ref1;minBinCount=32;base=column.histogram_base,stride=column.histogram_stride,bins=column.histogram_bins;width=Math.ceil(bins.length/minBinCount);interval=stride*width;rows=[];if(width>0){binCount=minBinCount+(bins.length%width>0?1:0);intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_i=0;binCount>=0?_i<binCount:_i>binCount;i=binCount>=0?++_i:--_i){m=i*width;n=m+width;count=0;for(binIndex=_j=m;m<=n?_j<n:_j>n;binIndex=m<=n?++_j:--_j){if(binIndex<bins.length){count+=bins[binIndex];}}intervalData[i]=base+i*interval;widthData[i]=interval;countData[i]=count;}}else{binCount=bins.length;intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_k=0,_len=bins.length;_k<_len;i=++_k){count=bins[i];intervalData[i]=base+i*stride;widthData[i]=stride;countData[i]=count;}}for(i=_l=_ref1=binCount-1;_ref1<=0?_l<=0:_l>=0;i=_ref1<=0?++_l:--_l){if(countData[i]!==0){binCount=i+1;intervalData=intervalData.slice(0,binCount);widthData=widthData.slice(0,binCount);countData=countData.slice(0,binCount);break;}}vectors=[createFactor('interval',Flow.TString,intervalData),createVector('width',Flow.TNumber,widthData),createVector('count',Flow.TNumber,countData)];return createDataframe('distribution',vectors,lodash.range(binCount),null,{description:`Distribution for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,plot:`plot inspect \'distribution\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspectCharacteristics=function(){var characteristicData;var count;var countData;var missing_count;var negative_infinity_count;var other;var percentData;var positive_infinity_count;var vectors;var zero_count;missing_count=column.missing_count,zero_count=column.zero_count,positive_infinity_count=column.positive_infinity_count,negative_infinity_count=column.negative_infinity_count;other=rowCount-missing_count-zero_count-positive_infinity_count-negative_infinity_count;characteristicData=['Missing','-Inf','Zero','+Inf','Other'];countData=[missing_count,negative_infinity_count,zero_count,positive_infinity_count,other];percentData=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=countData.length;_i<_len;_i++){count=countData[_i];_results.push(100*count/rowCount);}return _results;}();vectors=[createFactor('characteristic',Flow.TString,characteristicData),createVector('count',Flow.TNumber,countData),createVector('percent',Flow.TNumber,percentData)];return createDataframe('characteristics',vectors,lodash.range(characteristicData.length),null,{description:`Characteristics for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,plot:`plot inspect \'characteristics\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspectSummary=function(){var defaultPercentiles;var maximum;var mean;var minimum;var outliers;var percentiles;var q1;var q2;var q3;var vectors;defaultPercentiles=frame.default_percentiles;percentiles=column.percentiles;mean=column.mean;q1=percentiles[defaultPercentiles.indexOf(0.25)];q2=percentiles[defaultPercentiles.indexOf(0.5)];q3=percentiles[defaultPercentiles.indexOf(0.75)];outliers=lodash.unique(column.mins.concat(column.maxs));minimum=lodash.head(column.mins);maximum=lodash.head(column.maxs);vectors=[createFactor('column',Flow.TString,[columnName]),createVector('mean',Flow.TNumber,[mean]),createVector('q1',Flow.TNumber,[q1]),createVector('q2',Flow.TNumber,[q2]),createVector('q3',Flow.TNumber,[q3]),createVector('min',Flow.TNumber,[minimum]),createVector('max',Flow.TNumber,[maximum])];return createDataframe('summary',vectors,lodash.range(1),null,{description:`Summary for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,plot:`plot inspect \'summary\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspectDomain=function(){var counts;var i;var labels;var level;var levels;var percents;var sortedLevels;var vectors;var _i;var _len;var _ref1;levels=lodash.map(column.histogram_bins,function(count,index){return{count,index};});sortedLevels=lodash.sortBy(levels,function(level){return-level.count;});_ref1=createArrays(3,sortedLevels.length),labels=_ref1[0],counts=_ref1[1],percents=_ref1[2];for(i=_i=0,_len=sortedLevels.length;_i<_len;i=++_i){level=sortedLevels[i];labels[i]=column.domain[level.index];counts[i]=level.count;percents[i]=100*level.count/rowCount;}vectors=[createFactor('label',Flow.TString,labels),createVector('count',Flow.TNumber,counts),createVector('percent',Flow.TNumber,percents)];return createDataframe('domain',vectors,lodash.range(sortedLevels.length),null,{description:`Domain for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,plot:`plot inspect \'domain\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspections={characteristics:inspectCharacteristics};switch(column.type){case'int':case'real':if(column.histogram_bins.length){inspections.distribution=inspectDistribution;}if(!lodash.some(column.percentiles,function(a){return a==='NaN';})){inspections.summary=inspectSummary;inspections.percentiles=inspectPercentiles;}break;case'enum':inspections.domain=inspectDomain;}inspect_(frame,inspections);return render_(frame,h2oColumnSummaryOutput,frameKey,frame,columnName);};requestFrame=function(frameKey,go){return _.requestFrameSlice(frameKey,void 0,0,20,function(error,frame){if(error){return go(error);}return go(null,extendFrame(frameKey,frame));});};requestFrameData=function(frameKey,searchTerm,offset,count,go){return _.requestFrameSlice(frameKey,searchTerm,offset,count,function(error,frame){if(error){return go(error);}return go(null,extendFrameData(frameKey,frame));});};requestFrameSummarySlice=function(frameKey,searchTerm,offset,length,go){return _.requestFrameSummarySlice(frameKey,searchTerm,offset,length,function(error,frame){if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});};requestFrameSummary=function(frameKey,go){return _.requestFrameSummarySlice(frameKey,void 0,0,20,function(error,frame){if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});};requestColumnSummary=function(frameKey,columnName,go){return _.requestColumnSummary(frameKey,columnName,function(error,frame){if(error){return go(error);}return go(null,extendColumnSummary(frameKey,frame,columnName));});};requestFrames=function(go){return _.requestFrames(function(error,frames){if(error){return go(error);}return go(null,extendFrames(frames));});};requestCreateFrame=function(opts,go){return _.requestCreateFrame(opts,function(error,result){if(error){return go(error);}return _.requestJob(result.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};requestPartialDependence=function(opts,go){return _.requestPartialDependence(opts,function(error,result){if(error){return go(error);}return _.requestJob(result.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};requestPartialDependenceData=function(key,go){return _.requestPartialDependenceData(key,function(error,result){if(error){return go(error);}return go(null,extendPartialDependence(result));});};computeSplits=function(ratios,keys){var i;var key;var part;var parts;var ratio;var splits;var sum;var _i;var _j;var _len;var _len1;var _ref1;parts=[];sum=0;_ref1=keys.slice(0,ratios.length);for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){key=_ref1[i];sum+=ratio=ratios[i];parts.push({key,ratio});}parts.push({key:keys[keys.length-1],ratio:1-sum});splits=[];sum=0;for(_j=0,_len1=parts.length;_j<_len1;_j++){part=parts[_j];splits.push({min:sum,max:sum+part.ratio,key:part.key});sum+=part.ratio;}return splits;};requestBindFrames=function(key,sourceKeys,go){return _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`,function(error,result){if(error){return go(error);}return go(null,extendBindFrames(key,result));});};requestSplitFrame=function(frameKey,splitRatios,splitKeys,seed,go){var g;var i;var l;var part;var randomVecKey;var sliceExpr;var splits;var statements;var _i;var _len;if(splitRatios.length===splitKeys.length-1){splits=computeSplits(splitRatios,splitKeys);randomVecKey=createTempKey();statements=[];statements.push(`(tmp= ${randomVecKey} (h2o.runif ${frameKey} ${seed}))`);for(i=_i=0,_len=splits.length;_i<_len;i=++_i){part=splits[i];g=i!==0?`(> ${randomVecKey} ${part.min})`:null;l=i!==splits.length-1?`(<= ${randomVecKey} ${part.max})`:null;if(g&&l){sliceExpr=`(& ${g} ${l})`;}else{if(l){sliceExpr=l;}else{sliceExpr=g;}}statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);}statements.push(`(rm ${randomVecKey})`);return _.requestExec(`(, ${statements.join(' ')})`,function(error,result){if(error){return go(error);}return go(null,extendSplitFrameResult({keys:splitKeys,ratios:splitRatios}));});}return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));};requestMergeFrames=function(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows,go){var lr;var rr;var statement;lr=includeAllLeftRows?'TRUE':'FALSE';rr=includeAllRightRows?'TRUE':'FALSE';statement=`(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;return _.requestExec(statement,function(error,result){if(error){return go(error);}return go(null,extendMergeFramesResult({key:destinationKey}));});};createFrame=function(opts){if(opts){return _fork(requestCreateFrame,opts);}return assist(createFrame);};splitFrame=function(frameKey,splitRatios,splitKeys,seed){if(seed==null){seed=-1;}if(frameKey&&splitRatios&&splitKeys){return _fork(requestSplitFrame,frameKey,splitRatios,splitKeys,seed);}return assist(splitFrame);};mergeFrames=function(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows){if(destinationKey&&leftFrameKey&&rightFrameKey){return _fork(requestMergeFrames,destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows);}return assist(mergeFrames);};buildPartialDependence=function(opts){if(opts){return _fork(requestPartialDependence,opts);}return assist(buildPartialDependence);};getPartialDependence=function(destinationKey){if(destinationKey){return _fork(requestPartialDependenceData,destinationKey);}return assist(getPartialDependence);};getFrames=function(){return _fork(requestFrames);};getFrame=function(frameKey){switch(Flow.Prelude.typeOf(frameKey)){case'String':return _fork(requestFrame,frameKey);default:return assist(getFrame);}};bindFrames=function(key,sourceKeys){return _fork(requestBindFrames,key,sourceKeys);};getFrameSummary=function(frameKey){switch(Flow.Prelude.typeOf(frameKey)){case'String':return _fork(requestFrameSummary,frameKey);default:return assist(getFrameSummary);}};getFrameData=function(frameKey){switch(Flow.Prelude.typeOf(frameKey)){case'String':return _fork(requestFrameData,frameKey,void 0,0,20);default:return assist(getFrameSummary);}};requestDeleteFrame=function(frameKey,go){return _.requestDeleteFrame(frameKey,function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([frameKey]));});};deleteFrame=function(frameKey){if(frameKey){return _fork(requestDeleteFrame,frameKey);}return assist(deleteFrame);};extendExportFrame=function(result){return render_(result,h2oExportFrameOutput,result);};extendBindFrames=function(key,result){return render_(result,h2oBindFramesOutput,key,result);};requestExportFrame=function(frameKey,path,opts,go){return _.requestExportFrame(frameKey,path,opts.overwrite,function(error,result){if(error){return go(error);}return _.requestJob(result.job.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};exportFrame=function(frameKey,path,opts){if(opts==null){opts={};}if(frameKey&&path){return _fork(requestExportFrame,frameKey,path,opts);}return assist(exportFrame,frameKey,path,opts);};requestDeleteFrames=function(frameKeys,go){var futures;futures=lodash.map(frameKeys,function(frameKey){return _fork(_.requestDeleteFrame,frameKey);});return Flow.Async.join(futures,function(error,results){if(error){return go(error);}return go(null,extendDeletedKeys(frameKeys));});};deleteFrames=function(frameKeys){switch(frameKeys.length){case 0:return assist(deleteFrames);case 1:return deleteFrame(lodash.head(frameKeys));default:return _fork(requestDeleteFrames,frameKeys);}};getColumnSummary=function(frameKey,columnName){return _fork(requestColumnSummary,frameKey,columnName);};requestModels=function(go){return _.requestModels(function(error,models){if(error){return go(error);}return go(null,extendModels(models));});};requestModelsByKeys=function(modelKeys,go){var futures;futures=lodash.map(modelKeys,function(key){return _fork(_.requestModel,key);});return Flow.Async.join(futures,function(error,models){if(error){return go(error);}return go(null,extendModels(models));});};getModels=function(modelKeys){if(lodash.isArray(modelKeys)){if(modelKeys.length){return _fork(requestModelsByKeys,modelKeys);}return _fork(requestModels);}return _fork(requestModels);};requestGrids=function(go){return _.requestGrids(function(error,grids){if(error){return go(error);}return go(null,extendGrids(grids));});};getGrids=function(){return _fork(requestGrids);};requestModel=function(modelKey,go){return _.requestModel(modelKey,function(error,model){if(error){return go(error);}return go(null,extendModel(model));});};getModel=function(modelKey){switch(Flow.Prelude.typeOf(modelKey)){case'String':return _fork(requestModel,modelKey);default:return assist(getModel);}};requestGrid=function(gridKey,opts,go){return _.requestGrid(gridKey,opts,function(error,grid){if(error){return go(error);}return go(null,extendGrid(grid,opts));});};getGrid=function(gridKey,opts){switch(Flow.Prelude.typeOf(gridKey)){case'String':return _fork(requestGrid,gridKey,opts);default:return assist(getGrid);}};findColumnIndexByColumnLabel=function(frame,columnLabel){var column;var i;var _i;var _len;var _ref1;_ref1=frame.columns;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){column=_ref1[i];if(column.label===columnLabel){return i;}}throw new Flow.Error(`Column [${columnLabel}] not found in frame`);};findColumnIndicesByColumnLabels=function(frame,columnLabels){var columnLabel;var _i;var _len;var _results;_results=[];for(_i=0,_len=columnLabels.length;_i<_len;_i++){columnLabel=columnLabels[_i];_results.push(findColumnIndexByColumnLabel(frame,columnLabel));}return _results;};requestImputeColumn=function(opts,go){var column;var combineMethod;var frame;var groupByColumns;var method;frame=opts.frame,column=opts.column,method=opts.method,combineMethod=opts.combineMethod,groupByColumns=opts.groupByColumns;combineMethod=combineMethod!=null?combineMethod:'interpolate';return _.requestFrameSummaryWithoutData(frame,function(error,result){var columnIndex;var columnIndicesError;var columnKeyError;var groupByArg;var groupByColumnIndices;if(error){return go(error);}try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}if(groupByColumns&&groupByColumns.length){try{groupByColumnIndices=findColumnIndicesByColumnLabels(result,groupByColumns);}catch(_error){columnIndicesError=_error;return go(columnIndicesError);}}else{groupByColumnIndices=null;}groupByArg=groupByColumnIndices?`[${groupByColumnIndices.join(' ')}]`:'[]';return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`,function(error,result){if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};requestChangeColumnType=function(opts,go){var column;var frame;var method;var type;frame=opts.frame,column=opts.column,type=opts.type;method=type==='enum'?'as.factor':'as.numeric';return _.requestFrameSummaryWithoutData(frame,function(error,result){var columnIndex;var columnKeyError;try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`,function(error,result){if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};imputeColumn=function(opts){if(opts&&opts.frame&&opts.column&&opts.method){return _fork(requestImputeColumn,opts);}return assist(imputeColumn,opts);};changeColumnType=function(opts){if(opts&&opts.frame&&opts.column&&opts.type){return _fork(requestChangeColumnType,opts);}return assist(changeColumnType,opts);};requestDeleteModel=function(modelKey,go){return _.requestDeleteModel(modelKey,function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([modelKey]));});};deleteModel=function(modelKey){if(modelKey){return _fork(requestDeleteModel,modelKey);}return assist(deleteModel);};extendImportModel=function(result){return render_(result,H2O.ImportModelOutput,result);};requestImportModel=function(path,opts,go){return _.requestImportModel(path,opts.overwrite,function(error,result){if(error){return go(error);}return go(null,extendImportModel(result));});};importModel=function(path,opts){if(path&&path.length){return _fork(requestImportModel,path,opts);}return assist(importModel,path,opts);};extendExportModel=function(result){return render_(result,h2oExportModelOutput,result);};requestExportModel=function(modelKey,path,opts,go){return _.requestExportModel(modelKey,path,opts.overwrite,function(error,result){if(error){return go(error);}return go(null,extendExportModel(result));});};exportModel=function(modelKey,path,opts){if(modelKey&&path){return _fork(requestExportModel,modelKey,path,opts);}return assist(exportModel,modelKey,path,opts);};requestDeleteModels=function(modelKeys,go){var futures;futures=lodash.map(modelKeys,function(modelKey){return _fork(_.requestDeleteModel,modelKey);});return Flow.Async.join(futures,function(error,results){if(error){return go(error);}return go(null,extendDeletedKeys(modelKeys));});};deleteModels=function(modelKeys){switch(modelKeys.length){case 0:return assist(deleteModels);case 1:return deleteModel(lodash.head(modelKeys));default:return _fork(requestDeleteModels,modelKeys);}};requestJob=function(key,go){return _.requestJob(key,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});};requestJobs=function(go){return _.requestJobs(function(error,jobs){if(error){return go(error);}return go(null,extendJobs(jobs));});};getJobs=function(){return _fork(requestJobs);};getJob=function(arg){switch(Flow.Prelude.typeOf(arg)){case'String':return _fork(requestJob,arg);case'Object':if(arg.key!=null){return getJob(arg.key);}return assist(getJob);// break; // no-unreachable
+  default:return assist(getJob);}};requestCancelJob=function(key,go){return _.requestCancelJob(key,function(error){if(error){return go(error);}return go(null,extendCancelJob({}));});};cancelJob=function(arg){switch(Flow.Prelude.typeOf(arg)){case'String':return _fork(requestCancelJob,arg);default:return assist(cancelJob);}};extendImportResults=function(importResults){return render_(importResults,h2oImportFilesOutput,importResults);};requestImportFiles=function(paths,go){return _.requestImportFiles(paths,function(error,importResults){if(error){return go(error);}return go(null,extendImportResults(importResults));});};importFiles=function(paths){switch(Flow.Prelude.typeOf(paths)){case'Array':return _fork(requestImportFiles,paths);default:return assist(importFiles);}};extendParseSetupResults=function(args,parseSetupResults){return render_(parseSetupResults,H2O.SetupParseOutput,args,parseSetupResults);};requestImportAndParseSetup=function(paths,go){return _.requestImportFiles(paths,function(error,importResults){var sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,function(result){return result.destination_frames;})));return _.requestParseSetup(sourceKeys,function(error,parseSetupResults){if(error){return go(error);}return go(null,extendParseSetupResults({paths},parseSetupResults));});});};requestParseSetup=function(sourceKeys,go){return _.requestParseSetup(sourceKeys,function(error,parseSetupResults){if(error){return go(error);}return go(null,extendParseSetupResults({source_frames:sourceKeys},parseSetupResults));});};setupParse=function(args){if(args.paths&&lodash.isArray(args.paths)){return _fork(requestImportAndParseSetup,args.paths);}else if(args.source_frames&&lodash.isArray(args.source_frames)){return _fork(requestParseSetup,args.source_frames);}return assist(setupParse);};extendParseResult=function(parseResult){return render_(parseResult,H2O.JobOutput,parseResult.job);};requestImportAndParseFiles=function(paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){return _.requestImportFiles(paths,function(error,importResults){var sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,function(result){return result.destination_frames;})));return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,function(error,parseResult){if(error){return go(error);}return go(null,extendParseResult(parseResult));});});};requestParseFiles=function(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,function(error,parseResult){if(error){return go(error);}return go(null,extendParseResult(parseResult));});};parseFiles=function(opts){var checkHeader;var chunkSize;var columnCount;var columnNames;var columnTypes;var deleteOnDone;var destinationKey;var parseType;var separator;var useSingleQuotes;destinationKey=opts.destination_frame;parseType=opts.parse_type;separator=opts.separator;columnCount=opts.number_columns;useSingleQuotes=opts.single_quotes;columnNames=opts.column_names;columnTypes=opts.column_types;deleteOnDone=opts.delete_on_done;checkHeader=opts.check_header;chunkSize=opts.chunk_size;if(opts.paths){return _fork(requestImportAndParseFiles,opts.paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);}return _fork(requestParseFiles,opts.source_frames,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);};requestModelBuild=function(algo,opts,go){return _.requestModelBuild(algo,opts,function(error,result){var messages;var validation;if(error){return go(error);}if(result.error_count>0){messages=function(){var _i;var _len;var _ref1;var _results;_ref1=result.messages;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){validation=_ref1[_i];_results.push(validation.message);}return _results;}();return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));}return go(null,extendJob(result.job));});};requestAutoModelBuild=function(opts,go){var params;params={input_spec:{training_frame:opts.frame,response_column:opts.column},build_control:{stopping_criteria:{max_runtime_secs:opts.maxRunTime}}};return _.requestAutoModelBuild(params,function(error,result){if(error){return go(error);}return go(null,extendJob(result.job));});};buildAutoModel=function(opts){if(opts&&lodash.keys(opts).length>1){return _fork(requestAutoModelBuild,opts);}return assist(buildAutoModel,opts);};buildModel=function(algo,opts){if(algo&&opts&&lodash.keys(opts).length>1){return _fork(requestModelBuild,algo,opts);}return assist(buildModel,algo,opts);};unwrapPrediction=function(go){return function(error,result){if(error){return go(error);}return go(null,extendPrediction(result));};};requestPredict=function(destinationKey,modelKey,frameKey,options,go){return _.requestPredict(destinationKey,modelKey,frameKey,options,unwrapPrediction(go));};requestPredicts=function(opts,go){var futures;futures=lodash.map(opts,function(opt){var frameKey;var modelKey;var options;modelKey=opt.model,frameKey=opt.frame,options=opt.options;return _fork(_.requestPredict,null,modelKey,frameKey,options||{});});return Flow.Async.join(futures,function(error,predictions){if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};predict=function(opts){var combos;var deep_features_hidden_layer;var exemplar_index;var frame;var frames;var leaf_node_assignment;var model;var models;var predictions_frame;var reconstruction_error;var _i;var _j;var _len;var _len1;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,models=opts.models,frame=opts.frame,frames=opts.frames,reconstruction_error=opts.reconstruction_error,deep_features_hidden_layer=opts.deep_features_hidden_layer,leaf_node_assignment=opts.leaf_node_assignment,exemplar_index=opts.exemplar_index;if(models||frames){if(!models){if(model){models=[model];}}if(!frames){if(frame){frames=[frame];}}if(frames&&models){combos=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];for(_j=0,_len1=frames.length;_j<_len1;_j++){frame=frames[_j];combos.push({model,frame});}}return _fork(requestPredicts,combos);}return assist(predict,{predictions_frame,models,frames});}if(model&&frame){return _fork(requestPredict,predictions_frame,model,frame,{reconstruction_error,deep_features_hidden_layer,leaf_node_assignment});}else if(model&&exemplar_index!==void 0){return _fork(requestPredict,predictions_frame,model,null,{exemplar_index});}return assist(predict,{predictions_frame,model,frame});};requestPrediction=function(modelKey,frameKey,go){return _.requestPrediction(modelKey,frameKey,unwrapPrediction(go));};requestPredictions=function(opts,go){var frameKey;var futures;var modelKey;if(lodash.isArray(opts)){futures=lodash.map(opts,function(opt){var frameKey;var modelKey;modelKey=opt.model,frameKey=opt.frame;return _fork(_.requestPredictions,modelKey,frameKey);});return Flow.Async.join(futures,function(error,predictions){var uniquePredictions;if(error){return go(error);}uniquePredictions=lodash.values(lodash.indexBy(lodash.flatten(predictions,true),function(prediction){return prediction.model.name+prediction.frame.name;}));return go(null,extendPredictions(opts,uniquePredictions));});}modelKey=opts.model,frameKey=opts.frame;return _.requestPredictions(modelKey,frameKey,function(error,predictions){if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};getPrediction=function(opts){var frame;var model;var predictions_frame;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,frame=opts.frame;if(model&&frame){return _fork(requestPrediction,model,frame);}return assist(getPrediction,{predictions_frame,model,frame});};getPredictions=function(opts){if(opts==null){opts={};}return _fork(requestPredictions,opts);};requestCloud=function(go){return _.requestCloud(function(error,cloud){if(error){return go(error);}return go(null,extendCloud(cloud));});};getCloud=function(){return _fork(requestCloud);};requestTimeline=function(go){return _.requestTimeline(function(error,timeline){if(error){return go(error);}return go(null,extendTimeline(timeline));});};getTimeline=function(){return _fork(requestTimeline);};requestStackTrace=function(go){return _.requestStackTrace(function(error,stackTrace){if(error){return go(error);}return go(null,extendStackTrace(stackTrace));});};getStackTrace=function(){return _fork(requestStackTrace);};requestLogFile=function(nodeIndex,fileType,go){return _.requestCloud(function(error,cloud){var NODE_INDEX_SELF;if(error){return go(error);}if(nodeIndex<0||nodeIndex>=cloud.nodes.length){NODE_INDEX_SELF=-1;nodeIndex=NODE_INDEX_SELF;}return _.requestLogFile(nodeIndex,fileType,function(error,logFile){if(error){return go(error);}return go(null,extendLogFile(cloud,nodeIndex,fileType,logFile));});});};getLogFile=function(nodeIndex,fileType){if(nodeIndex==null){nodeIndex=-1;}if(fileType==null){fileType='info';}return _fork(requestLogFile,nodeIndex,fileType);};requestNetworkTest=function(go){return _.requestNetworkTest(function(error,result){if(error){return go(error);}return go(null,extendNetworkTest(result));});};testNetwork=function(){return _fork(requestNetworkTest);};requestRemoveAll=function(go){return _.requestRemoveAll(function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([]));});};deleteAll=function(){return _fork(requestRemoveAll);};extendRDDs=function(rdds){render_(rdds,h2oRDDsOutput,rdds);return rdds;};requestRDDs=function(go){return _.requestRDDs(function(error,result){if(error){return go(error);}return go(null,extendRDDs(result.rdds));});};getRDDs=function(){return _fork(requestRDDs);};extendDataFrames=function(dataframes){render_(dataframes,h2oDataFramesOutput,dataframes);return dataframes;};requestDataFrames=function(go){return _.requestDataFrames(function(error,result){if(error){return go(error);}return go(null,extendDataFrames(result.dataframes));});};getDataFrames=function(){return _fork(requestDataFrames);};extendAsH2OFrame=function(result){render_(result,h2oH2OFrameOutput,result);return result;};requestAsH2OFrameFromRDD=function(rdd_id,name,go){return _.requestAsH2OFrameFromRDD(rdd_id,name,function(error,h2oframe_id){if(error){return go(error);}return go(null,extendAsH2OFrame(h2oframe_id));});};asH2OFrameFromRDD=function(rdd_id,name){if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromRDD,rdd_id,name);};requestAsH2OFrameFromDF=function(df_id,name,go){return _.requestAsH2OFrameFromDF(df_id,name,function(error,result){if(error){return go(error);}return go(null,extendAsH2OFrame(result));});};asH2OFrameFromDF=function(df_id,name){if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromDF,df_id,name);};extendAsDataFrame=function(result){render_(result,h2oDataFrameOutput,result);return result;};requestAsDataFrame=function(hf_id,name,go){return _.requestAsDataFrame(hf_id,name,function(error,result){if(error){return go(error);}return go(null,extendAsDataFrame(result));});};asDataFrame=function(hf_id,name){if(name==null){name=void 0;}return _fork(requestAsDataFrame,hf_id,name);};requestScalaCode=function(session_id,code,go){return _.requestScalaCode(session_id,code,function(error,result){if(error){return go(error);}return go(null,extendScalaCode(result));});};extendScalaCode=function(result){render_(result,h2oScalaCodeOutput,result);return result;};runScalaCode=function(session_id,code){return _fork(requestScalaCode,session_id,code);};requestScalaIntp=function(go){return _.requestScalaIntp(function(error,result){if(error){return go(error);}return go(null,extendScalaIntp(result));});};extendScalaIntp=function(result){render_(result,h2oScalaIntpOutput,result);return result;};getScalaIntp=function(){return _fork(requestScalaIntp);};requestProfile=function(depth,go){return _.requestProfile(depth,function(error,profile){if(error){return go(error);}return go(null,extendProfile(profile));});};getProfile=function(opts){if(!opts){opts={depth:10};}return _fork(requestProfile,opts.depth);};loadScript=function(path,go){var onDone;var onFail;onDone=function(script,status){return go(null,{script,status});};onFail=function(jqxhr,settings,error){return go(error);};return $.getScript(path).done(onDone).fail(onFail);};dumpFuture=function(result,go){if(result==null){result={};}console.debug(result);return go(null,render_(result,Flow.ObjectBrowser,'dump',result));};dump=function(f){if(f!=null?f.isFuture:void 0){return _fork(dumpFuture,f);}return Flow.Async.async(function(){return f;});};assist=function(){var args;var func;func=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];if(func===void 0){return _fork(proceed,h2oAssist,[_assistance]);}switch(func){case importFiles:return _fork(proceed,h2oImportFilesInput,[]);case buildModel:return _fork(proceed,H2O.ModelInput,args);case buildAutoModel:return _fork(proceed,h2oAutoModelInput,args);case predict:case getPrediction:return _fork(proceed,h2oPredictInput,args);case createFrame:return _fork(proceed,h2oCreateFrameInput,args);case splitFrame:return _fork(proceed,h2oSplitFrameInput,args);case mergeFrames:return _fork(proceed,h2oMergeFramesInput,args);case buildPartialDependence:return _fork(proceed,h2oPartialDependenceInput,args);case exportFrame:return _fork(proceed,h2oExportFrameInput,args);case imputeColumn:return _fork(proceed,H2O.ImputeInput,args);case importModel:return _fork(proceed,h2oImportModelInput,args);case exportModel:return _fork(proceed,h2oExportModelInput,args);default:return _fork(proceed,h2oNoAssist,[]);}};Flow.Dataflow.link(_.ready,function(){Flow.Dataflow.link(_.ls,ls);Flow.Dataflow.link(_.inspect,inspect);Flow.Dataflow.link(_.plot,function(plot){return plot(lightning);});Flow.Dataflow.link(_.grid,function(frame){return lightning(lightning.select(),lightning.from(frame));});Flow.Dataflow.link(_.enumerate,function(frame){return lightning(lightning.select(0),lightning.from(frame));});Flow.Dataflow.link(_.requestFrameDataE,requestFrameData);return Flow.Dataflow.link(_.requestFrameSummarySliceE,requestFrameSummarySlice);});initAssistanceSparklingWater=function(){_assistance.getRDDs={description:'Get a list of Spark\'s RDDs',icon:'table'};return _assistance.getDataFrames={description:'Get a list of Spark\'s data frames',icon:'table'};};Flow.Dataflow.link(_.initialized,function(){if(_.onSparklingWater){return initAssistanceSparklingWater();}});routines={fork:_fork,join:_join,call:_call,apply:_apply,isFuture:_isFuture,signal:Flow.Dataflow.signal,signals:Flow.Dataflow.signals,isSignal:Flow.Dataflow.isSignal,act:Flow.Dataflow.act,react:Flow.Dataflow.react,lift:Flow.Dataflow.lift,merge:Flow.Dataflow.merge,dump,inspect,plot,grid,get:_get,assist,gui,loadScript,getJobs,getJob,cancelJob,importFiles,setupParse,parseFiles,createFrame,splitFrame,mergeFrames,buildPartialDependence,getPartialDependence,getFrames,getFrame,bindFrames,getFrameSummary,getFrameData,deleteFrames,deleteFrame,exportFrame,getColumnSummary,changeColumnType,imputeColumn,buildModel,buildAutoModel,getGrids,getModels,getModel,getGrid,deleteModels,deleteModel,importModel,exportModel,predict,getPrediction,getPredictions,getCloud,getTimeline,getProfile,getStackTrace,getLogFile,testNetwork,deleteAll};if(_.onSparklingWater){routinesOnSw={getDataFrames,getRDDs,getScalaIntp,runScalaCode,asH2OFrameFromRDD,asH2OFrameFromDF,asDataFrame};for(attrname in routinesOnSw){if({}.hasOwnProperty.call(routinesOnSw,attrname)){routines[attrname]=routinesOnSw[attrname];}}}return routines;};}
+
   // anonymous IIFE
   (function(){var lodash=window._;window.Flow={};window.H2O={};(function(){var checkSparklingWater;var getContextPath;getContextPath=function(){window.Flow.ContextPath='/';return $.ajax({url:window.referrer,type:'GET',success(data,status,xhr){if(xhr.getAllResponseHeaders().indexOf('X-h2o-context-path')!==-1){return window.Flow.ContextPath=xhr.getResponseHeader('X-h2o-context-path');}},async:false});};checkSparklingWater=function(context){context.onSparklingWater=false;return $.ajax({url:`${window.Flow.ContextPath}3/Metadata/endpoints`,type:'GET',dataType:'json',success(response){var route;var _i;var _len;var _ref;var _results;_ref=response.routes;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){route=_ref[_i];if(route.url_pattern==='/3/scalaint'){_results.push(context.onSparklingWater=true);}else{_results.push(void 0);}}return _results;},async:false});};if((typeof window!=='undefined'&&window!==null?window.$:void 0)!=null){$(function(){var context;context={};getContextPath();checkSparklingWater(context);window.flow=Flow.Application(context,H2O.Routines);H2O.Application(context);ko.applyBindings(window.flow);context.ready();return context.initialized();});}}).call(this);// anonymous IIFE
   (function(){Flow.Version='0.4.54';Flow.About=function(_){var _properties;_properties=Flow.Dataflow.signals([]);Flow.Dataflow.link(_.ready,function(){if(Flow.BuildProperties){return _properties(Flow.BuildProperties);}return _.requestAbout(function(error,response){var name;var properties;var value;var _i;var _len;var _ref;var _ref1;properties=[];if(!error){_ref=response.entries;for(_i=0,_len=_ref.length;_i<_len;_i++){_ref1=_ref[_i],name=_ref1.name,value=_ref1.value;properties.push({caption:`H2O ${name}`,value});}}properties.push({caption:'Flow version',value:Flow.Version});return _properties(Flow.BuildProperties=properties);});});return{properties:_properties};};}).call(this);(function(){Flow.AlertDialog=function(_,_message,_opts,_go){var accept;if(_opts==null){_opts={};}lodash.defaults(_opts,{title:'Alert',acceptCaption:'OK'});accept=function(){return _go(true);};return{title:_opts.title,acceptCaption:_opts.acceptCaption,message:Flow.Util.multilineTextToHTML(_message),accept,template:'alert-dialog'};};}).call(this);// anonymous IIFE
@@ -6602,10 +6488,6 @@
   // defer for now 
   (function(){H2O.Proxy=function(_){var cacheModelBuilders;var composePath;var doDelete;var doGet;var doPost;var doPostJSON;var doPut;var doUpload;var download;var encodeArrayForPost;var encodeObject;var encodeObjectForPost;var getGridModelBuilderEndpoint;var getLines;var getModelBuilderEndpoint;var getModelBuilders;var http;var mapWithKey;var optsToString;var requestAbout;var requestAsDataFrame;var requestAsH2OFrameFromDF;var requestAsH2OFrameFromRDD;var requestAutoModelBuild;var requestCancelJob;var requestCloud;var requestColumnSummary;var requestCreateFrame;var requestDataFrames;var requestDeleteFrame;var requestDeleteModel;var requestDeleteObject;var requestEcho;var requestEndpoint;var requestEndpoints;var requestExec;var requestExportFrame;var requestExportModel;var requestFileGlob;var requestFlow;var requestFrame;var requestFrameSlice;var requestFrameSummary;var requestFrameSummarySlice;var requestFrameSummaryWithoutData;var requestFrames;var requestGrid;var requestGrids;var requestHelpContent;var requestHelpIndex;var requestImportFile;var requestImportFiles;var requestImportModel;var requestInspect;var requestIsStorageConfigured;var requestJob;var requestJobs;var requestLogFile;var requestModel;var requestModelBuild;var requestModelBuilder;var requestModelBuilders;var requestModelBuildersVisibility;var requestModelInputValidation;var requestModels;var requestNetworkTest;var requestObject;var requestObjectExists;var requestObjects;var requestPack;var requestPacks;var requestParseFiles;var requestParseSetup;var requestParseSetupPreview;var requestPartialDependence;var requestPartialDependenceData;var requestPojoPreview;var requestPredict;var requestPrediction;var requestPredictions;var requestProfile;var requestPutObject;var requestRDDs;var requestRemoveAll;var requestScalaCode;var requestScalaIntp;var requestSchema;var requestSchemas;var requestShutdown;var requestSplitFrame;var requestStackTrace;var requestTimeline;var requestUploadFile;var requestUploadObject;var requestWithOpts;var trackPath;var unwrap;var __gridModelBuilderEndpoints;var __modelBuilderEndpoints;var __modelBuilders;var _storageConfiguration;download=function(type,url,go){if(url.substring(0,1)==='/'){url=window.Flow.ContextPath+url.substring(1);}return $.ajax({dataType:type,url,success(data,status,xhr){return go(null,data);},error(xhr,status,error){return go(new Flow.Error(error));}});};optsToString=function(opts){var str;if(opts!=null){str=` with opts ${JSON.stringify(opts)}`;if(str.length>50){return`${str.substr(0,50)}...`;}return str;}return'';};http=function(method,path,opts,go){var req;if(path.substring(0,1)==='/'){path=window.Flow.ContextPath+path.substring(1);}_.status('server','request',path);trackPath(path);req=function(){switch(method){case'GET':return $.getJSON(path);case'POST':return $.post(path,opts);case'POSTJSON':return $.ajax({url:path,type:'POST',contentType:'application/json',cache:false,data:JSON.stringify(opts)});case'PUT':return $.ajax({url:path,type:method,data:opts});case'DELETE':return $.ajax({url:path,type:method});case'UPLOAD':return $.ajax({url:path,type:'POST',data:opts,cache:false,contentType:false,processData:false});}}();req.done(function(data,status,xhr){var error;_.status('server','response',path);try{return go(null,data);}catch(_error){error=_error;return go(new Flow.Error(`Error processing ${method} ${path}`,error));}});return req.fail(function(xhr,status,error){var cause;var meta;var response;var serverError;_.status('server','error',path);response=xhr.responseJSON;cause=(meta=response!=null?response.__meta:void 0)&&(meta.schema_type==='H2OError'||meta.schema_type==='H2OModelBuilderError')?(serverError=new Flow.Error(response.exception_msg),serverError.stack=`${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`,serverError):(error!=null?error.message:void 0)?new Flow.Error(error.message):status==='error'&&xhr.status===0?new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.'):new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${error||'?'}`);return go(new Flow.Error(`Error calling ${method} ${path}${optsToString(opts)}`,cause));});};doGet=function(path,go){return http('GET',path,null,go);};doPost=function(path,opts,go){return http('POST',path,opts,go);};doPostJSON=function(path,opts,go){return http('POSTJSON',path,opts,go);};doPut=function(path,opts,go){return http('PUT',path,opts,go);};doUpload=function(path,formData,go){return http('UPLOAD',path,formData,go);};doDelete=function(path,go){return http('DELETE',path,null,go);};trackPath=function(path){var base;var e;var name;var other;var root;var version;var _ref;var _ref1;try{_ref=path.split('/'),root=_ref[0],version=_ref[1],name=_ref[2];_ref1=name.split('?'),base=_ref1[0],other=_ref1[1];if(base!=='Typeahead'&&base!=='Jobs'){_.trackEvent('api',base,version);}}catch(_error){e=_error;}};mapWithKey=function(obj,f){var key;var result;var value;result=[];for(key in obj){if({}.hasOwnProperty.call(obj,key)){value=obj[key];result.push(f(value,key));}}return result;};composePath=function(path,opts){var params;if(opts){params=mapWithKey(opts,function(v,k){return`${k}=${v}`;});return`${path}?${params.join('&')}`;}return path;};requestWithOpts=function(path,opts,go){return doGet(composePath(path,opts),go);};encodeArrayForPost=function(array){if(array){if(array.length===0){return null;}return`[${lodash.map(array,element=>{if(lodash.isNumber(element)){return element;}return`"${element}"`;}).join(',')} ]`;}return null;};encodeObject=function(source){var k;var target;var v;target={};for(k in source){if({}.hasOwnProperty.call(source,k)){v=source[k];target[k]=encodeURIComponent(v);}}return target;};encodeObjectForPost=function(source){var k;var target;var v;target={};for(k in source){if({}.hasOwnProperty.call(source,k)){v=source[k];target[k]=lodash.isArray(v)?encodeArrayForPost(v):v;}}return target;};unwrap=function(go,transform){return function(error,result){if(error){return go(error);}return go(null,transform(result));};};requestExec=function(ast,go){return doPost('/99/Rapids',{ast},function(error,result){if(error){return go(error);}if(result.error){return go(new Flow.Error(result.error));}return go(null,result);});};requestInspect=function(key,go){var opts;opts={key:encodeURIComponent(key)};return requestWithOpts('/3/Inspect',opts,go);};requestCreateFrame=function(opts,go){return doPost('/3/CreateFrame',opts,go);};requestSplitFrame=function(frameKey,splitRatios,splitKeys,go){var opts;opts={dataset:frameKey,ratios:encodeArrayForPost(splitRatios),dest_keys:encodeArrayForPost(splitKeys)};return doPost('/3/SplitFrame',opts,go);};requestFrames=function(go){return doGet('/3/Frames',function(error,result){if(error){return go(error);}return go(null,result.frames);});};requestFrame=function(key,go){return doGet(`/3/Frames/${encodeURIComponent(key)}`,unwrap(go,function(result){return lodash.head(result.frames);}));};requestFrameSlice=function(key,searchTerm,offset,count,go){return doGet(`/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`,unwrap(go,function(result){return lodash.head(result.frames);}));};requestFrameSummary=function(key,go){return doGet(`/3/Frames/${encodeURIComponent(key)}/summary`,unwrap(go,function(result){return lodash.head(result.frames);}));};requestFrameSummarySlice=function(key,searchTerm,offset,count,go){return doGet(`/3/Frames/${encodeURIComponent(key)}/summary?column_offset=${offset}&column_count=${count}&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`,unwrap(go,function(result){return lodash.head(result.frames);}));};requestFrameSummaryWithoutData=function(key,go){return doGet(`/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`,function(error,result){if(error){return go(error);}return go(null,lodash.head(result.frames));});};requestDeleteFrame=function(key,go){return doDelete(`/3/Frames/${encodeURIComponent(key)}`,go);};requestExportFrame=function(key,path,overwrite,go){var params;params={path,force:overwrite?'true':'false'};return doPost(`/3/Frames/${encodeURIComponent(key)}/export`,params,go);};requestColumnSummary=function(frameKey,column,go){return doGet(`/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`,unwrap(go,function(result){return lodash.head(result.frames);}));};requestJobs=function(go){return doGet('/3/Jobs',function(error,result){if(error){return go(new Flow.Error('Error fetching jobs',error));}return go(null,result.jobs);});};requestJob=function(key,go){return doGet(`/3/Jobs/${encodeURIComponent(key)}`,function(error,result){if(error){return go(new Flow.Error(`Error fetching job \'${key}\'`,error));}return go(null,lodash.head(result.jobs));});};requestCancelJob=function(key,go){return doPost(`/3/Jobs/${encodeURIComponent(key)}/cancel`,{},function(error,result){if(error){return go(new Flow.Error(`Error canceling job \'${key}\'`,error));}return go(null);});};requestFileGlob=function(path,limit,go){var opts;opts={src:encodeURIComponent(path),limit};return requestWithOpts('/3/Typeahead/files',opts,go);};requestImportFiles=function(paths,go){var tasks;tasks=lodash.map(paths,function(path){return function(go){return requestImportFile(path,go);};});return Flow.Async.iterate(tasks)(go);};requestImportFile=function(path,go){var opts;opts={path:encodeURIComponent(path)};return requestWithOpts('/3/ImportFiles',opts,go);};requestParseSetup=function(sourceKeys,go){var opts;opts={source_frames:encodeArrayForPost(sourceKeys)};return doPost('/3/ParseSetup',opts,go);};requestParseSetupPreview=function(sourceKeys,parseType,separator,useSingleQuotes,checkHeader,columnTypes,go){var opts;opts={source_frames:encodeArrayForPost(sourceKeys),parse_type:parseType,separator,single_quotes:useSingleQuotes,check_header:checkHeader,column_types:encodeArrayForPost(columnTypes)};return doPost('/3/ParseSetup',opts,go);};requestParseFiles=function(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){var opts;opts={destination_frame:destinationKey,source_frames:encodeArrayForPost(sourceKeys),parse_type:parseType,separator,number_columns:columnCount,single_quotes:useSingleQuotes,column_names:encodeArrayForPost(columnNames),column_types:encodeArrayForPost(columnTypes),check_header:checkHeader,delete_on_done:deleteOnDone,chunk_size:chunkSize};return doPost('/3/Parse',opts,go);};requestPartialDependence=function(opts,go){return doPost('/3/PartialDependence/',opts,go);};requestPartialDependenceData=function(key,go){return doGet(`/3/PartialDependence/${encodeURIComponent(key)}`,function(error,result){if(error){return go(error,result);}return go(error,result);});};requestGrids=function(go,opts){return doGet('/99/Grids',function(error,result){if(error){return go(error,result);}return go(error,result.grids);});};requestModels=function(go,opts){return requestWithOpts('/3/Models',opts,function(error,result){if(error){return go(error,result);}return go(error,result.models);});};requestGrid=function(key,opts,go){var params;params=void 0;if(opts){params={};if(opts.sort_by){params.sort_by=encodeURIComponent(opts.sort_by);}if(opts.decreasing===true||opts.decreasing===false){params.decreasing=opts.decreasing;}}return doGet(composePath(`/99/Grids/' + ${encodeURIComponent(key)}`,params),go);};requestModel=function(key,go){return doGet(`/3/Models/${encodeURIComponent(key)}`,function(error,result){if(error){return go(error,result);}return go(error,lodash.head(result.models));});};requestPojoPreview=function(key,go){return download('text',`/3/Models.java/${encodeURIComponent(key)}/preview`,go);};requestDeleteModel=function(key,go){return doDelete(`/3/Models/${encodeURIComponent(key)}`,go);};requestImportModel=function(path,overwrite,go){var opts;opts={dir:path,force:overwrite};return doPost('/99/Models.bin/not_in_use',opts,go);};requestExportModel=function(key,path,overwrite,go){return doGet(`/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`,go);};requestModelBuildersVisibility=function(go){return doGet('/3/Configuration/ModelBuilders/visibility',unwrap(go,function(result){return result.value;}));};__modelBuilders=null;__modelBuilderEndpoints=null;__gridModelBuilderEndpoints=null;cacheModelBuilders=function(modelBuilders){var gridModelBuilderEndpoints;var modelBuilder;var modelBuilderEndpoints;var _i;var _len;modelBuilderEndpoints={};gridModelBuilderEndpoints={};for(_i=0,_len=modelBuilders.length;_i<_len;_i++){modelBuilder=modelBuilders[_i];modelBuilderEndpoints[modelBuilder.algo]=`/${modelBuilder.__meta.schema_version}/ModelBuilders/${modelBuilder.algo}`;gridModelBuilderEndpoints[modelBuilder.algo]=`/99/Grid/${modelBuilder.algo}`;}__modelBuilderEndpoints=modelBuilderEndpoints;__gridModelBuilderEndpoints=gridModelBuilderEndpoints;return __modelBuilders=modelBuilders;};getModelBuilders=function(){return __modelBuilders;};getModelBuilderEndpoint=function(algo){return __modelBuilderEndpoints[algo];};getGridModelBuilderEndpoint=function(algo){return __gridModelBuilderEndpoints[algo];};requestModelBuilders=function(go){var modelBuilders;var visibility;if(modelBuilders=getModelBuilders()){return go(null,modelBuilders);}visibility='Stable';return doGet('/3/ModelBuilders',unwrap(go,function(result){var algo;var availableBuilders;var builder;var builders;builders=function(){var _ref;var _results;_ref=result.model_builders;_results=[];for(algo in _ref){if({}.hasOwnProperty.call(_ref,algo)){builder=_ref[algo];_results.push(builder);}}return _results;}();availableBuilders=function(){var _i;var _j;var _len;var _len1;var _results;var _results1;switch(visibility){case'Stable':_results=[];for(_i=0,_len=builders.length;_i<_len;_i++){builder=builders[_i];if(builder.visibility===visibility){_results.push(builder);}}return _results;// break; // no-unreachable
   case'Beta':_results1=[];for(_j=0,_len1=builders.length;_j<_len1;_j++){builder=builders[_j];if(builder.visibility===visibility||builder.visibility==='Stable'){_results1.push(builder);}}return _results1;// break; // no-unreachable
-  default:return builders;}}();return cacheModelBuilders(availableBuilders);}));};requestModelBuilder=function(algo,go){return doGet(getModelBuilderEndpoint(algo),go);};requestModelInputValidation=function(algo,parameters,go){return doPost(`${getModelBuilderEndpoint(algo)}/parameters`,encodeObjectForPost(parameters),go);};requestModelBuild=function(algo,parameters,go){_.trackEvent('model',algo);if(parameters.hyper_parameters){parameters.hyper_parameters=Flow.Prelude.stringify(parameters.hyper_parameters);if(parameters.search_criteria){parameters.search_criteria=Flow.Prelude.stringify(parameters.search_criteria);}return doPost(getGridModelBuilderEndpoint(algo),encodeObjectForPost(parameters),go);}return doPost(getModelBuilderEndpoint(algo),encodeObjectForPost(parameters),go);};requestAutoModelBuild=function(parameters,go){return doPostJSON('/3/AutoMLBuilder',parameters,go);};requestPredict=function(destinationKey,modelKey,frameKey,options,go){var opt;var opts;opts={};if(destinationKey){opts.predictions_frame=destinationKey;}if(void 0!==(opt=options.reconstruction_error)){opts.reconstruction_error=opt;}if(void 0!==(opt=options.deep_features_hidden_layer)){opts.deep_features_hidden_layer=opt;}if(void 0!==(opt=options.leaf_node_assignment)){opts.leaf_node_assignment=opt;}if(void 0!==(opt=options.exemplar_index)){opts.exemplar_index=opt;}return doPost(`/3/Predictions/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`,opts,function(error,result){if(error){return go(error);}return go(null,result);});};requestPrediction=function(modelKey,frameKey,go){return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`,function(error,result){if(error){return go(error);}return go(null,result);});};requestPredictions=function(modelKey,frameKey,_go){var go;go=function(error,result){var prediction;var predictions;if(error){return _go(error);}predictions=function(){var _i;var _len;var _ref;var _results;_ref=result.model_metrics;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){prediction=_ref[_i];if(modelKey&&prediction.model.name!==modelKey){_results.push(null);}else if(frameKey&&prediction.frame.name!==frameKey){_results.push(null);}else{_results.push(prediction);}}return _results;}();return _go(null,function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=predictions.length;_i<_len;_i++){prediction=predictions[_i];if(prediction){_results.push(prediction);}}return _results;}());};if(modelKey&&frameKey){return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/'${encodeURIComponent(frameKey)}`,go);}else if(modelKey){return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}`,go);}else if(frameKey){return doGet(`/3/ModelMetrics/frames/${encodeURIComponent(frameKey)}`,go);}return doGet('/3/ModelMetrics',go);};_storageConfiguration=null;requestIsStorageConfigured=function(go){if(_storageConfiguration){return go(null,_storageConfiguration.isConfigured);}return doGet('/3/NodePersistentStorage/configured',function(error,result){_storageConfiguration={isConfigured:error?false:result.configured};return go(null,_storageConfiguration.isConfigured);});};requestObjects=function(type,go){return doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}`,unwrap(go,function(result){return result.entries;}));};requestObjectExists=function(type,name,go){return doGet(`/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`,function(error,result){return go(null,error?false:result.exists);});};requestObject=function(type,name,go){return doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`,unwrap(go,function(result){return JSON.parse(result.value);}));};requestDeleteObject=function(type,name,go){return doDelete(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`,go);};requestPutObject=function(type,name,value,go){var uri;uri=`/3/NodePersistentStorage/${encodeURIComponent(type)}`;if(name){uri+=`/${encodeURIComponent(name)}`;}return doPost(uri,{value:JSON.stringify(value,null,2)},unwrap(go,function(result){return result.name;}));};requestUploadObject=function(type,name,formData,go){var uri;uri=`/3/NodePersistentStorage.bin/${encodeURIComponent(type)}`;if(name){uri+=`/${encodeURIComponent(name)}`;}return doUpload(uri,formData,unwrap(go,function(result){return result.name;}));};requestUploadFile=function(key,formData,go){return doUpload(`/3/PostFile?destination_frame=${encodeURIComponent(key)}`,formData,go);};requestCloud=function(go){return doGet('/3/Cloud',go);};requestTimeline=function(go){return doGet('/3/Timeline',go);};requestProfile=function(depth,go){return doGet(`/3/Profiler?depth=${depth}`,go);};requestStackTrace=function(go){return doGet('/3/JStack',go);};requestRemoveAll=function(go){return doDelete('/3/DKV',go);};requestEcho=function(message,go){return doPost('/3/LogAndEcho',{message},go);};requestLogFile=function(nodeIndex,fileType,go){return doGet(`/3/Logs/nodes/${nodeIndex}/files/${fileType}`,go);};requestNetworkTest=function(go){return doGet('/3/NetworkTest',go);};requestAbout=function(go){return doGet('/3/About',go);};requestShutdown=function(go){return doPost('/3/Shutdown',{},go);};requestEndpoints=function(go){return doGet('/3/Metadata/endpoints',go);};requestEndpoint=function(index,go){return doGet(`/3/Metadata/endpoints/${index}`,go);};requestSchemas=function(go){return doGet('/3/Metadata/schemas',go);};requestSchema=function(name,go){return doGet(`/3/Metadata/schemas/${encodeURIComponent(name)}`,go);};getLines=function(data){return lodash.filter(data.split('\n'),function(line){if(line.trim()){return true;}return false;});};requestPacks=function(go){return download('text','/flow/packs/index.list',unwrap(go,getLines));};requestPack=function(packName,go){return download('text',`/flow/packs/${encodeURIComponent(packName)}/index.list`,unwrap(go,getLines));};requestFlow=function(packName,flowName,go){return download('json',`/flow/packs/${encodeURIComponent(packName)}/${encodeURIComponent(flowName)}`,go);};requestHelpIndex=function(go){return download('json','/flow/help/catalog.json',go);};requestHelpContent=function(name,go){return download('text',`/flow/help/${name}.html`,go);};requestRDDs=function(go){return doGet('/3/RDDs',go);};requestDataFrames=function(go){return doGet('/3/dataframes',go);};requestScalaIntp=function(go){return doPost('/3/scalaint',{},go);};requestScalaCode=function(session_id,code,go){return doPost(`/3/scalaint/${session_id}`,{code},go);};requestAsH2OFrameFromRDD=function(rdd_id,name,go){if(name===void 0){return doPost(`/3/RDDs/${rdd_id}/h2oframe`,{},go);}return doPost(`/3/RDDs/${rdd_id}/h2oframe`,{h2oframe_id:name},go);};requestAsH2OFrameFromDF=function(df_id,name,go){if(name===void 0){return doPost(`/3/dataframes/${df_id}/h2oframe`,{},go);}return doPost(`/3/dataframes/${df_id}/h2oframe`,{h2oframe_id:name},go);};requestAsDataFrame=function(hf_id,name,go){if(name===void 0){return doPost(`/3/h2oframes/${hf_id}/dataframe`,{},go);}return doPost(`/3/h2oframes/${hf_id}/dataframe`,{dataframe_id:name},go);};Flow.Dataflow.link(_.requestInspect,requestInspect);Flow.Dataflow.link(_.requestCreateFrame,requestCreateFrame);Flow.Dataflow.link(_.requestSplitFrame,requestSplitFrame);Flow.Dataflow.link(_.requestFrames,requestFrames);Flow.Dataflow.link(_.requestFrame,requestFrame);Flow.Dataflow.link(_.requestFrameSlice,requestFrameSlice);Flow.Dataflow.link(_.requestFrameSummary,requestFrameSummary);Flow.Dataflow.link(_.requestFrameSummaryWithoutData,requestFrameSummaryWithoutData);Flow.Dataflow.link(_.requestFrameSummarySlice,requestFrameSummarySlice);Flow.Dataflow.link(_.requestDeleteFrame,requestDeleteFrame);Flow.Dataflow.link(_.requestExportFrame,requestExportFrame);Flow.Dataflow.link(_.requestColumnSummary,requestColumnSummary);Flow.Dataflow.link(_.requestJobs,requestJobs);Flow.Dataflow.link(_.requestJob,requestJob);Flow.Dataflow.link(_.requestCancelJob,requestCancelJob);Flow.Dataflow.link(_.requestFileGlob,requestFileGlob);Flow.Dataflow.link(_.requestImportFiles,requestImportFiles);Flow.Dataflow.link(_.requestImportFile,requestImportFile);Flow.Dataflow.link(_.requestParseSetup,requestParseSetup);Flow.Dataflow.link(_.requestParseSetupPreview,requestParseSetupPreview);Flow.Dataflow.link(_.requestParseFiles,requestParseFiles);Flow.Dataflow.link(_.requestPartialDependence,requestPartialDependence);Flow.Dataflow.link(_.requestPartialDependenceData,requestPartialDependenceData);Flow.Dataflow.link(_.requestGrids,requestGrids);Flow.Dataflow.link(_.requestModels,requestModels);Flow.Dataflow.link(_.requestGrid,requestGrid);Flow.Dataflow.link(_.requestModel,requestModel);Flow.Dataflow.link(_.requestPojoPreview,requestPojoPreview);Flow.Dataflow.link(_.requestDeleteModel,requestDeleteModel);Flow.Dataflow.link(_.requestImportModel,requestImportModel);Flow.Dataflow.link(_.requestExportModel,requestExportModel);Flow.Dataflow.link(_.requestModelBuilder,requestModelBuilder);Flow.Dataflow.link(_.requestModelBuilders,requestModelBuilders);Flow.Dataflow.link(_.requestModelBuild,requestModelBuild);Flow.Dataflow.link(_.requestModelInputValidation,requestModelInputValidation);Flow.Dataflow.link(_.requestAutoModelBuild,requestAutoModelBuild);Flow.Dataflow.link(_.requestPredict,requestPredict);Flow.Dataflow.link(_.requestPrediction,requestPrediction);Flow.Dataflow.link(_.requestPredictions,requestPredictions);Flow.Dataflow.link(_.requestObjects,requestObjects);Flow.Dataflow.link(_.requestObject,requestObject);Flow.Dataflow.link(_.requestObjectExists,requestObjectExists);Flow.Dataflow.link(_.requestDeleteObject,requestDeleteObject);Flow.Dataflow.link(_.requestPutObject,requestPutObject);Flow.Dataflow.link(_.requestUploadObject,requestUploadObject);Flow.Dataflow.link(_.requestUploadFile,requestUploadFile);Flow.Dataflow.link(_.requestCloud,requestCloud);Flow.Dataflow.link(_.requestTimeline,requestTimeline);Flow.Dataflow.link(_.requestProfile,requestProfile);Flow.Dataflow.link(_.requestStackTrace,requestStackTrace);Flow.Dataflow.link(_.requestRemoveAll,requestRemoveAll);Flow.Dataflow.link(_.requestEcho,requestEcho);Flow.Dataflow.link(_.requestLogFile,requestLogFile);Flow.Dataflow.link(_.requestNetworkTest,requestNetworkTest);Flow.Dataflow.link(_.requestAbout,requestAbout);Flow.Dataflow.link(_.requestShutdown,requestShutdown);Flow.Dataflow.link(_.requestEndpoints,requestEndpoints);Flow.Dataflow.link(_.requestEndpoint,requestEndpoint);Flow.Dataflow.link(_.requestSchemas,requestSchemas);Flow.Dataflow.link(_.requestSchema,requestSchema);Flow.Dataflow.link(_.requestPacks,requestPacks);Flow.Dataflow.link(_.requestPack,requestPack);Flow.Dataflow.link(_.requestFlow,requestFlow);Flow.Dataflow.link(_.requestHelpIndex,requestHelpIndex);Flow.Dataflow.link(_.requestHelpContent,requestHelpContent);Flow.Dataflow.link(_.requestExec,requestExec);Flow.Dataflow.link(_.requestRDDs,requestRDDs);Flow.Dataflow.link(_.requestDataFrames,requestDataFrames);Flow.Dataflow.link(_.requestScalaIntp,requestScalaIntp);Flow.Dataflow.link(_.requestScalaCode,requestScalaCode);Flow.Dataflow.link(_.requestAsH2OFrameFromDF,requestAsH2OFrameFromDF);Flow.Dataflow.link(_.requestAsH2OFrameFromRDD,requestAsH2OFrameFromRDD);return Flow.Dataflow.link(_.requestAsDataFrame,requestAsDataFrame);};}).call(this);// anonymous IIFE
-  (function(){var combineTables;var computeFalsePositiveRate;var computeTruePositiveRate;var concatArrays;var convertColumnToVector;var convertTableToFrame;var createArrays;var createDataframe;var createFactor;var createList;var createTempKey;var createVector;var format4f;var format6fi;var formatConfusionMatrix;var formulateGetPredictionsOrigin;var getTwoDimData;var lightning;var parseAndFormatArray;var parseAndFormatObjectArray;var parseNaNs;var parseNulls;var parseNumbers;var repeatValues;var _assistance;var __slice=[].slice;lightning=(typeof window!=='undefined'&&window!==null?window.plot:void 0)!=null?window.plot:{};if(lightning.settings){lightning.settings.axisLabelFont='11px "Source Code Pro", monospace';lightning.settings.axisTitleFont='bold 11px "Source Code Pro", monospace';}createTempKey=function(){return`flow_${Flow.Util.uuid().replace(/\-/g,'')}`;};createVector=lightning.createVector;createFactor=lightning.createFactor;createList=lightning.createList;createDataframe=lightning.createFrame;_assistance={importFiles:{description:'Import file(s) into H<sub>2</sub>O',icon:'files-o'},getFrames:{description:'Get a list of frames in H<sub>2</sub>O',icon:'table'},splitFrame:{description:'Split a frame into two or more frames',icon:'scissors'},mergeFrames:{description:'Merge two frames into one',icon:'link'},getModels:{description:'Get a list of models in H<sub>2</sub>O',icon:'cubes'},getGrids:{description:'Get a list of grid search results in H<sub>2</sub>O',icon:'th'},getPredictions:{description:'Get a list of predictions in H<sub>2</sub>O',icon:'bolt'},getJobs:{description:'Get a list of jobs running in H<sub>2</sub>O',icon:'tasks'},buildModel:{description:'Build a model',icon:'cube'},importModel:{description:'Import a saved model',icon:'cube'},predict:{description:'Make a prediction',icon:'bolt'}};parseNumbers=function(source){var i;var target;var value;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){value=source[i];target[i]=value==='NaN'?void 0:value==='Infinity'?Number.POSITIVE_INFINITY:value==='-Infinity'?Number.NEGATIVE_INFINITY:value;}return target;};convertColumnToVector=function(column,data){switch(column.type){case'byte':case'short':case'int':case'integer':case'long':return createVector(column.name,Flow.TNumber,parseNumbers(data));case'float':case'double':return createVector(column.name,Flow.TNumber,parseNumbers(data),format4f);case'string':return createFactor(column.name,Flow.TString,data);case'matrix':return createList(column.name,data,formatConfusionMatrix);default:return createList(column.name,data);}};convertTableToFrame=function(table,tableName,metadata){var column;var i;var vectors;vectors=function(){var _i;var _len;var _ref;var _results;_ref=table.columns;_results=[];for(i=_i=0,_len=_ref.length;_i<_len;i=++_i){column=_ref[i];_results.push(convertColumnToVector(column,table.data[i]));}return _results;}();return createDataframe(tableName,vectors,lodash.range(table.rowcount),null,metadata);};getTwoDimData=function(table,columnName){var columnIndex;columnIndex=lodash.findIndex(table.columns,function(column){return column.name===columnName;});if(columnIndex>=0){return table.data[columnIndex];}return void 0;};format4f=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(4).replace(/\.0+$/,'.0');}return number;};format6fi=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(6).replace(/\.0+$/,'');}return number;};combineTables=function(tables){var columnCount;var columnData;var data;var element;var i;var index;var leader;var rowCount;var table;var _i;var _j;var _k;var _l;var _len;var _len1;var _len2;var _ref;leader=lodash.head(tables);rowCount=0;columnCount=leader.data.length;data=new Array(columnCount);for(_i=0,_len=tables.length;_i<_len;_i++){table=tables[_i];rowCount+=table.rowcount;}for(i=_j=0;columnCount>=0?_j<columnCount:_j>columnCount;i=columnCount>=0?++_j:--_j){data[i]=columnData=new Array(rowCount);index=0;for(_k=0,_len1=tables.length;_k<_len1;_k++){table=tables[_k];_ref=table.data[i];for(_l=0,_len2=_ref.length;_l<_len2;_l++){element=_ref[_l];columnData[index++]=element;}}}return{name:leader.name,columns:leader.columns,data,rowcount:rowCount};};createArrays=function(count,length){var i;var _i;var _results;_results=[];for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){_results.push(new Array(length));}return _results;};parseNaNs=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element==='NaN'?void 0:element;}return target;};parseNulls=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?element:void 0;}return target;};parseAndFormatArray=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?lodash.isNumber(element)?format6fi(element):element:void 0;}return target;};parseAndFormatObjectArray=function(source){var element;var i;var target;var _i;var _len;var _ref;var _ref1;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?((_ref=element.__meta)!=null?_ref.schema_type:void 0)==='Key<Model>'?`<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>`:((_ref1=element.__meta)!=null?_ref1.schema_type:void 0)==='Key<Frame>'?`<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>`:element:void 0;}return target;};repeatValues=function(count,value){var i;var target;var _i;target=new Array(count);for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){target[i]=value;}return target;};concatArrays=function(arrays){var a;switch(arrays.length){case 0:return[];case 1:return lodash.head(arrays);default:a=lodash.head(arrays);return a.concat(...lodash.tail(arrays));}};computeTruePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return tp/(tp+fn);};computeFalsePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return fp/(fp+tn);};formatConfusionMatrix=function(cm){var domain;var fn;var fnr;var fp;var fpr;var normal;var strong;var table;var tbody;var tn;var tp;var tr;var yellow;var _ref;var _ref1;var _ref2;var _ref3;_ref=cm.matrix,(_ref1=_ref[0],tn=_ref1[0],fp=_ref1[1]),(_ref2=_ref[1],fn=_ref2[0],tp=_ref2[1]);fnr=fn/(tp+fn);fpr=fp/(fp+tn);domain=cm.domain;_ref3=Flow.HTML.template('table.flow-matrix','tbody','tr','td.strong.flow-center','td','td.bg-yellow'),table=_ref3[0],tbody=_ref3[1],tr=_ref3[2],strong=_ref3[3],normal=_ref3[4],yellow=_ref3[5];return table([tbody([tr([strong('Actual/Predicted'),strong(domain[0]),strong(domain[1]),strong('Error'),strong('Rate')]),tr([strong(domain[0]),yellow(tn),normal(fp),normal(format4f(fpr)),normal(`${fp} / ${fp+tn}`)]),tr([strong(domain[1]),normal(fn),yellow(tp),normal(format4f(fnr)),normal(`${fn} / ${tp+fn}`)]),tr([strong('Total'),strong(tn+fn),strong(tp+fp),strong(format4f((fn+fp)/(fp+tn+tp+fn))),strong(`${fn}${fp} / ${fp+tn+tp+fn}`)])])]);};formulateGetPredictionsOrigin=function(opts){var frameKey;var modelKey;var opt;var sanitizedOpt;var sanitizedOpts;if(lodash.isArray(opts)){sanitizedOpts=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=opts.length;_i<_len;_i++){opt=opts[_i];sanitizedOpt={};if(opt.model){sanitizedOpt.model=opt.model;}if(opt.frame){sanitizedOpt.frame=opt.frame;}_results.push(sanitizedOpt);}return _results;}();return`getPredictions ${Flow.Prelude.stringify(sanitizedOpts)}`;}modelKey=opts.model,frameKey=opts.frame;if(modelKey&&frameKey){return`getPredictions model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`;}else if(modelKey){return`getPredictions model: ${Flow.Prelude.stringify(modelKey)}`;}else if(frameKey){return`getPredictions frame: ${Flow.Prelude.stringify(frameKey)}`;}return'getPredictions()';};H2O.Routines=function(_){var asDataFrame;var asH2OFrameFromDF;var asH2OFrameFromRDD;var assist;var attrname;var bindFrames;var blacklistedAttributesBySchema;var buildAutoModel;var buildModel;var buildPartialDependence;var cancelJob;var changeColumnType;var computeSplits;var createFrame;var createGui;var createPlot;var deleteAll;var deleteFrame;var deleteFrames;var deleteModel;var deleteModels;var dump;var dumpFuture;var exportFrame;var exportModel;var extendAsDataFrame;var extendAsH2OFrame;var extendBindFrames;var extendCancelJob;var extendCloud;var extendColumnSummary;var extendDataFrames;var extendDeletedKeys;var extendExportFrame;var extendExportModel;var extendFrame;var extendFrameData;var extendFrameSummary;var extendFrames;var extendGrid;var extendGrids;var extendGuiForm;var extendImportModel;var extendImportResults;var extendJob;var extendJobs;var extendLogFile;var extendMergeFramesResult;var extendModel;var extendModels;var extendNetworkTest;var extendParseResult;var extendParseSetupResults;var extendPartialDependence;var extendPlot;var extendPrediction;var extendPredictions;var extendProfile;var extendRDDs;var extendScalaCode;var extendScalaIntp;var extendSplitFrameResult;var extendStackTrace;var extendTimeline;var f;var findColumnIndexByColumnLabel;var findColumnIndicesByColumnLabels;var flow_;var getCloud;var getColumnSummary;var getDataFrames;var getFrame;var getFrameData;var getFrameSummary;var getFrames;var getGrid;var getGrids;var getJob;var getJobs;var getLogFile;var getModel;var getModelParameterValue;var getModels;var getPartialDependence;var getPrediction;var getPredictions;var getProfile;var getRDDs;var getScalaIntp;var getStackTrace;var getTimeline;var grid;var gui;var importFiles;var importModel;var imputeColumn;var initAssistanceSparklingWater;var inspect;var inspect$1;var inspect$2;var inspectFrameColumns;var inspectFrameData;var inspectModelParameters;var inspectNetworkTestResult;var inspectObject;var inspectObjectArray_;var inspectParametersAcrossModels;var inspectRawArray_;var inspectRawObject_;var inspectTwoDimTable_;var inspect_;var loadScript;var ls;var mergeFrames;var name;var parseFiles;var plot;var predict;var proceed;var read;var render_;var requestAsDataFrame;var requestAsH2OFrameFromDF;var requestAsH2OFrameFromRDD;var requestAutoModelBuild;var requestBindFrames;var requestCancelJob;var requestChangeColumnType;var requestCloud;var requestColumnSummary;var requestCreateFrame;var requestDataFrames;var requestDeleteFrame;var requestDeleteFrames;var requestDeleteModel;var requestDeleteModels;var requestExportFrame;var requestExportModel;var requestFrame;var requestFrameData;var requestFrameSummary;var requestFrameSummarySlice;var requestFrames;var requestGrid;var requestGrids;var requestImportAndParseFiles;var requestImportAndParseSetup;var requestImportFiles;var requestImportModel;var requestImputeColumn;var requestJob;var requestJobs;var requestLogFile;var requestMergeFrames;var requestModel;var requestModelBuild;var requestModels;var requestModelsByKeys;var requestNetworkTest;var requestParseFiles;var requestParseSetup;var requestPartialDependence;var requestPartialDependenceData;var requestPredict;var requestPrediction;var requestPredictions;var requestPredicts;var requestProfile;var requestRDDs;var requestRemoveAll;var requestScalaCode;var requestScalaIntp;var requestSplitFrame;var requestStackTrace;var requestTimeline;var routines;var routinesOnSw;var runScalaCode;var schemaTransforms;var setupParse;var splitFrame;var testNetwork;var transformBinomialMetrics;var unwrapPrediction;var _apply;var _async;var _call;var _fork;var _get;var _isFuture;var _join;var _plot;var _ref;var _schemaHacks;_fork=function(){var args;var f;f=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.fork(f,args);};_join=function(){var args;var go;var _i;args=arguments.length>=2?__slice.call(arguments,0,_i=arguments.length-1):(_i=0,[]),go=arguments[_i++];return Flow.Async.join(args,Flow.Async.applicate(go));};_call=function(){var args;var go;go=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.join(args,Flow.Async.applicate(go));};_apply=function(go,args){return Flow.Async.join(args,go);};_isFuture=Flow.Async.isFuture;_async=Flow.Async.async;_get=Flow.Async.get;proceed=function(func,args,go){return go(null,render_({},function(){return func(...[_].concat(args||[]));}));};proceed=function(func,args,go){return go(null,render_(...[{},func].concat(args||[])));};extendGuiForm=function(form){return render_(form,flowForm,form);};createGui=function(controls,go){return go(null,extendGuiForm(Flow.Dataflow.signals(controls||[])));};gui=function(controls){return _fork(createGui,controls);};_ref=Flow.Gui;for(name in _ref){if({}.hasOwnProperty.call(_ref,name)){f=_ref[name];gui[name]=f;}}flow_=function(raw){return raw._flow_||(raw._flow_={_cache_:{}});};render_=function(raw,render){flow_(raw).render=render;return raw;};render_=function(){var args;var raw;var render;raw=arguments[0],render=arguments[1],args=arguments.length>=3?__slice.call(arguments,2):[];flow_(raw).render=function(go){return render(...[_,go].concat(args));};return raw;};inspect_=function(raw,inspectors){var attr;var root;root=flow_(raw);if(root.inspect==null){root.inspect={};}for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];root.inspect[attr]=f;}}return raw;};inspect=function(a,b){if(arguments.length===1){return inspect$1(a);}return inspect$2(a,b);};inspect$1=function(obj){var attr;var inspections;var inspectors;var _ref1;if(_isFuture(obj)){return _async(inspect,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){inspections=[];for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];inspections.push(inspect$2(attr,obj));}}render_(inspections,h2oInspectsOutput,inspections);return inspections;}return{};};ls=function(obj){var inspectors;var _ref1;if(_isFuture(obj)){return _async(ls,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){return lodash.keys(inspectors);}return[];};inspect$2=function(attr,obj){var cached;var inspection;var inspectors;var key;var root;if(!attr){return;}if(_isFuture(obj)){return _async(inspect,attr,obj);}if(!obj){return;}if(!(root=obj._flow_)){return;}if(!(inspectors=root.inspect)){return;}if(cached=root._cache_[key=`inspect_${attr}`]){return cached;}if(!(f=inspectors[attr])){return;}if(!lodash.isFunction(f)){return;}root._cache_[key]=inspection=f();render_(inspection,h2oInspectOutput,inspection);return inspection;};_plot=function(render,go){return render(function(error,vis){if(error){return go(new Flow.Error('Error rendering vis.',error));}return go(null,vis);});};extendPlot=function(vis){return render_(vis,h2oPlotOutput,vis.element);};createPlot=function(f,go){return _plot(f(lightning),function(error,vis){if(error){return go(error);}return go(null,extendPlot(vis));});};plot=function(f){if(_isFuture(f)){return _fork(proceed,h2oPlotInput,f);}else if(lodash.isFunction(f)){return _fork(createPlot,f);}return assist(plot);};grid=function(f){return plot(function(g){return g(g.select(),g.from(f));});};transformBinomialMetrics=function(metrics){var cms;var domain;var fns;var fps;var i;var scores;var tns;var tp;var tps;if(scores=metrics.thresholds_and_metric_scores){domain=metrics.domain;tps=getTwoDimData(scores,'tps');tns=getTwoDimData(scores,'tns');fps=getTwoDimData(scores,'fps');fns=getTwoDimData(scores,'fns');cms=function(){var _i;var _len;var _results;_results=[];for(i=_i=0,_len=tps.length;_i<_len;i=++_i){tp=tps[i];_results.push({domain,matrix:[[tns[i],fps[i]],[fns[i],tp]]});}return _results;}();scores.columns.push({name:'CM',description:'CM',format:'matrix',type:'matrix'});scores.data.push(cms);}return metrics;};extendCloud=function(cloud){return render_(cloud,h2oCloudOutput,cloud);};extendTimeline=function(timeline){return render_(timeline,h2oTimelineOutput,timeline);};extendStackTrace=function(stackTrace){return render_(stackTrace,h2oStackTraceOutput,stackTrace);};extendLogFile=function(cloud,nodeIndex,fileType,logFile){return render_(logFile,h2oLogFileOutput,cloud,nodeIndex,fileType,logFile);};inspectNetworkTestResult=function(testResult){return function(){return convertTableToFrame(testResult.table,testResult.table.name,{description:testResult.table.name,origin:'testNetwork'});};};extendNetworkTest=function(testResult){inspect_(testResult,{result:inspectNetworkTestResult(testResult)});return render_(testResult,h2oNetworkTestOutput,testResult);};extendProfile=function(profile){return render_(profile,h2oProfileOutput,profile);};extendFrames=function(frames){render_(frames,h2oFramesOutput,frames);return frames;};extendSplitFrameResult=function(result){render_(result,h2oSplitFrameOutput,result);return result;};extendMergeFramesResult=function(result){render_(result,h2oMergeFramesOutput,result);return result;};extendPartialDependence=function(result){var data;var i;var inspections;var origin;var _i;var _len;var _ref1;inspections={};_ref1=result.partial_dependence_data;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){data=_ref1[i];origin=`getPartialDependence ${Flow.Prelude.stringify(result.destination_key)}`;inspections[`plot${i+1}`]=inspectTwoDimTable_(origin,`plot${i+1}`,data);}inspect_(result,inspections);render_(result,h2oPartialDependenceOutput,result);return result;};getModelParameterValue=function(type,value){switch(type){case'Key<Frame>':case'Key<Model>':if(value!=null){return value.name;}return void 0;// break; // no-unreachable
-  case'VecSpecifier':if(value!=null){return value.column_name;}return void 0;// break; // no-unreachable
-  default:if(value!=null){return value;}return void 0;}};inspectParametersAcrossModels=function(models){return function(){var data;var i;var leader;var model;var modelKeys;var parameter;var vectors;leader=lodash.head(models);vectors=function(){var _i;var _len;var _ref1;var _results;_ref1=leader.parameters;_results=[];for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){parameter=_ref1[i];data=function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=models.length;_j<_len1;_j++){model=models[_j];_results1.push(getModelParameterValue(parameter.type,model.parameters[i].actual_value));}return _results1;}();switch(parameter.type){case'enum':case'Frame':case'string':_results.push(createFactor(parameter.label,Flow.TString,data));break;case'byte':case'short':case'int':case'long':case'float':case'double':_results.push(createVector(parameter.label,Flow.TNumber,data));break;case'string[]':case'byte[]':case'short[]':case'int[]':case'long[]':case'float[]':case'double[]':_results.push(createList(parameter.label,data,function(a){if(a){return a;}return void 0;}));break;case'boolean':_results.push(createList(parameter.label,data,function(a){if(a){return'true';}return'false';}));break;default:_results.push(createList(parameter.label,data));}}return _results;}();modelKeys=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.model_id.name);}return _results;}();return createDataframe('parameters',vectors,lodash.range(models.length),null,{description:`Parameters for models ${modelKeys.join(', ')}`,origin:`getModels ${Flow.Prelude.stringify(modelKeys)}`});};};inspectModelParameters=function(model){return function(){var attr;var attrs;var data;var i;var parameter;var parameters;var vectors;parameters=model.parameters;attrs=['label','type','level','actual_value','default_value'];vectors=function(){var _i;var _j;var _len;var _len1;var _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];data=new Array(parameters.length);for(i=_j=0,_len1=parameters.length;_j<_len1;i=++_j){parameter=parameters[i];data[i]=attr==='actual_value'?getModelParameterValue(parameter.type,parameter[attr]):parameter[attr];}_results.push(createList(attr,data));}return _results;}();return createDataframe('parameters',vectors,lodash.range(parameters.length),null,{description:`Parameters for model \'${model.model_id.name}\'`,origin:`getModel ${Flow.Prelude.stringify(model.model_id.name)}`});};};extendJob=function(job){return render_(job,H2O.JobOutput,job);};extendJobs=function(jobs){var job;var _i;var _len;for(_i=0,_len=jobs.length;_i<_len;_i++){job=jobs[_i];extendJob(job);}return render_(jobs,h2oJobsOutput,jobs);};extendCancelJob=function(cancellation){return render_(cancellation,h2oCancelJobOutput,cancellation);};extendDeletedKeys=function(keys){return render_(keys,h2oDeleteObjectsOutput,keys);};inspectTwoDimTable_=function(origin,tableName,table){return function(){return convertTableToFrame(table,tableName,{description:table.description||'',origin});};};inspectRawArray_=function(name,origin,description,array){return function(){return createDataframe(name,[createList(name,parseAndFormatArray(array))],lodash.range(array.length),null,{description:'',origin});};};inspectObjectArray_=function(name,origin,description,array){return function(){return createDataframe(name,[createList(name,parseAndFormatObjectArray(array))],lodash.range(array.length),null,{description:'',origin});};};inspectRawObject_=function(name,origin,description,obj){return function(){var k;var v;var vectors;vectors=function(){var _results;_results=[];for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];_results.push(createList(k,[v===null?void 0:lodash.isNumber(v)?format6fi(v):v]));}}return _results;}();return createDataframe(name,vectors,lodash.range(1),null,{description:'',origin});};};_schemaHacks={KMeansOutput:{fields:'names domains help'},GBMOutput:{fields:'names domains help'},GLMOutput:{fields:'names domains help'},DRFOutput:{fields:'names domains help'},DeepLearningModelOutput:{fields:'names domains help'},NaiveBayesOutput:{fields:'names domains help pcond'},PCAOutput:{fields:'names domains help'},ModelMetricsBinomialGLM:{fields:null,transform:transformBinomialMetrics},ModelMetricsBinomial:{fields:null,transform:transformBinomialMetrics},ModelMetricsMultinomialGLM:{fields:null},ModelMetricsMultinomial:{fields:null},ModelMetricsRegressionGLM:{fields:null},ModelMetricsRegression:{fields:null},ModelMetricsClustering:{fields:null},ModelMetricsAutoEncoder:{fields:null},ConfusionMatrix:{fields:null}};blacklistedAttributesBySchema=function(){var attrs;var dict;var dicts;var field;var schema;var _i;var _len;var _ref1;dicts={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];dicts[schema]=dict={__meta:true};if(attrs.fields){_ref1=Flow.Prelude.words(attrs.fields);for(_i=0,_len=_ref1.length;_i<_len;_i++){field=_ref1[_i];dict[field]=true;}}}}return dicts;}();schemaTransforms=function(){var attrs;var schema;var transform;var transforms;transforms={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];if(transform=attrs.transform){transforms[schema]=transform;}}}return transforms;}();inspectObject=function(inspections,name,origin,obj){var attrs;var blacklistedAttributes;var k;var meta;var record;var schemaType;var transform;var v;var _ref1;var _ref2;schemaType=(_ref1=obj.__meta)!=null?_ref1.schema_type:void 0;blacklistedAttributes=schemaType?(attrs=blacklistedAttributesBySchema[schemaType])?attrs:{}:{};if(transform=schemaTransforms[schemaType]){obj=transform(obj);}record={};inspections[name]=inspectRawObject_(name,origin,name,record);for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];if(!blacklistedAttributes[k]){if(v===null){record[k]=null;}else{if(((_ref2=v.__meta)!=null?_ref2.schema_type:void 0)==='TwoDimTable'){inspections[`${name} - ${v.name}`]=inspectTwoDimTable_(origin,`${name} - ${v.name}`,v);}else{if(lodash.isArray(v)){if(k==='cross_validation_models'||k==='cross_validation_predictions'||name==='output'&&(k==='weights'||k==='biases')){inspections[k]=inspectObjectArray_(k,origin,k,v);}else{inspections[k]=inspectRawArray_(k,origin,k,v);}}else if(lodash.isObject(v)){if(meta=v.__meta){if(meta.schema_type==='Key<Frame>'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Key<Model>'){record[k]=`<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Frame'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;}else{inspectObject(inspections,`${name} - ${k}`,origin,v);}}else{console.log(`WARNING: dropping [${k}] from inspection:`,v);}}else{record[k]=lodash.isNumber(v)?format6fi(v):v;}}}}}}};extendModel=function(model){var refresh;lodash.extend=function(model){var inspections;var origin;var table;var tableName;var _i;var _len;var _ref1;inspections={};inspections.parameters=inspectModelParameters(model);origin=`getModel ${Flow.Prelude.stringify(model.model_id.name)}`;inspectObject(inspections,'output',origin,model.output);if(model.__meta.schema_type==='NaiveBayesModel'){if(lodash.isArray(model.output.pcond)){_ref1=model.output.pcond;for(_i=0,_len=_ref1.length;_i<_len;_i++){table=_ref1[_i];tableName=`output - pcond - ${table.name}`;inspections[tableName]=inspectTwoDimTable_(origin,tableName,table);}}}inspect_(model,inspections);return model;};refresh=function(go){return _.requestModel(model.model_id.name,function(error,model){if(error){return go(error);}return go(null,lodash.extend(model));});};lodash.extend(model);return render_(model,h2oModelOutput,model,refresh);};extendGrid=function(grid,opts){var inspections;var origin;origin=`getGrid ${Flow.Prelude.stringify(grid.grid_id.name)}`;if(opts){origin+=`, ${Flow.Prelude.stringify(opts)}`;}inspections={summary:inspectTwoDimTable_(origin,'summary',grid.summary_table),scoring_history:inspectTwoDimTable_(origin,'scoring_history',grid.scoring_history)};inspect_(grid,inspections);return render_(grid,h2oGridOutput,grid);};extendGrids=function(grids){return render_(grids,h2oGridsOutput,grids);};extendModels=function(models){var algos;var inspections;var model;inspections={};algos=lodash.unique(function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.algo);}return _results;}());if(algos.length===1){inspections.parameters=inspectParametersAcrossModels(models);}inspect_(models,inspections);return render_(models,h2oModelsOutput,models);};read=function(value){if(value==='NaN'){return null;}return value;};extendPredictions=function(opts,predictions){render_(predictions,h2oPredictsOutput,opts,predictions);return predictions;};extendPrediction=function(result){var frameKey;var inspections;var modelKey;var prediction;var predictionFrame;var _ref1;modelKey=result.model.name;frameKey=(_ref1=result.frame)!=null?_ref1.name:void 0;prediction=lodash.head(result.model_metrics);predictionFrame=result.predictions_frame;inspections={};if(prediction){inspectObject(inspections,'Prediction',`getPrediction model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`,prediction);}else{prediction={};inspectObject(inspections,'Prediction',`getPrediction model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`,{prediction_frame:predictionFrame});}inspect_(prediction,inspections);return render_(prediction,h2oPredictOutput,prediction);};inspectFrameColumns=function(tableLabel,frameKey,frame,frameColumns){return function(){var actionsData;var attr;var attrs;var column;var i;var labelVector;var title;var toColumnSummaryLink;var toConversionLink;var typeVector;var vectors;attrs=['label','type','missing_count|Missing','zero_count|Zeros','positive_infinity_count|+Inf','negative_infinity_count|-Inf','min','max','mean','sigma','cardinality'];toColumnSummaryLink=function(label){return`<a href=\'#\' data-type=\'summary-link\' data-key=${Flow.Prelude.stringify(label)}>${lodash.escape(label)}</a>`;};toConversionLink=function(value){var label;var type;var _ref1;_ref1=value.split('\0'),type=_ref1[0],label=_ref1[1];switch(type){case'enum':return`<a href=\'#\' data-type=\'as-numeric-link\' data-key=${Flow.Prelude.stringify(label)}>Convert to numeric</a>`;case'int':case'string':return`<a href=\'#\' data-type=\'as-factor-link\' data-key=${Flow.Prelude.stringify(label)}>Convert to enum</a>'`;default:return void 0;}};vectors=function(){var _i;var _len;var _ref1;var _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];_ref1=attr.split('|'),name=_ref1[0],title=_ref1[1];title=title!=null?title:name;switch(name){case'min':_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.mins));}return _results1;}(),format4f));break;case'max':_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.maxs));}return _results1;}(),format4f));break;case'cardinality':_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column.type==='enum'?column.domain_cardinality:void 0);}return _results1;}()));break;case'label':_results.push(createFactor(title,Flow.TString,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}(),null,toColumnSummaryLink));break;case'type':_results.push(createFactor(title,Flow.TString,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}()));break;case'mean':case'sigma':_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}(),format4f));break;default:_results.push(createVector(title,Flow.TNumber,function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}()));}}return _results;}();labelVector=vectors[0],typeVector=vectors[1];actionsData=function(){var _i;var _ref1;var _results;_results=[];for(i=_i=0,_ref1=frameColumns.length;_ref1>=0?_i<_ref1:_i>_ref1;i=_ref1>=0?++_i:--_i){_results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);}return _results;}();vectors.push(createFactor('Actions',Flow.TString,actionsData,null,toConversionLink));return createDataframe(tableLabel,vectors,lodash.range(frameColumns.length),null,{description:`A list of ${tableLabel} in the H2O Frame.`,origin:`getFrameSummary ${Flow.Prelude.stringify(frameKey)}`,plot:`plot inspect \'${tableLabel}\', getFrameSummary ${Flow.Prelude.stringify(frameKey)}`});};};inspectFrameData=function(frameKey,frame){return function(){var column;var domain;var frameColumns;var index;var rowIndex;var vectors;frameColumns=frame.columns;vectors=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=frameColumns.length;_i<_len;_i++){column=frameColumns[_i];switch(column.type){case'int':case'real':_results.push(createVector(column.label,Flow.TNumber,parseNaNs(column.data),format4f));break;case'enum':domain=column.domain;_results.push(createFactor(column.label,Flow.TString,function(){var _j;var _len1;var _ref1;var _results1;_ref1=column.data;_results1=[];for(_j=0,_len1=_ref1.length;_j<_len1;_j++){index=_ref1[_j];_results1.push(index!=null?domain[index]:void 0);}return _results1;}()));break;case'time':_results.push(createVector(column.label,Flow.TNumber,parseNaNs(column.data)));break;case'string':case'uuid':_results.push(createList(column.label,parseNulls(column.string_data)));break;default:_results.push(createList(column.label,parseNulls(column.data)));}}return _results;}();vectors.unshift(createVector('Row',Flow.TNumber,function(){var _i;var _ref1;var _ref2;var _results;_results=[];for(rowIndex=_i=_ref1=frame.row_offset,_ref2=frame.row_count;_ref1<=_ref2?_i<_ref2:_i>_ref2;rowIndex=_ref1<=_ref2?++_i:--_i){_results.push(rowIndex+1);}return _results;}()));return createDataframe('data',vectors,lodash.range(frame.row_count-frame.row_offset),null,{description:'A partial list of rows in the H2O Frame.',origin:`getFrameData ${Flow.Prelude.stringify(frameKey)}`});};};extendFrameData=function(frameKey,frame){var inspections;var origin;inspections={data:inspectFrameData(frameKey,frame)};origin=`getFrameData ${Flow.Prelude.stringify(frameKey)}`;inspect_(frame,inspections);return render_(frame,h2oFrameDataOutput,frame);};extendFrame=function(frameKey,frame){var column;var enumColumns;var inspections;var origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns),data:inspectFrameData(frameKey,frame)};enumColumns=function(){var _i;var _len;var _ref1;var _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;}();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${Flow.Prelude.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendFrameSummary=function(frameKey,frame){var column;var enumColumns;var inspections;var origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns)};enumColumns=function(){var _i;var _len;var _ref1;var _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;}();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${Flow.Prelude.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendColumnSummary=function(frameKey,frame,columnName){var column;var inspectCharacteristics;var inspectDistribution;var inspectDomain;var inspectPercentiles;var inspectSummary;var inspections;var rowCount;column=lodash.head(frame.columns);rowCount=frame.rows;inspectPercentiles=function(){var vectors;vectors=[createVector('percentile',Flow.TNumber,frame.default_percentiles),createVector('value',Flow.TNumber,column.percentiles)];return createDataframe('percentiles',vectors,lodash.range(frame.default_percentiles.length),null,{description:`Percentiles for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspectDistribution=function(){var base;var binCount;var binIndex;var bins;var count;var countData;var i;var interval;var intervalData;var m;var minBinCount;var n;var rows;var stride;var vectors;var width;var widthData;var _i;var _j;var _k;var _l;var _len;var _ref1;minBinCount=32;base=column.histogram_base,stride=column.histogram_stride,bins=column.histogram_bins;width=Math.ceil(bins.length/minBinCount);interval=stride*width;rows=[];if(width>0){binCount=minBinCount+(bins.length%width>0?1:0);intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_i=0;binCount>=0?_i<binCount:_i>binCount;i=binCount>=0?++_i:--_i){m=i*width;n=m+width;count=0;for(binIndex=_j=m;m<=n?_j<n:_j>n;binIndex=m<=n?++_j:--_j){if(binIndex<bins.length){count+=bins[binIndex];}}intervalData[i]=base+i*interval;widthData[i]=interval;countData[i]=count;}}else{binCount=bins.length;intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_k=0,_len=bins.length;_k<_len;i=++_k){count=bins[i];intervalData[i]=base+i*stride;widthData[i]=stride;countData[i]=count;}}for(i=_l=_ref1=binCount-1;_ref1<=0?_l<=0:_l>=0;i=_ref1<=0?++_l:--_l){if(countData[i]!==0){binCount=i+1;intervalData=intervalData.slice(0,binCount);widthData=widthData.slice(0,binCount);countData=countData.slice(0,binCount);break;}}vectors=[createFactor('interval',Flow.TString,intervalData),createVector('width',Flow.TNumber,widthData),createVector('count',Flow.TNumber,countData)];return createDataframe('distribution',vectors,lodash.range(binCount),null,{description:`Distribution for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,plot:`plot inspect \'distribution\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspectCharacteristics=function(){var characteristicData;var count;var countData;var missing_count;var negative_infinity_count;var other;var percentData;var positive_infinity_count;var vectors;var zero_count;missing_count=column.missing_count,zero_count=column.zero_count,positive_infinity_count=column.positive_infinity_count,negative_infinity_count=column.negative_infinity_count;other=rowCount-missing_count-zero_count-positive_infinity_count-negative_infinity_count;characteristicData=['Missing','-Inf','Zero','+Inf','Other'];countData=[missing_count,negative_infinity_count,zero_count,positive_infinity_count,other];percentData=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=countData.length;_i<_len;_i++){count=countData[_i];_results.push(100*count/rowCount);}return _results;}();vectors=[createFactor('characteristic',Flow.TString,characteristicData),createVector('count',Flow.TNumber,countData),createVector('percent',Flow.TNumber,percentData)];return createDataframe('characteristics',vectors,lodash.range(characteristicData.length),null,{description:`Characteristics for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,plot:`plot inspect \'characteristics\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspectSummary=function(){var defaultPercentiles;var maximum;var mean;var minimum;var outliers;var percentiles;var q1;var q2;var q3;var vectors;defaultPercentiles=frame.default_percentiles;percentiles=column.percentiles;mean=column.mean;q1=percentiles[defaultPercentiles.indexOf(0.25)];q2=percentiles[defaultPercentiles.indexOf(0.5)];q3=percentiles[defaultPercentiles.indexOf(0.75)];outliers=lodash.unique(column.mins.concat(column.maxs));minimum=lodash.head(column.mins);maximum=lodash.head(column.maxs);vectors=[createFactor('column',Flow.TString,[columnName]),createVector('mean',Flow.TNumber,[mean]),createVector('q1',Flow.TNumber,[q1]),createVector('q2',Flow.TNumber,[q2]),createVector('q3',Flow.TNumber,[q3]),createVector('min',Flow.TNumber,[minimum]),createVector('max',Flow.TNumber,[maximum])];return createDataframe('summary',vectors,lodash.range(1),null,{description:`Summary for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,plot:`plot inspect \'summary\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspectDomain=function(){var counts;var i;var labels;var level;var levels;var percents;var sortedLevels;var vectors;var _i;var _len;var _ref1;levels=lodash.map(column.histogram_bins,function(count,index){return{count,index};});sortedLevels=lodash.sortBy(levels,function(level){return-level.count;});_ref1=createArrays(3,sortedLevels.length),labels=_ref1[0],counts=_ref1[1],percents=_ref1[2];for(i=_i=0,_len=sortedLevels.length;_i<_len;i=++_i){level=sortedLevels[i];labels[i]=column.domain[level.index];counts[i]=level.count;percents[i]=100*level.count/rowCount;}vectors=[createFactor('label',Flow.TString,labels),createVector('count',Flow.TNumber,counts),createVector('percent',Flow.TNumber,percents)];return createDataframe('domain',vectors,lodash.range(sortedLevels.length),null,{description:`Domain for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,plot:`plot inspect \'domain\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`});};inspections={characteristics:inspectCharacteristics};switch(column.type){case'int':case'real':if(column.histogram_bins.length){inspections.distribution=inspectDistribution;}if(!lodash.some(column.percentiles,function(a){return a==='NaN';})){inspections.summary=inspectSummary;inspections.percentiles=inspectPercentiles;}break;case'enum':inspections.domain=inspectDomain;}inspect_(frame,inspections);return render_(frame,h2oColumnSummaryOutput,frameKey,frame,columnName);};requestFrame=function(frameKey,go){return _.requestFrameSlice(frameKey,void 0,0,20,function(error,frame){if(error){return go(error);}return go(null,extendFrame(frameKey,frame));});};requestFrameData=function(frameKey,searchTerm,offset,count,go){return _.requestFrameSlice(frameKey,searchTerm,offset,count,function(error,frame){if(error){return go(error);}return go(null,extendFrameData(frameKey,frame));});};requestFrameSummarySlice=function(frameKey,searchTerm,offset,length,go){return _.requestFrameSummarySlice(frameKey,searchTerm,offset,length,function(error,frame){if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});};requestFrameSummary=function(frameKey,go){return _.requestFrameSummarySlice(frameKey,void 0,0,20,function(error,frame){if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});};requestColumnSummary=function(frameKey,columnName,go){return _.requestColumnSummary(frameKey,columnName,function(error,frame){if(error){return go(error);}return go(null,extendColumnSummary(frameKey,frame,columnName));});};requestFrames=function(go){return _.requestFrames(function(error,frames){if(error){return go(error);}return go(null,extendFrames(frames));});};requestCreateFrame=function(opts,go){return _.requestCreateFrame(opts,function(error,result){if(error){return go(error);}return _.requestJob(result.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};requestPartialDependence=function(opts,go){return _.requestPartialDependence(opts,function(error,result){if(error){return go(error);}return _.requestJob(result.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};requestPartialDependenceData=function(key,go){return _.requestPartialDependenceData(key,function(error,result){if(error){return go(error);}return go(null,extendPartialDependence(result));});};computeSplits=function(ratios,keys){var i;var key;var part;var parts;var ratio;var splits;var sum;var _i;var _j;var _len;var _len1;var _ref1;parts=[];sum=0;_ref1=keys.slice(0,ratios.length);for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){key=_ref1[i];sum+=ratio=ratios[i];parts.push({key,ratio});}parts.push({key:keys[keys.length-1],ratio:1-sum});splits=[];sum=0;for(_j=0,_len1=parts.length;_j<_len1;_j++){part=parts[_j];splits.push({min:sum,max:sum+part.ratio,key:part.key});sum+=part.ratio;}return splits;};requestBindFrames=function(key,sourceKeys,go){return _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`,function(error,result){if(error){return go(error);}return go(null,extendBindFrames(key,result));});};requestSplitFrame=function(frameKey,splitRatios,splitKeys,seed,go){var g;var i;var l;var part;var randomVecKey;var sliceExpr;var splits;var statements;var _i;var _len;if(splitRatios.length===splitKeys.length-1){splits=computeSplits(splitRatios,splitKeys);randomVecKey=createTempKey();statements=[];statements.push(`(tmp= ${randomVecKey} (h2o.runif ${frameKey} ${seed}))`);for(i=_i=0,_len=splits.length;_i<_len;i=++_i){part=splits[i];g=i!==0?`(> ${randomVecKey} ${part.min})`:null;l=i!==splits.length-1?`(<= ${randomVecKey} ${part.max})`:null;if(g&&l){sliceExpr=`(& ${g} ${l})`;}else{if(l){sliceExpr=l;}else{sliceExpr=g;}}statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);}statements.push(`(rm ${randomVecKey})`);return _.requestExec(`(, ${statements.join(' ')})`,function(error,result){if(error){return go(error);}return go(null,extendSplitFrameResult({keys:splitKeys,ratios:splitRatios}));});}return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));};requestMergeFrames=function(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows,go){var lr;var rr;var statement;lr=includeAllLeftRows?'TRUE':'FALSE';rr=includeAllRightRows?'TRUE':'FALSE';statement=`(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;return _.requestExec(statement,function(error,result){if(error){return go(error);}return go(null,extendMergeFramesResult({key:destinationKey}));});};createFrame=function(opts){if(opts){return _fork(requestCreateFrame,opts);}return assist(createFrame);};splitFrame=function(frameKey,splitRatios,splitKeys,seed){if(seed==null){seed=-1;}if(frameKey&&splitRatios&&splitKeys){return _fork(requestSplitFrame,frameKey,splitRatios,splitKeys,seed);}return assist(splitFrame);};mergeFrames=function(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows){if(destinationKey&&leftFrameKey&&rightFrameKey){return _fork(requestMergeFrames,destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows);}return assist(mergeFrames);};buildPartialDependence=function(opts){if(opts){return _fork(requestPartialDependence,opts);}return assist(buildPartialDependence);};getPartialDependence=function(destinationKey){if(destinationKey){return _fork(requestPartialDependenceData,destinationKey);}return assist(getPartialDependence);};getFrames=function(){return _fork(requestFrames);};getFrame=function(frameKey){switch(Flow.Prelude.typeOf(frameKey)){case'String':return _fork(requestFrame,frameKey);default:return assist(getFrame);}};bindFrames=function(key,sourceKeys){return _fork(requestBindFrames,key,sourceKeys);};getFrameSummary=function(frameKey){switch(Flow.Prelude.typeOf(frameKey)){case'String':return _fork(requestFrameSummary,frameKey);default:return assist(getFrameSummary);}};getFrameData=function(frameKey){switch(Flow.Prelude.typeOf(frameKey)){case'String':return _fork(requestFrameData,frameKey,void 0,0,20);default:return assist(getFrameSummary);}};requestDeleteFrame=function(frameKey,go){return _.requestDeleteFrame(frameKey,function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([frameKey]));});};deleteFrame=function(frameKey){if(frameKey){return _fork(requestDeleteFrame,frameKey);}return assist(deleteFrame);};extendExportFrame=function(result){return render_(result,h2oExportFrameOutput,result);};extendBindFrames=function(key,result){return render_(result,h2oBindFramesOutput,key,result);};requestExportFrame=function(frameKey,path,opts,go){return _.requestExportFrame(frameKey,path,opts.overwrite,function(error,result){if(error){return go(error);}return _.requestJob(result.job.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};exportFrame=function(frameKey,path,opts){if(opts==null){opts={};}if(frameKey&&path){return _fork(requestExportFrame,frameKey,path,opts);}return assist(exportFrame,frameKey,path,opts);};requestDeleteFrames=function(frameKeys,go){var futures;futures=lodash.map(frameKeys,function(frameKey){return _fork(_.requestDeleteFrame,frameKey);});return Flow.Async.join(futures,function(error,results){if(error){return go(error);}return go(null,extendDeletedKeys(frameKeys));});};deleteFrames=function(frameKeys){switch(frameKeys.length){case 0:return assist(deleteFrames);case 1:return deleteFrame(lodash.head(frameKeys));default:return _fork(requestDeleteFrames,frameKeys);}};getColumnSummary=function(frameKey,columnName){return _fork(requestColumnSummary,frameKey,columnName);};requestModels=function(go){return _.requestModels(function(error,models){if(error){return go(error);}return go(null,extendModels(models));});};requestModelsByKeys=function(modelKeys,go){var futures;futures=lodash.map(modelKeys,function(key){return _fork(_.requestModel,key);});return Flow.Async.join(futures,function(error,models){if(error){return go(error);}return go(null,extendModels(models));});};getModels=function(modelKeys){if(lodash.isArray(modelKeys)){if(modelKeys.length){return _fork(requestModelsByKeys,modelKeys);}return _fork(requestModels);}return _fork(requestModels);};requestGrids=function(go){return _.requestGrids(function(error,grids){if(error){return go(error);}return go(null,extendGrids(grids));});};getGrids=function(){return _fork(requestGrids);};requestModel=function(modelKey,go){return _.requestModel(modelKey,function(error,model){if(error){return go(error);}return go(null,extendModel(model));});};getModel=function(modelKey){switch(Flow.Prelude.typeOf(modelKey)){case'String':return _fork(requestModel,modelKey);default:return assist(getModel);}};requestGrid=function(gridKey,opts,go){return _.requestGrid(gridKey,opts,function(error,grid){if(error){return go(error);}return go(null,extendGrid(grid,opts));});};getGrid=function(gridKey,opts){switch(Flow.Prelude.typeOf(gridKey)){case'String':return _fork(requestGrid,gridKey,opts);default:return assist(getGrid);}};findColumnIndexByColumnLabel=function(frame,columnLabel){var column;var i;var _i;var _len;var _ref1;_ref1=frame.columns;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){column=_ref1[i];if(column.label===columnLabel){return i;}}throw new Flow.Error(`Column [${columnLabel}] not found in frame`);};findColumnIndicesByColumnLabels=function(frame,columnLabels){var columnLabel;var _i;var _len;var _results;_results=[];for(_i=0,_len=columnLabels.length;_i<_len;_i++){columnLabel=columnLabels[_i];_results.push(findColumnIndexByColumnLabel(frame,columnLabel));}return _results;};requestImputeColumn=function(opts,go){var column;var combineMethod;var frame;var groupByColumns;var method;frame=opts.frame,column=opts.column,method=opts.method,combineMethod=opts.combineMethod,groupByColumns=opts.groupByColumns;combineMethod=combineMethod!=null?combineMethod:'interpolate';return _.requestFrameSummaryWithoutData(frame,function(error,result){var columnIndex;var columnIndicesError;var columnKeyError;var groupByArg;var groupByColumnIndices;if(error){return go(error);}try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}if(groupByColumns&&groupByColumns.length){try{groupByColumnIndices=findColumnIndicesByColumnLabels(result,groupByColumns);}catch(_error){columnIndicesError=_error;return go(columnIndicesError);}}else{groupByColumnIndices=null;}groupByArg=groupByColumnIndices?`[${groupByColumnIndices.join(' ')}]`:'[]';return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`,function(error,result){if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};requestChangeColumnType=function(opts,go){var column;var frame;var method;var type;frame=opts.frame,column=opts.column,type=opts.type;method=type==='enum'?'as.factor':'as.numeric';return _.requestFrameSummaryWithoutData(frame,function(error,result){var columnIndex;var columnKeyError;try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`,function(error,result){if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};imputeColumn=function(opts){if(opts&&opts.frame&&opts.column&&opts.method){return _fork(requestImputeColumn,opts);}return assist(imputeColumn,opts);};changeColumnType=function(opts){if(opts&&opts.frame&&opts.column&&opts.type){return _fork(requestChangeColumnType,opts);}return assist(changeColumnType,opts);};requestDeleteModel=function(modelKey,go){return _.requestDeleteModel(modelKey,function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([modelKey]));});};deleteModel=function(modelKey){if(modelKey){return _fork(requestDeleteModel,modelKey);}return assist(deleteModel);};extendImportModel=function(result){return render_(result,H2O.ImportModelOutput,result);};requestImportModel=function(path,opts,go){return _.requestImportModel(path,opts.overwrite,function(error,result){if(error){return go(error);}return go(null,extendImportModel(result));});};importModel=function(path,opts){if(path&&path.length){return _fork(requestImportModel,path,opts);}return assist(importModel,path,opts);};extendExportModel=function(result){return render_(result,h2oExportModelOutput,result);};requestExportModel=function(modelKey,path,opts,go){return _.requestExportModel(modelKey,path,opts.overwrite,function(error,result){if(error){return go(error);}return go(null,extendExportModel(result));});};exportModel=function(modelKey,path,opts){if(modelKey&&path){return _fork(requestExportModel,modelKey,path,opts);}return assist(exportModel,modelKey,path,opts);};requestDeleteModels=function(modelKeys,go){var futures;futures=lodash.map(modelKeys,function(modelKey){return _fork(_.requestDeleteModel,modelKey);});return Flow.Async.join(futures,function(error,results){if(error){return go(error);}return go(null,extendDeletedKeys(modelKeys));});};deleteModels=function(modelKeys){switch(modelKeys.length){case 0:return assist(deleteModels);case 1:return deleteModel(lodash.head(modelKeys));default:return _fork(requestDeleteModels,modelKeys);}};requestJob=function(key,go){return _.requestJob(key,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});};requestJobs=function(go){return _.requestJobs(function(error,jobs){if(error){return go(error);}return go(null,extendJobs(jobs));});};getJobs=function(){return _fork(requestJobs);};getJob=function(arg){switch(Flow.Prelude.typeOf(arg)){case'String':return _fork(requestJob,arg);case'Object':if(arg.key!=null){return getJob(arg.key);}return assist(getJob);// break; // no-unreachable
-  default:return assist(getJob);}};requestCancelJob=function(key,go){return _.requestCancelJob(key,function(error){if(error){return go(error);}return go(null,extendCancelJob({}));});};cancelJob=function(arg){switch(Flow.Prelude.typeOf(arg)){case'String':return _fork(requestCancelJob,arg);default:return assist(cancelJob);}};extendImportResults=function(importResults){return render_(importResults,h2oImportFilesOutput,importResults);};requestImportFiles=function(paths,go){return _.requestImportFiles(paths,function(error,importResults){if(error){return go(error);}return go(null,extendImportResults(importResults));});};importFiles=function(paths){switch(Flow.Prelude.typeOf(paths)){case'Array':return _fork(requestImportFiles,paths);default:return assist(importFiles);}};extendParseSetupResults=function(args,parseSetupResults){return render_(parseSetupResults,H2O.SetupParseOutput,args,parseSetupResults);};requestImportAndParseSetup=function(paths,go){return _.requestImportFiles(paths,function(error,importResults){var sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,function(result){return result.destination_frames;})));return _.requestParseSetup(sourceKeys,function(error,parseSetupResults){if(error){return go(error);}return go(null,extendParseSetupResults({paths},parseSetupResults));});});};requestParseSetup=function(sourceKeys,go){return _.requestParseSetup(sourceKeys,function(error,parseSetupResults){if(error){return go(error);}return go(null,extendParseSetupResults({source_frames:sourceKeys},parseSetupResults));});};setupParse=function(args){if(args.paths&&lodash.isArray(args.paths)){return _fork(requestImportAndParseSetup,args.paths);}else if(args.source_frames&&lodash.isArray(args.source_frames)){return _fork(requestParseSetup,args.source_frames);}return assist(setupParse);};extendParseResult=function(parseResult){return render_(parseResult,H2O.JobOutput,parseResult.job);};requestImportAndParseFiles=function(paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){return _.requestImportFiles(paths,function(error,importResults){var sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,function(result){return result.destination_frames;})));return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,function(error,parseResult){if(error){return go(error);}return go(null,extendParseResult(parseResult));});});};requestParseFiles=function(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,function(error,parseResult){if(error){return go(error);}return go(null,extendParseResult(parseResult));});};parseFiles=function(opts){var checkHeader;var chunkSize;var columnCount;var columnNames;var columnTypes;var deleteOnDone;var destinationKey;var parseType;var separator;var useSingleQuotes;destinationKey=opts.destination_frame;parseType=opts.parse_type;separator=opts.separator;columnCount=opts.number_columns;useSingleQuotes=opts.single_quotes;columnNames=opts.column_names;columnTypes=opts.column_types;deleteOnDone=opts.delete_on_done;checkHeader=opts.check_header;chunkSize=opts.chunk_size;if(opts.paths){return _fork(requestImportAndParseFiles,opts.paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);}return _fork(requestParseFiles,opts.source_frames,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);};requestModelBuild=function(algo,opts,go){return _.requestModelBuild(algo,opts,function(error,result){var messages;var validation;if(error){return go(error);}if(result.error_count>0){messages=function(){var _i;var _len;var _ref1;var _results;_ref1=result.messages;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){validation=_ref1[_i];_results.push(validation.message);}return _results;}();return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));}return go(null,extendJob(result.job));});};requestAutoModelBuild=function(opts,go){var params;params={input_spec:{training_frame:opts.frame,response_column:opts.column},build_control:{stopping_criteria:{max_runtime_secs:opts.maxRunTime}}};return _.requestAutoModelBuild(params,function(error,result){if(error){return go(error);}return go(null,extendJob(result.job));});};buildAutoModel=function(opts){if(opts&&lodash.keys(opts).length>1){return _fork(requestAutoModelBuild,opts);}return assist(buildAutoModel,opts);};buildModel=function(algo,opts){if(algo&&opts&&lodash.keys(opts).length>1){return _fork(requestModelBuild,algo,opts);}return assist(buildModel,algo,opts);};unwrapPrediction=function(go){return function(error,result){if(error){return go(error);}return go(null,extendPrediction(result));};};requestPredict=function(destinationKey,modelKey,frameKey,options,go){return _.requestPredict(destinationKey,modelKey,frameKey,options,unwrapPrediction(go));};requestPredicts=function(opts,go){var futures;futures=lodash.map(opts,function(opt){var frameKey;var modelKey;var options;modelKey=opt.model,frameKey=opt.frame,options=opt.options;return _fork(_.requestPredict,null,modelKey,frameKey,options||{});});return Flow.Async.join(futures,function(error,predictions){if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};predict=function(opts){var combos;var deep_features_hidden_layer;var exemplar_index;var frame;var frames;var leaf_node_assignment;var model;var models;var predictions_frame;var reconstruction_error;var _i;var _j;var _len;var _len1;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,models=opts.models,frame=opts.frame,frames=opts.frames,reconstruction_error=opts.reconstruction_error,deep_features_hidden_layer=opts.deep_features_hidden_layer,leaf_node_assignment=opts.leaf_node_assignment,exemplar_index=opts.exemplar_index;if(models||frames){if(!models){if(model){models=[model];}}if(!frames){if(frame){frames=[frame];}}if(frames&&models){combos=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];for(_j=0,_len1=frames.length;_j<_len1;_j++){frame=frames[_j];combos.push({model,frame});}}return _fork(requestPredicts,combos);}return assist(predict,{predictions_frame,models,frames});}if(model&&frame){return _fork(requestPredict,predictions_frame,model,frame,{reconstruction_error,deep_features_hidden_layer,leaf_node_assignment});}else if(model&&exemplar_index!==void 0){return _fork(requestPredict,predictions_frame,model,null,{exemplar_index});}return assist(predict,{predictions_frame,model,frame});};requestPrediction=function(modelKey,frameKey,go){return _.requestPrediction(modelKey,frameKey,unwrapPrediction(go));};requestPredictions=function(opts,go){var frameKey;var futures;var modelKey;if(lodash.isArray(opts)){futures=lodash.map(opts,function(opt){var frameKey;var modelKey;modelKey=opt.model,frameKey=opt.frame;return _fork(_.requestPredictions,modelKey,frameKey);});return Flow.Async.join(futures,function(error,predictions){var uniquePredictions;if(error){return go(error);}uniquePredictions=lodash.values(lodash.indexBy(lodash.flatten(predictions,true),function(prediction){return prediction.model.name+prediction.frame.name;}));return go(null,extendPredictions(opts,uniquePredictions));});}modelKey=opts.model,frameKey=opts.frame;return _.requestPredictions(modelKey,frameKey,function(error,predictions){if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};getPrediction=function(opts){var frame;var model;var predictions_frame;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,frame=opts.frame;if(model&&frame){return _fork(requestPrediction,model,frame);}return assist(getPrediction,{predictions_frame,model,frame});};getPredictions=function(opts){if(opts==null){opts={};}return _fork(requestPredictions,opts);};requestCloud=function(go){return _.requestCloud(function(error,cloud){if(error){return go(error);}return go(null,extendCloud(cloud));});};getCloud=function(){return _fork(requestCloud);};requestTimeline=function(go){return _.requestTimeline(function(error,timeline){if(error){return go(error);}return go(null,extendTimeline(timeline));});};getTimeline=function(){return _fork(requestTimeline);};requestStackTrace=function(go){return _.requestStackTrace(function(error,stackTrace){if(error){return go(error);}return go(null,extendStackTrace(stackTrace));});};getStackTrace=function(){return _fork(requestStackTrace);};requestLogFile=function(nodeIndex,fileType,go){return _.requestCloud(function(error,cloud){var NODE_INDEX_SELF;if(error){return go(error);}if(nodeIndex<0||nodeIndex>=cloud.nodes.length){NODE_INDEX_SELF=-1;nodeIndex=NODE_INDEX_SELF;}return _.requestLogFile(nodeIndex,fileType,function(error,logFile){if(error){return go(error);}return go(null,extendLogFile(cloud,nodeIndex,fileType,logFile));});});};getLogFile=function(nodeIndex,fileType){if(nodeIndex==null){nodeIndex=-1;}if(fileType==null){fileType='info';}return _fork(requestLogFile,nodeIndex,fileType);};requestNetworkTest=function(go){return _.requestNetworkTest(function(error,result){if(error){return go(error);}return go(null,extendNetworkTest(result));});};testNetwork=function(){return _fork(requestNetworkTest);};requestRemoveAll=function(go){return _.requestRemoveAll(function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([]));});};deleteAll=function(){return _fork(requestRemoveAll);};extendRDDs=function(rdds){render_(rdds,h2oRDDsOutput,rdds);return rdds;};requestRDDs=function(go){return _.requestRDDs(function(error,result){if(error){return go(error);}return go(null,extendRDDs(result.rdds));});};getRDDs=function(){return _fork(requestRDDs);};extendDataFrames=function(dataframes){render_(dataframes,h2oDataFramesOutput,dataframes);return dataframes;};requestDataFrames=function(go){return _.requestDataFrames(function(error,result){if(error){return go(error);}return go(null,extendDataFrames(result.dataframes));});};getDataFrames=function(){return _fork(requestDataFrames);};extendAsH2OFrame=function(result){render_(result,h2oH2OFrameOutput,result);return result;};requestAsH2OFrameFromRDD=function(rdd_id,name,go){return _.requestAsH2OFrameFromRDD(rdd_id,name,function(error,h2oframe_id){if(error){return go(error);}return go(null,extendAsH2OFrame(h2oframe_id));});};asH2OFrameFromRDD=function(rdd_id,name){if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromRDD,rdd_id,name);};requestAsH2OFrameFromDF=function(df_id,name,go){return _.requestAsH2OFrameFromDF(df_id,name,function(error,result){if(error){return go(error);}return go(null,extendAsH2OFrame(result));});};asH2OFrameFromDF=function(df_id,name){if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromDF,df_id,name);};extendAsDataFrame=function(result){render_(result,h2oDataFrameOutput,result);return result;};requestAsDataFrame=function(hf_id,name,go){return _.requestAsDataFrame(hf_id,name,function(error,result){if(error){return go(error);}return go(null,extendAsDataFrame(result));});};asDataFrame=function(hf_id,name){if(name==null){name=void 0;}return _fork(requestAsDataFrame,hf_id,name);};requestScalaCode=function(session_id,code,go){return _.requestScalaCode(session_id,code,function(error,result){if(error){return go(error);}return go(null,extendScalaCode(result));});};extendScalaCode=function(result){render_(result,h2oScalaCodeOutput,result);return result;};runScalaCode=function(session_id,code){return _fork(requestScalaCode,session_id,code);};requestScalaIntp=function(go){return _.requestScalaIntp(function(error,result){if(error){return go(error);}return go(null,extendScalaIntp(result));});};extendScalaIntp=function(result){render_(result,h2oScalaIntpOutput,result);return result;};getScalaIntp=function(){return _fork(requestScalaIntp);};requestProfile=function(depth,go){return _.requestProfile(depth,function(error,profile){if(error){return go(error);}return go(null,extendProfile(profile));});};getProfile=function(opts){if(!opts){opts={depth:10};}return _fork(requestProfile,opts.depth);};loadScript=function(path,go){var onDone;var onFail;onDone=function(script,status){return go(null,{script,status});};onFail=function(jqxhr,settings,error){return go(error);};return $.getScript(path).done(onDone).fail(onFail);};dumpFuture=function(result,go){if(result==null){result={};}console.debug(result);return go(null,render_(result,Flow.ObjectBrowser,'dump',result));};dump=function(f){if(f!=null?f.isFuture:void 0){return _fork(dumpFuture,f);}return Flow.Async.async(function(){return f;});};assist=function(){var args;var func;func=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];if(func===void 0){return _fork(proceed,h2oAssist,[_assistance]);}switch(func){case importFiles:return _fork(proceed,h2oImportFilesInput,[]);case buildModel:return _fork(proceed,H2O.ModelInput,args);case buildAutoModel:return _fork(proceed,h2oAutoModelInput,args);case predict:case getPrediction:return _fork(proceed,h2oPredictInput,args);case createFrame:return _fork(proceed,h2oCreateFrameInput,args);case splitFrame:return _fork(proceed,h2oSplitFrameInput,args);case mergeFrames:return _fork(proceed,h2oMergeFramesInput,args);case buildPartialDependence:return _fork(proceed,h2oPartialDependenceInput,args);case exportFrame:return _fork(proceed,h2oExportFrameInput,args);case imputeColumn:return _fork(proceed,H2O.ImputeInput,args);case importModel:return _fork(proceed,h2oImportModelInput,args);case exportModel:return _fork(proceed,h2oExportModelInput,args);default:return _fork(proceed,h2oNoAssist,[]);}};Flow.Dataflow.link(_.ready,function(){Flow.Dataflow.link(_.ls,ls);Flow.Dataflow.link(_.inspect,inspect);Flow.Dataflow.link(_.plot,function(plot){return plot(lightning);});Flow.Dataflow.link(_.grid,function(frame){return lightning(lightning.select(),lightning.from(frame));});Flow.Dataflow.link(_.enumerate,function(frame){return lightning(lightning.select(0),lightning.from(frame));});Flow.Dataflow.link(_.requestFrameDataE,requestFrameData);return Flow.Dataflow.link(_.requestFrameSummarySliceE,requestFrameSummarySlice);});initAssistanceSparklingWater=function(){_assistance.getRDDs={description:'Get a list of Spark\'s RDDs',icon:'table'};return _assistance.getDataFrames={description:'Get a list of Spark\'s data frames',icon:'table'};};Flow.Dataflow.link(_.initialized,function(){if(_.onSparklingWater){return initAssistanceSparklingWater();}});routines={fork:_fork,join:_join,call:_call,apply:_apply,isFuture:_isFuture,signal:Flow.Dataflow.signal,signals:Flow.Dataflow.signals,isSignal:Flow.Dataflow.isSignal,act:Flow.Dataflow.act,react:Flow.Dataflow.react,lift:Flow.Dataflow.lift,merge:Flow.Dataflow.merge,dump,inspect,plot,grid,get:_get,assist,gui,loadScript,getJobs,getJob,cancelJob,importFiles,setupParse,parseFiles,createFrame,splitFrame,mergeFrames,buildPartialDependence,getPartialDependence,getFrames,getFrame,bindFrames,getFrameSummary,getFrameData,deleteFrames,deleteFrame,exportFrame,getColumnSummary,changeColumnType,imputeColumn,buildModel,buildAutoModel,getGrids,getModels,getModel,getGrid,deleteModels,deleteModel,importModel,exportModel,predict,getPrediction,getPredictions,getCloud,getTimeline,getProfile,getStackTrace,getLogFile,testNetwork,deleteAll};if(_.onSparklingWater){routinesOnSw={getDataFrames,getRDDs,getScalaIntp,runScalaCode,asH2OFrameFromRDD,asH2OFrameFromDF,asDataFrame};for(attrname in routinesOnSw){if({}.hasOwnProperty.call(routinesOnSw,attrname)){routines[attrname]=routinesOnSw[attrname];}}}return routines;};}).call(this);util();imputeInput();jobOutput();modelInput();parseInput();}).call(undefined);
+  default:return builders;}}();return cacheModelBuilders(availableBuilders);}));};requestModelBuilder=function(algo,go){return doGet(getModelBuilderEndpoint(algo),go);};requestModelInputValidation=function(algo,parameters,go){return doPost(`${getModelBuilderEndpoint(algo)}/parameters`,encodeObjectForPost(parameters),go);};requestModelBuild=function(algo,parameters,go){_.trackEvent('model',algo);if(parameters.hyper_parameters){parameters.hyper_parameters=Flow.Prelude.stringify(parameters.hyper_parameters);if(parameters.search_criteria){parameters.search_criteria=Flow.Prelude.stringify(parameters.search_criteria);}return doPost(getGridModelBuilderEndpoint(algo),encodeObjectForPost(parameters),go);}return doPost(getModelBuilderEndpoint(algo),encodeObjectForPost(parameters),go);};requestAutoModelBuild=function(parameters,go){return doPostJSON('/3/AutoMLBuilder',parameters,go);};requestPredict=function(destinationKey,modelKey,frameKey,options,go){var opt;var opts;opts={};if(destinationKey){opts.predictions_frame=destinationKey;}if(void 0!==(opt=options.reconstruction_error)){opts.reconstruction_error=opt;}if(void 0!==(opt=options.deep_features_hidden_layer)){opts.deep_features_hidden_layer=opt;}if(void 0!==(opt=options.leaf_node_assignment)){opts.leaf_node_assignment=opt;}if(void 0!==(opt=options.exemplar_index)){opts.exemplar_index=opt;}return doPost(`/3/Predictions/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`,opts,function(error,result){if(error){return go(error);}return go(null,result);});};requestPrediction=function(modelKey,frameKey,go){return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`,function(error,result){if(error){return go(error);}return go(null,result);});};requestPredictions=function(modelKey,frameKey,_go){var go;go=function(error,result){var prediction;var predictions;if(error){return _go(error);}predictions=function(){var _i;var _len;var _ref;var _results;_ref=result.model_metrics;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){prediction=_ref[_i];if(modelKey&&prediction.model.name!==modelKey){_results.push(null);}else if(frameKey&&prediction.frame.name!==frameKey){_results.push(null);}else{_results.push(prediction);}}return _results;}();return _go(null,function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=predictions.length;_i<_len;_i++){prediction=predictions[_i];if(prediction){_results.push(prediction);}}return _results;}());};if(modelKey&&frameKey){return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/'${encodeURIComponent(frameKey)}`,go);}else if(modelKey){return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}`,go);}else if(frameKey){return doGet(`/3/ModelMetrics/frames/${encodeURIComponent(frameKey)}`,go);}return doGet('/3/ModelMetrics',go);};_storageConfiguration=null;requestIsStorageConfigured=function(go){if(_storageConfiguration){return go(null,_storageConfiguration.isConfigured);}return doGet('/3/NodePersistentStorage/configured',function(error,result){_storageConfiguration={isConfigured:error?false:result.configured};return go(null,_storageConfiguration.isConfigured);});};requestObjects=function(type,go){return doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}`,unwrap(go,function(result){return result.entries;}));};requestObjectExists=function(type,name,go){return doGet(`/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`,function(error,result){return go(null,error?false:result.exists);});};requestObject=function(type,name,go){return doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`,unwrap(go,function(result){return JSON.parse(result.value);}));};requestDeleteObject=function(type,name,go){return doDelete(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`,go);};requestPutObject=function(type,name,value,go){var uri;uri=`/3/NodePersistentStorage/${encodeURIComponent(type)}`;if(name){uri+=`/${encodeURIComponent(name)}`;}return doPost(uri,{value:JSON.stringify(value,null,2)},unwrap(go,function(result){return result.name;}));};requestUploadObject=function(type,name,formData,go){var uri;uri=`/3/NodePersistentStorage.bin/${encodeURIComponent(type)}`;if(name){uri+=`/${encodeURIComponent(name)}`;}return doUpload(uri,formData,unwrap(go,function(result){return result.name;}));};requestUploadFile=function(key,formData,go){return doUpload(`/3/PostFile?destination_frame=${encodeURIComponent(key)}`,formData,go);};requestCloud=function(go){return doGet('/3/Cloud',go);};requestTimeline=function(go){return doGet('/3/Timeline',go);};requestProfile=function(depth,go){return doGet(`/3/Profiler?depth=${depth}`,go);};requestStackTrace=function(go){return doGet('/3/JStack',go);};requestRemoveAll=function(go){return doDelete('/3/DKV',go);};requestEcho=function(message,go){return doPost('/3/LogAndEcho',{message},go);};requestLogFile=function(nodeIndex,fileType,go){return doGet(`/3/Logs/nodes/${nodeIndex}/files/${fileType}`,go);};requestNetworkTest=function(go){return doGet('/3/NetworkTest',go);};requestAbout=function(go){return doGet('/3/About',go);};requestShutdown=function(go){return doPost('/3/Shutdown',{},go);};requestEndpoints=function(go){return doGet('/3/Metadata/endpoints',go);};requestEndpoint=function(index,go){return doGet(`/3/Metadata/endpoints/${index}`,go);};requestSchemas=function(go){return doGet('/3/Metadata/schemas',go);};requestSchema=function(name,go){return doGet(`/3/Metadata/schemas/${encodeURIComponent(name)}`,go);};getLines=function(data){return lodash.filter(data.split('\n'),function(line){if(line.trim()){return true;}return false;});};requestPacks=function(go){return download('text','/flow/packs/index.list',unwrap(go,getLines));};requestPack=function(packName,go){return download('text',`/flow/packs/${encodeURIComponent(packName)}/index.list`,unwrap(go,getLines));};requestFlow=function(packName,flowName,go){return download('json',`/flow/packs/${encodeURIComponent(packName)}/${encodeURIComponent(flowName)}`,go);};requestHelpIndex=function(go){return download('json','/flow/help/catalog.json',go);};requestHelpContent=function(name,go){return download('text',`/flow/help/${name}.html`,go);};requestRDDs=function(go){return doGet('/3/RDDs',go);};requestDataFrames=function(go){return doGet('/3/dataframes',go);};requestScalaIntp=function(go){return doPost('/3/scalaint',{},go);};requestScalaCode=function(session_id,code,go){return doPost(`/3/scalaint/${session_id}`,{code},go);};requestAsH2OFrameFromRDD=function(rdd_id,name,go){if(name===void 0){return doPost(`/3/RDDs/${rdd_id}/h2oframe`,{},go);}return doPost(`/3/RDDs/${rdd_id}/h2oframe`,{h2oframe_id:name},go);};requestAsH2OFrameFromDF=function(df_id,name,go){if(name===void 0){return doPost(`/3/dataframes/${df_id}/h2oframe`,{},go);}return doPost(`/3/dataframes/${df_id}/h2oframe`,{h2oframe_id:name},go);};requestAsDataFrame=function(hf_id,name,go){if(name===void 0){return doPost(`/3/h2oframes/${hf_id}/dataframe`,{},go);}return doPost(`/3/h2oframes/${hf_id}/dataframe`,{dataframe_id:name},go);};Flow.Dataflow.link(_.requestInspect,requestInspect);Flow.Dataflow.link(_.requestCreateFrame,requestCreateFrame);Flow.Dataflow.link(_.requestSplitFrame,requestSplitFrame);Flow.Dataflow.link(_.requestFrames,requestFrames);Flow.Dataflow.link(_.requestFrame,requestFrame);Flow.Dataflow.link(_.requestFrameSlice,requestFrameSlice);Flow.Dataflow.link(_.requestFrameSummary,requestFrameSummary);Flow.Dataflow.link(_.requestFrameSummaryWithoutData,requestFrameSummaryWithoutData);Flow.Dataflow.link(_.requestFrameSummarySlice,requestFrameSummarySlice);Flow.Dataflow.link(_.requestDeleteFrame,requestDeleteFrame);Flow.Dataflow.link(_.requestExportFrame,requestExportFrame);Flow.Dataflow.link(_.requestColumnSummary,requestColumnSummary);Flow.Dataflow.link(_.requestJobs,requestJobs);Flow.Dataflow.link(_.requestJob,requestJob);Flow.Dataflow.link(_.requestCancelJob,requestCancelJob);Flow.Dataflow.link(_.requestFileGlob,requestFileGlob);Flow.Dataflow.link(_.requestImportFiles,requestImportFiles);Flow.Dataflow.link(_.requestImportFile,requestImportFile);Flow.Dataflow.link(_.requestParseSetup,requestParseSetup);Flow.Dataflow.link(_.requestParseSetupPreview,requestParseSetupPreview);Flow.Dataflow.link(_.requestParseFiles,requestParseFiles);Flow.Dataflow.link(_.requestPartialDependence,requestPartialDependence);Flow.Dataflow.link(_.requestPartialDependenceData,requestPartialDependenceData);Flow.Dataflow.link(_.requestGrids,requestGrids);Flow.Dataflow.link(_.requestModels,requestModels);Flow.Dataflow.link(_.requestGrid,requestGrid);Flow.Dataflow.link(_.requestModel,requestModel);Flow.Dataflow.link(_.requestPojoPreview,requestPojoPreview);Flow.Dataflow.link(_.requestDeleteModel,requestDeleteModel);Flow.Dataflow.link(_.requestImportModel,requestImportModel);Flow.Dataflow.link(_.requestExportModel,requestExportModel);Flow.Dataflow.link(_.requestModelBuilder,requestModelBuilder);Flow.Dataflow.link(_.requestModelBuilders,requestModelBuilders);Flow.Dataflow.link(_.requestModelBuild,requestModelBuild);Flow.Dataflow.link(_.requestModelInputValidation,requestModelInputValidation);Flow.Dataflow.link(_.requestAutoModelBuild,requestAutoModelBuild);Flow.Dataflow.link(_.requestPredict,requestPredict);Flow.Dataflow.link(_.requestPrediction,requestPrediction);Flow.Dataflow.link(_.requestPredictions,requestPredictions);Flow.Dataflow.link(_.requestObjects,requestObjects);Flow.Dataflow.link(_.requestObject,requestObject);Flow.Dataflow.link(_.requestObjectExists,requestObjectExists);Flow.Dataflow.link(_.requestDeleteObject,requestDeleteObject);Flow.Dataflow.link(_.requestPutObject,requestPutObject);Flow.Dataflow.link(_.requestUploadObject,requestUploadObject);Flow.Dataflow.link(_.requestUploadFile,requestUploadFile);Flow.Dataflow.link(_.requestCloud,requestCloud);Flow.Dataflow.link(_.requestTimeline,requestTimeline);Flow.Dataflow.link(_.requestProfile,requestProfile);Flow.Dataflow.link(_.requestStackTrace,requestStackTrace);Flow.Dataflow.link(_.requestRemoveAll,requestRemoveAll);Flow.Dataflow.link(_.requestEcho,requestEcho);Flow.Dataflow.link(_.requestLogFile,requestLogFile);Flow.Dataflow.link(_.requestNetworkTest,requestNetworkTest);Flow.Dataflow.link(_.requestAbout,requestAbout);Flow.Dataflow.link(_.requestShutdown,requestShutdown);Flow.Dataflow.link(_.requestEndpoints,requestEndpoints);Flow.Dataflow.link(_.requestEndpoint,requestEndpoint);Flow.Dataflow.link(_.requestSchemas,requestSchemas);Flow.Dataflow.link(_.requestSchema,requestSchema);Flow.Dataflow.link(_.requestPacks,requestPacks);Flow.Dataflow.link(_.requestPack,requestPack);Flow.Dataflow.link(_.requestFlow,requestFlow);Flow.Dataflow.link(_.requestHelpIndex,requestHelpIndex);Flow.Dataflow.link(_.requestHelpContent,requestHelpContent);Flow.Dataflow.link(_.requestExec,requestExec);Flow.Dataflow.link(_.requestRDDs,requestRDDs);Flow.Dataflow.link(_.requestDataFrames,requestDataFrames);Flow.Dataflow.link(_.requestScalaIntp,requestScalaIntp);Flow.Dataflow.link(_.requestScalaCode,requestScalaCode);Flow.Dataflow.link(_.requestAsH2OFrameFromDF,requestAsH2OFrameFromDF);Flow.Dataflow.link(_.requestAsH2OFrameFromRDD,requestAsH2OFrameFromRDD);return Flow.Dataflow.link(_.requestAsDataFrame,requestAsDataFrame);};}).call(this);routines();util();imputeInput();jobOutput();modelInput();parseInput();}).call(undefined);
 
 }));
