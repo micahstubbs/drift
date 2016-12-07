@@ -66,6 +66,7 @@ import { modelInput } from './modelInput/modelInput';
 import { parseInput } from './parseInput/parseInput';
 import { jobOutput } from './jobOutput/jobOutput';
 import { imputeInput } from './imputeInput/imputeInput';
+import { util } from './util/util';
 
 // anonymous IIFE
 (function () {
@@ -8578,21 +8579,7 @@ import { imputeInput } from './imputeInput/imputeInput';
       return routines;
     };
   }.call(this));
-  // anonymous IIFE
-  (function () {
-    var getFileBaseName;
-    var validateFileExtension;
-    validateFileExtension = function (filename, extension) {
-      return filename.indexOf(extension, filename.length - extension.length) !== -1;
-    };
-    getFileBaseName = function (filename, extension) {
-      return Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
-    };
-    H2O.Util = {
-      validateFileExtension,
-      getFileBaseName
-    };
-  }.call(this));
+  util();
   imputeInput();
   jobOutput();
   modelInput();
