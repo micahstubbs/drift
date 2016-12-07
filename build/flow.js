@@ -7004,6 +7004,7 @@
   }
 
   function dialogs() {
+    var Flow = window.Flow;
     var __slice = [].slice;
     Flow.Dialogs = function (_) {
       var showDialog;
