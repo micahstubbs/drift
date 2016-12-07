@@ -1,9 +1,10 @@
 import { h2oImportModelOutput } from './h2oImportModelOutput';
 import { h2oFrameDataOutput } from './h2oFrameDataOutput';
-import { flowFileUploadDialog } from './flowFileUploadDialog';
-import { flowFileOpenDialog } from './flowFileOpenDialog';
 import { h2oDataFrameOutput } from './h2oDataFrameOutput';
 import { h2oApplicationContext } from './h2oApplicationContext';
+
+import { flowFileUploadDialog } from './flowFileUploadDialog';
+import { flowFileOpenDialog } from './flowFileOpenDialog';
 import { flowSandbox } from './flowSandbox';
 import { flowGrowl } from './flowGrowl';
 import { flowApplicationContext } from './flowApplicationContext';
@@ -15,6 +16,8 @@ import { flowHeading } from './flowHeading';
 import { flowForm } from './flowForm';
 import { flowCoffeescript } from './flowCoffeescript';
 import { flowCell } from './flowCell';
+import { flowAutosave } from './flowAutosave';
+
 import { modelInput } from './modelInput/modelInput';
 import { parseInput } from './parseInput/parseInput';
 import { jobOutput } from './jobOutput/jobOutput';
@@ -2182,7 +2185,7 @@ import { async } from './async/async';
       _renderers = Flow.Renderers(_, _sandbox);
       flowAnalytics(_);
       flowGrowl(_);
-      Flow.Autosave(_);
+      flowAutosave(_);
       _notebook = Flow.Notebook(_, _renderers);
       return {
         context: _,
@@ -2193,31 +2196,6 @@ import { async } from './async/async';
   }.call(this));
   // anonymous IIFE
   async();
-  (function () {
-    Flow.Autosave = function (_) {
-      var setDirty;
-      var setPristine;
-      var warnOnExit;
-      warnOnExit = function (e) {
-        var message;
-        message = 'Warning: you are about to exit Flow.';
-        if (e = e != null ? e : window.event) {
-          e.returnValue = message;
-        }
-        return message;
-      };
-      setDirty = function () {
-        return window.onbeforeunload = warnOnExit;
-      };
-      setPristine = function () {
-        return window.onbeforeunload = null;
-      };
-      return Flow.Dataflow.link(_.ready, function () {
-        Flow.Dataflow.link(_.setDirty, setDirty);
-        return Flow.Dataflow.link(_.setPristine, setPristine);
-      });
-    };
-  }.call(this));
   data();
   dataflow();
   dialogs();
