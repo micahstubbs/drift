@@ -60,6 +60,7 @@ import { flowRaw } from './flowRaw';
 import { flowHeading } from './flowHeading';
 import { flowForm } from './flowForm';
 import { flowCoffeescript } from './flowCoffeescript';
+import { flowConfirmDialog } from './flowConfirmDialog';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -614,35 +615,6 @@ import { flowCoffeescript } from './flowCoffeescript';
         trashClipCount: _trashClipCount,
         hasTrashClips: _hasTrashClips,
         emptyTrash
-      };
-    };
-  }.call(this));
-  (function () {
-    Flow.ConfirmDialog = function (_, _message, _opts, _go) {
-      var accept;
-      var decline;
-      if (_opts == null) {
-        _opts = {};
-      }
-      lodash.defaults(_opts, {
-        title: 'Confirm',
-        acceptCaption: 'Yes',
-        declineCaption: 'No'
-      });
-      accept = function () {
-        return _go(true);
-      };
-      decline = function () {
-        return _go(false);
-      };
-      return {
-        title: _opts.title,
-        acceptCaption: _opts.acceptCaption,
-        declineCaption: _opts.declineCaption,
-        message: Flow.Util.multilineTextToHTML(_message),
-        accept,
-        decline,
-        template: 'confirm-dialog'
       };
     };
   }.call(this));
@@ -3872,7 +3844,7 @@ import { flowCoffeescript } from './flowCoffeescript';
         return showDialog(ctor, args, go);
       });
       Flow.Dataflow.link(_.confirm, function (message, opts, go) {
-        return showDialog(Flow.ConfirmDialog, [
+        return showDialog(flowConfirmDialog, [
           message,
           opts
         ], go);
