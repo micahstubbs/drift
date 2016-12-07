@@ -51,7 +51,8 @@ import { h2oAutoModelInput } from './h2oAutoModelInput';
 import { h2oAssist } from './h2oAssist';
 import { h2oApplicationContext } from './h2oApplicationContext';
 import { flowSandbox } from './flowSandbox';
-import { flowGrowl } from './flowGrowl'; 
+import { flowGrowl } from './flowGrowl';
+import { flowApplicationContext } from './flowApplicationContext'; 
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -2775,40 +2776,13 @@ import { flowGrowl } from './flowGrowl';
       });
     };
   }.call(this));
-  (function () {
-    Flow.ApplicationContext = function (_) {
-      _.ready = Flow.Dataflow.slots();
-      _.initialized = Flow.Dataflow.slots();
-      _.open = Flow.Dataflow.slot();
-      _.load = Flow.Dataflow.slot();
-      _.saved = Flow.Dataflow.slots();
-      _.loaded = Flow.Dataflow.slots();
-      _.setDirty = Flow.Dataflow.slots();
-      _.setPristine = Flow.Dataflow.slots();
-      _.status = Flow.Dataflow.slot();
-      _.trackEvent = Flow.Dataflow.slot();
-      _.trackException = Flow.Dataflow.slot();
-      _.selectCell = Flow.Dataflow.slot();
-      _.insertCell = Flow.Dataflow.slot();
-      _.insertAndExecuteCell = Flow.Dataflow.slot();
-      _.executeAllCells = Flow.Dataflow.slot();
-      _.showHelp = Flow.Dataflow.slot();
-      _.showOutline = Flow.Dataflow.slot();
-      _.showBrowser = Flow.Dataflow.slot();
-      _.showClipboard = Flow.Dataflow.slot();
-      _.saveClip = Flow.Dataflow.slot();
-      _.growl = Flow.Dataflow.slot();
-      _.confirm = Flow.Dataflow.slot();
-      _.alert = Flow.Dataflow.slot();
-      return _.dialog = Flow.Dataflow.slot();
-    };
-  }.call(this));
+  // defer this for now
   (function () {
     Flow.Application = function (_, routines) {
       var _notebook;
       var _renderers;
       var _sandbox;
-      Flow.ApplicationContext(_);
+      flowApplicationContext(_);
       _sandbox = flowSandbox(_, routines(_));
       _renderers = Flow.Renderers(_, _sandbox);
       Flow.Analytics(_);
@@ -2822,6 +2796,7 @@ import { flowGrowl } from './flowGrowl';
       };
     };
   }.call(this));
+  // anonymous IIFE
   (function () {
     var createBuffer;
     var iterate;
