@@ -23,6 +23,8 @@ import { imputeInput } from './imputeInput/imputeInput';
 import { util } from './util/util';
 import { routines } from './routines/routines';
 import { coreUtils } from './coreUtils/coreUtils';
+import { types } from './types/types';
+
 // anonymous IIFE
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -4229,23 +4231,7 @@ import { coreUtils } from './coreUtils/coreUtils';
       };
     }();
   }.call(this));
-  // anonymous IIFE 
-  (function () {
-    Flow.TUndefined = 'undefined';
-    Flow.TNull = 'null';
-    Flow.TBoolean = 'Boolean';
-    Flow.TString = 'String';
-    Flow.TNumber = 'Number';
-    Flow.TFunction = 'Function';
-    Flow.TObject = 'Object';
-    Flow.TArray = 'Array';
-    Flow.TArguments = 'Arguments';
-    Flow.TDate = 'Date';
-    Flow.TRegExp = 'RegExp';
-    Flow.TError = 'Error';
-    Flow.TFactor = 'Factor';
-  }.call(this));
-  // anonymous IIFE
+  types();
   coreUtils();
   // defer for now 
   (function () {
