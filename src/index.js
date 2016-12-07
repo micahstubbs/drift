@@ -52,7 +52,10 @@ import { h2oAssist } from './h2oAssist';
 import { h2oApplicationContext } from './h2oApplicationContext';
 import { flowSandbox } from './flowSandbox';
 import { flowGrowl } from './flowGrowl';
-import { flowApplicationContext } from './flowApplicationContext'; 
+import { flowApplicationContext } from './flowApplicationContext';
+import { flowAnalytics } from './flowAnalytics';
+import { flowStatus } from './flowStatus';
+import { flowSidebar } from './flowSidebar'; 
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -1366,8 +1369,8 @@ import { flowApplicationContext } from './flowApplicationContext';
       _runningCaption = Flow.Dataflow.signal('Running');
       _runningPercent = Flow.Dataflow.signal('0%');
       _runningCellInput = Flow.Dataflow.signal('');
-      _status = Flow.Status(_);
-      _sidebar = Flow.Sidebar(_, _cells);
+      _status = flowStatus(_);
+      _sidebar = flowSidebar(_, _cells);
       _about = Flow.About(_);
       _dialogs = Flow.Dialogs(_);
       _initializeInterpreter = function () {
@@ -2639,143 +2642,6 @@ import { flowApplicationContext } from './flowApplicationContext';
       return render;
     };
   }.call(this));
-  (function () {
-    Flow.Sidebar = function (_, cells) {
-      var switchToBrowser;
-      var switchToClipboard;
-      var switchToHelp;
-      var switchToOutline;
-      var _browser;
-      var _clipboard;
-      var _help;
-      var _isBrowserMode;
-      var _isClipboardMode;
-      var _isHelpMode;
-      var _isOutlineMode;
-      var _mode;
-      var _outline;
-      _mode = Flow.Dataflow.signal('help');
-      _outline = Flow.Outline(_, cells);
-      _isOutlineMode = Flow.Dataflow.lift(_mode, function (mode) {
-        return mode === 'outline';
-      });
-      switchToOutline = function () {
-        return _mode('outline');
-      };
-      _browser = Flow.Browser(_);
-      _isBrowserMode = Flow.Dataflow.lift(_mode, function (mode) {
-        return mode === 'browser';
-      });
-      switchToBrowser = function () {
-        return _mode('browser');
-      };
-      _clipboard = Flow.Clipboard(_);
-      _isClipboardMode = Flow.Dataflow.lift(_mode, function (mode) {
-        return mode === 'clipboard';
-      });
-      switchToClipboard = function () {
-        return _mode('clipboard');
-      };
-      _help = Flow.Help(_);
-      _isHelpMode = Flow.Dataflow.lift(_mode, function (mode) {
-        return mode === 'help';
-      });
-      switchToHelp = function () {
-        return _mode('help');
-      };
-      Flow.Dataflow.link(_.ready, function () {
-        Flow.Dataflow.link(_.showHelp, function () {
-          return switchToHelp();
-        });
-        Flow.Dataflow.link(_.showClipboard, function () {
-          return switchToClipboard();
-        });
-        Flow.Dataflow.link(_.showBrowser, function () {
-          return switchToBrowser();
-        });
-        return Flow.Dataflow.link(_.showOutline, function () {
-          return switchToOutline();
-        });
-      });
-      return {
-        outline: _outline,
-        isOutlineMode: _isOutlineMode,
-        switchToOutline,
-        browser: _browser,
-        isBrowserMode: _isBrowserMode,
-        switchToBrowser,
-        clipboard: _clipboard,
-        isClipboardMode: _isClipboardMode,
-        switchToClipboard,
-        help: _help,
-        isHelpMode: _isHelpMode,
-        switchToHelp
-      };
-    };
-  }.call(this));
-  (function () {
-    Flow.Status = function (_) {
-      var defaultMessage;
-      var onStatus;
-      var _connections;
-      var _isBusy;
-      var _message;
-      defaultMessage = 'Ready';
-      _message = Flow.Dataflow.signal(defaultMessage);
-      _connections = Flow.Dataflow.signal(0);
-      _isBusy = Flow.Dataflow.lift(_connections, function (connections) {
-        return connections > 0;
-      });
-      onStatus = function (category, type, data) {
-        var connections;
-        console.debug('Status:', category, type, data);
-        switch (category) {
-          case 'server':
-            switch (type) {
-              case 'request':
-                _connections(_connections() + 1);
-                return lodash.defer(_message, `Requesting ${data}`);
-              case 'response':
-              case 'error':
-                _connections(connections = _connections() - 1);
-                if (connections) {
-                  return lodash.defer(_message, `Waiting for ${connections} responses...`);
-                }
-                return lodash.defer(_message, defaultMessage);
-            }
-        }
-      };
-      Flow.Dataflow.link(_.ready, function () {
-        return Flow.Dataflow.link(_.status, onStatus);
-      });
-      return {
-        message: _message,
-        connections: _connections,
-        isBusy: _isBusy
-      };
-    };
-  }.call(this));
-  (function () {
-    Flow.Analytics = function (_) {
-      Flow.Dataflow.link(_.trackEvent, function (category, action, label, value) {
-        return lodash.defer(function () {
-          return window.ga('send', 'event', category, action, label, value);
-        });
-      });
-      return Flow.Dataflow.link(_.trackException, function (description) {
-        return lodash.defer(function () {
-          _.requestEcho(`FLOW: ${description}`, function () {
-          });
-          return window.ga('send', 'exception', {
-            exDescription: description,
-            exFatal: false,
-            appName: 'Flow',
-            appVersion: Flow.Version
-          });
-        });
-      });
-    };
-  }.call(this));
   // defer this for now
   (function () {
     Flow.Application = function (_, routines) {
@@ -2785,7 +2651,7 @@ import { flowApplicationContext } from './flowApplicationContext';
       flowApplicationContext(_);
       _sandbox = flowSandbox(_, routines(_));
       _renderers = Flow.Renderers(_, _sandbox);
-      Flow.Analytics(_);
+      flowAnalytics(_);
       flowGrowl(_);
       Flow.Autosave(_);
       _notebook = Flow.Notebook(_, _renderers);
