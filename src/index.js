@@ -48,6 +48,7 @@ import { h2oCloudOutput } from './h2oCloudOutput';
 import { h2oCancelJobOutput } from './h2oCancelJobOutput';
 import { h2oBindFramesOutput } from './h2oBindFramesOutput';
 import { h2oAutoModelInput } from './h2oAutoModelInput';
+import { h2oAssist } from './h2oAssist';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -5108,6 +5109,8 @@ import { h2oAutoModelInput } from './h2oAutoModelInput';
       return H2O.Proxy(_);
     };
   }.call(this));
+  // abstracting out this IIFE produces an error
+  // defer for now 
   (function () {
     H2O.Proxy = function (_) {
       var cacheModelBuilders;
@@ -6052,6 +6055,7 @@ import { h2oAutoModelInput } from './h2oAutoModelInput';
       return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
     };
   }.call(this));
+  // anonymous IIFE
   (function () {
     var combineTables;
     var computeFalsePositiveRate;
@@ -9115,7 +9119,7 @@ import { h2oAutoModelInput } from './h2oAutoModelInput';
         var func;
         func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         if (func === void 0) {
-          return _fork(proceed, H2O.Assist, [_assistance]);
+          return _fork(proceed, h2oAssist, [_assistance]);
         }
         switch (func) {
           case importFiles:
@@ -9260,6 +9264,7 @@ import { h2oAutoModelInput } from './h2oAutoModelInput';
       return routines;
     };
   }.call(this));
+  // anonymous IIFE
   (function () {
     var getFileBaseName;
     var validateFileExtension;
@@ -9272,38 +9277,6 @@ import { h2oAutoModelInput } from './h2oAutoModelInput';
     H2O.Util = {
       validateFileExtension,
       getFileBaseName
-    };
-  }.call(this));
-  (function () {
-    H2O.Assist = function (_, _go, _items) {
-      var createAssistItem;
-      var item;
-      var name;
-      createAssistItem = function (name, item) {
-        return {
-          name,
-          description: item.description,
-          icon: `fa fa-${item.icon} flow-icon`,
-          execute() {
-            return _.insertAndExecuteCell('cs', name);
-          }
-        };
-      };
-      lodash.defer(_go);
-      return {
-        routines: function () {
-          var _results;
-          _results = [];
-          for (name in _items) {
-            if ({}.hasOwnProperty.call(_items, name)) {
-              item = _items[name];
-              _results.push(createAssistItem(name, item));
-            }
-          }
-          return _results;
-        }(),
-        template: 'flow-assist'
-      };
     };
   }.call(this));
   // anonymous IIFE
