@@ -4756,6 +4756,9 @@ import { flowSandbox } from './flowSandbox';
       }
     });
   }.call(this));
+  // this is used many places
+  // 179 matches across 29 files, in fact
+  // defer for now
   (function () {
     Flow.Prelude = function () {
       var _always;
@@ -4870,6 +4873,7 @@ import { flowSandbox } from './flowSandbox';
       };
     }();
   }.call(this));
+  // anonymous IIFE 
   (function () {
     Flow.TUndefined = 'undefined';
     Flow.TNull = 'null';
@@ -4885,6 +4889,7 @@ import { flowSandbox } from './flowSandbox';
     Flow.TError = 'Error';
     Flow.TFactor = 'Factor';
   }.call(this));
+  // anonymous IIFE
   (function () {
     var EOL;
     var describeCount;
