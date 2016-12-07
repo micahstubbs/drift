@@ -6174,6 +6174,232 @@
     };
   }
 
+  function jobOutput() {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var getJobOutputStatusColor;
+    var getJobProgressPercent;
+    var jobOutputStatusColors;
+    jobOutputStatusColors = {
+      failed: '#d9534f',
+      done: '#ccc',
+      running: '#f0ad4e'
+    };
+    getJobOutputStatusColor = function (status) {
+      switch (status) {
+        case 'DONE':
+          return jobOutputStatusColors.done;
+        case 'CREATED':
+        case 'RUNNING':
+          return jobOutputStatusColors.running;
+        default:
+          return jobOutputStatusColors.failed;
+      }
+    };
+    getJobProgressPercent = function (progress) {
+      return `${ Math.ceil(100 * progress) }%`;
+    };
+    H2O.JobOutput = function (_, _go, _job) {
+      var canView;
+      var cancel;
+      var initialize;
+      var isJobRunning;
+      var messageIcons;
+      var refresh;
+      var updateJob;
+      var view;
+      var _canCancel;
+      var _canView;
+      var _description;
+      var _destinationKey;
+      var _destinationType;
+      var _exception;
+      var _isBusy;
+      var _isLive;
+      var _key;
+      var _messages;
+      var _progress;
+      var _progressMessage;
+      var _remainingTime;
+      var _runTime;
+      var _status;
+      var _statusColor;
+      _isBusy = Flow.Dataflow.signal(false);
+      _isLive = Flow.Dataflow.signal(false);
+      _key = _job.key.name;
+      _description = _job.description;
+      _destinationKey = _job.dest.name;
+      _destinationType = function () {
+        switch (_job.dest.type) {
+          case 'Key<Frame>':
+            return 'Frame';
+          case 'Key<Model>':
+            return 'Model';
+          case 'Key<Grid>':
+            return 'Grid';
+          case 'Key<PartialDependence>':
+            return 'PartialDependence';
+          case 'Key<AutoML>':
+            return 'Auto Model';
+          case 'Key<KeyedVoid>':
+            return 'Void';
+          default:
+            return 'Unknown';
+        }
+      }();
+      _runTime = Flow.Dataflow.signal(null);
+      _remainingTime = Flow.Dataflow.signal(null);
+      _progress = Flow.Dataflow.signal(null);
+      _progressMessage = Flow.Dataflow.signal(null);
+      _status = Flow.Dataflow.signal(null);
+      _statusColor = Flow.Dataflow.signal(null);
+      _exception = Flow.Dataflow.signal(null);
+      _messages = Flow.Dataflow.signal(null);
+      _canView = Flow.Dataflow.signal(false);
+      _canCancel = Flow.Dataflow.signal(false);
+      isJobRunning = function (job) {
+        return job.status === 'CREATED' || job.status === 'RUNNING';
+      };
+      messageIcons = {
+        ERROR: 'fa-times-circle red',
+        WARN: 'fa-warning orange',
+        INFO: 'fa-info-circle'
+      };
+      canView = function (job) {
+        switch (_destinationType) {
+          case 'Model':
+          case 'Grid':
+            return job.ready_for_view;
+          default:
+            return !isJobRunning(job);
+        }
+      };
+      updateJob = function (job) {
+        var cause;
+        var message;
+        var messages;
+        _runTime(Flow.Util.formatMilliseconds(job.msec));
+        _progress(getJobProgressPercent(job.progress));
+        _remainingTime(job.progress ? Flow.Util.formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
+        _progressMessage(job.progress_msg);
+        _status(job.status);
+        _statusColor(getJobOutputStatusColor(job.status));
+        if (job.error_count) {
+          messages = function () {
+            var _i;
+            var _len;
+            var _ref;
+            var _results;
+            _ref = job.messages;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              message = _ref[_i];
+              if (message.message_type !== 'HIDE') {
+                _results.push({
+                  icon: messageIcons[message.message_type],
+                  message: `${ message.field_name }: ${ message.message }`
+                });
+              }
+            }
+            return _results;
+          }();
+          _messages(messages);
+        } else if (job.exception) {
+          cause = new Error(job.exception);
+          if (job.stacktrace) {
+            cause.stack = job.stacktrace;
+          }
+          _exception(Flow.Failure(_, new Flow.Error('Job failure.', cause)));
+        }
+        _canView(canView(job));
+        return _canCancel(isJobRunning(job));
+      };
+      refresh = function () {
+        _isBusy(true);
+        return _.requestJob(_key, function (error, job) {
+          _isBusy(false);
+          if (error) {
+            _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
+            return _isLive(false);
+          }
+          updateJob(job);
+          if (isJobRunning(job)) {
+            if (_isLive()) {
+              return lodash.delay(refresh, 1000);
+            }
+          } else {
+            _isLive(false);
+            if (_go) {
+              return lodash.defer(_go);
+            }
+          }
+        });
+      };
+      Flow.Dataflow.act(_isLive, function (isLive) {
+        if (isLive) {
+          return refresh();
+        }
+      });
+      view = function () {
+        if (!_canView()) {
+          return;
+        }
+        switch (_destinationType) {
+          case 'Frame':
+            return _.insertAndExecuteCell('cs', `getFrameSummary ${ Flow.Prelude.stringify(_destinationKey) }`);
+          case 'Model':
+            return _.insertAndExecuteCell('cs', `getModel ${ Flow.Prelude.stringify(_destinationKey) }`);
+          case 'Grid':
+            return _.insertAndExecuteCell('cs', `getGrid ${ Flow.Prelude.stringify(_destinationKey) }`);
+          case 'PartialDependence':
+            return _.insertAndExecuteCell('cs', `getPartialDependence ${ Flow.Prelude.stringify(_destinationKey) }`);
+          case 'Auto Model':
+            return _.insertAndExecuteCell('cs', 'getGrids');
+          case 'Void':
+            return alert(`This frame was exported to\n${ _job.dest.name }`);
+        }
+      };
+      cancel = function () {
+        return _.requestCancelJob(_key, function (error, result) {
+          if (error) {
+            return console.debug(error);
+          }
+          return updateJob(_job);
+        });
+      };
+      initialize = function (job) {
+        updateJob(job);
+        if (isJobRunning(job)) {
+          return _isLive(true);
+        }
+        if (_go) {
+          return lodash.defer(_go);
+        }
+      };
+      initialize(_job);
+      return {
+        key: _key,
+        description: _description,
+        destinationKey: _destinationKey,
+        destinationType: _destinationType,
+        runTime: _runTime,
+        remainingTime: _remainingTime,
+        progress: _progress,
+        progressMessage: _progressMessage,
+        status: _status,
+        statusColor: _statusColor,
+        messages: _messages,
+        exception: _exception,
+        isLive: _isLive,
+        canView: _canView,
+        canCancel: _canCancel,
+        cancel,
+        view,
+        template: 'flow-job-output'
+      };
+    };
+  }
+
   // anonymous IIFE
   (function(){var lodash=window._;window.Flow={};window.H2O={};(function(){var checkSparklingWater;var getContextPath;getContextPath=function(){window.Flow.ContextPath='/';return $.ajax({url:window.referrer,type:'GET',success(data,status,xhr){if(xhr.getAllResponseHeaders().indexOf('X-h2o-context-path')!==-1){return window.Flow.ContextPath=xhr.getResponseHeader('X-h2o-context-path');}},async:false});};checkSparklingWater=function(context){context.onSparklingWater=false;return $.ajax({url:`${window.Flow.ContextPath}3/Metadata/endpoints`,type:'GET',dataType:'json',success(response){var route;var _i;var _len;var _ref;var _results;_ref=response.routes;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){route=_ref[_i];if(route.url_pattern==='/3/scalaint'){_results.push(context.onSparklingWater=true);}else{_results.push(void 0);}}return _results;},async:false});};if((typeof window!=='undefined'&&window!==null?window.$:void 0)!=null){$(function(){var context;context={};getContextPath();checkSparklingWater(context);window.flow=Flow.Application(context,H2O.Routines);H2O.Application(context);ko.applyBindings(window.flow);context.ready();return context.initialized();});}}).call(this);// anonymous IIFE
   (function(){Flow.Version='0.4.54';Flow.About=function(_){var _properties;_properties=Flow.Dataflow.signals([]);Flow.Dataflow.link(_.ready,function(){if(Flow.BuildProperties){return _properties(Flow.BuildProperties);}return _.requestAbout(function(error,response){var name;var properties;var value;var _i;var _len;var _ref;var _ref1;properties=[];if(!error){_ref=response.entries;for(_i=0,_len=_ref.length;_i<_len;_i++){_ref1=_ref[_i],name=_ref1.name,value=_ref1.value;properties.push({caption:`H2O ${name}`,value});}}properties.push({caption:'Flow version',value:Flow.Version});return _properties(Flow.BuildProperties=properties);});});return{properties:_properties};};}).call(this);(function(){Flow.AlertDialog=function(_,_message,_opts,_go){var accept;if(_opts==null){_opts={};}lodash.defaults(_opts,{title:'Alert',acceptCaption:'OK'});accept=function(){return _go(true);};return{title:_opts.title,acceptCaption:_opts.acceptCaption,message:Flow.Util.multilineTextToHTML(_message),accept,template:'alert-dialog'};};}).call(this);// anonymous IIFE
@@ -6207,7 +6433,6 @@
   (function(){var getFileBaseName;var validateFileExtension;validateFileExtension=function(filename,extension){return filename.indexOf(extension,filename.length-extension.length)!==-1;};getFileBaseName=function(filename,extension){return Flow.Util.sanitizeName(filename.substr(0,filename.length-extension.length));};H2O.Util={validateFileExtension,getFileBaseName};}).call(this);// anonymous IIFE
   (function(){var createOptions;var _allCombineMethods;var _allMethods;createOptions=function(options){var option;var _i;var _len;var _results;_results=[];for(_i=0,_len=options.length;_i<_len;_i++){option=options[_i];_results.push({caption:option,value:option.toLowerCase()});}return _results;};_allMethods=createOptions(['Mean','Median','Mode']);_allCombineMethods=createOptions(['Interpolate','Average','Low','High']);H2O.ImputeInput=function(_,_go,opts){var impute;var _canGroupByColumns;var _canImpute;var _canUseCombineMethod;var _column;var _columns;var _combineMethod;var _combineMethods;var _frame;var _frames;var _groupByColumns;var _hasFrame;var _method;var _methods;if(opts==null){opts={};}_frames=Flow.Dataflow.signal([]);_frame=Flow.Dataflow.signal(null);_hasFrame=Flow.Dataflow.lift(_frame,function(frame){if(frame){return true;}return false;});_columns=Flow.Dataflow.signal([]);_column=Flow.Dataflow.signal(null);_methods=_allMethods;_method=Flow.Dataflow.signal(_allMethods[0]);_canUseCombineMethod=Flow.Dataflow.lift(_method,function(method){return method.value==='median';});_combineMethods=_allCombineMethods;_combineMethod=Flow.Dataflow.signal(_allCombineMethods[0]);_canGroupByColumns=Flow.Dataflow.lift(_method,function(method){return method.value!=='median';});_groupByColumns=Flow.Dataflow.signals([]);_canImpute=Flow.Dataflow.lift(_frame,_column,function(frame,column){return frame&&column;});impute=function(){var arg;var combineMethod;var groupByColumns;var method;method=_method();arg={frame:_frame(),column:_column(),method:method.value};if(method.value==='median'){if(combineMethod=_combineMethod()){arg.combineMethod=combineMethod.value;}}else{groupByColumns=_groupByColumns();if(groupByColumns.length){arg.groupByColumns=groupByColumns;}}return _.insertAndExecuteCell('cs',`imputeColumn ${JSON.stringify(arg)}`);};_.requestFrames(function(error,frames){var frame;if(error){// empty
   }else{_frames(function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=frames.length;_i<_len;_i++){frame=frames[_i];if(!frame.is_text){_results.push(frame.frame_id.name);}}return _results;}());if(opts.frame){_frame(opts.frame);}}});Flow.Dataflow.react(_frame,function(frame){if(frame){return _.requestFrameSummaryWithoutData(frame,function(error,frame){var column;if(error){// empty
-  }else{_columns(function(){var _i;var _len;var _ref;var _results;_ref=frame.columns;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.label);}return _results;}());if(opts.column){_column(opts.column);return delete opts.column;}}});}return _columns([]);});lodash.defer(_go);return{frames:_frames,frame:_frame,hasFrame:_hasFrame,columns:_columns,column:_column,methods:_methods,method:_method,canUseCombineMethod:_canUseCombineMethod,combineMethods:_combineMethods,combineMethod:_combineMethod,canGroupByColumns:_canGroupByColumns,groupByColumns:_groupByColumns,canImpute:_canImpute,impute,template:'flow-impute-input'};};}).call(this);// anonymous IIFE
-  (function(){var getJobOutputStatusColor;var getJobProgressPercent;var jobOutputStatusColors;jobOutputStatusColors={failed:'#d9534f',done:'#ccc',running:'#f0ad4e'};getJobOutputStatusColor=function(status){switch(status){case'DONE':return jobOutputStatusColors.done;case'CREATED':case'RUNNING':return jobOutputStatusColors.running;default:return jobOutputStatusColors.failed;}};getJobProgressPercent=function(progress){return`${Math.ceil(100*progress)}%`;};H2O.JobOutput=function(_,_go,_job){var canView;var cancel;var initialize;var isJobRunning;var messageIcons;var refresh;var updateJob;var view;var _canCancel;var _canView;var _description;var _destinationKey;var _destinationType;var _exception;var _isBusy;var _isLive;var _key;var _messages;var _progress;var _progressMessage;var _remainingTime;var _runTime;var _status;var _statusColor;_isBusy=Flow.Dataflow.signal(false);_isLive=Flow.Dataflow.signal(false);_key=_job.key.name;_description=_job.description;_destinationKey=_job.dest.name;_destinationType=function(){switch(_job.dest.type){case'Key<Frame>':return'Frame';case'Key<Model>':return'Model';case'Key<Grid>':return'Grid';case'Key<PartialDependence>':return'PartialDependence';case'Key<AutoML>':return'Auto Model';case'Key<KeyedVoid>':return'Void';default:return'Unknown';}}();_runTime=Flow.Dataflow.signal(null);_remainingTime=Flow.Dataflow.signal(null);_progress=Flow.Dataflow.signal(null);_progressMessage=Flow.Dataflow.signal(null);_status=Flow.Dataflow.signal(null);_statusColor=Flow.Dataflow.signal(null);_exception=Flow.Dataflow.signal(null);_messages=Flow.Dataflow.signal(null);_canView=Flow.Dataflow.signal(false);_canCancel=Flow.Dataflow.signal(false);isJobRunning=function(job){return job.status==='CREATED'||job.status==='RUNNING';};messageIcons={ERROR:'fa-times-circle red',WARN:'fa-warning orange',INFO:'fa-info-circle'};canView=function(job){switch(_destinationType){case'Model':case'Grid':return job.ready_for_view;default:return!isJobRunning(job);}};updateJob=function(job){var cause;var message;var messages;_runTime(Flow.Util.formatMilliseconds(job.msec));_progress(getJobProgressPercent(job.progress));_remainingTime(job.progress?Flow.Util.formatMilliseconds(Math.round((1-job.progress)*job.msec/job.progress)):'Estimating...');_progressMessage(job.progress_msg);_status(job.status);_statusColor(getJobOutputStatusColor(job.status));if(job.error_count){messages=function(){var _i;var _len;var _ref;var _results;_ref=job.messages;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){message=_ref[_i];if(message.message_type!=='HIDE'){_results.push({icon:messageIcons[message.message_type],message:`${message.field_name}: ${message.message}`});}}return _results;}();_messages(messages);}else if(job.exception){cause=new Error(job.exception);if(job.stacktrace){cause.stack=job.stacktrace;}_exception(Flow.Failure(_,new Flow.Error('Job failure.',cause)));}_canView(canView(job));return _canCancel(isJobRunning(job));};refresh=function(){_isBusy(true);return _.requestJob(_key,function(error,job){_isBusy(false);if(error){_exception(Flow.Failure(_,new Flow.Error('Error fetching jobs',error)));return _isLive(false);}updateJob(job);if(isJobRunning(job)){if(_isLive()){return lodash.delay(refresh,1000);}}else{_isLive(false);if(_go){return lodash.defer(_go);}}});};Flow.Dataflow.act(_isLive,function(isLive){if(isLive){return refresh();}});view=function(){if(!_canView()){return;}switch(_destinationType){case'Frame':return _.insertAndExecuteCell('cs',`getFrameSummary ${Flow.Prelude.stringify(_destinationKey)}`);case'Model':return _.insertAndExecuteCell('cs',`getModel ${Flow.Prelude.stringify(_destinationKey)}`);case'Grid':return _.insertAndExecuteCell('cs',`getGrid ${Flow.Prelude.stringify(_destinationKey)}`);case'PartialDependence':return _.insertAndExecuteCell('cs',`getPartialDependence ${Flow.Prelude.stringify(_destinationKey)}`);case'Auto Model':return _.insertAndExecuteCell('cs','getGrids');case'Void':return alert(`This frame was exported to\n${_job.dest.name}`);}};cancel=function(){return _.requestCancelJob(_key,function(error,result){if(error){return console.debug(error);}return updateJob(_job);});};initialize=function(job){updateJob(job);if(isJobRunning(job)){return _isLive(true);}if(_go){return lodash.defer(_go);}};initialize(_job);return{key:_key,description:_description,destinationKey:_destinationKey,destinationType:_destinationType,runTime:_runTime,remainingTime:_remainingTime,progress:_progress,progressMessage:_progressMessage,status:_status,statusColor:_statusColor,messages:_messages,exception:_exception,isLive:_isLive,canView:_canView,canCancel:_canCancel,cancel,view,template:'flow-job-output'};};}).call(this);modelInput();parseInput();}).call(undefined);
+  }else{_columns(function(){var _i;var _len;var _ref;var _results;_ref=frame.columns;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.label);}return _results;}());if(opts.column){_column(opts.column);return delete opts.column;}}});}return _columns([]);});lodash.defer(_go);return{frames:_frames,frame:_frame,hasFrame:_hasFrame,columns:_columns,column:_column,methods:_methods,method:_method,canUseCombineMethod:_canUseCombineMethod,combineMethods:_combineMethods,combineMethod:_combineMethod,canGroupByColumns:_canGroupByColumns,groupByColumns:_groupByColumns,canImpute:_canImpute,impute,template:'flow-impute-input'};};}).call(this);jobOutput();modelInput();parseInput();}).call(undefined);
 
 }));
