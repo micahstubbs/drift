@@ -1,3 +1,5 @@
+import { flowCoffeescriptKernel } from './flowCoffeescriptKernel';
+
 export function flowCoffeescript(_, guid, sandbox) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -5,7 +7,7 @@ export function flowCoffeescript(_, guid, sandbox) {
   var print;
   var render;
   var _kernel;
-  _kernel = Flow.CoffeescriptKernel;
+  _kernel = flowCoffeescriptKernel();
   print = function (arg) {
     if (arg !== print) {
       sandbox.results[guid].outputs(arg);
