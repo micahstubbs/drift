@@ -26,6 +26,7 @@ import { coreUtils } from './coreUtils/coreUtils';
 import { types } from './types/types';
 import { localStorage } from './localStorage/localStorage';
 import { knockout } from './knockout/knockout';
+import { html } from './html/html';
 
 // anonymous IIFE
 (function () {
@@ -3764,26 +3765,7 @@ import { knockout } from './knockout/knockout';
   }.call(this));
   // src/core/modules/html.coffee
   // 24 matches across 5 files
-  (function () {
-    if ((typeof window !== 'undefined' && window !== null ? window.diecut : void 0) == null) {
-      return;
-    }
-    Flow.HTML = {
-      template: diecut,
-      render(name, html) {
-        var el;
-        el = document.createElement(name);
-        if (html) {
-          if (lodash.isString(html)) {
-            el.innerHTML = html;
-          } else {
-            el.appendChild(html);
-          }
-        }
-        return el;
-      }
-    };
-  }.call(this));
+  html();
   knockout();
   localStorage();
   // src/core/modules/marked.coffee IIFE
@@ -3803,9 +3785,6 @@ import { knockout } from './knockout/knockout';
       }
     });
   }.call(this));
-  // this is used many places
-  // 179 matches across 29 files, in fact
-  // defer for now
   (function () {
     Flow.Prelude = function () {
       var _always;
