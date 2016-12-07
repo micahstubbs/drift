@@ -63,6 +63,7 @@ import { flowCoffeescript } from './flowCoffeescript';
 import { flowConfirmDialog } from './flowConfirmDialog';
 import { flowCell } from './flowCell';
 
+// anonymous IIFE
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
     var checkSparklingWater;
@@ -121,6 +122,7 @@ import { flowCell } from './flowCell';
       });
     }
   }.call(this));
+  // anonymous IIFE
   (function () {
     Flow.Version = '0.4.54';
     Flow.About = function (_) {
