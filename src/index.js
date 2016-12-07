@@ -57,6 +57,7 @@ import { flowAnalytics } from './flowAnalytics';
 import { flowStatus } from './flowStatus';
 import { flowSidebar } from './flowSidebar';
 import { flowRaw } from './flowRaw';
+import { flowHeading } from './flowHeading';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -781,20 +782,6 @@ import { flowRaw } from './flowRaw';
     };
   }.call(this));
   (function () {
-    Flow.Heading = function (_, level) {
-      var render;
-      render = function (input, output) {
-        output.data({
-          text: input.trim() || '(Untitled)',
-          template: `flow-${level}`
-        });
-        return output.end();
-      };
-      render.isCode = false;
-      return render;
-    };
-  }.call(this));
-  (function () {
     var _catalog;
     var _homeContent;
     var _homeMarkdown;
@@ -1187,27 +1174,28 @@ import { flowRaw } from './flowRaw';
       return render;
     };
   }.call(this));
+  // anonymous IIFE
   (function () {
     var __slice = [].slice;
     Flow.Renderers = function (_, _sandbox) {
       return {
         h1() {
-          return Flow.Heading(_, 'h1');
+          return flowHeading(_, 'h1');
         },
         h2() {
-          return Flow.Heading(_, 'h2');
+          return flowHeading(_, 'h2');
         },
         h3() {
-          return Flow.Heading(_, 'h3');
+          return flowHeading(_, 'h3');
         },
         h4() {
-          return Flow.Heading(_, 'h4');
+          return flowHeading(_, 'h4');
         },
         h5() {
-          return Flow.Heading(_, 'h5');
+          return flowHeading(_, 'h5');
         },
         h6() {
-          return Flow.Heading(_, 'h6');
+          return flowHeading(_, 'h6');
         },
         md() {
           return Flow.Markdown(_);
@@ -2481,6 +2469,7 @@ import { flowRaw } from './flowRaw';
       };
     };
   }.call(this));
+  // anonymous IIFE 
   (function () {
     var isExpandable;
     var preview;
