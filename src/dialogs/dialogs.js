@@ -1,3 +1,5 @@
+import { flowConfirmDialog } from '../flowConfirmDialog';
+
 export function dialogs() {
   var Flow = window.Flow;
   var __slice = [].slice;

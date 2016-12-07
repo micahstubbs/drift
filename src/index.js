@@ -14,7 +14,6 @@ import { flowRaw } from './flowRaw';
 import { flowHeading } from './flowHeading';
 import { flowForm } from './flowForm';
 import { flowCoffeescript } from './flowCoffeescript';
-import { flowConfirmDialog } from './flowConfirmDialog';
 import { flowCell } from './flowCell';
 import { modelInput } from './modelInput/modelInput';
 import { parseInput } from './parseInput/parseInput';
