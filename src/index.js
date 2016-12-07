@@ -51,6 +51,7 @@ import { h2oAutoModelInput } from './h2oAutoModelInput';
 import { h2oAssist } from './h2oAssist';
 import { h2oApplicationContext } from './h2oApplicationContext';
 import { flowSandbox } from './flowSandbox';
+import { flowGrowl } from './flowGrowl'; 
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -2811,7 +2812,7 @@ import { flowSandbox } from './flowSandbox';
       _sandbox = flowSandbox(_, routines(_));
       _renderers = Flow.Renderers(_, _sandbox);
       Flow.Analytics(_);
-      Flow.Growl(_);
+      flowGrowl(_);
       Flow.Autosave(_);
       _notebook = Flow.Notebook(_, _renderers);
       return {
@@ -4271,16 +4272,7 @@ import { flowSandbox } from './flowSandbox';
       Time: formatTime
     };
   }.call(this));
-  (function () {
-    Flow.Growl = function (_) {
-      return Flow.Dataflow.link(_.growl, function (message, type) {
-        if (type) {
-          return $.bootstrapGrowl(message, { type });
-        }
-        return $.bootstrapGrowl(message);
-      });
-    };
-  }.call(this));
+  // anonymous IIFE
   (function () {
     var button;
     var checkbox;
@@ -4406,6 +4398,7 @@ import { flowSandbox } from './flowSandbox';
       button
     };
   }.call(this));
+  // anonymous IIFE
   (function () {
     if ((typeof window !== 'undefined' && window !== null ? window.diecut : void 0) == null) {
       return;
@@ -4426,6 +4419,7 @@ import { flowSandbox } from './flowSandbox';
       }
     };
   }.call(this));
+  // anonymous IIFE
   (function () {
     if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
       return;
@@ -4658,6 +4652,7 @@ import { flowSandbox } from './flowSandbox';
       }
     };
   }.call(this));
+  // anonymous IIFE
   (function () {
     var keyOf;
     var list;
@@ -4742,6 +4737,7 @@ import { flowSandbox } from './flowSandbox';
       purge
     };
   }.call(this));
+  // anonymous IIFE
   (function () {
     if ((typeof window !== 'undefined' && window !== null ? window.marked : void 0) == null) {
       return;
