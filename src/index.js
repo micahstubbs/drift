@@ -55,7 +55,8 @@ import { flowGrowl } from './flowGrowl';
 import { flowApplicationContext } from './flowApplicationContext';
 import { flowAnalytics } from './flowAnalytics';
 import { flowStatus } from './flowStatus';
-import { flowSidebar } from './flowSidebar'; 
+import { flowSidebar } from './flowSidebar';
+import { flowRaw } from './flowRaw'; 
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -1218,7 +1219,7 @@ import { flowSidebar } from './flowSidebar';
           return Flow.Coffeescript(_, guid, _sandbox);
         },
         raw() {
-          return Flow.Raw(_);
+          return flowRaw(_);
         }
       };
     };
@@ -2626,20 +2627,6 @@ import { flowSidebar } from './flowSidebar';
   (function () {
     Flow.Outline = function (_, _cells) {
       return { cells: _cells };
-    };
-  }.call(this));
-  (function () {
-    Flow.Raw = function (_) {
-      var render;
-      render = function (input, output) {
-        output.data({
-          text: input,
-          template: 'flow-raw'
-        });
-        return output.end();
-      };
-      render.isCode = false;
-      return render;
     };
   }.call(this));
   // defer this for now
