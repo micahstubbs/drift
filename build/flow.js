@@ -5902,6 +5902,278 @@
     };
   }
 
+  function parseInput() {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var MaxItemsPerPage;
+    var dataTypes;
+    var parseDelimiters;
+    var parseTypes;
+    MaxItemsPerPage = 15;
+    parseTypes = lodash.map(['AUTO', 'ARFF', 'XLS', 'XLSX', 'CSV', 'SVMLight', 'ORC', 'AVRO', 'PARQUET'], function (type) {
+      return {
+        type,
+        caption: type
+      };
+    });
+    parseDelimiters = function () {
+      var characterDelimiters;
+      var createDelimiter;
+      var otherDelimiters;
+      var whitespaceDelimiters;
+      var whitespaceSeparators;
+      whitespaceSeparators = ['NULL', 'SOH (start of heading)', 'STX (start of text)', 'ETX (end of text)', 'EOT (end of transmission)', 'ENQ (enquiry)', 'ACK (acknowledge)', 'BEL \'\\a\' (bell)', 'BS  \'\\b\' (backspace)', 'HT  \'\\t\' (horizontal tab)', 'LF  \'\\n\' (new line)', 'VT  \'\\v\' (vertical tab)', 'FF  \'\\f\' (form feed)', 'CR  \'\\r\' (carriage ret)', 'SO  (shift out)', 'SI  (shift in)', 'DLE (data link escape)', 'DC1 (device control 1) ', 'DC2 (device control 2)', 'DC3 (device control 3)', 'DC4 (device control 4)', 'NAK (negative ack.)', 'SYN (synchronous idle)', 'ETB (end of trans. blk)', 'CAN (cancel)', 'EM  (end of medium)', 'SUB (substitute)', 'ESC (escape)', 'FS  (file separator)', 'GS  (group separator)', 'RS  (record separator)', 'US  (unit separator)', '\' \' SPACE'];
+      createDelimiter = function (caption, charCode) {
+        return {
+          charCode,
+          caption: `${ caption }: \'${ `00${ charCode }`.slice(-2) }\'`
+        };
+      };
+      whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
+      characterDelimiters = lodash.times(126 - whitespaceSeparators.length, function (i) {
+        var charCode;
+        charCode = i + whitespaceSeparators.length;
+        return createDelimiter(String.fromCharCode(charCode), charCode);
+      });
+      otherDelimiters = [{
+        charCode: -1,
+        caption: 'AUTO'
+      }];
+      return whitespaceDelimiters.concat(characterDelimiters, otherDelimiters);
+    }();
+    dataTypes = ['Unknown', 'Numeric', 'Enum', 'Time', 'UUID', 'String', 'Invalid'];
+    H2O.SetupParseOutput = function (_, _go, _inputs, _result) {
+      var filterColumns;
+      var goToNextPage;
+      var goToPreviousPage;
+      var makePage;
+      var parseFiles;
+      var refreshPreview;
+      var _activePage;
+      var _canGoToNextPage;
+      var _canGoToPreviousPage;
+      var _canReconfigure;
+      var _chunkSize;
+      var _columnCount;
+      var _columnNameSearchTerm;
+      var _columns;
+      var _currentPage;
+      var _deleteOnDone;
+      var _delimiter;
+      var _destinationKey;
+      var _filteredColumns;
+      var _headerOption;
+      var _headerOptions;
+      var _inputKey;
+      var _parseType;
+      var _preview;
+      var _sourceKeys;
+      var _useSingleQuotes;
+      var _visibleColumns;
+      _inputKey = _inputs.paths ? 'paths' : 'source_frames';
+      _sourceKeys = lodash.map(_result.source_frames, function (src) {
+        return src.name;
+      });
+      _parseType = Flow.Dataflow.signal(lodash.find(parseTypes, function (parseType) {
+        return parseType.type === _result.parse_type;
+      }));
+      _canReconfigure = Flow.Dataflow.lift(_parseType, function (parseType) {
+        return parseType.type !== 'SVMLight';
+      });
+      _delimiter = Flow.Dataflow.signal(lodash.find(parseDelimiters, function (delimiter) {
+        return delimiter.charCode === _result.separator;
+      }));
+      _useSingleQuotes = Flow.Dataflow.signal(_result.single_quotes);
+      _destinationKey = Flow.Dataflow.signal(_result.destination_frame);
+      _headerOptions = {
+        auto: 0,
+        header: 1,
+        data: -1
+      };
+      _headerOption = Flow.Dataflow.signal(_result.check_header === 0 ? 'auto' : _result.check_header === -1 ? 'data' : 'header');
+      _deleteOnDone = Flow.Dataflow.signal(true);
+      _columnNameSearchTerm = Flow.Dataflow.signal('');
+      _preview = Flow.Dataflow.signal(_result);
+      _chunkSize = Flow.Dataflow.lift(_preview, function (preview) {
+        return preview.chunk_size;
+      });
+      refreshPreview = function () {
+        var column;
+        var columnTypes;
+        columnTypes = function () {
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = _columns();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            column = _ref[_i];
+            _results.push(column.type());
+          }
+          return _results;
+        }();
+        return _.requestParseSetupPreview(_sourceKeys, _parseType().type, _delimiter().charCode, _useSingleQuotes(), _headerOptions[_headerOption()], columnTypes, function (error, result) {
+          if (!error) {
+            return _preview(result);
+          }
+        });
+      };
+      _columns = Flow.Dataflow.lift(_preview, function (preview) {
+        var columnCount;
+        var columnNames;
+        var columnTypes;
+        var data;
+        var i;
+        var j;
+        var previewData;
+        var row;
+        var rowCount;
+        var rows;
+        var _i;
+        var _j;
+        columnTypes = preview.column_types;
+        columnCount = columnTypes.length;
+        previewData = preview.data;
+        rowCount = previewData.length;
+        columnNames = preview.column_names;
+        rows = new Array(columnCount);
+        for (j = _i = 0; columnCount >= 0 ? _i < columnCount : _i > columnCount; j = columnCount >= 0 ? ++_i : --_i) {
+          data = new Array(rowCount);
+          for (i = _j = 0; rowCount >= 0 ? _j < rowCount : _j > rowCount; i = rowCount >= 0 ? ++_j : --_j) {
+            data[i] = previewData[i][j];
+          }
+          rows[j] = row = {
+            index: `${ j + 1 }`,
+            name: Flow.Dataflow.signal(columnNames ? columnNames[j] : ''),
+            type: Flow.Dataflow.signal(columnTypes[j]),
+            data
+          };
+        }
+        return rows;
+      });
+      _columnCount = Flow.Dataflow.lift(_columns, function (columns) {
+        return (columns != null ? columns.length : void 0) || 0;
+      });
+      _currentPage = 0;
+      Flow.Dataflow.act(_columns, function (columns) {
+        return lodash.forEach(columns, function (column) {
+          return Flow.Dataflow.react(column.type, function () {
+            _currentPage = _activePage().index;
+            return refreshPreview();
+          });
+        });
+      });
+      Flow.Dataflow.react(_parseType, _delimiter, _useSingleQuotes, _headerOption, function () {
+        _currentPage = 0;
+        return refreshPreview();
+      });
+      _filteredColumns = Flow.Dataflow.lift(_columns, function (columns) {
+        return columns;
+      });
+      makePage = function (index, columns) {
+        return {
+          index,
+          columns
+        };
+      };
+      _activePage = Flow.Dataflow.lift(_columns, function (columns) {
+        return makePage(_currentPage, columns);
+      });
+      filterColumns = function () {
+        return _activePage(makePage(0, lodash.filter(_columns(), function (column) {
+          return column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1;
+        })));
+      };
+      Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));
+      _visibleColumns = Flow.Dataflow.lift(_activePage, function (currentPage) {
+        var start;
+        start = currentPage.index * MaxItemsPerPage;
+        return currentPage.columns.slice(start, start + MaxItemsPerPage);
+      });
+      parseFiles = function () {
+        var column;
+        var columnNames;
+        var columnTypes;
+        var headerOption;
+        columnNames = function () {
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = _columns();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            column = _ref[_i];
+            _results.push(column.name());
+          }
+          return _results;
+        }();
+        headerOption = _headerOptions[_headerOption()];
+        if (lodash.every(columnNames, function (columnName) {
+          return columnName.trim() === '';
+        })) {
+          columnNames = null;
+          headerOption = -1;
+        }
+        columnTypes = function () {
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = _columns();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            column = _ref[_i];
+            _results.push(column.type());
+          }
+          return _results;
+        }();
+        return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + Flow.Prelude.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + Flow.Prelude.stringify(_destinationKey()) + '\n  parse_type: ' + Flow.Prelude.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + Flow.Prelude.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + Flow.Prelude.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
+      };
+      _canGoToNextPage = Flow.Dataflow.lift(_activePage, function (currentPage) {
+        return (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length;
+      });
+      _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, function (currentPage) {
+        return currentPage.index > 0;
+      });
+      goToNextPage = function () {
+        var currentPage;
+        currentPage = _activePage();
+        return _activePage(makePage(currentPage.index + 1, currentPage.columns));
+      };
+      goToPreviousPage = function () {
+        var currentPage;
+        currentPage = _activePage();
+        if (currentPage.index > 0) {
+          return _activePage(makePage(currentPage.index - 1, currentPage.columns));
+        }
+      };
+      lodash.defer(_go);
+      return {
+        sourceKeys: _inputs[_inputKey],
+        canReconfigure: _canReconfigure,
+        parseTypes,
+        dataTypes,
+        delimiters: parseDelimiters,
+        parseType: _parseType,
+        delimiter: _delimiter,
+        useSingleQuotes: _useSingleQuotes,
+        destinationKey: _destinationKey,
+        headerOption: _headerOption,
+        deleteOnDone: _deleteOnDone,
+        columns: _visibleColumns,
+        parseFiles,
+        columnNameSearchTerm: _columnNameSearchTerm,
+        canGoToNextPage: _canGoToNextPage,
+        canGoToPreviousPage: _canGoToPreviousPage,
+        goToNextPage,
+        goToPreviousPage,
+        template: 'flow-parse-raw-input'
+      };
+    };
+  }
+
   // anonymous IIFE
   (function(){var lodash=window._;window.Flow={};window.H2O={};(function(){var checkSparklingWater;var getContextPath;getContextPath=function(){window.Flow.ContextPath='/';return $.ajax({url:window.referrer,type:'GET',success(data,status,xhr){if(xhr.getAllResponseHeaders().indexOf('X-h2o-context-path')!==-1){return window.Flow.ContextPath=xhr.getResponseHeader('X-h2o-context-path');}},async:false});};checkSparklingWater=function(context){context.onSparklingWater=false;return $.ajax({url:`${window.Flow.ContextPath}3/Metadata/endpoints`,type:'GET',dataType:'json',success(response){var route;var _i;var _len;var _ref;var _results;_ref=response.routes;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){route=_ref[_i];if(route.url_pattern==='/3/scalaint'){_results.push(context.onSparklingWater=true);}else{_results.push(void 0);}}return _results;},async:false});};if((typeof window!=='undefined'&&window!==null?window.$:void 0)!=null){$(function(){var context;context={};getContextPath();checkSparklingWater(context);window.flow=Flow.Application(context,H2O.Routines);H2O.Application(context);ko.applyBindings(window.flow);context.ready();return context.initialized();});}}).call(this);// anonymous IIFE
   (function(){Flow.Version='0.4.54';Flow.About=function(_){var _properties;_properties=Flow.Dataflow.signals([]);Flow.Dataflow.link(_.ready,function(){if(Flow.BuildProperties){return _properties(Flow.BuildProperties);}return _.requestAbout(function(error,response){var name;var properties;var value;var _i;var _len;var _ref;var _ref1;properties=[];if(!error){_ref=response.entries;for(_i=0,_len=_ref.length;_i<_len;_i++){_ref1=_ref[_i],name=_ref1.name,value=_ref1.value;properties.push({caption:`H2O ${name}`,value});}}properties.push({caption:'Flow version',value:Flow.Version});return _properties(Flow.BuildProperties=properties);});});return{properties:_properties};};}).call(this);(function(){Flow.AlertDialog=function(_,_message,_opts,_go){var accept;if(_opts==null){_opts={};}lodash.defaults(_opts,{title:'Alert',acceptCaption:'OK'});accept=function(){return _go(true);};return{title:_opts.title,acceptCaption:_opts.acceptCaption,message:Flow.Util.multilineTextToHTML(_message),accept,template:'alert-dialog'};};}).call(this);// anonymous IIFE
@@ -5936,9 +6208,6 @@
   (function(){var createOptions;var _allCombineMethods;var _allMethods;createOptions=function(options){var option;var _i;var _len;var _results;_results=[];for(_i=0,_len=options.length;_i<_len;_i++){option=options[_i];_results.push({caption:option,value:option.toLowerCase()});}return _results;};_allMethods=createOptions(['Mean','Median','Mode']);_allCombineMethods=createOptions(['Interpolate','Average','Low','High']);H2O.ImputeInput=function(_,_go,opts){var impute;var _canGroupByColumns;var _canImpute;var _canUseCombineMethod;var _column;var _columns;var _combineMethod;var _combineMethods;var _frame;var _frames;var _groupByColumns;var _hasFrame;var _method;var _methods;if(opts==null){opts={};}_frames=Flow.Dataflow.signal([]);_frame=Flow.Dataflow.signal(null);_hasFrame=Flow.Dataflow.lift(_frame,function(frame){if(frame){return true;}return false;});_columns=Flow.Dataflow.signal([]);_column=Flow.Dataflow.signal(null);_methods=_allMethods;_method=Flow.Dataflow.signal(_allMethods[0]);_canUseCombineMethod=Flow.Dataflow.lift(_method,function(method){return method.value==='median';});_combineMethods=_allCombineMethods;_combineMethod=Flow.Dataflow.signal(_allCombineMethods[0]);_canGroupByColumns=Flow.Dataflow.lift(_method,function(method){return method.value!=='median';});_groupByColumns=Flow.Dataflow.signals([]);_canImpute=Flow.Dataflow.lift(_frame,_column,function(frame,column){return frame&&column;});impute=function(){var arg;var combineMethod;var groupByColumns;var method;method=_method();arg={frame:_frame(),column:_column(),method:method.value};if(method.value==='median'){if(combineMethod=_combineMethod()){arg.combineMethod=combineMethod.value;}}else{groupByColumns=_groupByColumns();if(groupByColumns.length){arg.groupByColumns=groupByColumns;}}return _.insertAndExecuteCell('cs',`imputeColumn ${JSON.stringify(arg)}`);};_.requestFrames(function(error,frames){var frame;if(error){// empty
   }else{_frames(function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=frames.length;_i<_len;_i++){frame=frames[_i];if(!frame.is_text){_results.push(frame.frame_id.name);}}return _results;}());if(opts.frame){_frame(opts.frame);}}});Flow.Dataflow.react(_frame,function(frame){if(frame){return _.requestFrameSummaryWithoutData(frame,function(error,frame){var column;if(error){// empty
   }else{_columns(function(){var _i;var _len;var _ref;var _results;_ref=frame.columns;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.label);}return _results;}());if(opts.column){_column(opts.column);return delete opts.column;}}});}return _columns([]);});lodash.defer(_go);return{frames:_frames,frame:_frame,hasFrame:_hasFrame,columns:_columns,column:_column,methods:_methods,method:_method,canUseCombineMethod:_canUseCombineMethod,combineMethods:_combineMethods,combineMethod:_combineMethod,canGroupByColumns:_canGroupByColumns,groupByColumns:_groupByColumns,canImpute:_canImpute,impute,template:'flow-impute-input'};};}).call(this);// anonymous IIFE
-  (function(){var getJobOutputStatusColor;var getJobProgressPercent;var jobOutputStatusColors;jobOutputStatusColors={failed:'#d9534f',done:'#ccc',running:'#f0ad4e'};getJobOutputStatusColor=function(status){switch(status){case'DONE':return jobOutputStatusColors.done;case'CREATED':case'RUNNING':return jobOutputStatusColors.running;default:return jobOutputStatusColors.failed;}};getJobProgressPercent=function(progress){return`${Math.ceil(100*progress)}%`;};H2O.JobOutput=function(_,_go,_job){var canView;var cancel;var initialize;var isJobRunning;var messageIcons;var refresh;var updateJob;var view;var _canCancel;var _canView;var _description;var _destinationKey;var _destinationType;var _exception;var _isBusy;var _isLive;var _key;var _messages;var _progress;var _progressMessage;var _remainingTime;var _runTime;var _status;var _statusColor;_isBusy=Flow.Dataflow.signal(false);_isLive=Flow.Dataflow.signal(false);_key=_job.key.name;_description=_job.description;_destinationKey=_job.dest.name;_destinationType=function(){switch(_job.dest.type){case'Key<Frame>':return'Frame';case'Key<Model>':return'Model';case'Key<Grid>':return'Grid';case'Key<PartialDependence>':return'PartialDependence';case'Key<AutoML>':return'Auto Model';case'Key<KeyedVoid>':return'Void';default:return'Unknown';}}();_runTime=Flow.Dataflow.signal(null);_remainingTime=Flow.Dataflow.signal(null);_progress=Flow.Dataflow.signal(null);_progressMessage=Flow.Dataflow.signal(null);_status=Flow.Dataflow.signal(null);_statusColor=Flow.Dataflow.signal(null);_exception=Flow.Dataflow.signal(null);_messages=Flow.Dataflow.signal(null);_canView=Flow.Dataflow.signal(false);_canCancel=Flow.Dataflow.signal(false);isJobRunning=function(job){return job.status==='CREATED'||job.status==='RUNNING';};messageIcons={ERROR:'fa-times-circle red',WARN:'fa-warning orange',INFO:'fa-info-circle'};canView=function(job){switch(_destinationType){case'Model':case'Grid':return job.ready_for_view;default:return!isJobRunning(job);}};updateJob=function(job){var cause;var message;var messages;_runTime(Flow.Util.formatMilliseconds(job.msec));_progress(getJobProgressPercent(job.progress));_remainingTime(job.progress?Flow.Util.formatMilliseconds(Math.round((1-job.progress)*job.msec/job.progress)):'Estimating...');_progressMessage(job.progress_msg);_status(job.status);_statusColor(getJobOutputStatusColor(job.status));if(job.error_count){messages=function(){var _i;var _len;var _ref;var _results;_ref=job.messages;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){message=_ref[_i];if(message.message_type!=='HIDE'){_results.push({icon:messageIcons[message.message_type],message:`${message.field_name}: ${message.message}`});}}return _results;}();_messages(messages);}else if(job.exception){cause=new Error(job.exception);if(job.stacktrace){cause.stack=job.stacktrace;}_exception(Flow.Failure(_,new Flow.Error('Job failure.',cause)));}_canView(canView(job));return _canCancel(isJobRunning(job));};refresh=function(){_isBusy(true);return _.requestJob(_key,function(error,job){_isBusy(false);if(error){_exception(Flow.Failure(_,new Flow.Error('Error fetching jobs',error)));return _isLive(false);}updateJob(job);if(isJobRunning(job)){if(_isLive()){return lodash.delay(refresh,1000);}}else{_isLive(false);if(_go){return lodash.defer(_go);}}});};Flow.Dataflow.act(_isLive,function(isLive){if(isLive){return refresh();}});view=function(){if(!_canView()){return;}switch(_destinationType){case'Frame':return _.insertAndExecuteCell('cs',`getFrameSummary ${Flow.Prelude.stringify(_destinationKey)}`);case'Model':return _.insertAndExecuteCell('cs',`getModel ${Flow.Prelude.stringify(_destinationKey)}`);case'Grid':return _.insertAndExecuteCell('cs',`getGrid ${Flow.Prelude.stringify(_destinationKey)}`);case'PartialDependence':return _.insertAndExecuteCell('cs',`getPartialDependence ${Flow.Prelude.stringify(_destinationKey)}`);case'Auto Model':return _.insertAndExecuteCell('cs','getGrids');case'Void':return alert(`This frame was exported to\n${_job.dest.name}`);}};cancel=function(){return _.requestCancelJob(_key,function(error,result){if(error){return console.debug(error);}return updateJob(_job);});};initialize=function(job){updateJob(job);if(isJobRunning(job)){return _isLive(true);}if(_go){return lodash.defer(_go);}};initialize(_job);return{key:_key,description:_description,destinationKey:_destinationKey,destinationType:_destinationType,runTime:_runTime,remainingTime:_remainingTime,progress:_progress,progressMessage:_progressMessage,status:_status,statusColor:_statusColor,messages:_messages,exception:_exception,isLive:_isLive,canView:_canView,canCancel:_canCancel,cancel,view,template:'flow-job-output'};};}).call(this);// modelInput
-  modelInput();// anonymous IIFE
-  (function(){var MaxItemsPerPage;var dataTypes;var parseDelimiters;var parseTypes;MaxItemsPerPage=15;parseTypes=lodash.map(['AUTO','ARFF','XLS','XLSX','CSV','SVMLight','ORC','AVRO','PARQUET'],function(type){return{type,caption:type};});parseDelimiters=function(){var characterDelimiters;var createDelimiter;var otherDelimiters;var whitespaceDelimiters;var whitespaceSeparators;whitespaceSeparators=['NULL','SOH (start of heading)','STX (start of text)','ETX (end of text)','EOT (end of transmission)','ENQ (enquiry)','ACK (acknowledge)','BEL \'\\a\' (bell)','BS  \'\\b\' (backspace)','HT  \'\\t\' (horizontal tab)','LF  \'\\n\' (new line)','VT  \'\\v\' (vertical tab)','FF  \'\\f\' (form feed)','CR  \'\\r\' (carriage ret)','SO  (shift out)','SI  (shift in)','DLE (data link escape)','DC1 (device control 1) ','DC2 (device control 2)','DC3 (device control 3)','DC4 (device control 4)','NAK (negative ack.)','SYN (synchronous idle)','ETB (end of trans. blk)','CAN (cancel)','EM  (end of medium)','SUB (substitute)','ESC (escape)','FS  (file separator)','GS  (group separator)','RS  (record separator)','US  (unit separator)','\' \' SPACE'];createDelimiter=function(caption,charCode){return{charCode,caption:`${caption}: \'${`00${charCode}`.slice(-2)}\'`};};whitespaceDelimiters=lodash.map(whitespaceSeparators,createDelimiter);characterDelimiters=lodash.times(126-whitespaceSeparators.length,function(i){var charCode;charCode=i+whitespaceSeparators.length;return createDelimiter(String.fromCharCode(charCode),charCode);});otherDelimiters=[{charCode:-1,caption:'AUTO'}];return whitespaceDelimiters.concat(characterDelimiters,otherDelimiters);}();dataTypes=['Unknown','Numeric','Enum','Time','UUID','String','Invalid'];H2O.SetupParseOutput=function(_,_go,_inputs,_result){var filterColumns;var goToNextPage;var goToPreviousPage;var makePage;var parseFiles;var refreshPreview;var _activePage;var _canGoToNextPage;var _canGoToPreviousPage;var _canReconfigure;var _chunkSize;var _columnCount;var _columnNameSearchTerm;var _columns;var _currentPage;var _deleteOnDone;var _delimiter;var _destinationKey;var _filteredColumns;var _headerOption;var _headerOptions;var _inputKey;var _parseType;var _preview;var _sourceKeys;var _useSingleQuotes;var _visibleColumns;_inputKey=_inputs.paths?'paths':'source_frames';_sourceKeys=lodash.map(_result.source_frames,function(src){return src.name;});_parseType=Flow.Dataflow.signal(lodash.find(parseTypes,function(parseType){return parseType.type===_result.parse_type;}));_canReconfigure=Flow.Dataflow.lift(_parseType,function(parseType){return parseType.type!=='SVMLight';});_delimiter=Flow.Dataflow.signal(lodash.find(parseDelimiters,function(delimiter){return delimiter.charCode===_result.separator;}));_useSingleQuotes=Flow.Dataflow.signal(_result.single_quotes);_destinationKey=Flow.Dataflow.signal(_result.destination_frame);_headerOptions={auto:0,header:1,data:-1};_headerOption=Flow.Dataflow.signal(_result.check_header===0?'auto':_result.check_header===-1?'data':'header');_deleteOnDone=Flow.Dataflow.signal(true);_columnNameSearchTerm=Flow.Dataflow.signal('');_preview=Flow.Dataflow.signal(_result);_chunkSize=Flow.Dataflow.lift(_preview,function(preview){return preview.chunk_size;});refreshPreview=function(){var column;var columnTypes;columnTypes=function(){var _i;var _len;var _ref;var _results;_ref=_columns();_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.type());}return _results;}();return _.requestParseSetupPreview(_sourceKeys,_parseType().type,_delimiter().charCode,_useSingleQuotes(),_headerOptions[_headerOption()],columnTypes,function(error,result){if(!error){return _preview(result);}});};_columns=Flow.Dataflow.lift(_preview,function(preview){var columnCount;var columnNames;var columnTypes;var data;var i;var j;var previewData;var row;var rowCount;var rows;var _i;var _j;columnTypes=preview.column_types;columnCount=columnTypes.length;previewData=preview.data;rowCount=previewData.length;columnNames=preview.column_names;rows=new Array(columnCount);for(j=_i=0;columnCount>=0?_i<columnCount:_i>columnCount;j=columnCount>=0?++_i:--_i){data=new Array(rowCount);for(i=_j=0;rowCount>=0?_j<rowCount:_j>rowCount;i=rowCount>=0?++_j:--_j){data[i]=previewData[i][j];}rows[j]=row={index:`${j+1}`,name:Flow.Dataflow.signal(columnNames?columnNames[j]:''),type:Flow.Dataflow.signal(columnTypes[j]),data};}return rows;});_columnCount=Flow.Dataflow.lift(_columns,function(columns){return(columns!=null?columns.length:void 0)||0;});_currentPage=0;Flow.Dataflow.act(_columns,function(columns){return lodash.forEach(columns,function(column){return Flow.Dataflow.react(column.type,function(){_currentPage=_activePage().index;return refreshPreview();});});});Flow.Dataflow.react(_parseType,_delimiter,_useSingleQuotes,_headerOption,function(){_currentPage=0;return refreshPreview();});_filteredColumns=Flow.Dataflow.lift(_columns,function(columns){return columns;});makePage=function(index,columns){return{index,columns};};_activePage=Flow.Dataflow.lift(_columns,function(columns){return makePage(_currentPage,columns);});filterColumns=function(){return _activePage(makePage(0,lodash.filter(_columns(),function(column){return column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase())>-1;})));};Flow.Dataflow.react(_columnNameSearchTerm,lodash.throttle(filterColumns,500));_visibleColumns=Flow.Dataflow.lift(_activePage,function(currentPage){var start;start=currentPage.index*MaxItemsPerPage;return currentPage.columns.slice(start,start+MaxItemsPerPage);});parseFiles=function(){var column;var columnNames;var columnTypes;var headerOption;columnNames=function(){var _i;var _len;var _ref;var _results;_ref=_columns();_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.name());}return _results;}();headerOption=_headerOptions[_headerOption()];if(lodash.every(columnNames,function(columnName){return columnName.trim()==='';})){columnNames=null;headerOption=-1;}columnTypes=function(){var _i;var _len;var _ref;var _results;_ref=_columns();_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){column=_ref[_i];_results.push(column.type());}return _results;}();return _.insertAndExecuteCell('cs','parseFiles\n  '+_inputKey+': '+Flow.Prelude.stringify(_inputs[_inputKey])+'\n  destination_frame: '+Flow.Prelude.stringify(_destinationKey())+'\n  parse_type: '+Flow.Prelude.stringify(_parseType().type)+'\n  separator: '+_delimiter().charCode+'\n  number_columns: '+_columnCount()+'\n  single_quotes: '+_useSingleQuotes()+'\n  '+(_canReconfigure()?'column_names: '+Flow.Prelude.stringify(columnNames)+'\n  ':'')+(_canReconfigure()?'column_types: '+Flow.Prelude.stringify(columnTypes)+'\n  ':'')+'delete_on_done: '+_deleteOnDone()+'\n  check_header: '+headerOption+'\n  chunk_size: '+_chunkSize());// eslint-disable-line
-  };_canGoToNextPage=Flow.Dataflow.lift(_activePage,function(currentPage){return(currentPage.index+1)*MaxItemsPerPage<currentPage.columns.length;});_canGoToPreviousPage=Flow.Dataflow.lift(_activePage,function(currentPage){return currentPage.index>0;});goToNextPage=function(){var currentPage;currentPage=_activePage();return _activePage(makePage(currentPage.index+1,currentPage.columns));};goToPreviousPage=function(){var currentPage;currentPage=_activePage();if(currentPage.index>0){return _activePage(makePage(currentPage.index-1,currentPage.columns));}};lodash.defer(_go);return{sourceKeys:_inputs[_inputKey],canReconfigure:_canReconfigure,parseTypes,dataTypes,delimiters:parseDelimiters,parseType:_parseType,delimiter:_delimiter,useSingleQuotes:_useSingleQuotes,destinationKey:_destinationKey,headerOption:_headerOption,deleteOnDone:_deleteOnDone,columns:_visibleColumns,parseFiles,columnNameSearchTerm:_columnNameSearchTerm,canGoToNextPage:_canGoToNextPage,canGoToPreviousPage:_canGoToPreviousPage,goToNextPage,goToPreviousPage,template:'flow-parse-raw-input'};};}).call(this);}).call(undefined);
+  (function(){var getJobOutputStatusColor;var getJobProgressPercent;var jobOutputStatusColors;jobOutputStatusColors={failed:'#d9534f',done:'#ccc',running:'#f0ad4e'};getJobOutputStatusColor=function(status){switch(status){case'DONE':return jobOutputStatusColors.done;case'CREATED':case'RUNNING':return jobOutputStatusColors.running;default:return jobOutputStatusColors.failed;}};getJobProgressPercent=function(progress){return`${Math.ceil(100*progress)}%`;};H2O.JobOutput=function(_,_go,_job){var canView;var cancel;var initialize;var isJobRunning;var messageIcons;var refresh;var updateJob;var view;var _canCancel;var _canView;var _description;var _destinationKey;var _destinationType;var _exception;var _isBusy;var _isLive;var _key;var _messages;var _progress;var _progressMessage;var _remainingTime;var _runTime;var _status;var _statusColor;_isBusy=Flow.Dataflow.signal(false);_isLive=Flow.Dataflow.signal(false);_key=_job.key.name;_description=_job.description;_destinationKey=_job.dest.name;_destinationType=function(){switch(_job.dest.type){case'Key<Frame>':return'Frame';case'Key<Model>':return'Model';case'Key<Grid>':return'Grid';case'Key<PartialDependence>':return'PartialDependence';case'Key<AutoML>':return'Auto Model';case'Key<KeyedVoid>':return'Void';default:return'Unknown';}}();_runTime=Flow.Dataflow.signal(null);_remainingTime=Flow.Dataflow.signal(null);_progress=Flow.Dataflow.signal(null);_progressMessage=Flow.Dataflow.signal(null);_status=Flow.Dataflow.signal(null);_statusColor=Flow.Dataflow.signal(null);_exception=Flow.Dataflow.signal(null);_messages=Flow.Dataflow.signal(null);_canView=Flow.Dataflow.signal(false);_canCancel=Flow.Dataflow.signal(false);isJobRunning=function(job){return job.status==='CREATED'||job.status==='RUNNING';};messageIcons={ERROR:'fa-times-circle red',WARN:'fa-warning orange',INFO:'fa-info-circle'};canView=function(job){switch(_destinationType){case'Model':case'Grid':return job.ready_for_view;default:return!isJobRunning(job);}};updateJob=function(job){var cause;var message;var messages;_runTime(Flow.Util.formatMilliseconds(job.msec));_progress(getJobProgressPercent(job.progress));_remainingTime(job.progress?Flow.Util.formatMilliseconds(Math.round((1-job.progress)*job.msec/job.progress)):'Estimating...');_progressMessage(job.progress_msg);_status(job.status);_statusColor(getJobOutputStatusColor(job.status));if(job.error_count){messages=function(){var _i;var _len;var _ref;var _results;_ref=job.messages;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){message=_ref[_i];if(message.message_type!=='HIDE'){_results.push({icon:messageIcons[message.message_type],message:`${message.field_name}: ${message.message}`});}}return _results;}();_messages(messages);}else if(job.exception){cause=new Error(job.exception);if(job.stacktrace){cause.stack=job.stacktrace;}_exception(Flow.Failure(_,new Flow.Error('Job failure.',cause)));}_canView(canView(job));return _canCancel(isJobRunning(job));};refresh=function(){_isBusy(true);return _.requestJob(_key,function(error,job){_isBusy(false);if(error){_exception(Flow.Failure(_,new Flow.Error('Error fetching jobs',error)));return _isLive(false);}updateJob(job);if(isJobRunning(job)){if(_isLive()){return lodash.delay(refresh,1000);}}else{_isLive(false);if(_go){return lodash.defer(_go);}}});};Flow.Dataflow.act(_isLive,function(isLive){if(isLive){return refresh();}});view=function(){if(!_canView()){return;}switch(_destinationType){case'Frame':return _.insertAndExecuteCell('cs',`getFrameSummary ${Flow.Prelude.stringify(_destinationKey)}`);case'Model':return _.insertAndExecuteCell('cs',`getModel ${Flow.Prelude.stringify(_destinationKey)}`);case'Grid':return _.insertAndExecuteCell('cs',`getGrid ${Flow.Prelude.stringify(_destinationKey)}`);case'PartialDependence':return _.insertAndExecuteCell('cs',`getPartialDependence ${Flow.Prelude.stringify(_destinationKey)}`);case'Auto Model':return _.insertAndExecuteCell('cs','getGrids');case'Void':return alert(`This frame was exported to\n${_job.dest.name}`);}};cancel=function(){return _.requestCancelJob(_key,function(error,result){if(error){return console.debug(error);}return updateJob(_job);});};initialize=function(job){updateJob(job);if(isJobRunning(job)){return _isLive(true);}if(_go){return lodash.defer(_go);}};initialize(_job);return{key:_key,description:_description,destinationKey:_destinationKey,destinationType:_destinationType,runTime:_runTime,remainingTime:_remainingTime,progress:_progress,progressMessage:_progressMessage,status:_status,statusColor:_statusColor,messages:_messages,exception:_exception,isLive:_isLive,canView:_canView,canCancel:_canCancel,cancel,view,template:'flow-job-output'};};}).call(this);modelInput();parseInput();}).call(undefined);
 
 }));
