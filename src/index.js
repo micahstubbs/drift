@@ -3638,6 +3638,9 @@ import { html } from './html/html';
     };
   }.call(this));
   // anonymous IIFE
+  // includes
+  // src/core/modules/gui.coffee
+  // and more 
   (function () {
     var button;
     var checkbox;
