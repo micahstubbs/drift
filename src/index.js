@@ -56,7 +56,7 @@ import { flowApplicationContext } from './flowApplicationContext';
 import { flowAnalytics } from './flowAnalytics';
 import { flowStatus } from './flowStatus';
 import { flowSidebar } from './flowSidebar';
-import { flowRaw } from './flowRaw'; 
+import { flowRaw } from './flowRaw';
 
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
@@ -2622,11 +2622,6 @@ import { flowRaw } from './flowRaw';
         object: Flow.ObjectBrowserElement(key, object),
         template: 'flow-object'
       };
-    };
-  }.call(this));
-  (function () {
-    Flow.Outline = function (_, _cells) {
-      return { cells: _cells };
     };
   }.call(this));
   // defer this for now

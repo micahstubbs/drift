@@ -1,3 +1,5 @@
+import { flowOutline } from './flowOutline'; 
+
 export function flowSidebar(_, cells) {
   var Flow = window.Flow;
   var switchToBrowser;
@@ -14,7 +16,7 @@ export function flowSidebar(_, cells) {
   var _mode;
   var _outline;
   _mode = Flow.Dataflow.signal('help');
-  _outline = Flow.Outline(_, cells);
+  _outline = flowOutline(_, cells);
   _isOutlineMode = Flow.Dataflow.lift(_mode, function (mode) {
     return mode === 'outline';
   });
