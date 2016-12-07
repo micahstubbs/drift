@@ -3762,7 +3762,8 @@ import { knockout } from './knockout/knockout';
       button
     };
   }.call(this));
-  // anonymous IIFE
+  // src/core/modules/html.coffee
+  // 24 matches across 5 files
   (function () {
     if ((typeof window !== 'undefined' && window !== null ? window.diecut : void 0) == null) {
       return;
