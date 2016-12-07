@@ -8026,6 +8026,332 @@
     };
   }
 
+  function async() {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var createBuffer;
+    var iterate;
+    var pipe;
+    var _applicate;
+    var _async;
+    var _find;
+    var _find$2;
+    var _find$3;
+    var _fork;
+    var _get;
+    var _isFuture;
+    var _join;
+    var _noop;
+    var __slice = [].slice;
+    createBuffer = function (array) {
+      var buffer;
+      var _array;
+      var _go;
+      _array = array || [];
+      _go = null;
+      buffer = function (element) {
+        if (element === void 0) {
+          return _array;
+        }
+        _array.push(element);
+        if (_go) {
+          _go(element);
+        }
+        return element;
+      };
+      buffer.subscribe = function (go) {
+        return _go = go;
+      };
+      buffer.buffer = _array;
+      buffer.isBuffer = true;
+      return buffer;
+    };
+    _noop = function (go) {
+      return go(null);
+    };
+    _applicate = function (go) {
+      return function (error, args) {
+        if (lodash.isFunction(go)) {
+          return go(...[error].concat(args));
+        }
+      };
+    };
+    _fork = function (f, args) {
+      var self;
+      if (!lodash.isFunction(f)) {
+        throw new Error('Not a function.');
+      }
+      self = function (go) {
+        var canGo;
+        canGo = lodash.isFunction(go);
+        if (self.settled) {
+          if (self.rejected) {
+            if (canGo) {
+              return go(self.error);
+            }
+          } else {
+            if (canGo) {
+              return go(null, self.result);
+            }
+          }
+        } else {
+          return _join(args, function (error, args) {
+            if (error) {
+              self.error = error;
+              self.fulfilled = false;
+              self.rejected = true;
+              if (canGo) {
+                return go(error);
+              }
+            } else {
+              return f(...args.concat(function (error, result) {
+                if (error) {
+                  self.error = error;
+                  self.fulfilled = false;
+                  self.rejected = true;
+                  if (canGo) {
+                    go(error);
+                  }
+                } else {
+                  self.result = result;
+                  self.fulfilled = true;
+                  self.rejected = false;
+                  if (canGo) {
+                    go(null, result);
+                  }
+                }
+                self.settled = true;
+                return self.pending = false;
+              }));
+            }
+          });
+        }
+      };
+      self.method = f;
+      self.args = args;
+      self.fulfilled = false;
+      self.rejected = false;
+      self.settled = false;
+      self.pending = true;
+      self.isFuture = true;
+      return self;
+    };
+    _isFuture = function (a) {
+      if (a != null ? a.isFuture : void 0) {
+        return true;
+      }
+      return false;
+    };
+    _join = function (args, go) {
+      var arg;
+      var i;
+      var _actual;
+      var _i;
+      var _len;
+      var _results;
+      var _settled;
+      var _tasks;
+      if (args.length === 0) {
+        return go(null, []);
+      }
+      _tasks = [];
+      _results = [];
+      for (i = _i = 0, _len = args.length; _i < _len; i = ++_i) {
+        arg = args[i];
+        if (arg != null ? arg.isFuture : void 0) {
+          _tasks.push({
+            future: arg,
+            resultIndex: i
+          });
+        } else {
+          _results[i] = arg;
+        }
+      }
+      if (_tasks.length === 0) {
+        return go(null, _results);
+      }
+      _actual = 0;
+      _settled = false;
+      lodash.forEach(_tasks, function (task) {
+        return task.future.call(null, function (error, result) {
+          if (_settled) {
+            return;
+          }
+          if (error) {
+            _settled = true;
+            go(new Flow.Error(`Error evaluating future[${ task.resultIndex }]`, error));
+          } else {
+            _results[task.resultIndex] = result;
+            _actual++;
+            if (_actual === _tasks.length) {
+              _settled = true;
+              go(null, _results);
+            }
+          }
+        });
+      });
+    };
+    pipe = function (tasks) {
+      var next;
+      var _tasks;
+      _tasks = tasks.slice(0);
+      next = function (args, go) {
+        var task;
+        task = _tasks.shift();
+        if (task) {
+          return task(...args.concat(function () {
+            var error;
+            var results;
+            error = arguments[0], results = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
+            if (error) {
+              return go(error);
+            }
+            return next(results, go);
+          }));
+        }
+        return go(...[null].concat(args));
+      };
+      return function () {
+        var args;
+        var go;
+        var _i;
+        args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
+        return next(args, go);
+      };
+    };
+    iterate = function (tasks) {
+      var next;
+      var _results;
+      var _tasks;
+      _tasks = tasks.slice(0);
+      _results = [];
+      next = function (go) {
+        var task;
+        task = _tasks.shift();
+        if (task) {
+          return task(function (error, result) {
+            if (error) {
+              return go(error);
+            }
+            _results.push(result);
+            return next(go);
+          });
+        }
+        return go(null, _results);
+      };
+      return function (go) {
+        return next(go);
+      };
+    };
+    _async = function () {
+      var args;
+      var f;
+      var later;
+      f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
+      later = function () {
+        var args;
+        var error;
+        var go;
+        var result;
+        var _i;
+        args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
+        try {
+          result = f(...args);
+          return go(null, result);
+        } catch (_error) {
+          error = _error;
+          return go(error);
+        }
+      };
+      return _fork(later, args);
+    };
+    _find$3 = function (attr, prop, obj) {
+      var v;
+      var _i;
+      var _len;
+      if (_isFuture(obj)) {
+        return _async(_find$3, attr, prop, obj);
+      } else if (lodash.isArray(obj)) {
+        for (_i = 0, _len = obj.length; _i < _len; _i++) {
+          v = obj[_i];
+          if (v[attr] === prop) {
+            return v;
+          }
+        }
+        return;
+      }
+    };
+    _find$2 = function (attr, obj) {
+      if (_isFuture(obj)) {
+        return _async(_find$2, attr, obj);
+      } else if (lodash.isString(attr)) {
+        if (lodash.isArray(obj)) {
+          return _find$3('name', attr, obj);
+        }
+        return obj[attr];
+      }
+    };
+    _find = function () {
+      var a;
+      var args;
+      var b;
+      var c;
+      var ta;
+      var tb;
+      var tc;
+      args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
+      switch (args.length) {
+        case 3:
+          a = args[0], b = args[1], c = args[2];
+          ta = Flow.Prelude.typeOf(a);
+          tb = Flow.Prelude.typeOf(b);
+          tc = Flow.Prelude.typeOf(c);
+          if (ta === 'Array' && tb === 'String') {
+            return _find$3(b, c, a);
+          } else if (ta === 'String' && (tc = 'Array')) {
+            return _find$3(a, b, c);
+          }
+          break;
+        case 2:
+          a = args[0], b = args[1];
+          if (!a) {
+            return;
+          }
+          if (!b) {
+            return;
+          }
+          if (lodash.isString(b)) {
+            return _find$2(b, a);
+          } else if (lodash.isString(a)) {
+            return _find$2(a, b);
+          }
+      }
+    };
+    _get = function (attr, obj) {
+      if (_isFuture(obj)) {
+        return _async(_get, attr, obj);
+      } else if (lodash.isString(attr)) {
+        if (lodash.isArray(obj)) {
+          return _find$3('name', attr, obj);
+        }
+        return obj[attr];
+      }
+    };
+    Flow.Async = {
+      createBuffer,
+      noop: _noop,
+      applicate: _applicate,
+      isFuture: _isFuture,
+      fork: _fork,
+      join: _join,
+      pipe,
+      iterate,
+      async: _async,
+      find: _find,
+      get: _get
+    };
+  }
+
   // anonymous IIFE
   (function(){var lodash=window._;window.Flow={};window.H2O={};(function(){var checkSparklingWater;var getContextPath;getContextPath=function(){window.Flow.ContextPath='/';return $.ajax({url:window.referrer,type:'GET',success(data,status,xhr){if(xhr.getAllResponseHeaders().indexOf('X-h2o-context-path')!==-1){return window.Flow.ContextPath=xhr.getResponseHeader('X-h2o-context-path');}},async:false});};checkSparklingWater=function(context){context.onSparklingWater=false;return $.ajax({url:`${window.Flow.ContextPath}3/Metadata/endpoints`,type:'GET',dataType:'json',success(response){var route;var _i;var _len;var _ref;var _results;_ref=response.routes;_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){route=_ref[_i];if(route.url_pattern==='/3/scalaint'){_results.push(context.onSparklingWater=true);}else{_results.push(void 0);}}return _results;},async:false});};if((typeof window!=='undefined'&&window!==null?window.$:void 0)!=null){$(function(){var context;context={};getContextPath();checkSparklingWater(context);window.flow=Flow.Application(context,H2O.Routines);H2O.Application(context);ko.applyBindings(window.flow);context.ready();return context.initialized();});}}).call(this);// anonymous IIFE
   (function(){Flow.Version='0.4.54';Flow.About=function(_){var _properties;_properties=Flow.Dataflow.signals([]);Flow.Dataflow.link(_.ready,function(){if(Flow.BuildProperties){return _properties(Flow.BuildProperties);}return _.requestAbout(function(error,response){var name;var properties;var value;var _i;var _len;var _ref;var _ref1;properties=[];if(!error){_ref=response.entries;for(_i=0,_len=_ref.length;_i<_len;_i++){_ref1=_ref[_i],name=_ref1.name,value=_ref1.value;properties.push({caption:`H2O ${name}`,value});}}properties.push({caption:'Flow version',value:Flow.Version});return _properties(Flow.BuildProperties=properties);});});return{properties:_properties};};}).call(this);(function(){Flow.AlertDialog=function(_,_message,_opts,_go){var accept;if(_opts==null){_opts={};}lodash.defaults(_opts,{title:'Alert',acceptCaption:'OK'});accept=function(){return _go(true);};return{title:_opts.title,acceptCaption:_opts.acceptCaption,message:Flow.Util.multilineTextToHTML(_message),accept,template:'alert-dialog'};};}).call(this);// anonymous IIFE
@@ -8036,7 +8362,7 @@
   (function(){var isExpandable;var preview;var previewArray;var previewObject;isExpandable=function(type){switch(type){case'null':case'undefined':case'Boolean':case'String':case'Number':case'Date':case'RegExp':case'Arguments':case'Function':return false;default:return true;}};previewArray=function(array){var element;var ellipsis;var previews;ellipsis=array.length>5?', ...':'';previews=function(){var _i;var _len;var _ref;var _results;_ref=lodash.head(array,5);_results=[];for(_i=0,_len=_ref.length;_i<_len;_i++){element=_ref[_i];_results.push(preview(element));}return _results;}();return`[${previews.join(', ')}${ellipsis}]`;};previewObject=function(object){var count;var ellipsis;var key;var previews;var value;count=0;previews=[];ellipsis='';for(key in object){if({}.hasOwnProperty.call(object,key)){value=object[key];if(!(key!=='_flow_')){continue;}previews.push(`${key}: ${preview(value)}`);if(++count===5){ellipsis=', ...';break;}}}return`{${previews.join(', ')}${ellipsis}}`;};preview=function(element,recurse){var type;if(recurse==null){recurse=false;}type=Flow.Prelude.typeOf(element);switch(type){case'Boolean':case'String':case'Number':case'Date':case'RegExp':return element;case'undefined':case'null':case'Function':case'Arguments':return type;case'Array':if(recurse){return previewArray(element);}return type;// break; // no-unreachable
   default:if(recurse){return previewObject(element);}return type;}};Flow.ObjectBrowserElement=function(key,object){var toggle;var _canExpand;var _expansions;var _isExpanded;var _type;_expansions=Flow.Dataflow.signal(null);_isExpanded=Flow.Dataflow.signal(false);_type=Flow.Prelude.typeOf(object);_canExpand=isExpandable(_type);toggle=function(){var expansions;var value;if(!_canExpand){return;}if(_expansions()===null){expansions=[];for(key in object){if({}.hasOwnProperty.call(object,key)){value=object[key];if(key!=='_flow_'){expansions.push(Flow.ObjectBrowserElement(key,value));}}}_expansions(expansions);}return _isExpanded(!_isExpanded());};return{key,preview:preview(object,true),toggle,expansions:_expansions,isExpanded:_isExpanded,canExpand:_canExpand};};Flow.ObjectBrowser=function(_,_go,key,object){lodash.defer(_go);return{object:Flow.ObjectBrowserElement(key,object),template:'flow-object'};};}).call(this);// defer this for now
   (function(){Flow.Application=function(_,routines){var _notebook;var _renderers;var _sandbox;flowApplicationContext(_);_sandbox=flowSandbox(_,routines(_));_renderers=Flow.Renderers(_,_sandbox);flowAnalytics(_);flowGrowl(_);Flow.Autosave(_);_notebook=Flow.Notebook(_,_renderers);return{context:_,sandbox:_sandbox,view:_notebook};};}).call(this);// anonymous IIFE
-  (function(){var createBuffer;var iterate;var pipe;var _applicate;var _async;var _find;var _find$2;var _find$3;var _fork;var _get;var _isFuture;var _join;var _noop;var __slice=[].slice;createBuffer=function(array){var buffer;var _array;var _go;_array=array||[];_go=null;buffer=function(element){if(element===void 0){return _array;}_array.push(element);if(_go){_go(element);}return element;};buffer.subscribe=function(go){return _go=go;};buffer.buffer=_array;buffer.isBuffer=true;return buffer;};_noop=function(go){return go(null);};_applicate=function(go){return function(error,args){if(lodash.isFunction(go)){return go(...[error].concat(args));}};};_fork=function(f,args){var self;if(!lodash.isFunction(f)){throw new Error('Not a function.');}self=function(go){var canGo;canGo=lodash.isFunction(go);if(self.settled){if(self.rejected){if(canGo){return go(self.error);}}else{if(canGo){return go(null,self.result);}}}else{return _join(args,function(error,args){if(error){self.error=error;self.fulfilled=false;self.rejected=true;if(canGo){return go(error);}}else{return f(...args.concat(function(error,result){if(error){self.error=error;self.fulfilled=false;self.rejected=true;if(canGo){go(error);}}else{self.result=result;self.fulfilled=true;self.rejected=false;if(canGo){go(null,result);}}self.settled=true;return self.pending=false;}));}});}};self.method=f;self.args=args;self.fulfilled=false;self.rejected=false;self.settled=false;self.pending=true;self.isFuture=true;return self;};_isFuture=function(a){if(a!=null?a.isFuture:void 0){return true;}return false;};_join=function(args,go){var arg;var i;var _actual;var _i;var _len;var _results;var _settled;var _tasks;if(args.length===0){return go(null,[]);}_tasks=[];_results=[];for(i=_i=0,_len=args.length;_i<_len;i=++_i){arg=args[i];if(arg!=null?arg.isFuture:void 0){_tasks.push({future:arg,resultIndex:i});}else{_results[i]=arg;}}if(_tasks.length===0){return go(null,_results);}_actual=0;_settled=false;lodash.forEach(_tasks,function(task){return task.future.call(null,function(error,result){if(_settled){return;}if(error){_settled=true;go(new Flow.Error(`Error evaluating future[${task.resultIndex}]`,error));}else{_results[task.resultIndex]=result;_actual++;if(_actual===_tasks.length){_settled=true;go(null,_results);}}});});};pipe=function(tasks){var next;var _tasks;_tasks=tasks.slice(0);next=function(args,go){var task;task=_tasks.shift();if(task){return task(...args.concat(function(){var error;var results;error=arguments[0],results=arguments.length>=2?__slice.call(arguments,1):[];if(error){return go(error);}return next(results,go);}));}return go(...[null].concat(args));};return function(){var args;var go;var _i;args=arguments.length>=2?__slice.call(arguments,0,_i=arguments.length-1):(_i=0,[]),go=arguments[_i++];return next(args,go);};};iterate=function(tasks){var next;var _results;var _tasks;_tasks=tasks.slice(0);_results=[];next=function(go){var task;task=_tasks.shift();if(task){return task(function(error,result){if(error){return go(error);}_results.push(result);return next(go);});}return go(null,_results);};return function(go){return next(go);};};_async=function(){var args;var f;var later;f=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];later=function(){var args;var error;var go;var result;var _i;args=arguments.length>=2?__slice.call(arguments,0,_i=arguments.length-1):(_i=0,[]),go=arguments[_i++];try{result=f(...args);return go(null,result);}catch(_error){error=_error;return go(error);}};return _fork(later,args);};_find$3=function(attr,prop,obj){var v;var _i;var _len;if(_isFuture(obj)){return _async(_find$3,attr,prop,obj);}else if(lodash.isArray(obj)){for(_i=0,_len=obj.length;_i<_len;_i++){v=obj[_i];if(v[attr]===prop){return v;}}return;}};_find$2=function(attr,obj){if(_isFuture(obj)){return _async(_find$2,attr,obj);}else if(lodash.isString(attr)){if(lodash.isArray(obj)){return _find$3('name',attr,obj);}return obj[attr];}};_find=function(){var a;var args;var b;var c;var ta;var tb;var tc;args=arguments.length>=1?__slice.call(arguments,0):[];switch(args.length){case 3:a=args[0],b=args[1],c=args[2];ta=Flow.Prelude.typeOf(a);tb=Flow.Prelude.typeOf(b);tc=Flow.Prelude.typeOf(c);if(ta==='Array'&&tb==='String'){return _find$3(b,c,a);}else if(ta==='String'&&(tc='Array')){return _find$3(a,b,c);}break;case 2:a=args[0],b=args[1];if(!a){return;}if(!b){return;}if(lodash.isString(b)){return _find$2(b,a);}else if(lodash.isString(a)){return _find$2(a,b);}}};_get=function(attr,obj){if(_isFuture(obj)){return _async(_get,attr,obj);}else if(lodash.isString(attr)){if(lodash.isArray(obj)){return _find$3('name',attr,obj);}return obj[attr];}};Flow.Async={createBuffer,noop:_noop,applicate:_applicate,isFuture:_isFuture,fork:_fork,join:_join,pipe,iterate,async:_async,find:_find,get:_get};}).call(this);(function(){Flow.Autosave=function(_){var setDirty;var setPristine;var warnOnExit;warnOnExit=function(e){var message;message='Warning: you are about to exit Flow.';if(e=e!=null?e:window.event){e.returnValue=message;}return message;};setDirty=function(){return window.onbeforeunload=warnOnExit;};setPristine=function(){return window.onbeforeunload=null;};return Flow.Dataflow.link(_.ready,function(){Flow.Dataflow.link(_.setDirty,setDirty);return Flow.Dataflow.link(_.setPristine,setPristine);});};}).call(this);data();dataflow();dialogs();error();format();// anonymous IIFE
+  async();(function(){Flow.Autosave=function(_){var setDirty;var setPristine;var warnOnExit;warnOnExit=function(e){var message;message='Warning: you are about to exit Flow.';if(e=e!=null?e:window.event){e.returnValue=message;}return message;};setDirty=function(){return window.onbeforeunload=warnOnExit;};setPristine=function(){return window.onbeforeunload=null;};return Flow.Dataflow.link(_.ready,function(){Flow.Dataflow.link(_.setDirty,setDirty);return Flow.Dataflow.link(_.setPristine,setPristine);});};}).call(this);data();dataflow();dialogs();error();format();// anonymous IIFE
   // includes
   // src/core/modules/gui.coffee
   // and more 
