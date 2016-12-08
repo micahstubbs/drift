@@ -359,7 +359,6 @@ import { notebook } from './notebook/notebook';
     };
   }.call(this));
   notebook();
-  // anonymous IIFE
   objectBrowser(); 
   (function () {}.call(this));
   // defer this for now
