@@ -3,12 +3,7 @@ import { h2oFrameDataOutput } from './h2oFrameDataOutput';
 import { h2oDataFrameOutput } from './h2oDataFrameOutput';
 import { h2oApplicationContext } from './h2oApplicationContext';
 
-import { flowSandbox } from './flowSandbox';
-import { flowGrowl } from './flowGrowl';
-import { flowApplicationContext } from './flowApplicationContext';
-import { flowAnalytics } from './flowAnalytics';
 import { flowForm } from './flowForm';
-import { flowAutosave } from './flowAutosave';
 
 import { modelInput } from './modelInput/modelInput';
 import { parseInput } from './parseInput/parseInput';
@@ -33,6 +28,7 @@ import { notebook } from './notebook/notebook';
 import { failure } from './failure/failure';
 import { clipboard } from './clipboard/clipboard';
 import { about } from './about/about';
+import { flowApplication } from './flowApplication';
 
 // flow.coffee
 // parent IIFE for the rest of this file
@@ -87,7 +83,7 @@ import { about } from './about/about';
         context = {};
         getContextPath();
         checkSparklingWater(context);
-        window.flow = Flow.Application(context, H2O.Routines);
+        window.flow = flowApplication(context, H2O.Routines);
         H2O.Application(context);
         ko.applyBindings(window.flow);
         context.ready();
@@ -101,27 +97,6 @@ import { about } from './about/about';
   help();
   notebook();
   objectBrowser(); 
-  // defer this for now
-  (function () {
-    Flow.Application = function (_, routines) {
-      var _notebook;
-      var _renderers;
-      var _sandbox;
-      flowApplicationContext(_);
-      _sandbox = flowSandbox(_, routines(_));
-      _renderers = Flow.Renderers(_, _sandbox);
-      flowAnalytics(_);
-      flowGrowl(_);
-      flowAutosave(_);
-      _notebook = Flow.Notebook(_, _renderers);
-      return {
-        context: _,
-        sandbox: _sandbox,
-        view: _notebook
-      };
-    };
-  }.call(this));
-  // anonymous IIFE
   async();
   data();
   dataflow();

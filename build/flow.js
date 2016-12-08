@@ -89,98 +89,6 @@
     return _.requestAsDataFrame = Flow.Dataflow.slot();
   };
 
-  function flowSandbox(_, routines) {
-    return {
-      routines,
-      context: {},
-      results: {}
-    };
-  };
-
-  function flowGrowl(_) {
-    var Flow = window.Flow;
-    return Flow.Dataflow.link(_.growl, function (message, type) {
-      if (type) {
-        return $.bootstrapGrowl(message, { type });
-      }
-      return $.bootstrapGrowl(message);
-    });
-  };
-
-  function flowApplicationContext(_) {
-    var Flow = window.Flow;
-    _.ready = Flow.Dataflow.slots();
-    _.initialized = Flow.Dataflow.slots();
-    _.open = Flow.Dataflow.slot();
-    _.load = Flow.Dataflow.slot();
-    _.saved = Flow.Dataflow.slots();
-    _.loaded = Flow.Dataflow.slots();
-    _.setDirty = Flow.Dataflow.slots();
-    _.setPristine = Flow.Dataflow.slots();
-    _.status = Flow.Dataflow.slot();
-    _.trackEvent = Flow.Dataflow.slot();
-    _.trackException = Flow.Dataflow.slot();
-    _.selectCell = Flow.Dataflow.slot();
-    _.insertCell = Flow.Dataflow.slot();
-    _.insertAndExecuteCell = Flow.Dataflow.slot();
-    _.executeAllCells = Flow.Dataflow.slot();
-    _.showHelp = Flow.Dataflow.slot();
-    _.showOutline = Flow.Dataflow.slot();
-    _.showBrowser = Flow.Dataflow.slot();
-    _.showClipboard = Flow.Dataflow.slot();
-    _.saveClip = Flow.Dataflow.slot();
-    _.growl = Flow.Dataflow.slot();
-    _.confirm = Flow.Dataflow.slot();
-    _.alert = Flow.Dataflow.slot();
-    return _.dialog = Flow.Dataflow.slot();
-  };
-
-  function flowAnalytics(_) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    Flow.Dataflow.link(_.trackEvent, function (category, action, label, value) {
-      return lodash.defer(function () {
-        return window.ga('send', 'event', category, action, label, value);
-      });
-    });
-    return Flow.Dataflow.link(_.trackException, function (description) {
-      return lodash.defer(function () {
-        _.requestEcho(`FLOW: ${ description }`, function () {});
-        return window.ga('send', 'exception', {
-          exDescription: description,
-          exFatal: false,
-          appName: 'Flow',
-          appVersion: Flow.Version
-        });
-      });
-    });
-  };
-
-  function flowAutosave(_) {
-    var Flow = window.Flow;
-    var setDirty;
-    var setPristine;
-    var warnOnExit;
-    warnOnExit = function (e) {
-      var message;
-      message = 'Warning: you are about to exit Flow.';
-      if (e = e != null ? e : window.event) {
-        e.returnValue = message;
-      }
-      return message;
-    };
-    setDirty = function () {
-      return window.onbeforeunload = warnOnExit;
-    };
-    setPristine = function () {
-      return window.onbeforeunload = null;
-    };
-    return Flow.Dataflow.link(_.ready, function () {
-      Flow.Dataflow.link(_.setDirty, setDirty);
-      return Flow.Dataflow.link(_.setPristine, setPristine);
-    });
-  };
-
   function modelInput() {
     var lodash = window._;
     var Flow = window.Flow;
@@ -10091,7 +9999,120 @@
     };
   }
 
-  // anonymous IIFE
+  function flowApplicationContext(_) {
+    var Flow = window.Flow;
+    _.ready = Flow.Dataflow.slots();
+    _.initialized = Flow.Dataflow.slots();
+    _.open = Flow.Dataflow.slot();
+    _.load = Flow.Dataflow.slot();
+    _.saved = Flow.Dataflow.slots();
+    _.loaded = Flow.Dataflow.slots();
+    _.setDirty = Flow.Dataflow.slots();
+    _.setPristine = Flow.Dataflow.slots();
+    _.status = Flow.Dataflow.slot();
+    _.trackEvent = Flow.Dataflow.slot();
+    _.trackException = Flow.Dataflow.slot();
+    _.selectCell = Flow.Dataflow.slot();
+    _.insertCell = Flow.Dataflow.slot();
+    _.insertAndExecuteCell = Flow.Dataflow.slot();
+    _.executeAllCells = Flow.Dataflow.slot();
+    _.showHelp = Flow.Dataflow.slot();
+    _.showOutline = Flow.Dataflow.slot();
+    _.showBrowser = Flow.Dataflow.slot();
+    _.showClipboard = Flow.Dataflow.slot();
+    _.saveClip = Flow.Dataflow.slot();
+    _.growl = Flow.Dataflow.slot();
+    _.confirm = Flow.Dataflow.slot();
+    _.alert = Flow.Dataflow.slot();
+    return _.dialog = Flow.Dataflow.slot();
+  };
+
+  function flowSandbox(_, routines) {
+    return {
+      routines,
+      context: {},
+      results: {}
+    };
+  };
+
+  function flowAnalytics(_) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    Flow.Dataflow.link(_.trackEvent, function (category, action, label, value) {
+      return lodash.defer(function () {
+        return window.ga('send', 'event', category, action, label, value);
+      });
+    });
+    return Flow.Dataflow.link(_.trackException, function (description) {
+      return lodash.defer(function () {
+        _.requestEcho(`FLOW: ${ description }`, function () {});
+        return window.ga('send', 'exception', {
+          exDescription: description,
+          exFatal: false,
+          appName: 'Flow',
+          appVersion: Flow.Version
+        });
+      });
+    });
+  };
+
+  function flowGrowl(_) {
+    var Flow = window.Flow;
+    return Flow.Dataflow.link(_.growl, function (message, type) {
+      if (type) {
+        return $.bootstrapGrowl(message, { type });
+      }
+      return $.bootstrapGrowl(message);
+    });
+  };
+
+  function flowAutosave(_) {
+    var Flow = window.Flow;
+    var setDirty;
+    var setPristine;
+    var warnOnExit;
+    warnOnExit = function (e) {
+      var message;
+      message = 'Warning: you are about to exit Flow.';
+      if (e = e != null ? e : window.event) {
+        e.returnValue = message;
+      }
+      return message;
+    };
+    setDirty = function () {
+      return window.onbeforeunload = warnOnExit;
+    };
+    setPristine = function () {
+      return window.onbeforeunload = null;
+    };
+    return Flow.Dataflow.link(_.ready, function () {
+      Flow.Dataflow.link(_.setDirty, setDirty);
+      return Flow.Dataflow.link(_.setPristine, setPristine);
+    });
+  };
+
+  function flowApplication(_, routines) {
+    var Flow = window.Flow;
+    var _notebook;
+    var _renderers;
+    var _sandbox;
+    flowApplicationContext(_);
+    _sandbox = flowSandbox(_, routines(_));
+    _renderers = Flow.Renderers(_, _sandbox);
+    flowAnalytics(_);
+    flowGrowl(_);
+    flowAutosave(_);
+    _notebook = Flow.Notebook(_, _renderers);
+    return {
+      context: _,
+      sandbox: _sandbox,
+      view: _notebook
+    };
+  };
+
+  // flow.coffee
+  // parent IIFE for the rest of this file
+  // defer for now
   (function () {
     var lodash = window._;window.Flow = {};window.H2O = {};(function () {
       var checkSparklingWater;
@@ -10142,7 +10163,7 @@
           context = {};
           getContextPath();
           checkSparklingWater(context);
-          window.flow = Flow.Application(context, H2O.Routines);
+          window.flow = flowApplication(context, H2O.Routines);
           H2O.Application(context);
           ko.applyBindings(window.flow);
           context.ready();
@@ -10156,28 +10177,6 @@
     help();
     notebook();
     objectBrowser();
-    (function () {}).call(this);
-    // defer this for now
-    (function () {
-      Flow.Application = function (_, routines) {
-        var _notebook;
-        var _renderers;
-        var _sandbox;
-        flowApplicationContext(_);
-        _sandbox = flowSandbox(_, routines(_));
-        _renderers = Flow.Renderers(_, _sandbox);
-        flowAnalytics(_);
-        flowGrowl(_);
-        flowAutosave(_);
-        _notebook = Flow.Notebook(_, _renderers);
-        return {
-          context: _,
-          sandbox: _sandbox,
-          view: _notebook
-        };
-      };
-    }).call(this);
-    // anonymous IIFE
     async();
     data();
     dataflow();
