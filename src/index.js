@@ -34,7 +34,9 @@ import { failure } from './failure/failure';
 import { clipboard } from './clipboard/clipboard';
 import { about } from './about/about';
 
-// anonymous IIFE
+// flow.coffee
+// parent IIFE for the rest of this file
+// defer for now
 (function () {
   var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
     var checkSparklingWater;
@@ -99,7 +101,6 @@ import { about } from './about/about';
   help();
   notebook();
   objectBrowser(); 
-  (function () {}.call(this));
   // defer this for now
   (function () {
     Flow.Application = function (_, routines) {
