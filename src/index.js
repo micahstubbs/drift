@@ -1,7 +1,8 @@
 import { h2oImportModelOutput } from './h2oImportModelOutput';
 import { h2oFrameDataOutput } from './h2oFrameDataOutput';
 import { h2oDataFrameOutput } from './h2oDataFrameOutput';
-import { h2oApplicationContext } from './h2oApplicationContext';
+import { h2oApplication } from './h2oApplication'; 
+
 
 import { flowForm } from './flowForm';
 
@@ -85,7 +86,7 @@ import { gui } from './gui/gui';
         getContextPath();
         checkSparklingWater(context);
         window.flow = flowApplication(context, H2O.Routines);
-        H2O.Application(context);
+        h2oApplication(context);
         ko.applyBindings(window.flow);
         context.ready();
         return context.initialized();
@@ -244,13 +245,6 @@ import { gui } from './gui/gui';
   }.call(this));
   types();
   coreUtils();
-  // defer for now 
-  (function () {
-    H2O.Application = function (_) {
-      h2oApplicationContext(_);
-      return H2O.Proxy(_);
-    };
-  }.call(this));
   // abstracting out this IIFE produces an error
   // defer for now 
   (function () {
