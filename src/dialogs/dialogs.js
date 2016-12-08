@@ -1,4 +1,5 @@
 import { flowConfirmDialog } from '../flowConfirmDialog';
+import { flowAlertDialog } from '../flowAlertDialog';
 
 export function dialogs() {
   var Flow = window.Flow;
@@ -50,7 +51,7 @@ export function dialogs() {
       ], go);
     });
     Flow.Dataflow.link(_.alert, function (message, opts, go) {
-      return showDialog(Flow.AlertDialog, [
+      return showDialog(flowAlertDialog, [
         message,
         opts
       ], go);

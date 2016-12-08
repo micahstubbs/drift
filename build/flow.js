@@ -6443,6 +6443,29 @@
     };
   };
 
+  function flowAlertDialog(_, _message, _opts, _go) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var accept;
+    if (_opts == null) {
+      _opts = {};
+    }
+    lodash.defaults(_opts, {
+      title: 'Alert',
+      acceptCaption: 'OK'
+    });
+    accept = function () {
+      return _go(true);
+    };
+    return {
+      title: _opts.title,
+      acceptCaption: _opts.acceptCaption,
+      message: Flow.Util.multilineTextToHTML(_message),
+      accept,
+      template: 'alert-dialog'
+    };
+  };
+
   function dialogs() {
     var Flow = window.Flow;
     var __slice = [].slice;
@@ -6490,7 +6513,7 @@
         return showDialog(flowConfirmDialog, [message, opts], go);
       });
       Flow.Dataflow.link(_.alert, function (message, opts, go) {
-        return showDialog(Flow.AlertDialog, [message, opts], go);
+        return showDialog(flowAlertDialog, [message, opts], go);
       });
       return {
         dialog: _dialog,
@@ -10126,29 +10149,6 @@
         return { properties: _properties };
       };
     }).call(this);
-    (function () {
-      Flow.AlertDialog = function (_, _message, _opts, _go) {
-        var accept;
-        if (_opts == null) {
-          _opts = {};
-        }
-        lodash.defaults(_opts, {
-          title: 'Alert',
-          acceptCaption: 'OK'
-        });
-        accept = function () {
-          return _go(true);
-        };
-        return {
-          title: _opts.title,
-          acceptCaption: _opts.acceptCaption,
-          message: Flow.Util.multilineTextToHTML(_message),
-          accept,
-          template: 'alert-dialog'
-        };
-      };
-    }).call(this);
-    // anonymous IIFE
     clipboard();
     failure();
     help();

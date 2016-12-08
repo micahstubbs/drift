@@ -131,29 +131,6 @@ import { clipboard } from './clipboard/clipboard';
       return { properties: _properties };
     };
   }.call(this));
-  (function () {
-    Flow.AlertDialog = function (_, _message, _opts, _go) {
-      var accept;
-      if (_opts == null) {
-        _opts = {};
-      }
-      lodash.defaults(_opts, {
-        title: 'Alert',
-        acceptCaption: 'OK'
-      });
-      accept = function () {
-        return _go(true);
-      };
-      return {
-        title: _opts.title,
-        acceptCaption: _opts.acceptCaption,
-        message: Flow.Util.multilineTextToHTML(_message),
-        accept,
-        template: 'alert-dialog'
-      };
-    };
-  }.call(this));
-  // anonymous IIFE
   clipboard();
   failure();
   help();
