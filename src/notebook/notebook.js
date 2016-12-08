@@ -6,6 +6,7 @@ import { flowSidebar } from '../flowSidebar';
 import { flowCell } from '../flowCell';
 import { flowFileOpenDialog } from '../flowFileOpenDialog';
 import { flowFileUploadDialog } from '../flowFileUploadDialog';
+import { flowMarkdown } from '../flowMarkdown';
 
 export function notebook() {
   var lodash = window._;
@@ -32,7 +33,7 @@ export function notebook() {
         return flowHeading(_, 'h6');
       },
       md() {
-        return Flow.Markdown(_);
+        return flowMarkdown(_);
       },
       cs(guid) {
         return flowCoffeescript(_, guid, _sandbox);

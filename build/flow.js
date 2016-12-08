@@ -8856,6 +8856,26 @@
     };
   };
 
+  function flowMarkdown(_) {
+    var render;
+    render = function (input, output) {
+      var error;
+      try {
+        return output.data({
+          html: marked(input.trim() || '(No content)'),
+          template: 'flow-html'
+        });
+      } catch (_error) {
+        error = _error;
+        return output.error(error);
+      } finally {
+        output.end();
+      }
+    };
+    render.isCode = false;
+    return render;
+  };
+
   function notebook() {
     var lodash = window._;
     var Flow = window.Flow;
@@ -8881,7 +8901,7 @@
           return flowHeading(_, 'h6');
         },
         md() {
-          return Flow.Markdown(_);
+          return flowMarkdown(_);
         },
         cs(guid) {
           return flowCoffeescript(_, guid, _sandbox);
@@ -10126,29 +10146,7 @@
       };
     }).call(this);
     help();
-    (function () {
-      Flow.Markdown = function (_) {
-        var render;
-        render = function (input, output) {
-          var error;
-          try {
-            return output.data({
-              html: marked(input.trim() || '(No content)'),
-              template: 'flow-html'
-            });
-          } catch (_error) {
-            error = _error;
-            return output.error(error);
-          } finally {
-            output.end();
-          }
-        };
-        render.isCode = false;
-        return render;
-      };
-    }).call(this);
     notebook();
-    // anonymous IIFE
     objectBrowser();
     (function () {}).call(this);
     // defer this for now

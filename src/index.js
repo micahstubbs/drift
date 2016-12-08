@@ -337,27 +337,6 @@ import { notebook } from './notebook/notebook';
     };
   }.call(this));
   help();
-  (function () {
-    Flow.Markdown = function (_) {
-      var render;
-      render = function (input, output) {
-        var error;
-        try {
-          return output.data({
-            html: marked(input.trim() || '(No content)'),
-            template: 'flow-html'
-          });
-        } catch (_error) {
-          error = _error;
-          return output.error(error);
-        } finally {
-          output.end();
-        }
-      };
-      render.isCode = false;
-      return render;
-    };
-  }.call(this));
   notebook();
   objectBrowser(); 
   (function () {}.call(this));
