@@ -9849,6 +9849,38 @@
     };
   }
 
+  function failure() {
+    var traceCauses;
+    traceCauses = function (error, causes) {
+      causes.push(error.message);
+      if (error.cause) {
+        traceCauses(error.cause, causes);
+      }
+      return causes;
+    };
+    Flow.Failure = function (_, error) {
+      var causes;
+      var message;
+      var toggleStack;
+      var _isStackVisible;
+      causes = traceCauses(error, []);
+      message = causes.shift();
+      _isStackVisible = Flow.Dataflow.signal(false);
+      toggleStack = function () {
+        return _isStackVisible(!_isStackVisible());
+      };
+      _.trackException(`${ message }; ${ causes.join('; ') }`);
+      return {
+        message,
+        stack: error.stack,
+        causes,
+        isStackVisible: _isStackVisible,
+        toggleStack,
+        template: 'flow-failure'
+      };
+    };
+  }
+
   // anonymous IIFE
   (function () {
     var lodash = window._;window.Flow = {};window.H2O = {};(function () {
@@ -10113,38 +10145,7 @@
         };
       };
     }).call(this);
-    // anonymous IIFE
-    (function () {
-      var traceCauses;
-      traceCauses = function (error, causes) {
-        causes.push(error.message);
-        if (error.cause) {
-          traceCauses(error.cause, causes);
-        }
-        return causes;
-      };
-      Flow.Failure = function (_, error) {
-        var causes;
-        var message;
-        var toggleStack;
-        var _isStackVisible;
-        causes = traceCauses(error, []);
-        message = causes.shift();
-        _isStackVisible = Flow.Dataflow.signal(false);
-        toggleStack = function () {
-          return _isStackVisible(!_isStackVisible());
-        };
-        _.trackException(`${ message }; ${ causes.join('; ') }`);
-        return {
-          message,
-          stack: error.stack,
-          causes,
-          isStackVisible: _isStackVisible,
-          toggleStack,
-          template: 'flow-failure'
-        };
-      };
-    }).call(this);
+    failure();
     help();
     notebook();
     objectBrowser();
