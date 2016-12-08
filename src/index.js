@@ -343,6 +343,8 @@ import { objectBrowser } from './objectBrowser/objectBrowser';
     };
   }.call(this));
   // anonymous IIFE
+  // src/core/components/help.coffee
+  // and other things
   (function () {
     var _catalog;
     var _homeContent;
