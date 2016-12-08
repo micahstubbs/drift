@@ -1,4 +1,5 @@
 export function flowAutosave(_) {
+  var Flow = window.Flow;
   var setDirty;
   var setPristine;
   var warnOnExit;
