@@ -1,13 +1,16 @@
 export function knockout() {
   const lodash = window._;
+  const $ = window.jQuery;
+  const CodeMirror = window.CodeMirror;
+  const ko = window.ko;
+  const marked = window.marked;
   if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
     return;
   }
   ko.bindingHandlers.raw = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
       let $element;
-      let arg;
-      arg = ko.unwrap(valueAccessor());
+      const arg = ko.unwrap(valueAccessor());
       if (arg) {
         $element = $(element);
         $element.empty();
@@ -17,10 +20,9 @@ export function knockout() {
   };
   ko.bindingHandlers.markdown = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      let data;
       let error;
       let html;
-      data = ko.unwrap(valueAccessor());
+      const data = ko.unwrap(valueAccessor());
       try {
         html = marked(data || '');
       } catch (_error) {
@@ -32,8 +34,7 @@ export function knockout() {
   };
   ko.bindingHandlers.stringify = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      let data;
-      data = ko.unwrap(valueAccessor());
+      const data = ko.unwrap(valueAccessor());
       return $(element).text(JSON.stringify(data, null, 2));
     }
   };
@@ -101,15 +102,12 @@ export function knockout() {
         $el = $(element);
         $viewport = $el.closest('.flow-box-notebook');
         arg.scrollIntoView = immediate => {
-          let height;
-          let position;
-          let top;
           if (immediate == null) {
             immediate = false;
           }
-          position = $viewport.scrollTop();
-          top = $el.position().top + position;
-          height = $viewport.height();
+          const position = $viewport.scrollTop();
+          const top = $el.position().top + position;
+          const height = $viewport.height();
           if (top - 20 < position || top + 20 > position + height) {
             if (immediate) {
               return $viewport.scrollTop(top);
@@ -122,28 +120,21 @@ export function knockout() {
   };
   ko.bindingHandlers.collapse = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      let $caretEl;
-      let $el;
-      let $nextEl;
-      let caretDown;
-      let caretEl;
-      let caretRight;
       let isCollapsed;
-      let toggle;
-      caretDown = 'fa-caret-down';
-      caretRight = 'fa-caret-right';
+      const caretDown = 'fa-caret-down';
+      const caretRight = 'fa-caret-right';
       isCollapsed = ko.unwrap(valueAccessor());
-      caretEl = document.createElement('i');
+      const caretEl = document.createElement('i');
       caretEl.className = 'fa';
       caretEl.style.marginRight = '3px';
       element.insertBefore(caretEl, element.firstChild);
-      $el = $(element);
-      $nextEl = $el.next();
+      const $el = $(element);
+      const $nextEl = $el.next();
       if (!$nextEl.length) {
         throw new Error('No collapsible sibling found');
       }
-      $caretEl = $(caretEl);
-      toggle = () => {
+      const $caretEl = $(caretEl);
+      const toggle = () => {
         if (isCollapsed) {
           $caretEl.removeClass(caretDown).addClass(caretRight);
           $nextEl.hide();
@@ -163,8 +154,7 @@ export function knockout() {
   ko.bindingHandlers.dom = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
       let $element;
-      let arg;
-      arg = ko.unwrap(valueAccessor());
+      const arg = ko.unwrap(valueAccessor());
       if (arg) {
         $element = $(element);
         $element.empty();
@@ -186,8 +176,7 @@ export function knockout() {
   ko.bindingHandlers.file = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
       let $file;
-      let file;
-      file = valueAccessor();
+      const file = valueAccessor();
       if (file) {
         $file = $(element);
         $file.change(function () {
@@ -198,17 +187,14 @@ export function knockout() {
   };
   ko.bindingHandlers.codemirror = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      let editor;
-      let internalTextArea;
-      let options;
-      options = ko.unwrap(valueAccessor());
-      editor = CodeMirror.fromTextArea(element, options);
+      const options = ko.unwrap(valueAccessor());
+      const editor = CodeMirror.fromTextArea(element, options);
       editor.on('change', cm => allBindings().value(cm.getValue()));
       element.editor = editor;
       if (allBindings().value()) {
         editor.setValue(allBindings().value());
       }
-      internalTextArea = $(editor.getWrapperElement()).find('div textarea');
+      const internalTextArea = $(editor.getWrapperElement()).find('div textarea');
       internalTextArea.attr('rows', '1');
       internalTextArea.attr('spellcheck', 'false');
       internalTextArea.removeAttr('wrap');
