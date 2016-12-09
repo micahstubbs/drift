@@ -1,10 +1,10 @@
 export function error() {
-  var Flow = window.Flow;
-  var FlowError;
-  var __hasProp = {}.hasOwnProperty;
+  const Flow = window.Flow;
+  let FlowError;
+  const __hasProp = {}.hasOwnProperty;
 
-  var __extends = (child, parent) => {
-    var key;
+  const __extends = (child, parent) => {
+    let key;
     for (key in parent) {
       if (__hasProp.call(parent, key)) {
         child[key] = parent[key];
@@ -22,8 +22,8 @@ export function error() {
   FlowError = (_super => {
     __extends(FlowError, _super);
     function FlowError(message, cause) {
-      var error;
-      var _ref;
+      let error;
+      let _ref;
       this.message = message;
       this.cause = cause;
       this.name = 'FlowError';

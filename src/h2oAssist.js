@@ -1,8 +1,8 @@
 export function h2oAssist(_, _go, _items) {
-  var lodash = window._;
-  var createAssistItem;
-  var item;
-  var name;
+  const lodash = window._;
+  let createAssistItem;
+  let item;
+  let name;
   createAssistItem = (name, item) => ({
     name,
     description: item.description,
@@ -15,7 +15,7 @@ export function h2oAssist(_, _go, _items) {
   lodash.defer(_go);
   return {
     routines: (() => {
-      var _results;
+      let _results;
       _results = [];
       for (name in _items) {
         if ({}.hasOwnProperty.call(_items, name)) {

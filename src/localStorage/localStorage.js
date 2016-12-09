@@ -1,27 +1,27 @@
 export function localStorage() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var keyOf;
-  var list;
-  var purge;
-  var purgeAll;
-  var read;
-  var write;
-  var _ls;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let keyOf;
+  let list;
+  let purge;
+  let purgeAll;
+  let read;
+  let write;
+  let _ls;
   if (!(typeof window !== 'undefined' && window !== null ? window.localStorage : void 0)) {
     return;
   }
   _ls = window.localStorage;
   keyOf = (type, id) => `${type}:${id}`;
   list = type => {
-    var i;
-    var id;
-    var key;
-    var objs;
-    var t;
-    var _i;
-    var _ref;
-    var _ref1;
+    let i;
+    let id;
+    let key;
+    let objs;
+    let t;
+    let _i;
+    let _ref;
+    let _ref1;
     objs = [];
     for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
       key = _ls.key(i);
@@ -37,7 +37,7 @@ export function localStorage() {
     return objs;
   };
   read = (type, id) => {
-    var raw;
+    let raw;
     if (raw = _ls.getobj(keyOf(type, id))) {
       return JSON.parse(raw);
     }
@@ -51,15 +51,15 @@ export function localStorage() {
     return purgeAll(type);
   };
   purgeAll = type => {
-    var allKeys;
-    var i;
-    var key;
-    var _i;
-    var _len;
+    let allKeys;
+    let i;
+    let key;
+    let _i;
+    let _len;
     allKeys = (() => {
-      var _i;
-      var _ref;
-      var _results;
+      let _i;
+      let _ref;
+      let _results;
       _results = [];
       for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
         _results.push(_ls.key(i));

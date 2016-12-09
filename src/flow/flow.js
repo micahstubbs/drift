@@ -2,9 +2,9 @@ import { h2oApplication } from '../h2oApplication';
 import { flowApplication } from '../flowApplication';
 
 export function flow() {
-  var Flow = window.Flow;
-  var checkSparklingWater;
-  var getContextPath;
+  const Flow = window.Flow;
+  let checkSparklingWater;
+  let getContextPath;
   getContextPath = () => {
     window.Flow.ContextPath = '/';
     return $.ajax({
@@ -25,11 +25,11 @@ export function flow() {
       type: 'GET',
       dataType: 'json',
       success(response) {
-        var route;
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let route;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = response.routes;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -47,7 +47,7 @@ export function flow() {
   };
   if ((typeof window !== 'undefined' && window !== null ? window.$ : void 0) != null) {
     $(() => {
-      var context;
+      let context;
       context = {};
       getContextPath();
       checkSparklingWater(context);

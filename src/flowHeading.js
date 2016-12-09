@@ -1,5 +1,5 @@
 export function flowHeading(_, level) {
-  var render;
+  let render;
   render = (input, output) => {
     output.data({
       text: input.trim() || '(Untitled)',

@@ -2,10 +2,10 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var _frameKey;
-  var _viewFrame;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let _frameKey;
+  let _viewFrame;
   _frameKey = _mergeFramesResult.key;
   _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(_frameKey)}`);
   lodash.defer(_go);

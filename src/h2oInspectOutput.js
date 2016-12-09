@@ -2,10 +2,10 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oInspectOutput(_, _go, _frame) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var plot;
-  var view;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let plot;
+  let view;
   view = () => _.insertAndExecuteCell('cs', `grid inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}`);
   plot = () => _.insertAndExecuteCell('cs', _frame.metadata.plot);
   lodash.defer(_go);

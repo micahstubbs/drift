@@ -2,25 +2,25 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oJobsOutput(_, _go, jobs) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createJobView;
-  var initialize;
-  var refresh;
-  var toggleRefresh;
-  var _exception;
-  var _hasJobViews;
-  var _isBusy;
-  var _isLive;
-  var _jobViews;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createJobView;
+  let initialize;
+  let refresh;
+  let toggleRefresh;
+  let _exception;
+  let _hasJobViews;
+  let _isBusy;
+  let _isLive;
+  let _jobViews;
   _jobViews = Flow.Dataflow.signals([]);
   _hasJobViews = Flow.Dataflow.lift(_jobViews, jobViews => jobViews.length > 0);
   _isLive = Flow.Dataflow.signal(false);
   _isBusy = Flow.Dataflow.signal(false);
   _exception = Flow.Dataflow.signal(null);
   createJobView = job => {
-    var type;
-    var view;
+    let type;
+    let view;
     view = () => _.insertAndExecuteCell('cs', `getJob ${flowPrelude.stringify(job.key.name)}`);
     type = (() => {
       switch (job.dest.type) {

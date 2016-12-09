@@ -1,5 +1,5 @@
 export function h2oDeleteObjectsOutput(_, _go, _keys) {
-  var lodash = window._;
+  const lodash = window._;
   lodash.defer(_go);
   return {
     hasKeys: _keys.length > 0,

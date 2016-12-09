@@ -1,21 +1,21 @@
 export function flowBrowser(_) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createNotebookView;
-  var loadNotebooks;
-  var _docs;
-  var _hasDocs;
-  var _sortedDocs;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createNotebookView;
+  let loadNotebooks;
+  let _docs;
+  let _hasDocs;
+  let _sortedDocs;
   _docs = Flow.Dataflow.signals([]);
   _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
   _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
   createNotebookView = notebook => {
-    var load;
-    var purge;
-    var self;
-    var _date;
-    var _fromNow;
-    var _name;
+    let load;
+    let purge;
+    let self;
+    let _date;
+    let _fromNow;
+    let _name;
     _name = notebook.name;
     _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
     _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
@@ -33,7 +33,7 @@ export function flowBrowser(_) {
     }, accept => {
       if (accept) {
         return _.requestDeleteObject('notebook', _name, error => {
-          var _ref;
+          let _ref;
           if (error) {
             return _alert((_ref = error.message) != null ? _ref : error);
           }

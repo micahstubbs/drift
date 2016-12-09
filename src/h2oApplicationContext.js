@@ -1,5 +1,5 @@
 export function h2oApplicationContext(_) {
-  var Flow = window.Flow;
+  const Flow = window.Flow;
   _.requestFileGlob = Flow.Dataflow.slot();
   _.requestCreateFrame = Flow.Dataflow.slot();
   _.requestSplitFrame = Flow.Dataflow.slot();

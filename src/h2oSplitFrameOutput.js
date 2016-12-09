@@ -2,22 +2,22 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
-  var lodash = window._;
-  var computeRatios;
-  var createFrameView;
-  var index;
-  var key;
-  var _frames;
-  var _ratios;
+  const lodash = window._;
+  let computeRatios;
+  let createFrameView;
+  let index;
+  let key;
+  let _frames;
+  let _ratios;
   computeRatios = sourceRatios => {
-    var ratio;
-    var ratios;
-    var total;
+    let ratio;
+    let ratios;
+    let total;
     total = 0;
     ratios = ((() => {
-      var _i;
-      var _len;
-      var _results;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = sourceRatios.length; _i < _len; _i++) {
         ratio = sourceRatios[_i];
@@ -30,8 +30,8 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     return ratios;
   };
   createFrameView = (key, ratio) => {
-    var self;
-    var view;
+    let self;
+    let view;
     view = () => _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(key)}`);
     return self = {
       key,
@@ -41,10 +41,10 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
   };
   _ratios = computeRatios(_splitFrameResult.ratios);
   _frames = ((() => {
-    var _i;
-    var _len;
-    var _ref;
-    var _results;
+    let _i;
+    let _len;
+    let _ref;
+    let _results;
     _ref = _splitFrameResult.keys;
     _results = [];
     for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {

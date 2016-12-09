@@ -2,34 +2,34 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oPredictInput(_, _go, opt) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var predict;
-  var _canPredict;
-  var _computeDeepFeaturesHiddenLayer;
-  var _computeLeafNodeAssignment;
-  var _computeReconstructionError;
-  var _deepFeaturesHiddenLayer;
-  var _deepFeaturesHiddenLayerValue;
-  var _destinationKey;
-  var _exception;
-  var _exemplarIndex;
-  var _exemplarIndexValue;
-  var _frames;
-  var _hasExemplarIndex;
-  var _hasFrames;
-  var _hasLeafNodeAssignment;
-  var _hasModels;
-  var _hasReconError;
-  var _isDeepLearning;
-  var _models;
-  var _ref;
-  var _selectedFrame;
-  var _selectedFrames;
-  var _selectedFramesCaption;
-  var _selectedModel;
-  var _selectedModels;
-  var _selectedModelsCaption;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let predict;
+  let _canPredict;
+  let _computeDeepFeaturesHiddenLayer;
+  let _computeLeafNodeAssignment;
+  let _computeReconstructionError;
+  let _deepFeaturesHiddenLayer;
+  let _deepFeaturesHiddenLayerValue;
+  let _destinationKey;
+  let _exception;
+  let _exemplarIndex;
+  let _exemplarIndexValue;
+  let _frames;
+  let _hasExemplarIndex;
+  let _hasFrames;
+  let _hasLeafNodeAssignment;
+  let _hasModels;
+  let _hasReconError;
+  let _isDeepLearning;
+  let _models;
+  let _ref;
+  let _selectedFrame;
+  let _selectedFrames;
+  let _selectedFramesCaption;
+  let _selectedModel;
+  let _selectedModels;
+  let _selectedModelsCaption;
   _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${Flow.Util.uuid()}`);
   _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
   _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
@@ -44,10 +44,10 @@ export function h2oPredictInput(_, _go, opt) {
   _models = Flow.Dataflow.signals([]);
   _isDeepLearning = Flow.Dataflow.lift(_selectedModel, model => model && model.algo === 'deeplearning');
   _hasReconError = Flow.Dataflow.lift(_selectedModel, model => {
-    var parameter;
-    var _i;
-    var _len;
-    var _ref1;
+    let parameter;
+    let _i;
+    let _len;
+    let _ref1;
     if (model) {
       if (model.algo === 'deeplearning') {
         _ref1 = model.parameters;
@@ -99,22 +99,22 @@ export function h2oPredictInput(_, _go, opt) {
     exemplarIndexValue,
     hasExemplarIndex
   ) => {
-    var hasFrameAndModel;
-    var hasValidOptions;
+    let hasFrameAndModel;
+    let hasValidOptions;
     hasFrameAndModel = frame && model || _hasFrames && model || _hasModels && frame || _hasModels && hasExemplarIndex;
     hasValidOptions = hasReconError ? computeReconstructionError ? true : computeDeepFeaturesHiddenLayer ? !lodash.isNaN(deepFeaturesHiddenLayerValue) : true : true;
     return hasFrameAndModel && hasValidOptions;
   });
   if (!_hasFrames) {
     _.requestFrames((error, frames) => {
-      var frame;
+      let frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));
       }
       return _frames((() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = frames.length; _i < _len; _i++) {
           frame = frames[_i];
@@ -128,14 +128,14 @@ export function h2oPredictInput(_, _go, opt) {
   }
   if (!_hasModels) {
     _.requestModels((error, models) => {
-      var model;
+      let model;
       if (error) {
         return _exception(new Flow.Error('Error fetching model list.', error));
       }
       return _models((() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
@@ -151,10 +151,10 @@ export function h2oPredictInput(_, _go, opt) {
     }
   }
   predict = () => {
-    var cs;
-    var destinationKey;
-    var frameArg;
-    var modelArg;
+    let cs;
+    let destinationKey;
+    let frameArg;
+    let modelArg;
     if (_hasFrames) {
       frameArg = _selectedFrames.length > 1 ? _selectedFrames : lodash.head(_selectedFrames);
       modelArg = _selectedModel();

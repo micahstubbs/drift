@@ -2,12 +2,12 @@ import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function parseInput() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var MaxItemsPerPage;
-  var dataTypes;
-  var parseDelimiters;
-  var parseTypes;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let MaxItemsPerPage;
+  let dataTypes;
+  let parseDelimiters;
+  let parseTypes;
   MaxItemsPerPage = 15;
   parseTypes = lodash.map([
     'AUTO',
@@ -24,11 +24,11 @@ export function parseInput() {
     caption: type
   }));
   parseDelimiters = (() => {
-    var characterDelimiters;
-    var createDelimiter;
-    var otherDelimiters;
-    var whitespaceDelimiters;
-    var whitespaceSeparators;
+    let characterDelimiters;
+    let createDelimiter;
+    let otherDelimiters;
+    let whitespaceDelimiters;
+    let whitespaceSeparators;
     whitespaceSeparators = [
       'NULL',
       'SOH (start of heading)',
@@ -70,7 +70,7 @@ export function parseInput() {
     });
     whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
     characterDelimiters = lodash.times(126 - whitespaceSeparators.length, i => {
-      var charCode;
+      let charCode;
       charCode = i + whitespaceSeparators.length;
       return createDelimiter(String.fromCharCode(charCode), charCode);
     });
@@ -90,33 +90,33 @@ export function parseInput() {
     'Invalid'
   ];
   H2O.SetupParseOutput = (_, _go, _inputs, _result) => {
-    var filterColumns;
-    var goToNextPage;
-    var goToPreviousPage;
-    var makePage;
-    var parseFiles;
-    var refreshPreview;
-    var _activePage;
-    var _canGoToNextPage;
-    var _canGoToPreviousPage;
-    var _canReconfigure;
-    var _chunkSize;
-    var _columnCount;
-    var _columnNameSearchTerm;
-    var _columns;
-    var _currentPage;
-    var _deleteOnDone;
-    var _delimiter;
-    var _destinationKey;
-    var _filteredColumns;
-    var _headerOption;
-    var _headerOptions;
-    var _inputKey;
-    var _parseType;
-    var _preview;
-    var _sourceKeys;
-    var _useSingleQuotes;
-    var _visibleColumns;
+    let filterColumns;
+    let goToNextPage;
+    let goToPreviousPage;
+    let makePage;
+    let parseFiles;
+    let refreshPreview;
+    let _activePage;
+    let _canGoToNextPage;
+    let _canGoToPreviousPage;
+    let _canReconfigure;
+    let _chunkSize;
+    let _columnCount;
+    let _columnNameSearchTerm;
+    let _columns;
+    let _currentPage;
+    let _deleteOnDone;
+    let _delimiter;
+    let _destinationKey;
+    let _filteredColumns;
+    let _headerOption;
+    let _headerOptions;
+    let _inputKey;
+    let _parseType;
+    let _preview;
+    let _sourceKeys;
+    let _useSingleQuotes;
+    let _visibleColumns;
     _inputKey = _inputs.paths ? 'paths' : 'source_frames';
     _sourceKeys = lodash.map(_result.source_frames, src => src.name);
     _parseType = Flow.Dataflow.signal(lodash.find(parseTypes, parseType => parseType.type === _result.parse_type));
@@ -135,13 +135,13 @@ export function parseInput() {
     _preview = Flow.Dataflow.signal(_result);
     _chunkSize = Flow.Dataflow.lift(_preview, preview => preview.chunk_size);
     refreshPreview = () => {
-      var column;
-      var columnTypes;
+      let column;
+      let columnTypes;
       columnTypes = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _columns();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -157,18 +157,18 @@ export function parseInput() {
       });
     };
     _columns = Flow.Dataflow.lift(_preview, preview => {
-      var columnCount;
-      var columnNames;
-      var columnTypes;
-      var data;
-      var i;
-      var j;
-      var previewData;
-      var row;
-      var rowCount;
-      var rows;
-      var _i;
-      var _j;
+      let columnCount;
+      let columnNames;
+      let columnTypes;
+      let data;
+      let i;
+      let j;
+      let previewData;
+      let row;
+      let rowCount;
+      let rows;
+      let _i;
+      let _j;
       columnTypes = preview.column_types;
       columnCount = columnTypes.length;
       previewData = preview.data;
@@ -208,20 +208,20 @@ export function parseInput() {
     filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
     Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));
     _visibleColumns = Flow.Dataflow.lift(_activePage, currentPage => {
-      var start;
+      let start;
       start = currentPage.index * MaxItemsPerPage;
       return currentPage.columns.slice(start, start + MaxItemsPerPage);
     });
     parseFiles = () => {
-      var column;
-      var columnNames;
-      var columnTypes;
-      var headerOption;
+      let column;
+      let columnNames;
+      let columnTypes;
+      let headerOption;
       columnNames = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _columns();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -236,10 +236,10 @@ export function parseInput() {
         headerOption = -1;
       }
       columnTypes = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _columns();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -253,12 +253,12 @@ export function parseInput() {
     _canGoToNextPage = Flow.Dataflow.lift(_activePage, currentPage => (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length);
     _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, currentPage => currentPage.index > 0);
     goToNextPage = () => {
-      var currentPage;
+      let currentPage;
       currentPage = _activePage();
       return _activePage(makePage(currentPage.index + 1, currentPage.columns));
     };
     goToPreviousPage = () => {
-      var currentPage;
+      let currentPage;
       currentPage = _activePage();
       if (currentPage.index > 0) {
         return _activePage(makePage(currentPage.index - 1, currentPage.columns));

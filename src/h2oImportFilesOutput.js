@@ -2,14 +2,14 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oImportFilesOutput(_, _go, _importResults) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createImportView;
-  var parse;
-  var _allFrames;
-  var _canParse;
-  var _importViews;
-  var _title;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createImportView;
+  let parse;
+  let _allFrames;
+  let _canParse;
+  let _importViews;
+  let _title;
   _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, result => result.destination_frames)));
   _canParse = _allFrames.length > 0;
   _title = `${_allFrames.length} / ${_importResults.length} files imported.`;
@@ -19,7 +19,7 @@ export function h2oImportFilesOutput(_, _go, _importResults) {
   });
   _importViews = lodash.map(_importResults, createImportView);
   parse = () => {
-    var paths;
+    let paths;
     paths = lodash.map(_allFrames, flowPrelude.stringify);
     return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${paths.join(',')} ]`);
   };

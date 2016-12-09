@@ -2,68 +2,68 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oModelOutput(_, _go, _model, refresh) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createOutput;
-  var _isLive;
-  var _output;
-  var _refresh;
-  var _toggleRefresh;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createOutput;
+  let _isLive;
+  let _output;
+  let _refresh;
+  let _toggleRefresh;
   _output = Flow.Dataflow.signal(null);
   createOutput = _model => {
-    var cloneModel;
-    var confusionMatrix;
-    var deleteModel;
-    var downloadMojo;
-    var downloadPojo;
-    var exportModel;
-    var format4f;
-    var getAucAsLabel;
-    var getThresholdsAndCriteria;
-    var inspect;
-    var lambdaSearchParameter;
-    var output;
-    var plotter;
-    var predict;
-    var previewPojo;
-    var renderMultinomialConfusionMatrix;
-    var renderPlot;
-    var table;
-    var tableName;
-    var toggle;
-    var _i;
-    var _inputParameters;
-    var _isExpanded;
-    var _isPojoLoaded;
-    var _len;
-    var _plots;
-    var _pojoPreview;
-    var _ref;
-    var _ref1;
-    var _ref10;
-    var _ref11;
-    var _ref12;
-    var _ref13;
-    var _ref14;
-    var _ref15;
-    var _ref16;
-    var _ref17;
-    var _ref18;
-    var _ref19;
-    var _ref2;
-    var _ref20;
-    var _ref21;
-    var _ref22;
-    var _ref23;
-    var _ref24;
-    var _ref25;
-    var _ref3;
-    var _ref4;
-    var _ref5;
-    var _ref6;
-    var _ref7;
-    var _ref8;
-    var _ref9;
+    let cloneModel;
+    let confusionMatrix;
+    let deleteModel;
+    let downloadMojo;
+    let downloadPojo;
+    let exportModel;
+    let format4f;
+    let getAucAsLabel;
+    let getThresholdsAndCriteria;
+    let inspect;
+    let lambdaSearchParameter;
+    let output;
+    let plotter;
+    let predict;
+    let previewPojo;
+    let renderMultinomialConfusionMatrix;
+    let renderPlot;
+    let table;
+    let tableName;
+    let toggle;
+    let _i;
+    let _inputParameters;
+    let _isExpanded;
+    let _isPojoLoaded;
+    let _len;
+    let _plots;
+    let _pojoPreview;
+    let _ref;
+    let _ref1;
+    let _ref10;
+    let _ref11;
+    let _ref12;
+    let _ref13;
+    let _ref14;
+    let _ref15;
+    let _ref16;
+    let _ref17;
+    let _ref18;
+    let _ref19;
+    let _ref2;
+    let _ref20;
+    let _ref21;
+    let _ref22;
+    let _ref23;
+    let _ref24;
+    let _ref25;
+    let _ref3;
+    let _ref4;
+    let _ref5;
+    let _ref6;
+    let _ref7;
+    let _ref8;
+    let _ref9;
     _isExpanded = Flow.Dataflow.signal(false);
     _plots = Flow.Dataflow.signals([]);
     _pojoPreview = Flow.Dataflow.signal(null);
@@ -74,12 +74,12 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       return false;
     });
     _inputParameters = lodash.map(_model.parameters, parameter => {
-      var actual_value;
-      var default_value;
-      var help;
-      var label;
-      var type;
-      var value;
+      let actual_value;
+      let default_value;
+      let help;
+      let label;
+      let type;
+      let value;
       type = parameter.type, default_value = parameter.default_value, actual_value = parameter.actual_value, label = parameter.label, help = parameter.help;
       value = (() => {
         switch (type) {
@@ -129,26 +129,26 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       return number;
     };
     getAucAsLabel = (model, tableName) => {
-      var metrics;
+      let metrics;
       if (metrics = _.inspect(tableName, model)) {
         return ` , AUC = ${metrics.schema.AUC.at(0)}`;
       }
       return '';
     };
     getThresholdsAndCriteria = (model, tableName) => {
-      var criteria;
-      var criterionTable;
-      var i;
-      var idxVector;
-      var metricVector;
-      var thresholdVector;
-      var thresholds;
+      let criteria;
+      let criterionTable;
+      let i;
+      let idxVector;
+      let metricVector;
+      let thresholdVector;
+      let thresholds;
       if (criterionTable = _.inspect(tableName, _model)) {
         thresholdVector = table.schema.threshold;
         thresholds = (() => {
-          var _i;
-          var _ref;
-          var _results;
+          let _i;
+          let _ref;
+          let _results;
           _results = [];
           for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
             _results.push({
@@ -161,9 +161,9 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         metricVector = criterionTable.schema.metric;
         idxVector = criterionTable.schema.idx;
         criteria = (() => {
-          var _i;
-          var _ref;
-          var _results;
+          let _i;
+          let _ref;
+          let _results;
           _results = [];
           for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
             _results.push({
@@ -181,9 +181,9 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       return void 0;
     };
     renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
-      var container;
-      var linkedFrame;
-      var rocPanel;
+      let container;
+      let linkedFrame;
+      let rocPanel;
       container = Flow.Dataflow.signal(null);
       linkedFrame = Flow.Dataflow.signal(null);
       if (thresholdsAndCriteria) {
@@ -195,12 +195,12 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         };
       }
       render((error, vis) => {
-        var _autoHighlight;
+        let _autoHighlight;
         if (error) {
           return console.debug(error);
         }
         $('a', vis.element).on('click', e => {
-          var $a;
+          let $a;
           $a = $(e.target);
           switch ($a.attr('data-type')) {
             case 'frame':
@@ -213,12 +213,12 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         _autoHighlight = true;
         if (vis.subscribe) {
           vis.subscribe('markselect', _arg => {
-            var currentCriterion;
-            var frame;
-            var indices;
-            var renderTable;
-            var selectedIndex;
-            var subframe;
+            let currentCriterion;
+            let frame;
+            let indices;
+            let renderTable;
+            let selectedIndex;
+            let subframe;
             frame = _arg.frame, indices = _arg.indices;
             subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
             renderTable = g => g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
@@ -273,25 +273,25 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       });
     };
     renderMultinomialConfusionMatrix = (title, cm) => {
-      var bold;
-      var cell;
-      var cells;
-      var column;
-      var columnCount;
-      var errorColumnIndex;
-      var headers;
-      var i;
-      var normal;
-      var rowCount;
-      var rowIndex;
-      var rows;
-      var table;
-      var tbody;
-      var totalRowIndex;
-      var tr;
-      var yellow;
-      var _i;
-      var _ref;
+      let bold;
+      let cell;
+      let cells;
+      let column;
+      let columnCount;
+      let errorColumnIndex;
+      let headers;
+      let i;
+      let normal;
+      let rowCount;
+      let rowIndex;
+      let rows;
+      let table;
+      let tbody;
+      let totalRowIndex;
+      let tr;
+      let yellow;
+      let _i;
+      let _ref;
       _ref = Flow.HTML.template('table.flow-confusion-matrix', 'tbody', 'tr', 'td', 'td.strong', 'td.bg-yellow'), table = _ref[0], tbody = _ref[1], tr = _ref[2], normal = _ref[3], bold = _ref[4], yellow = _ref[5];
       columnCount = cm.columns.length;
       rowCount = cm.rowcount;
@@ -302,10 +302,10 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       totalRowIndex = rowCount - 1;
       for (rowIndex = _i = 0; rowCount >= 0 ? _i < rowCount : _i > rowCount; rowIndex = rowCount >= 0 ? ++_i : --_i) {
         cells = (() => {
-          var _j;
-          var _len;
-          var _ref1;
-          var _results;
+          let _j;
+          let _len;
+          let _ref1;
+          let _results;
           _ref1 = cm.data;
           _results = [];
           for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {

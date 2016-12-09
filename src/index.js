@@ -35,7 +35,7 @@ import { flow } from './flow/flow';
 // parent IIFE for the rest of this file
 // defer for now
 (function () {
-  var lodash = window._;
+  const lodash = window._;
   window.Flow = {};
   window.H2O = {};
   flow();

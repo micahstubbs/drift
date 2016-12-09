@@ -5,10 +5,10 @@ import { flowGrowl } from './flowGrowl';
 import { flowAutosave } from './flowAutosave';
 
 export function flowApplication(_, routines) {
-  var Flow = window.Flow;
-  var _notebook;
-  var _renderers;
-  var _sandbox;
+  const Flow = window.Flow;
+  let _notebook;
+  let _renderers;
+  let _sandbox;
   flowApplicationContext(_);
   _sandbox = flowSandbox(_, routines(_));
   _renderers = Flow.Renderers(_, _sandbox);

@@ -1,8 +1,8 @@
 export function flowConfirmDialog(_, _message, _opts, _go) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var accept;
-  var decline;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let accept;
+  let decline;
   if (_opts == null) {
     _opts = {};
   }

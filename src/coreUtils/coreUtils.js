@@ -1,19 +1,19 @@
 export function coreUtils() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var EOL;
-  var describeCount;
-  var format1d0;
-  var formatBytes;
-  var formatClockTime;
-  var formatElapsedTime;
-  var formatMilliseconds;
-  var fromNow;
-  var highlight;
-  var multilineTextToHTML;
-  var padTime;
-  var sanitizeName;
-  var splitTime;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let EOL;
+  let describeCount;
+  let format1d0;
+  let formatBytes;
+  let formatClockTime;
+  let formatElapsedTime;
+  let formatMilliseconds;
+  let fromNow;
+  let highlight;
+  let multilineTextToHTML;
+  let padTime;
+  let sanitizeName;
+  let splitTime;
   describeCount = (count, singular, plural) => {
     if (!plural) {
       plural = `${singular}s`;
@@ -29,8 +29,8 @@ export function coreUtils() {
   };
   fromNow = date => moment(date).fromNow();
   formatBytes = bytes => {
-    var i;
-    var sizes;
+    let i;
+    let sizes;
     sizes = [
       'Bytes',
       'KB',
@@ -46,10 +46,10 @@ export function coreUtils() {
   };
   padTime = n => `${(n < 10 ? '0' : '')}${n}`;
   splitTime = s => {
-    var hrs;
-    var mins;
-    var ms;
-    var secs;
+    let hrs;
+    let mins;
+    let ms;
+    let secs;
     ms = s % 1000;
     s = (s - ms) / 1000;
     secs = s % 60;
@@ -64,21 +64,21 @@ export function coreUtils() {
     ];
   };
   formatMilliseconds = s => {
-    var hrs;
-    var mins;
-    var ms;
-    var secs;
-    var _ref;
+    let hrs;
+    let mins;
+    let ms;
+    let secs;
+    let _ref;
     _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
     return `${padTime(hrs)}:${padTime(mins)}:${padTime(secs)}.${ms}`;
   };
   format1d0 = n => Math.round(n * 10) / 10;
   formatElapsedTime = s => {
-    var hrs;
-    var mins;
-    var ms;
-    var secs;
-    var _ref;
+    let hrs;
+    let mins;
+    let ms;
+    let secs;
+    let _ref;
     _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
     if (hrs !== 0) {
       return `${format1d0((hrs * 60 + mins) / 60)}h`;

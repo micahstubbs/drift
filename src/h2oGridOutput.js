@@ -2,27 +2,27 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oGridOutput(_, _go, _grid) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var buildModel;
-  var collectSelectedKeys;
-  var compareModels;
-  var createModelView;
-  var deleteModels;
-  var initialize;
-  var inspect;
-  var inspectAll;
-  var inspectHistory;
-  var predictUsingModels;
-  var _canCompareModels;
-  var _checkAllModels;
-  var _checkedModelCount;
-  var _errorViews;
-  var _hasErrors;
-  var _hasModels;
-  var _hasSelectedModels;
-  var _isCheckingAll;
-  var _modelViews;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let buildModel;
+  let collectSelectedKeys;
+  let compareModels;
+  let createModelView;
+  let deleteModels;
+  let initialize;
+  let inspect;
+  let inspectAll;
+  let inspectHistory;
+  let predictUsingModels;
+  let _canCompareModels;
+  let _checkAllModels;
+  let _checkedModelCount;
+  let _errorViews;
+  let _hasErrors;
+  let _hasModels;
+  let _hasSelectedModels;
+  let _isCheckingAll;
+  let _modelViews;
   _modelViews = Flow.Dataflow.signal([]);
   _hasModels = _grid.model_ids.length > 0;
   _errorViews = Flow.Dataflow.signal([]);
@@ -33,10 +33,10 @@ export function h2oGridOutput(_, _go, _grid) {
   _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
   _isCheckingAll = false;
   Flow.Dataflow.react(_checkAllModels, checkAll => {
-    var view;
-    var views;
-    var _i;
-    var _len;
+    let view;
+    let views;
+    let _i;
+    let _len;
     _isCheckingAll = true;
     views = _modelViews();
     for (_i = 0, _len = views.length; _i < _len; _i++) {
@@ -47,23 +47,23 @@ export function h2oGridOutput(_, _go, _grid) {
     _isCheckingAll = false;
   });
   createModelView = model_id => {
-    var cloneModel;
-    var inspect;
-    var predict;
-    var view;
-    var _isChecked;
+    let cloneModel;
+    let inspect;
+    let predict;
+    let view;
+    let _isChecked;
     _isChecked = Flow.Dataflow.signal(false);
     Flow.Dataflow.react(_isChecked, () => {
-      var checkedViews;
-      var view;
+      let checkedViews;
+      let view;
       if (_isCheckingAll) {
         return;
       }
       checkedViews = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _modelViews();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -92,11 +92,11 @@ export function h2oGridOutput(_, _go, _grid) {
   };
   buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
   collectSelectedKeys = () => {
-    var view;
-    var _i;
-    var _len;
-    var _ref;
-    var _results;
+    let view;
+    let _i;
+    let _len;
+    let _ref;
+    let _results;
     _ref = _modelViews();
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -118,23 +118,23 @@ export function h2oGridOutput(_, _go, _grid) {
     }
   });
   inspect = () => {
-    var summary;
+    let summary;
     summary = _.inspect('summary', _grid);
     return _.insertAndExecuteCell('cs', `grid inspect \'summary\', ${summary.metadata.origin}`);
   };
   inspectHistory = () => {
-    var history;
+    let history;
     history = _.inspect('scoring_history', _grid);
     return _.insertAndExecuteCell('cs', `grid inspect \'scoring_history\', ${history.metadata.origin}`);
   };
   inspectAll = () => {
-    var allKeys;
-    var view;
+    let allKeys;
+    let view;
     allKeys = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _modelViews();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -146,13 +146,13 @@ export function h2oGridOutput(_, _go, _grid) {
     return _.insertAndExecuteCell('cs', `inspect getModels ${flowPrelude.stringify(allKeys)}`);
   };
   initialize = grid => {
-    var errorViews;
-    var i;
+    let errorViews;
+    let i;
     _modelViews(lodash.map(grid.model_ids, createModelView));
     errorViews = (() => {
-      var _i;
-      var _ref;
-      var _results;
+      let _i;
+      let _ref;
+      let _results;
       _results = [];
       for (i = _i = 0, _ref = grid.failure_details.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
         _results.push({

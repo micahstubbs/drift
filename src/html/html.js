@@ -1,13 +1,13 @@
 export function html() {
-  var lodash = window._;
-  var Flow = window.Flow;
+  const lodash = window._;
+  const Flow = window.Flow;
   if ((typeof window !== 'undefined' && window !== null ? window.diecut : void 0) == null) {
     return;
   }
   Flow.HTML = {
     template: diecut,
     render(name, html) {
-      var el;
+      let el;
       el = document.createElement(name);
       if (html) {
         if (lodash.isString(html)) {

@@ -1,14 +1,14 @@
 export function h2oStackTraceOutput(_, _go, _stackTrace) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createNode;
-  var createThread;
-  var node;
-  var _activeNode;
-  var _nodes;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createNode;
+  let createThread;
+  let node;
+  let _activeNode;
+  let _nodes;
   _activeNode = Flow.Dataflow.signal(null);
   createThread = thread => {
-    var lines;
+    let lines;
     lines = thread.split('\n');
     return {
       title: lodash.head(lines),
@@ -16,18 +16,18 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
     };
   };
   createNode = node => {
-    var display;
-    var self;
-    var thread;
+    let display;
+    let self;
+    let thread;
     display = () => _activeNode(self);
     return self = {
       name: node.node,
       timestamp: new Date(node.time),
       threads: ((() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = node.thread_traces;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -40,10 +40,10 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
     };
   };
   _nodes = ((() => {
-    var _i;
-    var _len;
-    var _ref;
-    var _results;
+    let _i;
+    let _len;
+    let _ref;
+    let _results;
     _ref = _stackTrace.traces;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {

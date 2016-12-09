@@ -1,17 +1,17 @@
 export function flowStatus(_) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var defaultMessage;
-  var onStatus;
-  var _connections;
-  var _isBusy;
-  var _message;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let defaultMessage;
+  let onStatus;
+  let _connections;
+  let _isBusy;
+  let _message;
   defaultMessage = 'Ready';
   _message = Flow.Dataflow.signal(defaultMessage);
   _connections = Flow.Dataflow.signal(0);
   _isBusy = Flow.Dataflow.lift(_connections, connections => connections > 0);
   onStatus = (category, type, data) => {
-    var connections;
+    let connections;
     console.debug('Status:', category, type, data);
     switch (category) {
       case 'server':

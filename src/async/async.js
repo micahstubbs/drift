@@ -2,26 +2,26 @@ import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function async() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createBuffer;
-  var iterate;
-  var pipe;
-  var _applicate;
-  var _async;
-  var _find;
-  var _find$2;
-  var _find$3;
-  var _fork;
-  var _get;
-  var _isFuture;
-  var _join;
-  var _noop;
-  var __slice = [].slice;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createBuffer;
+  let iterate;
+  let pipe;
+  let _applicate;
+  let _async;
+  let _find;
+  let _find$2;
+  let _find$3;
+  let _fork;
+  let _get;
+  let _isFuture;
+  let _join;
+  let _noop;
+  const __slice = [].slice;
   createBuffer = array => {
-    var buffer;
-    var _array;
-    var _go;
+    let buffer;
+    let _array;
+    let _go;
     _array = array || [];
     _go = null;
     buffer = element => {
@@ -46,12 +46,12 @@ export function async() {
     }
   };
   _fork = (f, args) => {
-    var self;
+    let self;
     if (!lodash.isFunction(f)) {
       throw new Error('Not a function.');
     }
     self = go => {
-      var canGo;
+      let canGo;
       canGo = lodash.isFunction(go);
       if (self.settled) {
         if (self.rejected) {
@@ -112,14 +112,14 @@ export function async() {
     return false;
   };
   _join = (args, go) => {
-    var arg;
-    var i;
-    var _actual;
-    var _i;
-    var _len;
-    var _results;
-    var _settled;
-    var _tasks;
+    let arg;
+    let i;
+    let _actual;
+    let _i;
+    let _len;
+    let _results;
+    let _settled;
+    let _tasks;
     if (args.length === 0) {
       return go(null, []);
     }
@@ -159,16 +159,16 @@ export function async() {
     }));
   };
   pipe = tasks => {
-    var next;
-    var _tasks;
+    let next;
+    let _tasks;
     _tasks = tasks.slice(0);
     next = (args, go) => {
-      var task;
+      let task;
       task = _tasks.shift();
       if (task) {
         return task(...args.concat(function () {
-          var error;
-          var results;
+          let error;
+          let results;
           error = arguments[0], results = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
           if (error) {
             return go(error);
@@ -179,21 +179,21 @@ export function async() {
       return go(...[null].concat(args));
     };
     return function () {
-      var args;
-      var go;
-      var _i;
+      let args;
+      let go;
+      let _i;
       args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
       return next(args, go);
     };
   };
   iterate = tasks => {
-    var next;
-    var _results;
-    var _tasks;
+    let next;
+    let _results;
+    let _tasks;
     _tasks = tasks.slice(0);
     _results = [];
     next = go => {
-      var task;
+      let task;
       task = _tasks.shift();
       if (task) {
         return task((error, result) => {
@@ -209,16 +209,16 @@ export function async() {
     return go => next(go);
   };
   _async = function () {
-    var args;
-    var f;
-    var later;
+    let args;
+    let f;
+    let later;
     f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
     later = function () {
-      var args;
-      var error;
-      var go;
-      var result;
-      var _i;
+      let args;
+      let error;
+      let go;
+      let result;
+      let _i;
       args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
       try {
         result = f(...args);
@@ -231,9 +231,9 @@ export function async() {
     return _fork(later, args);
   };
   _find$3 = (attr, prop, obj) => {
-    var v;
-    var _i;
-    var _len;
+    let v;
+    let _i;
+    let _len;
     if (_isFuture(obj)) {
       return _async(_find$3, attr, prop, obj);
     } else if (lodash.isArray(obj)) {
@@ -257,13 +257,13 @@ export function async() {
     }
   };
   _find = function () {
-    var a;
-    var args;
-    var b;
-    var c;
-    var ta;
-    var tb;
-    var tc;
+    let a;
+    let args;
+    let b;
+    let c;
+    let ta;
+    let tb;
+    let tc;
     args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
     switch (args.length) {
       case 3:

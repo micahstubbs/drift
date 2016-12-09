@@ -2,21 +2,21 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oMergeFramesInput(_, _go) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var _canMerge;
-  var _destinationKey;
-  var _exception;
-  var _frames;
-  var _includeAllLeftRows;
-  var _includeAllRightRows;
-  var _leftColumns;
-  var _merge;
-  var _rightColumns;
-  var _selectedLeftColumn;
-  var _selectedLeftFrame;
-  var _selectedRightColumn;
-  var _selectedRightFrame;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let _canMerge;
+  let _destinationKey;
+  let _exception;
+  let _frames;
+  let _includeAllLeftRows;
+  let _includeAllRightRows;
+  let _leftColumns;
+  let _merge;
+  let _rightColumns;
+  let _selectedLeftColumn;
+  let _selectedLeftFrame;
+  let _selectedRightColumn;
+  let _selectedRightFrame;
   _exception = Flow.Dataflow.signal(null);
   _destinationKey = Flow.Dataflow.signal(`merged-${Flow.Util.uuid()}`);
   _frames = Flow.Dataflow.signals([]);
@@ -50,7 +50,7 @@ export function h2oMergeFramesInput(_, _go) {
     return _rightColumns([]);
   });
   _merge = () => {
-    var cs;
+    let cs;
     if (!_canMerge()) {
       return;
     }
@@ -58,14 +58,14 @@ export function h2oMergeFramesInput(_, _go) {
     return _.insertAndExecuteCell('cs', cs);
   };
   _.requestFrames((error, frames) => {
-    var frame;
+    let frame;
     if (error) {
       return _exception(new Flow.Error('Error fetching frame list.', error));
     }
     return _frames((() => {
-      var _i;
-      var _len;
-      var _results;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = frames.length; _i < _len; _i++) {
         frame = frames[_i];

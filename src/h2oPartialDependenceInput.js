@@ -2,17 +2,17 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oPartialDependenceInput(_, _go) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var _canCompute;
-  var _compute;
-  var _destinationKey;
-  var _exception;
-  var _frames;
-  var _models;
-  var _nbins;
-  var _selectedFrame;
-  var _selectedModel;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let _canCompute;
+  let _compute;
+  let _destinationKey;
+  let _exception;
+  let _frames;
+  let _models;
+  let _nbins;
+  let _selectedFrame;
+  let _selectedModel;
   _exception = Flow.Dataflow.signal(null);
   _destinationKey = Flow.Dataflow.signal(`ppd-${Flow.Util.uuid()}`);
   _frames = Flow.Dataflow.signals([]);
@@ -22,8 +22,8 @@ export function h2oPartialDependenceInput(_, _go) {
   _nbins = Flow.Dataflow.signal(20);
   _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
   _compute = () => {
-    var cs;
-    var opts;
+    let cs;
+    let opts;
     if (!_canCompute()) {
       return;
     }
@@ -37,14 +37,14 @@ export function h2oPartialDependenceInput(_, _go) {
     return _.insertAndExecuteCell('cs', cs);
   };
   _.requestFrames((error, frames) => {
-    var frame;
+    let frame;
     if (error) {
       return _exception(new Flow.Error('Error fetching frame list.', error));
     }
     return _frames((() => {
-      var _i;
-      var _len;
-      var _results;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = frames.length; _i < _len; _i++) {
         frame = frames[_i];
@@ -56,14 +56,14 @@ export function h2oPartialDependenceInput(_, _go) {
     })());
   });
   _.requestModels((error, models) => {
-    var model;
+    let model;
     if (error) {
       return _exception(new Flow.Error('Error fetching model list.', error));
     }
     return _models((() => {
-      var _i;
-      var _len;
-      var _results;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = models.length; _i < _len; _i++) {
         model = models[_i];

@@ -1,8 +1,8 @@
 export function h2oH2OFrameOutput(_, _go, _result) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createH2oFrameView;
-  var _h2oframeView;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createH2oFrameView;
+  let _h2oframeView;
   _h2oframeView = Flow.Dataflow.signal(null);
   createH2oFrameView = result => ({
     h2oframe_id: result.h2oframe_id

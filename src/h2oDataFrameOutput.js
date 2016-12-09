@@ -1,8 +1,8 @@
 export function h2oDataFrameOutput(_, _go, _result) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createDataFrameView;
-  var _dataFrameView;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createDataFrameView;
+  let _dataFrameView;
   _dataFrameView = Flow.Dataflow.signal(null);
   createDataFrameView = result => ({
     dataframe_id: result.dataframe_id

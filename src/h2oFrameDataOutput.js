@@ -1,19 +1,19 @@
 export function h2oFrameDataOutput(_, _go, _frame) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var MaxItemsPerPage;
-  var goToNextPage;
-  var goToPreviousPage;
-  var refreshColumns;
-  var renderFrame;
-  var renderPlot;
-  var _canGoToNextPage;
-  var _canGoToPreviousPage;
-  var _columnNameSearchTerm;
-  var _currentPage;
-  var _data;
-  var _lastUsedSearchTerm;
-  var _maxPages;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let MaxItemsPerPage;
+  let goToNextPage;
+  let goToPreviousPage;
+  let refreshColumns;
+  let renderFrame;
+  let renderPlot;
+  let _canGoToNextPage;
+  let _canGoToPreviousPage;
+  let _columnNameSearchTerm;
+  let _currentPage;
+  let _data;
+  let _lastUsedSearchTerm;
+  let _maxPages;
   MaxItemsPerPage = 20;
   _data = Flow.Dataflow.signal(null);
   _columnNameSearchTerm = Flow.Dataflow.signal(null);
@@ -30,9 +30,9 @@ export function h2oFrameDataOutput(_, _go, _frame) {
   renderFrame = frame => renderPlot(_data, _.plot(g => g(g.select(), g.from(_.inspect('data', frame)))));
   _lastUsedSearchTerm = null;
   refreshColumns = pageIndex => {
-    var itemCount;
-    var searchTerm;
-    var startIndex;
+    let itemCount;
+    let searchTerm;
+    let startIndex;
     searchTerm = _columnNameSearchTerm();
     if (searchTerm !== _lastUsedSearchTerm) {
       pageIndex = 0;
@@ -50,14 +50,14 @@ export function h2oFrameDataOutput(_, _go, _frame) {
     });
   };
   goToPreviousPage = () => {
-    var currentPage;
+    let currentPage;
     currentPage = _currentPage();
     if (currentPage > 0) {
       refreshColumns(currentPage - 1);
     }
   };
   goToNextPage = () => {
-    var currentPage;
+    let currentPage;
     currentPage = _currentPage();
     if (currentPage < _maxPages() - 1) {
       refreshColumns(currentPage + 1);

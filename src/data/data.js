@@ -1,41 +1,41 @@
 export function data() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var combineRanges;
-  var computeRange;
-  var createAbstractVariable;
-  var createCompiledPrototype;
-  var createFactor;
-  var createNumericVariable;
-  var createRecordConstructor;
-  var createTable;
-  var createVariable;
-  var factor;
-  var includeZeroInRange;
-  var nextPrototypeName;
-  var permute;
-  var _prototypeCache;
-  var _prototypeId;
-  var __slice = [].slice;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let combineRanges;
+  let computeRange;
+  let createAbstractVariable;
+  let createCompiledPrototype;
+  let createFactor;
+  let createNumericVariable;
+  let createRecordConstructor;
+  let createTable;
+  let createVariable;
+  let factor;
+  let includeZeroInRange;
+  let nextPrototypeName;
+  let permute;
+  let _prototypeCache;
+  let _prototypeId;
+  const __slice = [].slice;
   _prototypeId = 0;
   nextPrototypeName = () => `Map${++_prototypeId}`;
   _prototypeCache = {};
   createCompiledPrototype = attrs => {
-    var attr;
-    var cacheKey;
-    var i;
-    var inits;
-    var params;
-    var proto;
-    var prototypeName;
+    let attr;
+    let cacheKey;
+    let i;
+    let inits;
+    let params;
+    let proto;
+    let prototypeName;
     cacheKey = attrs.join('\0');
     if (proto = _prototypeCache[cacheKey]) {
       return proto;
     }
     params = (() => {
-      var _i;
-      var _ref;
-      var _results;
+      let _i;
+      let _ref;
+      let _results;
       _results = [];
       for (i = _i = 0, _ref = attrs.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
         _results.push(`a${i}`);
@@ -43,9 +43,9 @@ export function data() {
       return _results;
     })();
     inits = (() => {
-      var _i;
-      var _len;
-      var _results;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (i = _i = 0, _len = attrs.length; _i < _len; i = ++_i) {
         attr = attrs[i];
@@ -57,11 +57,11 @@ export function data() {
     return _prototypeCache[cacheKey] = new Function(`function ${prototypeName}(${params.join(',')}){${inits.join('')}} return ${prototypeName};`)();
   };
   createRecordConstructor = variables => {
-    var variable;
+    let variable;
     return createCompiledPrototype((() => {
-      var _i;
-      var _len;
-      var _results;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = variables.length; _i < _len; _i++) {
         variable = variables[_i];
@@ -71,17 +71,17 @@ export function data() {
     })());
   };
   createTable = opts => {
-    var description;
-    var expand;
-    var fill;
-    var label;
-    var meta;
-    var rows;
-    var schema;
-    var variable;
-    var variables;
-    var _i;
-    var _len;
+    let description;
+    let expand;
+    let fill;
+    let label;
+    let meta;
+    let rows;
+    let schema;
+    let variable;
+    let variables;
+    let _i;
+    let _len;
     label = opts.label, description = opts.description, variables = opts.variables, rows = opts.rows, meta = opts.meta;
     if (!description) {
       description = 'No description available.';
@@ -93,11 +93,11 @@ export function data() {
     }
     fill = (i, go) => {
       _fill(i, (error, result) => {
-        var index;
-        var startIndex;
-        var value;
-        var _j;
-        var _len1;
+        let index;
+        let startIndex;
+        let value;
+        let _j;
+        let _len1;
         if (error) {
           return go(error);
         }
@@ -110,11 +110,11 @@ export function data() {
       });
     };
     expand = (...args) => {
-      var type;
-      var types;
-      var _j;
-      var _len1;
-      var _results;
+      let type;
+      let types;
+      let _j;
+      let _len1;
+      let _results;
       types = args.length >= 1 ? __slice.call(args, 0) : [];
       _results = [];
       for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
@@ -137,8 +137,8 @@ export function data() {
     };
   };
   includeZeroInRange = range => {
-    var hi;
-    var lo;
+    let hi;
+    let lo;
     lo = range[0], hi = range[1];
     if (lo > 0 && hi > 0) {
       return [
@@ -154,13 +154,13 @@ export function data() {
     return range;
   };
   combineRanges = (...args) => {
-    var hi;
-    var lo;
-    var range;
-    var ranges;
-    var value;
-    var _i;
-    var _len;
+    let hi;
+    let lo;
+    let range;
+    let ranges;
+    let value;
+    let _i;
+    let _len;
     ranges = args.length >= 1 ? __slice.call(args, 0) : [];
     lo = Number.POSITIVE_INFINITY;
     hi = Number.NEGATIVE_INFINITY;
@@ -179,12 +179,12 @@ export function data() {
     ];
   };
   computeRange = (rows, attr) => {
-    var hi;
-    var lo;
-    var row;
-    var value;
-    var _i;
-    var _len;
+    let hi;
+    let lo;
+    let row;
+    let value;
+    let _i;
+    let _len;
     if (rows.length) {
       lo = Number.POSITIVE_INFINITY;
       hi = Number.NEGATIVE_INFINITY;
@@ -209,11 +209,11 @@ export function data() {
     ];
   };
   permute = (array, indices) => {
-    var i;
-    var index;
-    var permuted;
-    var _i;
-    var _len;
+    let i;
+    let index;
+    let permuted;
+    let _i;
+    let _len;
     permuted = new Array(array.length);
     for (i = _i = 0, _len = indices.length; _i < _len; i = ++_i) {
       index = indices[i];
@@ -229,7 +229,7 @@ export function data() {
     read: _read
   });
   createNumericVariable = (_label, _domain, _format, _read) => {
-    var self;
+    let self;
     self = createAbstractVariable(_label, 'Number', _domain || [
       Number.POSITIVE_INFINITY,
       Number.NEGATIVE_INFINITY
@@ -254,13 +254,13 @@ export function data() {
     return createAbstractVariable(_label, _type, _domain, _format, _read);
   };
   createFactor = (_label, _domain, _format, _read) => {
-    var level;
-    var self;
-    var _i;
-    var _id;
-    var _len;
-    var _levels;
-    var _ref;
+    let level;
+    let self;
+    let _i;
+    let _id;
+    let _len;
+    let _levels;
+    let _ref;
     self = createAbstractVariable(_label, 'Factor', _domain || [], _format, _read);
     _id = 0;
     _levels = {};
@@ -273,7 +273,7 @@ export function data() {
     }
     if (!self.read) {
       self.read = datum => {
-        var id;
+        let id;
         level = datum === void 0 || datum === null ? 'null' : datum;
         if (void 0 === (id = _levels[level])) {
           _levels[level] = id = _id++;
@@ -285,15 +285,15 @@ export function data() {
     return self;
   };
   factor = array => {
-    var data;
-    var domain;
-    var i;
-    var id;
-    var level;
-    var levels;
-    var _i;
-    var _id;
-    var _len;
+    let data;
+    let domain;
+    let i;
+    let id;
+    let level;
+    let levels;
+    let _i;
+    let _id;
+    let _len;
     _id = 0;
     levels = {};
     domain = [];

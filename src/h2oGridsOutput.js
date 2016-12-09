@@ -2,15 +2,15 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oGridsOutput(_, _go, _grids) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var buildModel;
-  var createGridView;
-  var initialize;
-  var _gridViews;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let buildModel;
+  let createGridView;
+  let initialize;
+  let _gridViews;
   _gridViews = Flow.Dataflow.signal([]);
   createGridView = grid => {
-    var view;
+    let view;
     view = () => _.insertAndExecuteCell('cs', `getGrid ${flowPrelude.stringify(grid.grid_id.name)}`);
     return {
       key: grid.grid_id.name,

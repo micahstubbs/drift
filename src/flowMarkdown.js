@@ -1,7 +1,7 @@
 export function flowMarkdown(_) {
-  var render;
+  let render;
   render = (input, output) => {
-    var error;
+    let error;
     try {
       return output.data({
         html: marked(input.trim() || '(No content)'),

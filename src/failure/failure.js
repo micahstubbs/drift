@@ -1,6 +1,6 @@
 export function failure() {
-  var Flow = window.Flow;
-  var traceCauses;
+  const Flow = window.Flow;
+  let traceCauses;
   traceCauses = (error, causes) => {
     causes.push(error.message);
     if (error.cause) {
@@ -9,10 +9,10 @@ export function failure() {
     return causes;
   };
   Flow.Failure = (_, error) => {
-    var causes;
-    var message;
-    var toggleStack;
-    var _isStackVisible;
+    let causes;
+    let message;
+    let toggleStack;
+    let _isStackVisible;
     causes = traceCauses(error, []);
     message = causes.shift();
     _isStackVisible = Flow.Dataflow.signal(false);

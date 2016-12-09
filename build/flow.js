@@ -5,19 +5,19 @@
 }(this, function () { 'use strict';
 
   function flowPreludeFunction() {
-    var Flow = window.Flow;
-    var _always;
-    var _copy;
-    var _deepClone;
-    var _isDefined;
-    var _isFalsy;
-    var _isTruthy;
-    var _negative;
-    var _never;
-    var _remove;
-    var _repeat;
-    var _typeOf;
-    var _words;
+    const Flow = window.Flow;
+    let _always;
+    let _copy;
+    let _deepClone;
+    let _isDefined;
+    let _isFalsy;
+    let _isTruthy;
+    let _negative;
+    let _never;
+    let _remove;
+    let _repeat;
+    let _typeOf;
+    let _words;
     _isDefined = value => !lodash.isUndefined(value);
     _isTruthy = value => {
       if (value) {
@@ -36,7 +36,7 @@
     _never = () => false;
     _copy = array => array.slice(0);
     _remove = (array, element) => {
-      var index;
+      let index;
       if ((index = lodash.indexOf(array, element)) > -1) {
         return lodash.head(array.splice(index, 1));
       }
@@ -44,9 +44,9 @@
     };
     _words = text => text.split(/\s+/);
     _repeat = (count, value) => {
-      var array;
-      var i;
-      var _i;
+      let array;
+      let i;
+      let _i;
       array = [];
       for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
         array.push(value);
@@ -54,7 +54,7 @@
       return array;
     };
     _typeOf = a => {
-      var type;
+      let type;
       type = Object.prototype.toString.call(a);
       if (a === null) {
         return 'null';
@@ -109,24 +109,24 @@
   const flowPrelude$3 = flowPreludeFunction();
 
   function modelInput() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createCheckboxControl;
-    var createControl;
-    var createControlFromParameter;
-    var createDropdownControl;
-    var createGridableValues;
-    var createListControl;
-    var createTextboxControl;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createCheckboxControl;
+    let createControl;
+    let createControlFromParameter;
+    let createDropdownControl;
+    let createGridableValues;
+    let createListControl;
+    let createTextboxControl;
     createControl = (kind, parameter) => {
-      var _hasError;
-      var _hasInfo;
-      var _hasMessage;
-      var _hasWarning;
-      var _isGrided;
-      var _isNotGrided;
-      var _isVisible;
-      var _message;
+      let _hasError;
+      let _hasInfo;
+      let _hasMessage;
+      let _hasWarning;
+      let _isGrided;
+      let _isNotGrided;
+      let _isVisible;
+      let _message;
       _hasError = Flow.Dataflow.signal(false);
       _hasWarning = Flow.Dataflow.signal(false);
       _hasInfo = Flow.Dataflow.signal(false);
@@ -158,17 +158,17 @@
       };
     };
     createTextboxControl = (parameter, type) => {
-      var control;
-      var isArrayValued;
-      var isInt;
-      var isReal;
-      var textToValues;
-      var _ref;
-      var _ref1;
-      var _text;
-      var _textGrided;
-      var _value;
-      var _valueGrided;
+      let control;
+      let isArrayValued;
+      let isInt;
+      let isReal;
+      let textToValues;
+      let _ref;
+      let _ref1;
+      let _text;
+      let _textGrided;
+      let _value;
+      let _valueGrided;
       isArrayValued = isInt = isReal = false;
       switch (type) {
         case 'byte[]':
@@ -196,12 +196,12 @@
       _text = Flow.Dataflow.signal(isArrayValued ? ((_ref = parameter.actual_value) != null ? _ref : []).join(', ') : (_ref1 = parameter.actual_value) != null ? _ref1 : '');
       _textGrided = Flow.Dataflow.signal(`${ _text() };`);
       textToValues = text => {
-        var parsed;
-        var vals;
-        var value;
-        var _i;
-        var _len;
-        var _ref2;
+        let parsed;
+        let vals;
+        let value;
+        let _i;
+        let _len;
+        let _ref2;
         if (isArrayValued) {
           vals = [];
           _ref2 = text.split(/\s*,\s*/g);
@@ -225,11 +225,11 @@
       };
       _value = Flow.Dataflow.lift(_text, textToValues);
       _valueGrided = Flow.Dataflow.lift(_textGrided, text => {
-        var part;
-        var token;
-        var _i;
-        var _len;
-        var _ref2;
+        let part;
+        let token;
+        let _i;
+        let _len;
+        let _ref2;
         lodash.values = [];
         _ref2 = `${ text }`.split(/\s*;\s*/g);
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
@@ -253,8 +253,8 @@
       value: Flow.Dataflow.signal(true)
     }));
     createDropdownControl = parameter => {
-      var control;
-      var _value;
+      let control;
+      let _value;
       _value = Flow.Dataflow.signal(parameter.actual_value);
       control = createControl('dropdown', parameter);
       control.values = Flow.Dataflow.signals(parameter.values);
@@ -263,33 +263,33 @@
       return control;
     };
     createListControl = parameter => {
-      var MaxItemsPerPage;
-      var blockSelectionUpdates;
-      var changeSelection;
-      var control;
-      var createEntry;
-      var deselectFiltered;
-      var filterItems;
-      var goToNextPage;
-      var goToPreviousPage;
-      var incrementSelectionCount;
-      var selectFiltered;
-      var _canGoToNextPage;
-      var _canGoToPreviousPage;
-      var _currentPage;
-      var _entries;
-      var _filteredItems;
-      var _hasFilteredItems;
-      var _ignoreNATerm;
-      var _isUpdatingSelectionCount;
-      var _lastUsedIgnoreNaTerm;
-      var _lastUsedSearchTerm;
-      var _maxPages;
-      var _searchCaption;
-      var _searchTerm;
-      var _selectionCount;
-      var _values;
-      var _visibleItems;
+      let MaxItemsPerPage;
+      let blockSelectionUpdates;
+      let changeSelection;
+      let control;
+      let createEntry;
+      let deselectFiltered;
+      let filterItems;
+      let goToNextPage;
+      let goToPreviousPage;
+      let incrementSelectionCount;
+      let selectFiltered;
+      let _canGoToNextPage;
+      let _canGoToPreviousPage;
+      let _currentPage;
+      let _entries;
+      let _filteredItems;
+      let _hasFilteredItems;
+      let _ignoreNATerm;
+      let _isUpdatingSelectionCount;
+      let _lastUsedIgnoreNaTerm;
+      let _lastUsedSearchTerm;
+      let _maxPages;
+      let _searchCaption;
+      let _searchTerm;
+      let _selectionCount;
+      let _values;
+      let _visibleItems;
       MaxItemsPerPage = 100;
       _searchTerm = Flow.Dataflow.signal('');
       _ignoreNATerm = Flow.Dataflow.signal('');
@@ -303,7 +303,7 @@
       };
       incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
       createEntry = value => {
-        var isSelected;
+        let isSelected;
         isSelected = Flow.Dataflow.signal(false);
         Flow.Dataflow.react(isSelected, isSelected => {
           if (!_isUpdatingSelectionCount) {
@@ -331,7 +331,7 @@
       _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
       _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
       _searchCaption = Flow.Dataflow.lift(_entries, _filteredItems, _selectionCount, _currentPage, _maxPages, (entries, filteredItems, selectionCount, currentPage, maxPages) => {
-        var caption;
+        let caption;
         caption = maxPages === 0 ? '' : `Showing page ${ currentPage + 1 } of ${ maxPages }.`;
         if (filteredItems.length !== entries.length) {
           caption += ` Filtered ${ filteredItems.length } of ${ entries.length }.`;
@@ -345,17 +345,17 @@
       _lastUsedSearchTerm = null;
       _lastUsedIgnoreNaTerm = null;
       filterItems = force => {
-        var entry;
-        var filteredItems;
-        var hide;
-        var i;
-        var ignoreNATerm;
-        var missingPercent;
-        var searchTerm;
-        var start;
-        var _i;
-        var _len;
-        var _ref;
+        let entry;
+        let filteredItems;
+        let hide;
+        let i;
+        let ignoreNATerm;
+        let missingPercent;
+        let searchTerm;
+        let start;
+        let _i;
+        let _len;
+        let _ref;
         if (force == null) {
           force = false;
         }
@@ -386,16 +386,16 @@
         _visibleItems(_filteredItems().slice(start, start + MaxItemsPerPage));
       };
       changeSelection = (source, value) => {
-        var entry;
-        var _i;
-        var _len;
+        let entry;
+        let _i;
+        let _len;
         for (_i = 0, _len = source.length; _i < _len; _i++) {
           entry = source[_i];
           entry.isSelected(value);
         }
       };
       selectFiltered = () => {
-        var entries;
+        let entries;
         entries = _filteredItems();
         blockSelectionUpdates(() => changeSelection(entries, true));
         return _selectionCount(entries.length);
@@ -435,8 +435,8 @@
       return control;
     };
     createCheckboxControl = parameter => {
-      var control;
-      var _value;
+      let control;
+      let _value;
       _value = Flow.Dataflow.signal(parameter.actual_value);
       control = createControl('checkbox', parameter);
       control.clientId = lodash.uniqueId();
@@ -476,41 +476,41 @@
       }
     };
     H2O.ModelBuilderForm = (_, _algorithm, _parameters) => {
-      var collectParameters;
-      var control;
-      var createModel;
-      var criticalControls;
-      var expertControls;
-      var findControl;
-      var findFormField;
-      var parameterTemplateOf;
-      var performValidations;
-      var revalidate;
-      var secondaryControls;
-      var _controlGroups;
-      var _exception;
-      var _form;
-      var _gridId;
-      var _gridMaxModels;
-      var _gridMaxRuntime;
-      var _gridStoppingMetric;
-      var _gridStoppingMetrics;
-      var _gridStoppingRounds;
-      var _gridStoppingTolerance;
-      var _gridStrategies;
-      var _gridStrategy;
-      var _hasValidationFailures;
-      var _i;
-      var _isGridRandomDiscrete;
-      var _isGrided;
-      var _j;
-      var _k;
-      var _len;
-      var _len1;
-      var _len2;
-      var _parametersByLevel;
-      var _revalidate;
-      var _validationFailureMessage;
+      let collectParameters;
+      let control;
+      let createModel;
+      let criticalControls;
+      let expertControls;
+      let findControl;
+      let findFormField;
+      let parameterTemplateOf;
+      let performValidations;
+      let revalidate;
+      let secondaryControls;
+      let _controlGroups;
+      let _exception;
+      let _form;
+      let _gridId;
+      let _gridMaxModels;
+      let _gridMaxRuntime;
+      let _gridStoppingMetric;
+      let _gridStoppingMetrics;
+      let _gridStoppingRounds;
+      let _gridStoppingTolerance;
+      let _gridStrategies;
+      let _gridStrategy;
+      let _hasValidationFailures;
+      let _i;
+      let _isGridRandomDiscrete;
+      let _isGrided;
+      let _j;
+      let _k;
+      let _len;
+      let _len1;
+      let _len2;
+      let _parametersByLevel;
+      let _revalidate;
+      let _validationFailureMessage;
       _exception = Flow.Dataflow.signal(null);
       _validationFailureMessage = Flow.Dataflow.signal('');
       _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$3.isTruthy);
@@ -527,7 +527,7 @@
       _gridStoppingTolerance = Flow.Dataflow.signal(0.001);
       _parametersByLevel = lodash.groupBy(_parameters, parameter => parameter.level);
       _controlGroups = lodash.map(['critical', 'secondary', 'expert'], type => {
-        var controls;
+        let controls;
         controls = lodash.filter(lodash.map(_parametersByLevel[type], createControlFromParameter), a => {
           if (a) {
             return true;
@@ -535,9 +535,9 @@
           return false;
         });
         lodash.forEach(controls, control => Flow.Dataflow.react(control.isGrided, () => {
-          var isGrided;
-          var _i;
-          var _len;
+          let isGrided;
+          let _i;
+          let _len;
           isGrided = false;
           for (_i = 0, _len = controls.length; _i < _len; _i++) {
             control = controls[_i];
@@ -585,11 +585,11 @@
         }
       }
       findControl = name => {
-        var controls;
-        var _l;
-        var _len3;
-        var _len4;
-        var _m;
+        let controls;
+        let _l;
+        let _len3;
+        let _len4;
+        let _m;
         for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
           controls = _controlGroups[_l];
           for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
@@ -603,26 +603,26 @@
       parameterTemplateOf = control => `flow-${ control.kind }-model-parameter`;
       findFormField = name => lodash.find(_form, field => field.name === name);
       (() => {
-        var foldColumnParameter;
-        var ignoredColumnsParameter;
-        var offsetColumnsParameter;
-        var responseColumnParameter;
-        var trainingFrameParameter;
-        var validationFrameParameter;
-        var weightsColumnParameter;
-        var _ref;
+        let foldColumnParameter;
+        let ignoredColumnsParameter;
+        let offsetColumnsParameter;
+        let responseColumnParameter;
+        let trainingFrameParameter;
+        let validationFrameParameter;
+        let weightsColumnParameter;
+        let _ref;
         _ref = lodash.map(['training_frame', 'validation_frame', 'response_column', 'ignored_columns', 'offset_column', 'weights_column', 'fold_column'], findFormField), trainingFrameParameter = _ref[0], validationFrameParameter = _ref[1], responseColumnParameter = _ref[2], ignoredColumnsParameter = _ref[3], offsetColumnsParameter = _ref[4], weightsColumnParameter = _ref[5], foldColumnParameter = _ref[6];
         if (trainingFrameParameter) {
           if (responseColumnParameter || ignoredColumnsParameter) {
             return Flow.Dataflow.act(trainingFrameParameter.value, frameKey => {
               if (frameKey) {
                 _.requestFrameSummaryWithoutData(frameKey, (error, frame) => {
-                  var columnLabels;
-                  var columnValues;
+                  let columnLabels;
+                  let columnValues;
                   if (!error) {
                     columnValues = lodash.map(frame.columns, column => column.label);
                     columnLabels = lodash.map(frame.columns, column => {
-                      var missingPercent;
+                      let missingPercent;
                       missingPercent = 100 * column.missing_count / frame.rows;
                       return {
                         type: column.type === 'enum' ? `enum(${ column.domain_cardinality })` : column.type,
@@ -657,26 +657,26 @@
         }
       })();
       collectParameters = includeUnchangedParameters => {
-        var controls;
-        var entry;
-        var gridStoppingRounds;
-        var hyperParameters;
-        var isGrided;
-        var item;
-        var maxModels;
-        var maxRuntime;
-        var parameters;
-        var searchCriteria;
-        var selectedValues;
-        var stoppingTolerance;
-        var value;
-        var _l;
-        var _len3;
-        var _len4;
-        var _len5;
-        var _m;
-        var _n;
-        var _ref;
+        let controls;
+        let entry;
+        let gridStoppingRounds;
+        let hyperParameters;
+        let isGrided;
+        let item;
+        let maxModels;
+        let maxRuntime;
+        let parameters;
+        let searchCriteria;
+        let selectedValues;
+        let stoppingTolerance;
+        let value;
+        let _l;
+        let _len3;
+        let _len4;
+        let _len5;
+        let _m;
+        let _n;
+        let _ref;
         if (includeUnchangedParameters == null) {
           includeUnchangedParameters = false;
         }
@@ -718,9 +718,9 @@
                   case 'list':
                     if (value.length) {
                       selectedValues = (() => {
-                        var _len6;
-                        var _o;
-                        var _results;
+                        let _len6;
+                        let _o;
+                        let _results;
                         _results = [];
                         for (_o = 0, _len6 = value.length; _o < _len6; _o++) {
                           entry = value[_o];
@@ -765,7 +765,7 @@
         return parameters;
       };
       performValidations = (checkForErrors, go) => {
-        var parameters;
+        let parameters;
         _exception(null);
         parameters = collectParameters(true);
         if (parameters.hyper_parameters) {
@@ -773,17 +773,17 @@
         }
         _validationFailureMessage('');
         return _.requestModelInputValidation(_algorithm, parameters, (error, modelBuilder) => {
-          var controls;
-          var hasErrors;
-          var validation;
-          var validations;
-          var validationsByControlName;
-          var _l;
-          var _len3;
-          var _len4;
-          var _len5;
-          var _m;
-          var _n;
+          let controls;
+          let hasErrors;
+          let validation;
+          let validations;
+          let validationsByControlName;
+          let _l;
+          let _len3;
+          let _len4;
+          let _len5;
+          let _m;
+          let _n;
           if (error) {
             return _exception(Flow.Failure(_, new Flow.Error('Error fetching initial model builder state', error)));
           }
@@ -839,7 +839,7 @@
       createModel = () => {
         _exception(null);
         return performValidations(true, () => {
-          var parameters;
+          let parameters;
           parameters = collectParameters(false);
           return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ flowPrelude$3.stringify(parameters) }`);
         });
@@ -851,11 +851,11 @@
       };
       revalidate = lodash.throttle(_revalidate, 100, { leading: false });
       performValidations(false, () => {
-        var controls;
-        var _l;
-        var _len3;
-        var _len4;
-        var _m;
+        let controls;
+        let _l;
+        let _len3;
+        let _len4;
+        let _m;
         for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
           controls = _controlGroups[_l];
           for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
@@ -885,13 +885,13 @@
       };
     };
     H2O.ModelInput = (_, _go, _algo, _opts) => {
-      var createModel;
-      var populateFramesAndColumns;
-      var _algorithm;
-      var _algorithms;
-      var _canCreateModel;
-      var _exception;
-      var _modelForm;
+      let createModel;
+      let populateFramesAndColumns;
+      let _algorithm;
+      let _algorithms;
+      let _canCreateModel;
+      let _exception;
+      let _modelForm;
       _exception = Flow.Dataflow.signal(null);
       _algorithms = Flow.Dataflow.signal([]);
       _algorithm = Flow.Dataflow.signal(null);
@@ -903,8 +903,8 @@
       });
       _modelForm = Flow.Dataflow.signal(null);
       populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
-        var classificationParameter;
-        var destinationKeyParameter;
+        let classificationParameter;
+        let destinationKeyParameter;
         destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
         if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
           destinationKeyParameter.actual_value = `${ algorithm }-${ Flow.Util.uuid() }`;
@@ -914,19 +914,19 @@
           classificationParameter.actual_value = true;
         }
         return _.requestFrames((error, frames) => {
-          var frame;
-          var frameKeys;
-          var frameParameters;
-          var parameter;
-          var _i;
-          var _len;
+          let frame;
+          let frameKeys;
+          let frameParameters;
+          let parameter;
+          let _i;
+          let _len;
           if (error) {
             // empty
           } else {
             frameKeys = (() => {
-              var _i;
-              var _len;
-              var _results;
+              let _i;
+              let _len;
+              let _results;
               _results = [];
               for (_i = 0, _len = frames.length; _i < _len; _i++) {
                 frame = frames[_i];
@@ -951,13 +951,13 @@
         });
       };
       (() => _.requestModelBuilders((error, modelBuilders) => {
-        var frameKey;
+        let frameKey;
         _algorithms(modelBuilders);
         _algorithm(_algo ? lodash.find(modelBuilders, builder => builder.algo === _algo) : void 0);
         frameKey = _opts != null ? _opts.training_frame : void 0;
         return Flow.Dataflow.act(_algorithm, builder => {
-          var algorithm;
-          var parameters;
+          let algorithm;
+          let parameters;
           if (builder) {
             algorithm = builder.algo;
             parameters = flowPrelude$3.deepClone(builder.parameters);
@@ -983,23 +983,23 @@
   const flowPrelude$4 = flowPreludeFunction();
 
   function parseInput() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var MaxItemsPerPage;
-    var dataTypes;
-    var parseDelimiters;
-    var parseTypes;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let MaxItemsPerPage;
+    let dataTypes;
+    let parseDelimiters;
+    let parseTypes;
     MaxItemsPerPage = 15;
     parseTypes = lodash.map(['AUTO', 'ARFF', 'XLS', 'XLSX', 'CSV', 'SVMLight', 'ORC', 'AVRO', 'PARQUET'], type => ({
       type,
       caption: type
     }));
     parseDelimiters = (() => {
-      var characterDelimiters;
-      var createDelimiter;
-      var otherDelimiters;
-      var whitespaceDelimiters;
-      var whitespaceSeparators;
+      let characterDelimiters;
+      let createDelimiter;
+      let otherDelimiters;
+      let whitespaceDelimiters;
+      let whitespaceSeparators;
       whitespaceSeparators = ['NULL', 'SOH (start of heading)', 'STX (start of text)', 'ETX (end of text)', 'EOT (end of transmission)', 'ENQ (enquiry)', 'ACK (acknowledge)', 'BEL \'\\a\' (bell)', 'BS  \'\\b\' (backspace)', 'HT  \'\\t\' (horizontal tab)', 'LF  \'\\n\' (new line)', 'VT  \'\\v\' (vertical tab)', 'FF  \'\\f\' (form feed)', 'CR  \'\\r\' (carriage ret)', 'SO  (shift out)', 'SI  (shift in)', 'DLE (data link escape)', 'DC1 (device control 1) ', 'DC2 (device control 2)', 'DC3 (device control 3)', 'DC4 (device control 4)', 'NAK (negative ack.)', 'SYN (synchronous idle)', 'ETB (end of trans. blk)', 'CAN (cancel)', 'EM  (end of medium)', 'SUB (substitute)', 'ESC (escape)', 'FS  (file separator)', 'GS  (group separator)', 'RS  (record separator)', 'US  (unit separator)', '\' \' SPACE'];
       createDelimiter = (caption, charCode) => ({
         charCode,
@@ -1007,7 +1007,7 @@
       });
       whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
       characterDelimiters = lodash.times(126 - whitespaceSeparators.length, i => {
-        var charCode;
+        let charCode;
         charCode = i + whitespaceSeparators.length;
         return createDelimiter(String.fromCharCode(charCode), charCode);
       });
@@ -1019,33 +1019,33 @@
     })();
     dataTypes = ['Unknown', 'Numeric', 'Enum', 'Time', 'UUID', 'String', 'Invalid'];
     H2O.SetupParseOutput = (_, _go, _inputs, _result) => {
-      var filterColumns;
-      var goToNextPage;
-      var goToPreviousPage;
-      var makePage;
-      var parseFiles;
-      var refreshPreview;
-      var _activePage;
-      var _canGoToNextPage;
-      var _canGoToPreviousPage;
-      var _canReconfigure;
-      var _chunkSize;
-      var _columnCount;
-      var _columnNameSearchTerm;
-      var _columns;
-      var _currentPage;
-      var _deleteOnDone;
-      var _delimiter;
-      var _destinationKey;
-      var _filteredColumns;
-      var _headerOption;
-      var _headerOptions;
-      var _inputKey;
-      var _parseType;
-      var _preview;
-      var _sourceKeys;
-      var _useSingleQuotes;
-      var _visibleColumns;
+      let filterColumns;
+      let goToNextPage;
+      let goToPreviousPage;
+      let makePage;
+      let parseFiles;
+      let refreshPreview;
+      let _activePage;
+      let _canGoToNextPage;
+      let _canGoToPreviousPage;
+      let _canReconfigure;
+      let _chunkSize;
+      let _columnCount;
+      let _columnNameSearchTerm;
+      let _columns;
+      let _currentPage;
+      let _deleteOnDone;
+      let _delimiter;
+      let _destinationKey;
+      let _filteredColumns;
+      let _headerOption;
+      let _headerOptions;
+      let _inputKey;
+      let _parseType;
+      let _preview;
+      let _sourceKeys;
+      let _useSingleQuotes;
+      let _visibleColumns;
       _inputKey = _inputs.paths ? 'paths' : 'source_frames';
       _sourceKeys = lodash.map(_result.source_frames, src => src.name);
       _parseType = Flow.Dataflow.signal(lodash.find(parseTypes, parseType => parseType.type === _result.parse_type));
@@ -1064,13 +1064,13 @@
       _preview = Flow.Dataflow.signal(_result);
       _chunkSize = Flow.Dataflow.lift(_preview, preview => preview.chunk_size);
       refreshPreview = () => {
-        var column;
-        var columnTypes;
+        let column;
+        let columnTypes;
         columnTypes = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = _columns();
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1086,18 +1086,18 @@
         });
       };
       _columns = Flow.Dataflow.lift(_preview, preview => {
-        var columnCount;
-        var columnNames;
-        var columnTypes;
-        var data;
-        var i;
-        var j;
-        var previewData;
-        var row;
-        var rowCount;
-        var rows;
-        var _i;
-        var _j;
+        let columnCount;
+        let columnNames;
+        let columnTypes;
+        let data;
+        let i;
+        let j;
+        let previewData;
+        let row;
+        let rowCount;
+        let rows;
+        let _i;
+        let _j;
         columnTypes = preview.column_types;
         columnCount = columnTypes.length;
         previewData = preview.data;
@@ -1137,20 +1137,20 @@
       filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
       Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));
       _visibleColumns = Flow.Dataflow.lift(_activePage, currentPage => {
-        var start;
+        let start;
         start = currentPage.index * MaxItemsPerPage;
         return currentPage.columns.slice(start, start + MaxItemsPerPage);
       });
       parseFiles = () => {
-        var column;
-        var columnNames;
-        var columnTypes;
-        var headerOption;
+        let column;
+        let columnNames;
+        let columnTypes;
+        let headerOption;
         columnNames = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = _columns();
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1165,10 +1165,10 @@
           headerOption = -1;
         }
         columnTypes = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = _columns();
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1182,12 +1182,12 @@
       _canGoToNextPage = Flow.Dataflow.lift(_activePage, currentPage => (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length);
       _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, currentPage => currentPage.index > 0);
       goToNextPage = () => {
-        var currentPage;
+        let currentPage;
         currentPage = _activePage();
         return _activePage(makePage(currentPage.index + 1, currentPage.columns));
       };
       goToPreviousPage = () => {
-        var currentPage;
+        let currentPage;
         currentPage = _activePage();
         if (currentPage.index > 0) {
           return _activePage(makePage(currentPage.index - 1, currentPage.columns));
@@ -1221,11 +1221,11 @@
   const flowPrelude$5 = flowPreludeFunction();
 
   function jobOutput() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var getJobOutputStatusColor;
-    var getJobProgressPercent;
-    var jobOutputStatusColors;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let getJobOutputStatusColor;
+    let getJobProgressPercent;
+    let jobOutputStatusColors;
     jobOutputStatusColors = {
       failed: '#d9534f',
       done: '#ccc',
@@ -1244,30 +1244,30 @@
     };
     getJobProgressPercent = progress => `${ Math.ceil(100 * progress) }%`;
     H2O.JobOutput = (_, _go, _job) => {
-      var canView;
-      var cancel;
-      var initialize;
-      var isJobRunning;
-      var messageIcons;
-      var refresh;
-      var updateJob;
-      var view;
-      var _canCancel;
-      var _canView;
-      var _description;
-      var _destinationKey;
-      var _destinationType;
-      var _exception;
-      var _isBusy;
-      var _isLive;
-      var _key;
-      var _messages;
-      var _progress;
-      var _progressMessage;
-      var _remainingTime;
-      var _runTime;
-      var _status;
-      var _statusColor;
+      let canView;
+      let cancel;
+      let initialize;
+      let isJobRunning;
+      let messageIcons;
+      let refresh;
+      let updateJob;
+      let view;
+      let _canCancel;
+      let _canView;
+      let _description;
+      let _destinationKey;
+      let _destinationType;
+      let _exception;
+      let _isBusy;
+      let _isLive;
+      let _key;
+      let _messages;
+      let _progress;
+      let _progressMessage;
+      let _remainingTime;
+      let _runTime;
+      let _status;
+      let _statusColor;
       _isBusy = Flow.Dataflow.signal(false);
       _isLive = Flow.Dataflow.signal(false);
       _key = _job.key.name;
@@ -1317,9 +1317,9 @@
         }
       };
       updateJob = job => {
-        var cause;
-        var message;
-        var messages;
+        let cause;
+        let message;
+        let messages;
         _runTime(Flow.Util.formatMilliseconds(job.msec));
         _progress(getJobProgressPercent(job.progress));
         _remainingTime(job.progress ? Flow.Util.formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
@@ -1328,10 +1328,10 @@
         _statusColor(getJobOutputStatusColor(job.status));
         if (job.error_count) {
           messages = (() => {
-            var _i;
-            var _len;
-            var _ref;
-            var _results;
+            let _i;
+            let _len;
+            let _ref;
+            let _results;
             _ref = job.messages;
             _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1441,16 +1441,16 @@
   }
 
   function imputeInput() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createOptions;
-    var _allCombineMethods;
-    var _allMethods;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createOptions;
+    let _allCombineMethods;
+    let _allMethods;
     createOptions = options => {
-      var option;
-      var _i;
-      var _len;
-      var _results;
+      let option;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = options.length; _i < _len; _i++) {
         option = options[_i];
@@ -1464,20 +1464,20 @@
     _allMethods = createOptions(['Mean', 'Median', 'Mode']);
     _allCombineMethods = createOptions(['Interpolate', 'Average', 'Low', 'High']);
     H2O.ImputeInput = (_, _go, opts) => {
-      var impute;
-      var _canGroupByColumns;
-      var _canImpute;
-      var _canUseCombineMethod;
-      var _column;
-      var _columns;
-      var _combineMethod;
-      var _combineMethods;
-      var _frame;
-      var _frames;
-      var _groupByColumns;
-      var _hasFrame;
-      var _method;
-      var _methods;
+      let impute;
+      let _canGroupByColumns;
+      let _canImpute;
+      let _canUseCombineMethod;
+      let _column;
+      let _columns;
+      let _combineMethod;
+      let _combineMethods;
+      let _frame;
+      let _frames;
+      let _groupByColumns;
+      let _hasFrame;
+      let _method;
+      let _methods;
       if (opts == null) {
         opts = {};
       }
@@ -1500,10 +1500,10 @@
       _groupByColumns = Flow.Dataflow.signals([]);
       _canImpute = Flow.Dataflow.lift(_frame, _column, (frame, column) => frame && column);
       impute = () => {
-        var arg;
-        var combineMethod;
-        var groupByColumns;
-        var method;
+        let arg;
+        let combineMethod;
+        let groupByColumns;
+        let method;
         method = _method();
         arg = {
           frame: _frame(),
@@ -1523,14 +1523,14 @@
         return _.insertAndExecuteCell('cs', `imputeColumn ${ JSON.stringify(arg) }`);
       };
       _.requestFrames((error, frames) => {
-        var frame;
+        let frame;
         if (error) {
           // empty
         } else {
           _frames((() => {
-            var _i;
-            var _len;
-            var _results;
+            let _i;
+            let _len;
+            let _results;
             _results = [];
             for (_i = 0, _len = frames.length; _i < _len; _i++) {
               frame = frames[_i];
@@ -1548,15 +1548,15 @@
       Flow.Dataflow.react(_frame, frame => {
         if (frame) {
           return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
-            var column;
+            let column;
             if (error) {
               // empty
             } else {
               _columns((() => {
-                var _i;
-                var _len;
-                var _ref;
-                var _results;
+                let _i;
+                let _len;
+                let _ref;
+                let _results;
                 _ref = frame.columns;
                 _results = [];
                 for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1596,9 +1596,9 @@
   }
 
   function util() {
-    var Flow = window.Flow;
-    var getFileBaseName;
-    var validateFileExtension;
+    const Flow = window.Flow;
+    let getFileBaseName;
+    let validateFileExtension;
     validateFileExtension = (filename, extension) => filename.indexOf(extension, filename.length - extension.length) !== -1;
     getFileBaseName = (filename, extension) => Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
     H2O.Util = {
@@ -1610,13 +1610,13 @@
   const flowPrelude$7 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createTableView;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createTableView;
     createTableView = table => {
-      var grid;
-      var inspect;
-      var plot;
+      let grid;
+      let inspect;
+      let plot;
       inspect = () => _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$7.stringify(table.label) }, ${ table.metadata.origin }`);
       grid = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$7.stringify(table.label) }, ${ table.metadata.origin }`);
       plot = () => _.insertAndExecuteCell('cs', table.metadata.plot);
@@ -1640,10 +1640,10 @@
   const flowPrelude$8 = flowPreludeFunction();
 
   function h2oInspectOutput(_, _go, _frame) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var plot;
-    var view;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let plot;
+    let view;
     view = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$8.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
     plot = () => _.insertAndExecuteCell('cs', _frame.metadata.plot);
     lodash.defer(_go);
@@ -1658,7 +1658,7 @@
   }
 
   function h2oPlotOutput(_, _go, _plot) {
-    var lodash = window._;
+    const lodash = window._;
     lodash.defer(_go);
     return {
       plot: _plot,
@@ -1669,21 +1669,21 @@
   const flowPrelude$9 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
-    var plot;
-    var vector;
-    var _canPlot;
-    var _color;
-    var _type;
-    var _types;
-    var _vectors;
-    var _x;
-    var _y;
+    let plot;
+    let vector;
+    let _canPlot;
+    let _color;
+    let _type;
+    let _types;
+    let _vectors;
+    let _x;
+    let _y;
     _types = ['point', 'path', 'rect'];
     _vectors = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _frame.vectors;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1700,8 +1700,8 @@
     _color = Flow.Dataflow.signal(null);
     _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
     plot = () => {
-      var color;
-      var command;
+      let color;
+      let command;
       command = (color = _color()) ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$9.stringify(_x()) }, ${ flowPrelude$9.stringify(_y()) }\n    g.color ${ flowPrelude$9.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$9.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$9.stringify(_x()) }, ${ flowPrelude$9.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$9.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
       return _.insertAndExecuteCell('cs', command);
     };
@@ -1720,36 +1720,36 @@
   }
 
   function h2oCloudOutput(_, _go, _cloud) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var avg;
-    var createGrid;
-    var createNodeRow;
-    var createTotalRow;
-    var format3f;
-    var formatMilliseconds;
-    var formatThreads;
-    var prettyPrintBytes;
-    var refresh;
-    var sum;
-    var toggleExpansion;
-    var toggleRefresh;
-    var updateCloud;
-    var _exception;
-    var _hasConsensus;
-    var _headers;
-    var _isBusy;
-    var _isExpanded;
-    var _isHealthy;
-    var _isLive;
-    var _isLocked;
-    var _name;
-    var _nodeCounts;
-    var _nodes;
-    var _size;
-    var _sizes;
-    var _uptime;
-    var _version;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let avg;
+    let createGrid;
+    let createNodeRow;
+    let createTotalRow;
+    let format3f;
+    let formatMilliseconds;
+    let formatThreads;
+    let prettyPrintBytes;
+    let refresh;
+    let sum;
+    let toggleExpansion;
+    let toggleRefresh;
+    let updateCloud;
+    let _exception;
+    let _hasConsensus;
+    let _headers;
+    let _isBusy;
+    let _isExpanded;
+    let _isHealthy;
+    let _isLive;
+    let _isLocked;
+    let _name;
+    let _nodeCounts;
+    let _nodes;
+    let _size;
+    let _sizes;
+    let _uptime;
+    let _version;
     _exception = Flow.Dataflow.signal(null);
     _isLive = Flow.Dataflow.signal(false);
     _isBusy = Flow.Dataflow.signal(false);
@@ -1767,7 +1767,7 @@
     format3f = d3.format('.3f');
     _sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     prettyPrintBytes = bytes => {
-      var i;
+      let i;
       if (bytes === 0) {
         return '-';
       }
@@ -1775,13 +1775,13 @@
       return `${ (bytes / Math.pow(1024, i)).toFixed(2) } ${ _sizes[i] }`;
     };
     formatThreads = fjs => {
-      var i;
-      var max_lo;
-      var s;
-      var _i;
-      var _j;
-      var _k;
-      var _ref;
+      let i;
+      let max_lo;
+      let s;
+      let _i;
+      let _j;
+      let _k;
+      let _ref;
       for (max_lo = _i = 120; _i > 0; max_lo = --_i) {
         if (fjs[max_lo - 1] !== -1) {
           break;
@@ -1802,10 +1802,10 @@
       return s;
     };
     sum = (nodes, attrOf) => {
-      var node;
-      var total;
-      var _i;
-      var _len;
+      let node;
+      let total;
+      let _i;
+      let _len;
       total = 0;
       for (_i = 0, _len = nodes.length; _i < _len; _i++) {
         node = nodes[_i];
@@ -1817,38 +1817,38 @@
     _headers = [['&nbsp;', true], ['Name', true], ['Ping', true], ['Cores', true], ['Load', true], ['My CPU %', true], ['Sys CPU %', true], ['GFLOPS', true], ['Memory Bandwidth', true], ['Data (Used/Total)', true], ['Data (% Cached)', true], ['GC (Free / Total / Max)', true], ['Disk (Free / Max)', true], ['Disk (% Free)', true], ['PID', false], ['Keys', false], ['TCP', false], ['FD', false], ['RPCs', false], ['Threads', false], ['Tasks', false]];
     createNodeRow = node => [node.healthy, node.ip_port, moment(new Date(node.last_ping)).fromNow(), node.num_cpus, format3f(node.sys_load), node.my_cpu_pct, node.sys_cpu_pct, format3f(node.gflops), `${ prettyPrintBytes(node.mem_bw) } / s`, `${ prettyPrintBytes(node.mem_value_size) } / ${ prettyPrintBytes(node.total_value_size) }`, `${ Math.floor(node.mem_value_size * 100 / node.total_value_size) }%`, `${ prettyPrintBytes(node.free_mem) } / ${ prettyPrintBytes(node.tot_mem) } / ${ prettyPrintBytes(node.max_mem) }`, `${ prettyPrintBytes(node.free_disk) } / ${ prettyPrintBytes(node.max_disk) }`, `${ Math.floor(node.free_disk * 100 / node.max_disk) }%`, node.pid, node.num_keys, node.tcps_active, node.open_fds, node.rpcs_active, formatThreads(node.fjthrds), formatThreads(node.fjqueue)];
     createTotalRow = cloud => {
-      var nodes;
+      let nodes;
       nodes = cloud.nodes;
       return [cloud.cloud_healthy, 'TOTAL', '-', sum(nodes, node => node.num_cpus), format3f(sum(nodes, node => node.sys_load)), '-', '-', `${ format3f(sum(nodes, node => node.gflops)) }`, `${ prettyPrintBytes(sum(nodes, node => node.mem_bw)) } / s`, `${ prettyPrintBytes(sum(nodes, node => node.mem_value_size)) } / ${ prettyPrintBytes(sum(nodes, node => node.total_value_size)) }`, `${ Math.floor(avg(nodes, node => node.mem_value_size * 100 / node.total_value_size)) }%`, `${ prettyPrintBytes(sum(nodes, node => node.free_mem)) } / ${ prettyPrintBytes(sum(nodes, node => node.tot_mem)) } / ${ prettyPrintBytes(sum(nodes, node => node.max_mem)) }`, `${ prettyPrintBytes(sum(nodes, node => node.free_disk)) } / ${ prettyPrintBytes(sum(nodes, node => node.max_disk)) }`, `${ Math.floor(avg(nodes, node => node.free_disk * 100 / node.max_disk)) }%`, '-', sum(nodes, node => node.num_keys), sum(nodes, node => node.tcps_active), sum(nodes, node => node.open_fds), sum(nodes, node => node.rpcs_active), '-', '-'];
     };
     createGrid = (cloud, isExpanded) => {
-      var caption;
-      var cell;
-      var danger;
-      var grid;
-      var i;
-      var nodeRows;
-      var row;
-      var showAlways;
-      var success;
-      var table;
-      var tbody;
-      var td;
-      var tds;
-      var th;
-      var thead;
-      var ths;
-      var tr;
-      var trs;
-      var _ref;
+      let caption;
+      let cell;
+      let danger;
+      let grid;
+      let i;
+      let nodeRows;
+      let row;
+      let showAlways;
+      let success;
+      let table;
+      let tbody;
+      let td;
+      let tds;
+      let th;
+      let thead;
+      let ths;
+      let tr;
+      let trs;
+      let _ref;
       _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'i.fa.fa-check-circle.text-success', 'i.fa.fa-exclamation-circle.text-danger'), grid = _ref[0], table = _ref[1], thead = _ref[2], tbody = _ref[3], tr = _ref[4], th = _ref[5], td = _ref[6], success = _ref[7], danger = _ref[8];
       nodeRows = lodash.map(cloud.nodes, createNodeRow);
       nodeRows.push(createTotalRow(cloud));
       ths = (() => {
-        var _i;
-        var _len;
-        var _ref1;
-        var _results;
+        let _i;
+        let _len;
+        let _ref1;
+        let _results;
         _results = [];
         for (_i = 0, _len = _headers.length; _i < _len; _i++) {
           _ref1 = _headers[_i], caption = _ref1[0], showAlways = _ref1[1];
@@ -1859,16 +1859,16 @@
         return _results;
       })();
       trs = (() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = nodeRows.length; _i < _len; _i++) {
           row = nodeRows[_i];
           tds = (() => {
-            var _j;
-            var _len1;
-            var _results1;
+            let _j;
+            let _len1;
+            let _results1;
             _results1 = [];
             for (i = _j = 0, _len1 = row.length; _j < _len1; i = ++_j) {
               cell = row[i];
@@ -1943,17 +1943,17 @@
   }
 
   function h2oTimelineOutput(_, _go, _timeline) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createEvent;
-    var refresh;
-    var toggleRefresh;
-    var updateTimeline;
-    var _data;
-    var _headers;
-    var _isBusy;
-    var _isLive;
-    var _timestamp;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createEvent;
+    let refresh;
+    let toggleRefresh;
+    let updateTimeline;
+    let _data;
+    let _headers;
+    let _isBusy;
+    let _isLive;
+    let _timestamp;
     _isLive = Flow.Dataflow.signal(false);
     _isBusy = Flow.Dataflow.signal(false);
     _headers = ['HH:MM:SS:MS', 'nanosec', 'Who', 'I/O Type', 'Event', 'Type', 'Bytes'];
@@ -1971,19 +1971,19 @@
       }
     };
     updateTimeline = timeline => {
-      var cell;
-      var event;
-      var grid;
-      var header;
-      var table;
-      var tbody;
-      var td;
-      var th;
-      var thead;
-      var ths;
-      var tr;
-      var trs;
-      var _ref;
+      let cell;
+      let event;
+      let grid;
+      let header;
+      let table;
+      let tbody;
+      let td;
+      let th;
+      let thead;
+      let ths;
+      let tr;
+      let trs;
+      let _ref;
       _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td');
       grid = _ref[0];
       table = _ref[1];
@@ -1993,9 +1993,9 @@
       th = _ref[5];
       td = _ref[6];
       ths = (() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = _headers.length; _i < _len; _i++) {
           header = _headers[_i];
@@ -2059,16 +2059,16 @@
   }
 
   function h2oStackTraceOutput(_, _go, _stackTrace) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createNode;
-    var createThread;
-    var node;
-    var _activeNode;
-    var _nodes;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createNode;
+    let createThread;
+    let node;
+    let _activeNode;
+    let _nodes;
     _activeNode = Flow.Dataflow.signal(null);
     createThread = thread => {
-      var lines;
+      let lines;
       lines = thread.split('\n');
       return {
         title: lodash.head(lines),
@@ -2076,18 +2076,18 @@
       };
     };
     createNode = node => {
-      var display;
-      var self;
-      var thread;
+      let display;
+      let self;
+      let thread;
       display = () => _activeNode(self);
       return self = {
         name: node.node,
         timestamp: new Date(node.time),
         threads: (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = node.thread_traces;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2100,10 +2100,10 @@
       };
     };
     _nodes = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _stackTrace.traces;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2122,18 +2122,18 @@
   }
 
   function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createNode;
-    var initialize;
-    var refresh;
-    var refreshActiveView;
-    var _activeFileType;
-    var _activeNode;
-    var _contents;
-    var _exception;
-    var _fileTypes;
-    var _nodes;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createNode;
+    let initialize;
+    let refresh;
+    let refreshActiveView;
+    let _activeFileType;
+    let _activeNode;
+    let _contents;
+    let _exception;
+    let _fileTypes;
+    let _nodes;
     _exception = Flow.Dataflow.signal(null);
     _contents = Flow.Dataflow.signal('');
     _nodes = Flow.Dataflow.signal([]);
@@ -2157,14 +2157,14 @@
     };
     refresh = () => refreshActiveView(_activeNode(), _activeFileType());
     initialize = (cloud, nodeIndex, fileType, logFile) => {
-      var NODE_INDEX_SELF;
-      var clientNode;
-      var i;
-      var n;
-      var nodes;
-      var _i;
-      var _len;
-      var _ref;
+      let NODE_INDEX_SELF;
+      let clientNode;
+      let i;
+      let n;
+      let nodes;
+      let _i;
+      let _len;
+      let _ref;
       _activeFileType(fileType);
       _contents(logFile.log);
       nodes = [];
@@ -2198,10 +2198,10 @@
   }
 
   function h2oNetworkTestOutput(_, _go, _testResult) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var render;
-    var _result;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let render;
+    let _result;
     _result = Flow.Dataflow.signal(null);
     render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
     render((error, vis) => {
@@ -2218,25 +2218,25 @@
   }
 
   function h2oProfileOutput(_, _go, _profile) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createNode;
-    var i;
-    var node;
-    var _activeNode;
-    var _nodes;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createNode;
+    let i;
+    let node;
+    let _activeNode;
+    let _nodes;
     _activeNode = Flow.Dataflow.signal(null);
     createNode = node => {
-      var display;
-      var entries;
-      var entry;
-      var self;
+      let display;
+      let entries;
+      let entry;
+      let self;
       display = () => _activeNode(self);
       entries = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = node.entries;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2256,10 +2256,10 @@
       };
     };
     _nodes = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _profile.nodes;
       _results = [];
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -2280,26 +2280,26 @@
   const flowPrelude$10 = flowPreludeFunction();
 
   function h2oFramesOutput(_, _go, _frames) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var collectSelectedKeys;
-    var createFrameView;
-    var deleteFrames;
-    var importFiles;
-    var predictOnFrames;
-    var _checkAllFrames;
-    var _frameViews;
-    var _hasSelectedFrames;
-    var _isCheckingAll;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let collectSelectedKeys;
+    let createFrameView;
+    let deleteFrames;
+    let importFiles;
+    let predictOnFrames;
+    let _checkAllFrames;
+    let _frameViews;
+    let _hasSelectedFrames;
+    let _isCheckingAll;
     _frameViews = Flow.Dataflow.signal([]);
     _checkAllFrames = Flow.Dataflow.signal(false);
     _hasSelectedFrames = Flow.Dataflow.signal(false);
     _isCheckingAll = false;
     Flow.Dataflow.react(_checkAllFrames, checkAll => {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
+      let view;
+      let _i;
+      let _len;
+      let _ref;
       _isCheckingAll = true;
       _ref = _frameViews();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2310,24 +2310,24 @@
       _isCheckingAll = false;
     });
     createFrameView = frame => {
-      var columnLabels;
-      var createModel;
-      var inspect;
-      var predict;
-      var view;
-      var _isChecked;
+      let columnLabels;
+      let createModel;
+      let inspect;
+      let predict;
+      let view;
+      let _isChecked;
       _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
-        var checkedViews;
-        var view;
+        let checkedViews;
+        let view;
         if (_isCheckingAll) {
           return;
         }
         checkedViews = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = _frameViews();
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2365,11 +2365,11 @@
     };
     importFiles = () => _.insertAndExecuteCell('cs', 'importFiles');
     collectSelectedKeys = () => {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let view;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _frameViews();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2406,22 +2406,22 @@
   const flowPrelude$11 = flowPreludeFunction();
 
   function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
-    var lodash = window._;
-    var computeRatios;
-    var createFrameView;
-    var index;
-    var key;
-    var _frames;
-    var _ratios;
+    const lodash = window._;
+    let computeRatios;
+    let createFrameView;
+    let index;
+    let key;
+    let _frames;
+    let _ratios;
     computeRatios = sourceRatios => {
-      var ratio;
-      var ratios;
-      var total;
+      let ratio;
+      let ratios;
+      let total;
       total = 0;
       ratios = (() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = sourceRatios.length; _i < _len; _i++) {
           ratio = sourceRatios[_i];
@@ -2434,8 +2434,8 @@
       return ratios;
     };
     createFrameView = (key, ratio) => {
-      var self;
-      var view;
+      let self;
+      let view;
       view = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$11.stringify(key) }`);
       return self = {
         key,
@@ -2445,10 +2445,10 @@
     };
     _ratios = computeRatios(_splitFrameResult.ratios);
     _frames = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _splitFrameResult.keys;
       _results = [];
       for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
@@ -2467,10 +2467,10 @@
   const flowPrelude$12 = flowPreludeFunction();
 
   function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var _frameKey;
-    var _viewFrame;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let _frameKey;
+    let _viewFrame;
     _frameKey = _mergeFramesResult.key;
     _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$12.stringify(_frameKey) }`);
     lodash.defer(_go);
@@ -2484,21 +2484,21 @@
   const flowPrelude$13 = flowPreludeFunction();
 
   function h2oPartialDependenceOutput(_, _go, _result) {
-    var data;
-    var i;
-    var renderPlot;
-    var section;
-    var table;
-    var x;
-    var y;
-    var _destinationKey;
-    var _frameId;
-    var _i;
-    var _len;
-    var _modelId;
-    var _plots;
-    var _ref;
-    var _viewFrame;
+    let data;
+    let i;
+    let renderPlot;
+    let section;
+    let table;
+    let x;
+    let y;
+    let _destinationKey;
+    let _frameId;
+    let _i;
+    let _len;
+    let _modelId;
+    let _plots;
+    let _ref;
+    let _viewFrame;
     _destinationKey = _result.destination_key;
     _modelId = _result.model_id.name;
     _frameId = _result.frame_id.name;
@@ -2539,25 +2539,25 @@
   const flowPrelude$14 = flowPreludeFunction();
 
   function h2oJobsOutput(_, _go, jobs) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createJobView;
-    var initialize;
-    var refresh;
-    var toggleRefresh;
-    var _exception;
-    var _hasJobViews;
-    var _isBusy;
-    var _isLive;
-    var _jobViews;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createJobView;
+    let initialize;
+    let refresh;
+    let toggleRefresh;
+    let _exception;
+    let _hasJobViews;
+    let _isBusy;
+    let _isLive;
+    let _jobViews;
     _jobViews = Flow.Dataflow.signals([]);
     _hasJobViews = Flow.Dataflow.lift(_jobViews, jobViews => jobViews.length > 0);
     _isLive = Flow.Dataflow.signal(false);
     _isBusy = Flow.Dataflow.signal(false);
     _exception = Flow.Dataflow.signal(null);
     createJobView = job => {
-      var type;
-      var view;
+      let type;
+      let view;
       view = () => _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$14.stringify(job.key.name) }`);
       type = (() => {
         switch (job.dest.type) {
@@ -2622,13 +2622,13 @@
   }
 
   function h2oCancelJobOutput(_, _go, _cancellation) {
-    var lodash = window._;
+    const lodash = window._;
     lodash.defer(_go);
     return { template: 'flow-cancel-job-output' };
   }
 
   function h2oDeleteObjectsOutput(_, _go, _keys) {
-    var lodash = window._;
+    const lodash = window._;
     lodash.defer(_go);
     return {
       hasKeys: _keys.length > 0,
@@ -2640,68 +2640,68 @@
   const flowPrelude$15 = flowPreludeFunction();
 
   function h2oModelOutput(_, _go, _model, refresh) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createOutput;
-    var _isLive;
-    var _output;
-    var _refresh;
-    var _toggleRefresh;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createOutput;
+    let _isLive;
+    let _output;
+    let _refresh;
+    let _toggleRefresh;
     _output = Flow.Dataflow.signal(null);
     createOutput = _model => {
-      var cloneModel;
-      var confusionMatrix;
-      var deleteModel;
-      var downloadMojo;
-      var downloadPojo;
-      var exportModel;
-      var format4f;
-      var getAucAsLabel;
-      var getThresholdsAndCriteria;
-      var inspect;
-      var lambdaSearchParameter;
-      var output;
-      var plotter;
-      var predict;
-      var previewPojo;
-      var renderMultinomialConfusionMatrix;
-      var renderPlot;
-      var table;
-      var tableName;
-      var toggle;
-      var _i;
-      var _inputParameters;
-      var _isExpanded;
-      var _isPojoLoaded;
-      var _len;
-      var _plots;
-      var _pojoPreview;
-      var _ref;
-      var _ref1;
-      var _ref10;
-      var _ref11;
-      var _ref12;
-      var _ref13;
-      var _ref14;
-      var _ref15;
-      var _ref16;
-      var _ref17;
-      var _ref18;
-      var _ref19;
-      var _ref2;
-      var _ref20;
-      var _ref21;
-      var _ref22;
-      var _ref23;
-      var _ref24;
-      var _ref25;
-      var _ref3;
-      var _ref4;
-      var _ref5;
-      var _ref6;
-      var _ref7;
-      var _ref8;
-      var _ref9;
+      let cloneModel;
+      let confusionMatrix;
+      let deleteModel;
+      let downloadMojo;
+      let downloadPojo;
+      let exportModel;
+      let format4f;
+      let getAucAsLabel;
+      let getThresholdsAndCriteria;
+      let inspect;
+      let lambdaSearchParameter;
+      let output;
+      let plotter;
+      let predict;
+      let previewPojo;
+      let renderMultinomialConfusionMatrix;
+      let renderPlot;
+      let table;
+      let tableName;
+      let toggle;
+      let _i;
+      let _inputParameters;
+      let _isExpanded;
+      let _isPojoLoaded;
+      let _len;
+      let _plots;
+      let _pojoPreview;
+      let _ref;
+      let _ref1;
+      let _ref10;
+      let _ref11;
+      let _ref12;
+      let _ref13;
+      let _ref14;
+      let _ref15;
+      let _ref16;
+      let _ref17;
+      let _ref18;
+      let _ref19;
+      let _ref2;
+      let _ref20;
+      let _ref21;
+      let _ref22;
+      let _ref23;
+      let _ref24;
+      let _ref25;
+      let _ref3;
+      let _ref4;
+      let _ref5;
+      let _ref6;
+      let _ref7;
+      let _ref8;
+      let _ref9;
       _isExpanded = Flow.Dataflow.signal(false);
       _plots = Flow.Dataflow.signals([]);
       _pojoPreview = Flow.Dataflow.signal(null);
@@ -2712,12 +2712,12 @@
         return false;
       });
       _inputParameters = lodash.map(_model.parameters, parameter => {
-        var actual_value;
-        var default_value;
-        var help;
-        var label;
-        var type;
-        var value;
+        let actual_value;
+        let default_value;
+        let help;
+        let label;
+        let type;
+        let value;
         type = parameter.type, default_value = parameter.default_value, actual_value = parameter.actual_value, label = parameter.label, help = parameter.help;
         value = (() => {
           switch (type) {
@@ -2767,26 +2767,26 @@
         return number;
       };
       getAucAsLabel = (model, tableName) => {
-        var metrics;
+        let metrics;
         if (metrics = _.inspect(tableName, model)) {
           return ` , AUC = ${ metrics.schema.AUC.at(0) }`;
         }
         return '';
       };
       getThresholdsAndCriteria = (model, tableName) => {
-        var criteria;
-        var criterionTable;
-        var i;
-        var idxVector;
-        var metricVector;
-        var thresholdVector;
-        var thresholds;
+        let criteria;
+        let criterionTable;
+        let i;
+        let idxVector;
+        let metricVector;
+        let thresholdVector;
+        let thresholds;
         if (criterionTable = _.inspect(tableName, _model)) {
           thresholdVector = table.schema.threshold;
           thresholds = (() => {
-            var _i;
-            var _ref;
-            var _results;
+            let _i;
+            let _ref;
+            let _results;
             _results = [];
             for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
               _results.push({
@@ -2799,9 +2799,9 @@
           metricVector = criterionTable.schema.metric;
           idxVector = criterionTable.schema.idx;
           criteria = (() => {
-            var _i;
-            var _ref;
-            var _results;
+            let _i;
+            let _ref;
+            let _results;
             _results = [];
             for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
               _results.push({
@@ -2819,9 +2819,9 @@
         return void 0;
       };
       renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
-        var container;
-        var linkedFrame;
-        var rocPanel;
+        let container;
+        let linkedFrame;
+        let rocPanel;
         container = Flow.Dataflow.signal(null);
         linkedFrame = Flow.Dataflow.signal(null);
         if (thresholdsAndCriteria) {
@@ -2833,12 +2833,12 @@
           };
         }
         render((error, vis) => {
-          var _autoHighlight;
+          let _autoHighlight;
           if (error) {
             return console.debug(error);
           }
           $('a', vis.element).on('click', e => {
-            var $a;
+            let $a;
             $a = $(e.target);
             switch ($a.attr('data-type')) {
               case 'frame':
@@ -2851,12 +2851,12 @@
           _autoHighlight = true;
           if (vis.subscribe) {
             vis.subscribe('markselect', _arg => {
-              var currentCriterion;
-              var frame;
-              var indices;
-              var renderTable;
-              var selectedIndex;
-              var subframe;
+              let currentCriterion;
+              let frame;
+              let indices;
+              let renderTable;
+              let selectedIndex;
+              let subframe;
               frame = _arg.frame, indices = _arg.indices;
               subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
               renderTable = g => g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
@@ -2911,25 +2911,25 @@
         });
       };
       renderMultinomialConfusionMatrix = (title, cm) => {
-        var bold;
-        var cell;
-        var cells;
-        var column;
-        var columnCount;
-        var errorColumnIndex;
-        var headers;
-        var i;
-        var normal;
-        var rowCount;
-        var rowIndex;
-        var rows;
-        var table;
-        var tbody;
-        var totalRowIndex;
-        var tr;
-        var yellow;
-        var _i;
-        var _ref;
+        let bold;
+        let cell;
+        let cells;
+        let column;
+        let columnCount;
+        let errorColumnIndex;
+        let headers;
+        let i;
+        let normal;
+        let rowCount;
+        let rowIndex;
+        let rows;
+        let table;
+        let tbody;
+        let totalRowIndex;
+        let tr;
+        let yellow;
+        let _i;
+        let _ref;
         _ref = Flow.HTML.template('table.flow-confusion-matrix', 'tbody', 'tr', 'td', 'td.strong', 'td.bg-yellow'), table = _ref[0], tbody = _ref[1], tr = _ref[2], normal = _ref[3], bold = _ref[4], yellow = _ref[5];
         columnCount = cm.columns.length;
         rowCount = cm.rowcount;
@@ -2940,10 +2940,10 @@
         totalRowIndex = rowCount - 1;
         for (rowIndex = _i = 0; rowCount >= 0 ? _i < rowCount : _i > rowCount; rowIndex = rowCount >= 0 ? ++_i : --_i) {
           cells = (() => {
-            var _j;
-            var _len;
-            var _ref1;
-            var _results;
+            let _j;
+            let _len;
+            let _ref1;
+            let _results;
             _ref1 = cm.data;
             _results = [];
             for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
@@ -3231,27 +3231,27 @@
   const flowPrelude$16 = flowPreludeFunction();
 
   function h2oGridOutput(_, _go, _grid) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var buildModel;
-    var collectSelectedKeys;
-    var compareModels;
-    var createModelView;
-    var deleteModels;
-    var initialize;
-    var inspect;
-    var inspectAll;
-    var inspectHistory;
-    var predictUsingModels;
-    var _canCompareModels;
-    var _checkAllModels;
-    var _checkedModelCount;
-    var _errorViews;
-    var _hasErrors;
-    var _hasModels;
-    var _hasSelectedModels;
-    var _isCheckingAll;
-    var _modelViews;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let buildModel;
+    let collectSelectedKeys;
+    let compareModels;
+    let createModelView;
+    let deleteModels;
+    let initialize;
+    let inspect;
+    let inspectAll;
+    let inspectHistory;
+    let predictUsingModels;
+    let _canCompareModels;
+    let _checkAllModels;
+    let _checkedModelCount;
+    let _errorViews;
+    let _hasErrors;
+    let _hasModels;
+    let _hasSelectedModels;
+    let _isCheckingAll;
+    let _modelViews;
     _modelViews = Flow.Dataflow.signal([]);
     _hasModels = _grid.model_ids.length > 0;
     _errorViews = Flow.Dataflow.signal([]);
@@ -3262,10 +3262,10 @@
     _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
     _isCheckingAll = false;
     Flow.Dataflow.react(_checkAllModels, checkAll => {
-      var view;
-      var views;
-      var _i;
-      var _len;
+      let view;
+      let views;
+      let _i;
+      let _len;
       _isCheckingAll = true;
       views = _modelViews();
       for (_i = 0, _len = views.length; _i < _len; _i++) {
@@ -3276,23 +3276,23 @@
       _isCheckingAll = false;
     });
     createModelView = model_id => {
-      var cloneModel;
-      var inspect;
-      var predict;
-      var view;
-      var _isChecked;
+      let cloneModel;
+      let inspect;
+      let predict;
+      let view;
+      let _isChecked;
       _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
-        var checkedViews;
-        var view;
+        let checkedViews;
+        let view;
         if (_isCheckingAll) {
           return;
         }
         checkedViews = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = _modelViews();
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3321,11 +3321,11 @@
     };
     buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
     collectSelectedKeys = () => {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let view;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _modelViews();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3347,23 +3347,23 @@
       }
     });
     inspect = () => {
-      var summary;
+      let summary;
       summary = _.inspect('summary', _grid);
       return _.insertAndExecuteCell('cs', `grid inspect \'summary\', ${ summary.metadata.origin }`);
     };
     inspectHistory = () => {
-      var history;
+      let history;
       history = _.inspect('scoring_history', _grid);
       return _.insertAndExecuteCell('cs', `grid inspect \'scoring_history\', ${ history.metadata.origin }`);
     };
     inspectAll = () => {
-      var allKeys;
-      var view;
+      let allKeys;
+      let view;
       allKeys = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _modelViews();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3375,13 +3375,13 @@
       return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$16.stringify(allKeys) }`);
     };
     initialize = grid => {
-      var errorViews;
-      var i;
+      let errorViews;
+      let i;
       _modelViews(lodash.map(grid.model_ids, createModelView));
       errorViews = (() => {
-        var _i;
-        var _ref;
-        var _results;
+        let _i;
+        let _ref;
+        let _results;
         _results = [];
         for (i = _i = 0, _ref = grid.failure_details.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
           _results.push({
@@ -3420,15 +3420,15 @@
   const flowPrelude$17 = flowPreludeFunction();
 
   function h2oGridsOutput(_, _go, _grids) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var buildModel;
-    var createGridView;
-    var initialize;
-    var _gridViews;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let buildModel;
+    let createGridView;
+    let initialize;
+    let _gridViews;
     _gridViews = Flow.Dataflow.signal([]);
     createGridView = grid => {
-      var view;
+      let view;
       view = () => _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$17.stringify(grid.grid_id.name) }`);
       return {
         key: grid.grid_id.name,
@@ -3453,22 +3453,22 @@
   const flowPrelude$18 = flowPreludeFunction();
 
   function h2oModelsOutput(_, _go, _models) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var buildModel;
-    var collectSelectedKeys;
-    var compareModels;
-    var createModelView;
-    var deleteModels;
-    var initialize;
-    var inspectAll;
-    var predictUsingModels;
-    var _canCompareModels;
-    var _checkAllModels;
-    var _checkedModelCount;
-    var _hasSelectedModels;
-    var _isCheckingAll;
-    var _modelViews;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let buildModel;
+    let collectSelectedKeys;
+    let compareModels;
+    let createModelView;
+    let deleteModels;
+    let initialize;
+    let inspectAll;
+    let predictUsingModels;
+    let _canCompareModels;
+    let _checkAllModels;
+    let _checkedModelCount;
+    let _hasSelectedModels;
+    let _isCheckingAll;
+    let _modelViews;
     _modelViews = Flow.Dataflow.signal([]);
     _checkAllModels = Flow.Dataflow.signal(false);
     _checkedModelCount = Flow.Dataflow.signal(0);
@@ -3476,10 +3476,10 @@
     _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
     _isCheckingAll = false;
     Flow.Dataflow.react(_checkAllModels, checkAll => {
-      var view;
-      var views;
-      var _i;
-      var _len;
+      let view;
+      let views;
+      let _i;
+      let _len;
       _isCheckingAll = true;
       views = _modelViews();
       for (_i = 0, _len = views.length; _i < _len; _i++) {
@@ -3490,23 +3490,23 @@
       _isCheckingAll = false;
     });
     createModelView = model => {
-      var cloneModel;
-      var inspect;
-      var predict;
-      var view;
-      var _isChecked;
+      let cloneModel;
+      let inspect;
+      let predict;
+      let view;
+      let _isChecked;
       _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
-        var checkedViews;
-        var view;
+        let checkedViews;
+        let view;
         if (_isCheckingAll) {
           return;
         }
         checkedViews = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = _modelViews();
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3536,11 +3536,11 @@
     };
     buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
     collectSelectedKeys = () => {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let view;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _modelViews();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3562,13 +3562,13 @@
       }
     });
     inspectAll = () => {
-      var allKeys;
-      var view;
+      let allKeys;
+      let view;
       allKeys = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _modelViews();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3603,25 +3603,25 @@
   const flowPrelude$19 = flowPreludeFunction();
 
   function h2oPredictsOutput(_, _go, opts, _predictions) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var arePredictionsComparable;
-    var comparePredictions;
-    var createPredictionView;
-    var initialize;
-    var inspectAll;
-    var plotMetrics;
-    var plotPredictions;
-    var plotScores;
-    var predict;
-    var _canComparePredictions;
-    var _checkAllPredictions;
-    var _isCheckingAll;
-    var _metricsTable;
-    var _predictionViews;
-    var _predictionsTable;
-    var _rocCurve;
-    var _scoresTable;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let arePredictionsComparable;
+    let comparePredictions;
+    let createPredictionView;
+    let initialize;
+    let inspectAll;
+    let plotMetrics;
+    let plotPredictions;
+    let plotScores;
+    let predict;
+    let _canComparePredictions;
+    let _checkAllPredictions;
+    let _isCheckingAll;
+    let _metricsTable;
+    let _predictionViews;
+    let _predictionsTable;
+    let _rocCurve;
+    let _scoresTable;
     _predictionViews = Flow.Dataflow.signal([]);
     _checkAllPredictions = Flow.Dataflow.signal(false);
     _canComparePredictions = Flow.Dataflow.signal(false);
@@ -3634,10 +3634,10 @@
     };
     _isCheckingAll = false;
     Flow.Dataflow.react(_checkAllPredictions, checkAll => {
-      var view;
-      var _i;
-      var _len;
-      var _ref;
+      let view;
+      let _i;
+      let _len;
+      let _ref;
       _isCheckingAll = true;
       _ref = _predictionViews();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3648,28 +3648,28 @@
       _isCheckingAll = false;
     });
     createPredictionView = prediction => {
-      var inspect;
-      var view;
-      var _frameKey;
-      var _hasFrame;
-      var _isChecked;
-      var _modelKey;
-      var _ref;
+      let inspect;
+      let view;
+      let _frameKey;
+      let _hasFrame;
+      let _isChecked;
+      let _modelKey;
+      let _ref;
       _modelKey = prediction.model.name;
       _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
       _hasFrame = _frameKey;
       _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
-        var checkedViews;
-        var view;
+        let checkedViews;
+        let view;
         if (_isCheckingAll) {
           return;
         }
         checkedViews = (() => {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
+          let _i;
+          let _len;
+          let _ref1;
+          let _results;
           _ref1 = _predictionViews();
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -3706,13 +3706,13 @@
     _metricsTable = _.inspect('metrics', _predictions);
     _scoresTable = _.inspect('scores', _predictions);
     comparePredictions = () => {
-      var selectedKeys;
-      var view;
+      let selectedKeys;
+      let view;
       selectedKeys = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _predictionViews();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3757,32 +3757,32 @@
   const flowPrelude$20 = flowPreludeFunction();
 
   function h2oPredictOutput(_, _go, prediction) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var frame;
-    var inspect;
-    var model;
-    var renderPlot;
-    var table;
-    var tableName;
-    var _canInspect;
-    var _i;
-    var _len;
-    var _plots;
-    var _ref;
-    var _ref1;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let frame;
+    let inspect;
+    let model;
+    let renderPlot;
+    let table;
+    let tableName;
+    let _canInspect;
+    let _i;
+    let _len;
+    let _plots;
+    let _ref;
+    let _ref1;
     if (prediction) {
       frame = prediction.frame, model = prediction.model;
     }
     _plots = Flow.Dataflow.signals([]);
     _canInspect = prediction.__meta;
     renderPlot = (title, prediction, render) => {
-      var combineWithFrame;
-      var container;
+      let combineWithFrame;
+      let container;
       container = Flow.Dataflow.signal(null);
       combineWithFrame = () => {
-        var predictionsFrameName;
-        var targetFrameName;
+        let predictionsFrameName;
+        let targetFrameName;
         predictionsFrameName = prediction.predictions.frame_id.name;
         targetFrameName = `combined-${ predictionsFrameName }`;
         return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$20.stringify(targetFrameName) }, [ ${ flowPrelude$20.stringify(predictionsFrameName) }, ${ flowPrelude$20.stringify(frame.name) } ]`);
@@ -3792,7 +3792,7 @@
           return console.debug(error);
         }
         $('a', vis.element).on('click', e => {
-          var $a;
+          let $a;
           $a = $(e.target);
           switch ($a.attr('data-type')) {
             case 'frame':
@@ -3840,10 +3840,10 @@
   }
 
   function h2oH2OFrameOutput(_, _go, _result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createH2oFrameView;
-    var _h2oframeView;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createH2oFrameView;
+    let _h2oframeView;
     _h2oframeView = Flow.Dataflow.signal(null);
     createH2oFrameView = result => ({
       h2oframe_id: result.h2oframe_id
@@ -3859,32 +3859,32 @@
   const flowPrelude$21 = flowPreludeFunction();
 
   function h2oFrameOutput(_, _go, _frame) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var MaxItemsPerPage;
-    var createModel;
-    var deleteFrame;
-    var download;
-    var exportFrame;
-    var goToNextPage;
-    var goToPreviousPage;
-    var inspect;
-    var inspectData;
-    var predict;
-    var refreshColumns;
-    var renderFrame;
-    var renderGrid;
-    var renderPlot;
-    var splitFrame;
-    var _canGoToNextPage;
-    var _canGoToPreviousPage;
-    var _chunkSummary;
-    var _columnNameSearchTerm;
-    var _currentPage;
-    var _distributionSummary;
-    var _grid;
-    var _lastUsedSearchTerm;
-    var _maxPages;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let MaxItemsPerPage;
+    let createModel;
+    let deleteFrame;
+    let download;
+    let exportFrame;
+    let goToNextPage;
+    let goToPreviousPage;
+    let inspect;
+    let inspectData;
+    let predict;
+    let refreshColumns;
+    let renderFrame;
+    let renderGrid;
+    let renderPlot;
+    let splitFrame;
+    let _canGoToNextPage;
+    let _canGoToPreviousPage;
+    let _chunkSummary;
+    let _columnNameSearchTerm;
+    let _currentPage;
+    let _distributionSummary;
+    let _grid;
+    let _lastUsedSearchTerm;
+    let _maxPages;
     MaxItemsPerPage = 20;
     _grid = Flow.Dataflow.signal(null);
     _chunkSummary = Flow.Dataflow.signal(null);
@@ -3905,7 +3905,7 @@
         return console.debug(error);
       }
       $('a', vis.element).on('click', e => {
-        var $a;
+        let $a;
         $a = $(e.target);
         switch ($a.attr('data-type')) {
           case 'summary-link':
@@ -3940,9 +3940,9 @@
     };
     _lastUsedSearchTerm = null;
     refreshColumns = pageIndex => {
-      var itemCount;
-      var searchTerm;
-      var startIndex;
+      let itemCount;
+      let searchTerm;
+      let startIndex;
       searchTerm = _columnNameSearchTerm();
       if (searchTerm !== _lastUsedSearchTerm) {
         pageIndex = 0;
@@ -3960,14 +3960,14 @@
       });
     };
     goToPreviousPage = () => {
-      var currentPage;
+      let currentPage;
       currentPage = _currentPage();
       if (currentPage > 0) {
         refreshColumns(currentPage - 1);
       }
     };
     goToNextPage = () => {
-      var currentPage;
+      let currentPage;
       currentPage = _currentPage();
       if (currentPage < _maxPages() - 1) {
         refreshColumns(currentPage + 1);
@@ -4004,17 +4004,17 @@
   const flowPrelude$22 = flowPreludeFunction();
 
   function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var column;
-    var impute;
-    var inspect;
-    var renderPlot;
-    var table;
-    var _characteristicsPlot;
-    var _distributionPlot;
-    var _domainPlot;
-    var _summaryPlot;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let column;
+    let impute;
+    let inspect;
+    let renderPlot;
+    let table;
+    let _characteristicsPlot;
+    let _distributionPlot;
+    let _domainPlot;
+    let _summaryPlot;
     column = lodash.head(frame.columns);
     _characteristicsPlot = Flow.Dataflow.signal(null);
     _summaryPlot = Flow.Dataflow.signal(null);
@@ -4054,7 +4054,7 @@
   }
 
   function h2oExportFrameOutput(_, _go, result) {
-    var lodash = window._;
+    const lodash = window._;
     lodash.defer(_go);
     return { template: 'flow-export-frame-output' };
   }
@@ -4062,9 +4062,9 @@
   const flowPrelude$23 = flowPreludeFunction();
 
   function h2oBindFramesOutput(_, _go, key, result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var viewFrame;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let viewFrame;
     viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$23.stringify(key) }`);
     lodash.defer(_go);
     return {
@@ -4074,7 +4074,7 @@
   }
 
   function h2oExportModelOutput(_, _go, result) {
-    var lodash = window._;
+    const lodash = window._;
     lodash.defer(_go);
     return { template: 'flow-export-model-output' };
   }
@@ -4082,14 +4082,14 @@
   const flowPrelude$24 = flowPreludeFunction();
 
   function h2oImportFilesOutput(_, _go, _importResults) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createImportView;
-    var parse;
-    var _allFrames;
-    var _canParse;
-    var _importViews;
-    var _title;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createImportView;
+    let parse;
+    let _allFrames;
+    let _canParse;
+    let _importViews;
+    let _title;
     _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, result => result.destination_frames)));
     _canParse = _allFrames.length > 0;
     _title = `${ _allFrames.length } / ${ _importResults.length } files imported.`;
@@ -4099,7 +4099,7 @@
     });
     _importViews = lodash.map(_importResults, createImportView);
     parse = () => {
-      var paths;
+      let paths;
       paths = lodash.map(_allFrames, flowPrelude$24.stringify);
       return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ paths.join(',') } ]`);
     };
@@ -4117,10 +4117,10 @@
   }
 
   function h2oRDDsOutput(_, _go, _rDDs) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createRDDView;
-    var _rDDViews;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createRDDView;
+    let _rDDViews;
     _rDDViews = Flow.Dataflow.signal([]);
     createRDDView = rDD => ({
       id: rDD.rdd_id,
@@ -4137,10 +4137,10 @@
   }
 
   function h2oDataFramesOutput(_, _go, _dataFrames) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createDataFrameView;
-    var _dataFramesViews;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createDataFrameView;
+    let _dataFramesViews;
     _dataFramesViews = Flow.Dataflow.signal([]);
     createDataFrameView = dataFrame => ({
       dataframe_id: dataFrame.dataframe_id,
@@ -4156,12 +4156,12 @@
   }
 
   function h2oScalaCodeOutput(_, _go, _result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createScalaCodeView;
-    var _scalaCodeView;
-    var _scalaLinkText;
-    var _scalaResponseVisible;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createScalaCodeView;
+    let _scalaCodeView;
+    let _scalaLinkText;
+    let _scalaResponseVisible;
     _scalaCodeView = Flow.Dataflow.signal(null);
     _scalaResponseVisible = Flow.Dataflow.signal(false);
     _scalaLinkText = Flow.Dataflow.signal('Show Scala Response');
@@ -4189,10 +4189,10 @@
   }
 
   function h2oScalaIntpOutput(_, _go, _result) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createScalaIntpView;
-    var _scalaIntpView;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createScalaIntpView;
+    let _scalaIntpView;
     _scalaIntpView = Flow.Dataflow.signal(null);
     createScalaIntpView = result => ({
       session_id: result.session_id
@@ -4206,10 +4206,10 @@
   }
 
   function h2oAssist(_, _go, _items) {
-    var lodash = window._;
-    var createAssistItem;
-    var item;
-    var name;
+    const lodash = window._;
+    let createAssistItem;
+    let item;
+    let name;
     createAssistItem = (name, item) => ({
       name,
       description: item.description,
@@ -4222,7 +4222,7 @@
     lodash.defer(_go);
     return {
       routines: (() => {
-        var _results;
+        let _results;
         _results = [];
         for (name in _items) {
           if ({}.hasOwnProperty.call(_items, name)) {
@@ -4239,29 +4239,29 @@
   const flowPrelude$25 = flowPreludeFunction();
 
   function h2oImportFilesInput(_, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createFileItem;
-    var createFileItems;
-    var createSelectedFileItem;
-    var deselectAllFiles;
-    var importFiles;
-    var importSelectedFiles;
-    var listPathHints;
-    var processImportResult;
-    var selectAllFiles;
-    var tryImportFiles;
-    var _exception;
-    var _hasErrorMessage;
-    var _hasImportedFiles;
-    var _hasSelectedFiles;
-    var _hasUnselectedFiles;
-    var _importedFileCount;
-    var _importedFiles;
-    var _selectedFileCount;
-    var _selectedFiles;
-    var _selectedFilesDictionary;
-    var _specifiedPath;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createFileItem;
+    let createFileItems;
+    let createSelectedFileItem;
+    let deselectAllFiles;
+    let importFiles;
+    let importSelectedFiles;
+    let listPathHints;
+    let processImportResult;
+    let selectAllFiles;
+    let tryImportFiles;
+    let _exception;
+    let _hasErrorMessage;
+    let _hasImportedFiles;
+    let _hasSelectedFiles;
+    let _hasUnselectedFiles;
+    let _importedFileCount;
+    let _importedFiles;
+    let _selectedFileCount;
+    let _selectedFiles;
+    let _selectedFilesDictionary;
+    let _specifiedPath;
     _specifiedPath = Flow.Dataflow.signal('');
     _exception = Flow.Dataflow.signal('');
     _hasErrorMessage = Flow.Dataflow.lift(_exception, exception => {
@@ -4271,7 +4271,7 @@
       return false;
     });
     tryImportFiles = () => {
-      var specifiedPath;
+      let specifiedPath;
       specifiedPath = _specifiedPath();
       return _.requestFileGlob(specifiedPath, -1, (error, result) => {
         if (error) {
@@ -4292,10 +4292,10 @@
     _hasUnselectedFiles = Flow.Dataflow.lift(_importedFiles, files => lodash.some(files, file => !file.isSelected()));
     _selectedFiles = Flow.Dataflow.signals([]);
     _selectedFilesDictionary = Flow.Dataflow.lift(_selectedFiles, files => {
-      var dictionary;
-      var file;
-      var _i;
-      var _len;
+      let dictionary;
+      let file;
+      let _i;
+      let _len;
       dictionary = {};
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
@@ -4311,20 +4311,20 @@
     });
     _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, files => files.length > 0);
     importFiles = files => {
-      var paths;
+      let paths;
       paths = lodash.map(files, file => flowPrelude$25.stringify(file.path));
       return _.insertAndExecuteCell('cs', `importFiles [ ${ paths.join(',') } ]`);
     };
     importSelectedFiles = () => importFiles(_selectedFiles());
     createSelectedFileItem = path => {
-      var self;
+      let self;
       return self = {
         path,
         deselect() {
-          var file;
-          var _i;
-          var _len;
-          var _ref;
+          let file;
+          let _i;
+          let _len;
+          let _ref;
           _selectedFiles.remove(self);
           _ref = _importedFiles();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4337,7 +4337,7 @@
       };
     };
     createFileItem = (path, isSelected) => {
-      var self;
+      let self;
       self = {
         path,
         isSelected: Flow.Dataflow.signal(isSelected),
@@ -4358,14 +4358,14 @@
       }
     });
     selectAllFiles = () => {
-      var dict;
-      var file;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
-      var _ref;
-      var _ref1;
+      let dict;
+      let file;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      let _ref;
+      let _ref1;
       dict = {};
       _ref = _selectedFiles();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4381,10 +4381,10 @@
       }
     };
     deselectAllFiles = () => {
-      var file;
-      var _i;
-      var _len;
-      var _ref;
+      let file;
+      let _i;
+      let _len;
+      let _ref;
       _selectedFiles([]);
       _ref = _importedFiles();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4393,7 +4393,7 @@
       }
     };
     processImportResult = result => {
-      var files;
+      let files;
       files = createFileItems(result);
       return _importedFiles(files);
     };
@@ -4419,17 +4419,17 @@
   }
 
   function h2oAutoModelInput(_, _go, opts) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var buildModel;
-    var defaultMaxRunTime;
-    var _canBuildModel;
-    var _column;
-    var _columns;
-    var _frame;
-    var _frames;
-    var _hasFrame;
-    var _maxRunTime;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let buildModel;
+    let defaultMaxRunTime;
+    let _canBuildModel;
+    let _column;
+    let _columns;
+    let _frame;
+    let _frames;
+    let _hasFrame;
+    let _maxRunTime;
     if (opts == null) {
       opts = {};
     }
@@ -4447,9 +4447,9 @@
     defaultMaxRunTime = 3600;
     _maxRunTime = Flow.Dataflow.signal(defaultMaxRunTime);
     buildModel = () => {
-      var arg;
-      var maxRunTime;
-      var parsed;
+      let arg;
+      let maxRunTime;
+      let parsed;
       maxRunTime = defaultMaxRunTime;
       if (!lodash.isNaN(parsed = parseInt(_maxRunTime(), 10))) {
         maxRunTime = parsed;
@@ -4462,14 +4462,14 @@
       return _.insertAndExecuteCell('cs', `buildAutoModel ${ JSON.stringify(arg) }`);
     };
     _.requestFrames((error, frames) => {
-      var frame;
+      let frame;
       if (error) {
         // empty
       } else {
         _frames((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = frames.length; _i < _len; _i++) {
             frame = frames[_i];
@@ -4487,15 +4487,15 @@
     Flow.Dataflow.react(_frame, frame => {
       if (frame) {
         return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
-          var column;
+          let column;
           if (error) {
             // empty
           } else {
             _columns((() => {
-              var _i;
-              var _len;
-              var _ref;
-              var _results;
+              let _i;
+              let _len;
+              let _ref;
+              let _results;
               _ref = frame.columns;
               _results = [];
               for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4530,34 +4530,34 @@
   const flowPrelude$26 = flowPreludeFunction();
 
   function h2oPredictInput(_, _go, opt) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var predict;
-    var _canPredict;
-    var _computeDeepFeaturesHiddenLayer;
-    var _computeLeafNodeAssignment;
-    var _computeReconstructionError;
-    var _deepFeaturesHiddenLayer;
-    var _deepFeaturesHiddenLayerValue;
-    var _destinationKey;
-    var _exception;
-    var _exemplarIndex;
-    var _exemplarIndexValue;
-    var _frames;
-    var _hasExemplarIndex;
-    var _hasFrames;
-    var _hasLeafNodeAssignment;
-    var _hasModels;
-    var _hasReconError;
-    var _isDeepLearning;
-    var _models;
-    var _ref;
-    var _selectedFrame;
-    var _selectedFrames;
-    var _selectedFramesCaption;
-    var _selectedModel;
-    var _selectedModels;
-    var _selectedModelsCaption;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let predict;
+    let _canPredict;
+    let _computeDeepFeaturesHiddenLayer;
+    let _computeLeafNodeAssignment;
+    let _computeReconstructionError;
+    let _deepFeaturesHiddenLayer;
+    let _deepFeaturesHiddenLayerValue;
+    let _destinationKey;
+    let _exception;
+    let _exemplarIndex;
+    let _exemplarIndexValue;
+    let _frames;
+    let _hasExemplarIndex;
+    let _hasFrames;
+    let _hasLeafNodeAssignment;
+    let _hasModels;
+    let _hasReconError;
+    let _isDeepLearning;
+    let _models;
+    let _ref;
+    let _selectedFrame;
+    let _selectedFrames;
+    let _selectedFramesCaption;
+    let _selectedModel;
+    let _selectedModels;
+    let _selectedModelsCaption;
     _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
     _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
     _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
@@ -4572,10 +4572,10 @@
     _models = Flow.Dataflow.signals([]);
     _isDeepLearning = Flow.Dataflow.lift(_selectedModel, model => model && model.algo === 'deeplearning');
     _hasReconError = Flow.Dataflow.lift(_selectedModel, model => {
-      var parameter;
-      var _i;
-      var _len;
-      var _ref1;
+      let parameter;
+      let _i;
+      let _len;
+      let _ref1;
       if (model) {
         if (model.algo === 'deeplearning') {
           _ref1 = model.parameters;
@@ -4618,22 +4618,22 @@
     _exemplarIndex = Flow.Dataflow.signal(0);
     _exemplarIndexValue = Flow.Dataflow.lift(_exemplarIndex, text => parseInt(text, 10));
     _canPredict = Flow.Dataflow.lift(_selectedFrame, _selectedModel, _hasReconError, _computeReconstructionError, _computeDeepFeaturesHiddenLayer, _deepFeaturesHiddenLayerValue, _exemplarIndexValue, _hasExemplarIndex, (frame, model, hasReconError, computeReconstructionError, computeDeepFeaturesHiddenLayer, deepFeaturesHiddenLayerValue, exemplarIndexValue, hasExemplarIndex) => {
-      var hasFrameAndModel;
-      var hasValidOptions;
+      let hasFrameAndModel;
+      let hasValidOptions;
       hasFrameAndModel = frame && model || _hasFrames && model || _hasModels && frame || _hasModels && hasExemplarIndex;
       hasValidOptions = hasReconError ? computeReconstructionError ? true : computeDeepFeaturesHiddenLayer ? !lodash.isNaN(deepFeaturesHiddenLayerValue) : true : true;
       return hasFrameAndModel && hasValidOptions;
     });
     if (!_hasFrames) {
       _.requestFrames((error, frames) => {
-        var frame;
+        let frame;
         if (error) {
           return _exception(new Flow.Error('Error fetching frame list.', error));
         }
         return _frames((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = frames.length; _i < _len; _i++) {
             frame = frames[_i];
@@ -4647,14 +4647,14 @@
     }
     if (!_hasModels) {
       _.requestModels((error, models) => {
-        var model;
+        let model;
         if (error) {
           return _exception(new Flow.Error('Error fetching model list.', error));
         }
         return _models((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
@@ -4670,10 +4670,10 @@
       }
     }
     predict = () => {
-      var cs;
-      var destinationKey;
-      var frameArg;
-      var modelArg;
+      let cs;
+      let destinationKey;
+      let frameArg;
+      let modelArg;
       if (_hasFrames) {
         frameArg = _selectedFrames.length > 1 ? _selectedFrames : lodash.head(_selectedFrames);
         modelArg = _selectedModel();
@@ -4737,28 +4737,28 @@
   const flowPrelude$27 = flowPreludeFunction();
 
   function h2oCreateFrameInput(_, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createFrame;
-    var _binaryFraction;
-    var _binaryOnesFraction;
-    var _categoricalFraction;
-    var _columns;
-    var _factors;
-    var _hasResponse;
-    var _integerFraction;
-    var _integerRange;
-    var _key;
-    var _missingFraction;
-    var _randomize;
-    var _realRange;
-    var _responseFactors;
-    var _rows;
-    var _seed;
-    var _seed_for_column_types;
-    var _stringFraction;
-    var _timeFraction;
-    var _value;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createFrame;
+    let _binaryFraction;
+    let _binaryOnesFraction;
+    let _categoricalFraction;
+    let _columns;
+    let _factors;
+    let _hasResponse;
+    let _integerFraction;
+    let _integerRange;
+    let _key;
+    let _missingFraction;
+    let _randomize;
+    let _realRange;
+    let _responseFactors;
+    let _rows;
+    let _seed;
+    let _seed_for_column_types;
+    let _stringFraction;
+    let _timeFraction;
+    let _value;
     _key = Flow.Dataflow.signal('');
     _rows = Flow.Dataflow.signal(10000);
     _columns = Flow.Dataflow.signal(100);
@@ -4779,7 +4779,7 @@
     _responseFactors = Flow.Dataflow.signal(2);
     _hasResponse = Flow.Dataflow.signal(false);
     createFrame = () => {
-      var opts;
+      let opts;
       opts = {
         dest: _key(),
         rows: _rows(),
@@ -4832,27 +4832,27 @@
   const flowPrelude$28 = flowPreludeFunction();
 
   function h2oSplitFrameInput(_, _go, _frameKey) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var addSplit;
-    var addSplitRatio;
-    var collectKeys;
-    var collectRatios;
-    var computeSplits;
-    var createSplit;
-    var createSplitName;
-    var format4f;
-    var initialize;
-    var splitFrame;
-    var updateSplitRatiosAndNames;
-    var _frame;
-    var _frames;
-    var _lastSplitKey;
-    var _lastSplitRatio;
-    var _lastSplitRatioText;
-    var _seed;
-    var _splits;
-    var _validationMessage;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let addSplit;
+    let addSplitRatio;
+    let collectKeys;
+    let collectRatios;
+    let computeSplits;
+    let createSplit;
+    let createSplitName;
+    let format4f;
+    let initialize;
+    let splitFrame;
+    let updateSplitRatiosAndNames;
+    let _frame;
+    let _frames;
+    let _lastSplitKey;
+    let _lastSplitRatio;
+    let _lastSplitRatioText;
+    let _seed;
+    let _splits;
+    let _validationMessage;
     _frames = Flow.Dataflow.signal([]);
     _frame = Flow.Dataflow.signal(null);
     _lastSplitRatio = Flow.Dataflow.signal(1);
@@ -4869,11 +4869,11 @@
     Flow.Dataflow.react(_splits, () => updateSplitRatiosAndNames());
     _validationMessage = Flow.Dataflow.signal('');
     collectRatios = () => {
-      var entry;
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let entry;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _splits();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4883,13 +4883,13 @@
       return _results;
     };
     collectKeys = () => {
-      var entry;
-      var splitKeys;
+      let entry;
+      let splitKeys;
       splitKeys = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _splits();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4903,18 +4903,18 @@
     };
     createSplitName = (key, ratio) => `${ key }_${ format4f(ratio) }`;
     updateSplitRatiosAndNames = () => {
-      var entry;
-      var frame;
-      var frameKey;
-      var lastSplitRatio;
-      var ratio;
-      var totalRatio;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
-      var _ref;
-      var _ref1;
+      let entry;
+      let frame;
+      let frameKey;
+      let lastSplitRatio;
+      let ratio;
+      let totalRatio;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      let _ref;
+      let _ref1;
       totalRatio = 0;
       _ref = collectRatios();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4931,15 +4931,15 @@
       _lastSplitKey(createSplitName(frameKey, _lastSplitRatio()));
     };
     computeSplits = go => {
-      var key;
-      var ratio;
-      var splitKeys;
-      var splitRatios;
-      var totalRatio;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
+      let key;
+      let ratio;
+      let splitKeys;
+      let splitRatios;
+      let totalRatio;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
       if (!_frame()) {
         return go('Frame not specified.');
       }
@@ -4972,10 +4972,10 @@
       return go(null, splitRatios, splitKeys);
     };
     createSplit = ratio => {
-      var self;
-      var _key;
-      var _ratio;
-      var _ratioText;
+      let self;
+      let _key;
+      let _ratio;
+      let _ratioText;
       _ratioText = Flow.Dataflow.signal(`${ ratio }`);
       _key = Flow.Dataflow.signal('');
       _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
@@ -4999,13 +4999,13 @@
     });
     initialize = () => {
       _.requestFrames((error, frames) => {
-        var frame;
-        var frameKeys;
+        let frame;
+        let frameKeys;
         if (!error) {
           frameKeys = (() => {
-            var _i;
-            var _len;
-            var _results;
+            let _i;
+            let _len;
+            let _results;
             _results = [];
             for (_i = 0, _len = frames.length; _i < _len; _i++) {
               frame = frames[_i];
@@ -5042,21 +5042,21 @@
   const flowPrelude$29 = flowPreludeFunction();
 
   function h2oMergeFramesInput(_, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var _canMerge;
-    var _destinationKey;
-    var _exception;
-    var _frames;
-    var _includeAllLeftRows;
-    var _includeAllRightRows;
-    var _leftColumns;
-    var _merge;
-    var _rightColumns;
-    var _selectedLeftColumn;
-    var _selectedLeftFrame;
-    var _selectedRightColumn;
-    var _selectedRightFrame;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let _canMerge;
+    let _destinationKey;
+    let _exception;
+    let _frames;
+    let _includeAllLeftRows;
+    let _includeAllRightRows;
+    let _leftColumns;
+    let _merge;
+    let _rightColumns;
+    let _selectedLeftColumn;
+    let _selectedLeftFrame;
+    let _selectedRightColumn;
+    let _selectedRightFrame;
     _exception = Flow.Dataflow.signal(null);
     _destinationKey = Flow.Dataflow.signal(`merged-${ Flow.Util.uuid() }`);
     _frames = Flow.Dataflow.signals([]);
@@ -5090,7 +5090,7 @@
       return _rightColumns([]);
     });
     _merge = () => {
-      var cs;
+      let cs;
       if (!_canMerge()) {
         return;
       }
@@ -5098,14 +5098,14 @@
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames((error, frames) => {
-      var frame;
+      let frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));
       }
       return _frames((() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = frames.length; _i < _len; _i++) {
           frame = frames[_i];
@@ -5137,17 +5137,17 @@
   const flowPrelude$30 = flowPreludeFunction();
 
   function h2oPartialDependenceInput(_, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var _canCompute;
-    var _compute;
-    var _destinationKey;
-    var _exception;
-    var _frames;
-    var _models;
-    var _nbins;
-    var _selectedFrame;
-    var _selectedModel;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let _canCompute;
+    let _compute;
+    let _destinationKey;
+    let _exception;
+    let _frames;
+    let _models;
+    let _nbins;
+    let _selectedFrame;
+    let _selectedModel;
     _exception = Flow.Dataflow.signal(null);
     _destinationKey = Flow.Dataflow.signal(`ppd-${ Flow.Util.uuid() }`);
     _frames = Flow.Dataflow.signals([]);
@@ -5157,8 +5157,8 @@
     _nbins = Flow.Dataflow.signal(20);
     _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
     _compute = () => {
-      var cs;
-      var opts;
+      let cs;
+      let opts;
       if (!_canCompute()) {
         return;
       }
@@ -5172,14 +5172,14 @@
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames((error, frames) => {
-      var frame;
+      let frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));
       }
       return _frames((() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = frames.length; _i < _len; _i++) {
           frame = frames[_i];
@@ -5191,14 +5191,14 @@
       })());
     });
     _.requestModels((error, models) => {
-      var model;
+      let model;
       if (error) {
         return _exception(new Flow.Error('Error fetching model list.', error));
       }
       return _models((() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
@@ -5224,14 +5224,14 @@
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oExportFrameInput(_, _go, frameKey, path, opt) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var exportFrame;
-    var _canExportFrame;
-    var _frames;
-    var _overwrite;
-    var _path;
-    var _selectedFrame;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let exportFrame;
+    let _canExportFrame;
+    let _frames;
+    let _overwrite;
+    let _path;
+    let _selectedFrame;
     _frames = Flow.Dataflow.signal([]);
     _selectedFrame = Flow.Dataflow.signal(frameKey);
     _path = Flow.Dataflow.signal(null);
@@ -5239,14 +5239,14 @@
     _canExportFrame = Flow.Dataflow.lift(_selectedFrame, _path, (frame, path) => frame && path);
     exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$31.stringify(_selectedFrame()) }, ${ flowPrelude$31.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     _.requestFrames((error, frames) => {
-      var frame;
+      let frame;
       if (error) {
         // empty
       } else {
         _frames((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = frames.length; _i < _len; _i++) {
             frame = frames[_i];
@@ -5272,12 +5272,12 @@
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oImportModelInput(_, _go, path, opt) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var importModel;
-    var _canImportModel;
-    var _overwrite;
-    var _path;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let importModel;
+    let _canImportModel;
+    let _overwrite;
+    let _path;
     if (opt == null) {
       opt = {};
     }
@@ -5298,14 +5298,14 @@
   const flowPrelude$33 = flowPreludeFunction();
 
   function h2oExportModelInput(_, _go, modelKey, path, opt) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var exportModel;
-    var _canExportModel;
-    var _models;
-    var _overwrite;
-    var _path;
-    var _selectedModelKey;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let exportModel;
+    let _canExportModel;
+    let _models;
+    let _overwrite;
+    let _path;
+    let _selectedModelKey;
     if (opt == null) {
       opt = {};
     }
@@ -5316,14 +5316,14 @@
     _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, (modelKey, path) => modelKey && path);
     exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$33.stringify(_selectedModelKey()) }, ${ flowPrelude$33.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     _.requestModels((error, models) => {
-      var model;
+      let model;
       if (error) {
         // empty
       } else {
         _models((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
@@ -5347,7 +5347,7 @@
   }
 
   function h2oNoAssist(_, _go) {
-    var lodash = window._;
+    const lodash = window._;
     lodash.defer(_go);
     return {
       showAssist() {
@@ -5360,34 +5360,34 @@
   const flowPrelude$6 = flowPreludeFunction();
 
   function routines() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var combineTables;
-    var computeFalsePositiveRate;
-    var computeTruePositiveRate;
-    var concatArrays;
-    var convertColumnToVector;
-    var convertTableToFrame;
-    var createArrays;
-    var createDataframe;
-    var createFactor;
-    var createList;
-    var createTempKey;
-    var createVector;
-    var format4f;
-    var format6fi;
-    var formatConfusionMatrix;
-    var formulateGetPredictionsOrigin;
-    var getTwoDimData;
-    var lightning;
-    var parseAndFormatArray;
-    var parseAndFormatObjectArray;
-    var parseNaNs;
-    var parseNulls;
-    var parseNumbers;
-    var repeatValues;
-    var _assistance;
-    var __slice = [].slice;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let combineTables;
+    let computeFalsePositiveRate;
+    let computeTruePositiveRate;
+    let concatArrays;
+    let convertColumnToVector;
+    let convertTableToFrame;
+    let createArrays;
+    let createDataframe;
+    let createFactor;
+    let createList;
+    let createTempKey;
+    let createVector;
+    let format4f;
+    let format6fi;
+    let formatConfusionMatrix;
+    let formulateGetPredictionsOrigin;
+    let getTwoDimData;
+    let lightning;
+    let parseAndFormatArray;
+    let parseAndFormatObjectArray;
+    let parseNaNs;
+    let parseNulls;
+    let parseNumbers;
+    let repeatValues;
+    let _assistance;
+    const __slice = [].slice;
     lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
     if (lightning.settings) {
       lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
@@ -5445,11 +5445,11 @@
       }
     };
     parseNumbers = source => {
-      var i;
-      var target;
-      var value;
-      var _i;
-      var _len;
+      let i;
+      let target;
+      let value;
+      let _i;
+      let _len;
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         value = source[i];
@@ -5477,14 +5477,14 @@
       }
     };
     convertTableToFrame = (table, tableName, metadata) => {
-      var column;
-      var i;
-      var vectors;
+      let column;
+      let i;
+      let vectors;
       vectors = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = table.columns;
         _results = [];
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -5496,7 +5496,7 @@
       return createDataframe(tableName, vectors, lodash.range(table.rowcount), null, metadata);
     };
     getTwoDimData = (table, columnName) => {
-      var columnIndex;
+      let columnIndex;
       columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
       if (columnIndex >= 0) {
         return table.data[columnIndex];
@@ -5522,23 +5522,23 @@
       return number;
     };
     combineTables = tables => {
-      var columnCount;
-      var columnData;
-      var data;
-      var element;
-      var i;
-      var index;
-      var leader;
-      var rowCount;
-      var table;
-      var _i;
-      var _j;
-      var _k;
-      var _l;
-      var _len;
-      var _len1;
-      var _len2;
-      var _ref;
+      let columnCount;
+      let columnData;
+      let data;
+      let element;
+      let i;
+      let index;
+      let leader;
+      let rowCount;
+      let table;
+      let _i;
+      let _j;
+      let _k;
+      let _l;
+      let _len;
+      let _len1;
+      let _len2;
+      let _ref;
       leader = lodash.head(tables);
       rowCount = 0;
       columnCount = leader.data.length;
@@ -5567,9 +5567,9 @@
       };
     };
     createArrays = (count, length) => {
-      var i;
-      var _i;
-      var _results;
+      let i;
+      let _i;
+      let _results;
       _results = [];
       for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
         _results.push(new Array(length));
@@ -5577,11 +5577,11 @@
       return _results;
     };
     parseNaNs = source => {
-      var element;
-      var i;
-      var target;
-      var _i;
-      var _len;
+      let element;
+      let i;
+      let target;
+      let _i;
+      let _len;
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         element = source[i];
@@ -5590,11 +5590,11 @@
       return target;
     };
     parseNulls = source => {
-      var element;
-      var i;
-      var target;
-      var _i;
-      var _len;
+      let element;
+      let i;
+      let target;
+      let _i;
+      let _len;
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         element = source[i];
@@ -5603,11 +5603,11 @@
       return target;
     };
     parseAndFormatArray = source => {
-      var element;
-      var i;
-      var target;
-      var _i;
-      var _len;
+      let element;
+      let i;
+      let target;
+      let _i;
+      let _len;
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         element = source[i];
@@ -5616,13 +5616,13 @@
       return target;
     };
     parseAndFormatObjectArray = source => {
-      var element;
-      var i;
-      var target;
-      var _i;
-      var _len;
-      var _ref;
-      var _ref1;
+      let element;
+      let i;
+      let target;
+      let _i;
+      let _len;
+      let _ref;
+      let _ref1;
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         element = source[i];
@@ -5631,9 +5631,9 @@
       return target;
     };
     repeatValues = (count, value) => {
-      var i;
-      var target;
-      var _i;
+      let i;
+      let target;
+      let _i;
       target = new Array(count);
       for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
         target[i] = value;
@@ -5641,7 +5641,7 @@
       return target;
     };
     concatArrays = arrays => {
-      var a;
+      let a;
       switch (arrays.length) {
         case 0:
           return [];
@@ -5653,43 +5653,43 @@
       }
     };
     computeTruePositiveRate = cm => {
-      var fn;
-      var fp;
-      var tn;
-      var tp;
-      var _ref;
-      var _ref1;
+      let fn;
+      let fp;
+      let tn;
+      let tp;
+      let _ref;
+      let _ref1;
       (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
       return tp / (tp + fn);
     };
     computeFalsePositiveRate = cm => {
-      var fn;
-      var fp;
-      var tn;
-      var tp;
-      var _ref;
-      var _ref1;
+      let fn;
+      let fp;
+      let tn;
+      let tp;
+      let _ref;
+      let _ref1;
       (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
       return fp / (fp + tn);
     };
     formatConfusionMatrix = cm => {
-      var domain;
-      var fn;
-      var fnr;
-      var fp;
-      var fpr;
-      var normal;
-      var strong;
-      var table;
-      var tbody;
-      var tn;
-      var tp;
-      var tr;
-      var yellow;
-      var _ref;
-      var _ref1;
-      var _ref2;
-      var _ref3;
+      let domain;
+      let fn;
+      let fnr;
+      let fp;
+      let fpr;
+      let normal;
+      let strong;
+      let table;
+      let tbody;
+      let tn;
+      let tp;
+      let tr;
+      let yellow;
+      let _ref;
+      let _ref1;
+      let _ref2;
+      let _ref3;
       _ref = cm.matrix, (_ref1 = _ref[0], tn = _ref1[0], fp = _ref1[1]), (_ref2 = _ref[1], fn = _ref2[0], tp = _ref2[1]);
       fnr = fn / (tp + fn);
       fpr = fp / (fp + tn);
@@ -5698,16 +5698,16 @@
       return table([tbody([tr([strong('Actual/Predicted'), strong(domain[0]), strong(domain[1]), strong('Error'), strong('Rate')]), tr([strong(domain[0]), yellow(tn), normal(fp), normal(format4f(fpr)), normal(`${ fp } / ${ fp + tn }`)]), tr([strong(domain[1]), normal(fn), yellow(tp), normal(format4f(fnr)), normal(`${ fn } / ${ tp + fn }`)]), tr([strong('Total'), strong(tn + fn), strong(tp + fp), strong(format4f((fn + fp) / (fp + tn + tp + fn))), strong(`${ fn }${ fp } / ${ fp + tn + tp + fn }`)])])]);
     };
     formulateGetPredictionsOrigin = opts => {
-      var frameKey;
-      var modelKey;
-      var opt;
-      var sanitizedOpt;
-      var sanitizedOpts;
+      let frameKey;
+      let modelKey;
+      let opt;
+      let sanitizedOpt;
+      let sanitizedOpts;
       if (lodash.isArray(opts)) {
         sanitizedOpts = (() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = opts.length; _i < _len; _i++) {
             opt = opts[_i];
@@ -5735,216 +5735,216 @@
       return 'getPredictions()';
     };
     H2O.Routines = _ => {
-      var asDataFrame;
-      var asH2OFrameFromDF;
-      var asH2OFrameFromRDD;
-      var assist;
-      var attrname;
-      var bindFrames;
-      var blacklistedAttributesBySchema;
-      var buildAutoModel;
-      var buildModel;
-      var buildPartialDependence;
-      var cancelJob;
-      var changeColumnType;
-      var computeSplits;
-      var createFrame;
-      var createGui;
-      var createPlot;
-      var deleteAll;
-      var deleteFrame;
-      var deleteFrames;
-      var deleteModel;
-      var deleteModels;
-      var dump;
-      var dumpFuture;
-      var exportFrame;
-      var exportModel;
-      var extendAsDataFrame;
-      var extendAsH2OFrame;
-      var extendBindFrames;
-      var extendCancelJob;
-      var extendCloud;
-      var extendColumnSummary;
-      var extendDataFrames;
-      var extendDeletedKeys;
-      var extendExportFrame;
-      var extendExportModel;
-      var extendFrame;
-      var extendFrameData;
-      var extendFrameSummary;
-      var extendFrames;
-      var extendGrid;
-      var extendGrids;
-      var extendGuiForm;
-      var extendImportModel;
-      var extendImportResults;
-      var extendJob;
-      var extendJobs;
-      var extendLogFile;
-      var extendMergeFramesResult;
-      var extendModel;
-      var extendModels;
-      var extendNetworkTest;
-      var extendParseResult;
-      var extendParseSetupResults;
-      var extendPartialDependence;
-      var extendPlot;
-      var extendPrediction;
-      var extendPredictions;
-      var extendProfile;
-      var extendRDDs;
-      var extendScalaCode;
-      var extendScalaIntp;
-      var extendSplitFrameResult;
-      var extendStackTrace;
-      var extendTimeline;
-      var f;
-      var findColumnIndexByColumnLabel;
-      var findColumnIndicesByColumnLabels;
-      var flow_;
-      var getCloud;
-      var getColumnSummary;
-      var getDataFrames;
-      var getFrame;
-      var getFrameData;
-      var getFrameSummary;
-      var getFrames;
-      var getGrid;
-      var getGrids;
-      var getJob;
-      var getJobs;
-      var getLogFile;
-      var getModel;
-      var getModelParameterValue;
-      var getModels;
-      var getPartialDependence;
-      var getPrediction;
-      var getPredictions;
-      var getProfile;
-      var getRDDs;
-      var getScalaIntp;
-      var getStackTrace;
-      var getTimeline;
-      var grid;
-      var gui;
-      var importFiles;
-      var importModel;
-      var imputeColumn;
-      var initAssistanceSparklingWater;
-      var inspect;
-      var inspect$1;
-      var inspect$2;
-      var inspectFrameColumns;
-      var inspectFrameData;
-      var inspectModelParameters;
-      var inspectNetworkTestResult;
-      var inspectObject;
-      var inspectObjectArray_;
-      var inspectParametersAcrossModels;
-      var inspectRawArray_;
-      var inspectRawObject_;
-      var inspectTwoDimTable_;
-      var inspect_;
-      var loadScript;
-      var ls;
-      var mergeFrames;
-      var name;
-      var parseFiles;
-      var plot;
-      var predict;
-      var proceed;
-      var read;
-      var render_;
-      var requestAsDataFrame;
-      var requestAsH2OFrameFromDF;
-      var requestAsH2OFrameFromRDD;
-      var requestAutoModelBuild;
-      var requestBindFrames;
-      var requestCancelJob;
-      var requestChangeColumnType;
-      var requestCloud;
-      var requestColumnSummary;
-      var requestCreateFrame;
-      var requestDataFrames;
-      var requestDeleteFrame;
-      var requestDeleteFrames;
-      var requestDeleteModel;
-      var requestDeleteModels;
-      var requestExportFrame;
-      var requestExportModel;
-      var requestFrame;
-      var requestFrameData;
-      var requestFrameSummary;
-      var requestFrameSummarySlice;
-      var requestFrames;
-      var requestGrid;
-      var requestGrids;
-      var requestImportAndParseFiles;
-      var requestImportAndParseSetup;
-      var requestImportFiles;
-      var requestImportModel;
-      var requestImputeColumn;
-      var requestJob;
-      var requestJobs;
-      var requestLogFile;
-      var requestMergeFrames;
-      var requestModel;
-      var requestModelBuild;
-      var requestModels;
-      var requestModelsByKeys;
-      var requestNetworkTest;
-      var requestParseFiles;
-      var requestParseSetup;
-      var requestPartialDependence;
-      var requestPartialDependenceData;
-      var requestPredict;
-      var requestPrediction;
-      var requestPredictions;
-      var requestPredicts;
-      var requestProfile;
-      var requestRDDs;
-      var requestRemoveAll;
-      var requestScalaCode;
-      var requestScalaIntp;
-      var requestSplitFrame;
-      var requestStackTrace;
-      var requestTimeline;
-      var routines;
-      var routinesOnSw;
-      var runScalaCode;
-      var schemaTransforms;
-      var setupParse;
-      var splitFrame;
-      var testNetwork;
-      var transformBinomialMetrics;
-      var unwrapPrediction;
-      var _apply;
-      var _async;
-      var _call;
-      var _fork;
-      var _get;
-      var _isFuture;
-      var _join;
-      var _plot;
-      var _ref;
-      var _schemaHacks;
+      let asDataFrame;
+      let asH2OFrameFromDF;
+      let asH2OFrameFromRDD;
+      let assist;
+      let attrname;
+      let bindFrames;
+      let blacklistedAttributesBySchema;
+      let buildAutoModel;
+      let buildModel;
+      let buildPartialDependence;
+      let cancelJob;
+      let changeColumnType;
+      let computeSplits;
+      let createFrame;
+      let createGui;
+      let createPlot;
+      let deleteAll;
+      let deleteFrame;
+      let deleteFrames;
+      let deleteModel;
+      let deleteModels;
+      let dump;
+      let dumpFuture;
+      let exportFrame;
+      let exportModel;
+      let extendAsDataFrame;
+      let extendAsH2OFrame;
+      let extendBindFrames;
+      let extendCancelJob;
+      let extendCloud;
+      let extendColumnSummary;
+      let extendDataFrames;
+      let extendDeletedKeys;
+      let extendExportFrame;
+      let extendExportModel;
+      let extendFrame;
+      let extendFrameData;
+      let extendFrameSummary;
+      let extendFrames;
+      let extendGrid;
+      let extendGrids;
+      let extendGuiForm;
+      let extendImportModel;
+      let extendImportResults;
+      let extendJob;
+      let extendJobs;
+      let extendLogFile;
+      let extendMergeFramesResult;
+      let extendModel;
+      let extendModels;
+      let extendNetworkTest;
+      let extendParseResult;
+      let extendParseSetupResults;
+      let extendPartialDependence;
+      let extendPlot;
+      let extendPrediction;
+      let extendPredictions;
+      let extendProfile;
+      let extendRDDs;
+      let extendScalaCode;
+      let extendScalaIntp;
+      let extendSplitFrameResult;
+      let extendStackTrace;
+      let extendTimeline;
+      let f;
+      let findColumnIndexByColumnLabel;
+      let findColumnIndicesByColumnLabels;
+      let flow_;
+      let getCloud;
+      let getColumnSummary;
+      let getDataFrames;
+      let getFrame;
+      let getFrameData;
+      let getFrameSummary;
+      let getFrames;
+      let getGrid;
+      let getGrids;
+      let getJob;
+      let getJobs;
+      let getLogFile;
+      let getModel;
+      let getModelParameterValue;
+      let getModels;
+      let getPartialDependence;
+      let getPrediction;
+      let getPredictions;
+      let getProfile;
+      let getRDDs;
+      let getScalaIntp;
+      let getStackTrace;
+      let getTimeline;
+      let grid;
+      let gui;
+      let importFiles;
+      let importModel;
+      let imputeColumn;
+      let initAssistanceSparklingWater;
+      let inspect;
+      let inspect$1;
+      let inspect$2;
+      let inspectFrameColumns;
+      let inspectFrameData;
+      let inspectModelParameters;
+      let inspectNetworkTestResult;
+      let inspectObject;
+      let inspectObjectArray_;
+      let inspectParametersAcrossModels;
+      let inspectRawArray_;
+      let inspectRawObject_;
+      let inspectTwoDimTable_;
+      let inspect_;
+      let loadScript;
+      let ls;
+      let mergeFrames;
+      let name;
+      let parseFiles;
+      let plot;
+      let predict;
+      let proceed;
+      let read;
+      let render_;
+      let requestAsDataFrame;
+      let requestAsH2OFrameFromDF;
+      let requestAsH2OFrameFromRDD;
+      let requestAutoModelBuild;
+      let requestBindFrames;
+      let requestCancelJob;
+      let requestChangeColumnType;
+      let requestCloud;
+      let requestColumnSummary;
+      let requestCreateFrame;
+      let requestDataFrames;
+      let requestDeleteFrame;
+      let requestDeleteFrames;
+      let requestDeleteModel;
+      let requestDeleteModels;
+      let requestExportFrame;
+      let requestExportModel;
+      let requestFrame;
+      let requestFrameData;
+      let requestFrameSummary;
+      let requestFrameSummarySlice;
+      let requestFrames;
+      let requestGrid;
+      let requestGrids;
+      let requestImportAndParseFiles;
+      let requestImportAndParseSetup;
+      let requestImportFiles;
+      let requestImportModel;
+      let requestImputeColumn;
+      let requestJob;
+      let requestJobs;
+      let requestLogFile;
+      let requestMergeFrames;
+      let requestModel;
+      let requestModelBuild;
+      let requestModels;
+      let requestModelsByKeys;
+      let requestNetworkTest;
+      let requestParseFiles;
+      let requestParseSetup;
+      let requestPartialDependence;
+      let requestPartialDependenceData;
+      let requestPredict;
+      let requestPrediction;
+      let requestPredictions;
+      let requestPredicts;
+      let requestProfile;
+      let requestRDDs;
+      let requestRemoveAll;
+      let requestScalaCode;
+      let requestScalaIntp;
+      let requestSplitFrame;
+      let requestStackTrace;
+      let requestTimeline;
+      let routines;
+      let routinesOnSw;
+      let runScalaCode;
+      let schemaTransforms;
+      let setupParse;
+      let splitFrame;
+      let testNetwork;
+      let transformBinomialMetrics;
+      let unwrapPrediction;
+      let _apply;
+      let _async;
+      let _call;
+      let _fork;
+      let _get;
+      let _isFuture;
+      let _join;
+      let _plot;
+      let _ref;
+      let _schemaHacks;
       _fork = function () {
-        var args;
-        var f;
+        let args;
+        let f;
         f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         return Flow.Async.fork(f, args);
       };
       _join = function () {
-        var args;
-        var go;
-        var _i;
+        let args;
+        let go;
+        let _i;
         args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
         return Flow.Async.join(args, Flow.Async.applicate(go));
       };
       _call = function () {
-        var args;
-        var go;
+        let args;
+        let go;
         go = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         return Flow.Async.join(args, Flow.Async.applicate(go));
       };
@@ -5970,16 +5970,16 @@
         return raw;
       };
       render_ = function () {
-        var args;
-        var raw;
-        var render;
+        let args;
+        let raw;
+        let render;
         raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
         flow_(raw).render = go => render(...[_, go].concat(args));
         return raw;
       };
       inspect_ = (raw, inspectors) => {
-        var attr;
-        var root;
+        let attr;
+        let root;
         root = flow_(raw);
         if (root.inspect == null) {
           root.inspect = {};
@@ -5999,10 +5999,10 @@
         return inspect$2(a, b);
       };
       inspect$1 = obj => {
-        var attr;
-        var inspections;
-        var inspectors;
-        var _ref1;
+        let attr;
+        let inspections;
+        let inspectors;
+        let _ref1;
         if (_isFuture(obj)) {
           return _async(inspect, obj);
         }
@@ -6020,8 +6020,8 @@
         return {};
       };
       ls = obj => {
-        var inspectors;
-        var _ref1;
+        let inspectors;
+        let _ref1;
         if (_isFuture(obj)) {
           return _async(ls, obj);
         }
@@ -6031,11 +6031,11 @@
         return [];
       };
       inspect$2 = (attr, obj) => {
-        var cached;
-        var inspection;
-        var inspectors;
-        var key;
-        var root;
+        let cached;
+        let inspection;
+        let inspectors;
+        let key;
+        let root;
         if (!attr) {
           return;
         }
@@ -6087,15 +6087,15 @@
       };
       grid = f => plot(g => g(g.select(), g.from(f)));
       transformBinomialMetrics = metrics => {
-        var cms;
-        var domain;
-        var fns;
-        var fps;
-        var i;
-        var scores;
-        var tns;
-        var tp;
-        var tps;
+        let cms;
+        let domain;
+        let fns;
+        let fps;
+        let i;
+        let scores;
+        let tns;
+        let tp;
+        let tps;
         if (scores = metrics.thresholds_and_metric_scores) {
           domain = metrics.domain;
           tps = getTwoDimData(scores, 'tps');
@@ -6103,9 +6103,9 @@
           fps = getTwoDimData(scores, 'fps');
           fns = getTwoDimData(scores, 'fns');
           cms = (() => {
-            var _i;
-            var _len;
-            var _results;
+            let _i;
+            let _len;
+            let _results;
             _results = [];
             for (i = _i = 0, _len = tps.length; _i < _len; i = ++_i) {
               tp = tps[i];
@@ -6152,13 +6152,13 @@
         return result;
       };
       extendPartialDependence = result => {
-        var data;
-        var i;
-        var inspections;
-        var origin;
-        var _i;
-        var _len;
-        var _ref1;
+        let data;
+        let i;
+        let inspections;
+        let origin;
+        let _i;
+        let _len;
+        let _ref1;
         inspections = {};
         _ref1 = result.partial_dependence_data;
         for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
@@ -6193,27 +6193,27 @@
         }
       };
       inspectParametersAcrossModels = models => () => {
-        var data;
-        var i;
-        var leader;
-        var model;
-        var modelKeys;
-        var parameter;
-        var vectors;
+        let data;
+        let i;
+        let leader;
+        let model;
+        let modelKeys;
+        let parameter;
+        let vectors;
         leader = lodash.head(models);
         vectors = (() => {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
+          let _i;
+          let _len;
+          let _ref1;
+          let _results;
           _ref1 = leader.parameters;
           _results = [];
           for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
             parameter = _ref1[i];
             data = (() => {
-              var _j;
-              var _len1;
-              var _results1;
+              let _j;
+              let _len1;
+              let _results1;
               _results1 = [];
               for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
                 model = models[_j];
@@ -6264,9 +6264,9 @@
           return _results;
         })();
         modelKeys = (() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
@@ -6280,21 +6280,21 @@
         });
       };
       inspectModelParameters = model => () => {
-        var attr;
-        var attrs;
-        var data;
-        var i;
-        var parameter;
-        var parameters;
-        var vectors;
+        let attr;
+        let attrs;
+        let data;
+        let i;
+        let parameter;
+        let parameters;
+        let vectors;
         parameters = model.parameters;
         attrs = ['label', 'type', 'level', 'actual_value', 'default_value'];
         vectors = (() => {
-          var _i;
-          var _j;
-          var _len;
-          var _len1;
-          var _results;
+          let _i;
+          let _j;
+          let _len;
+          let _len1;
+          let _results;
           _results = [];
           for (_i = 0, _len = attrs.length; _i < _len; _i++) {
             attr = attrs[_i];
@@ -6314,9 +6314,9 @@
       };
       extendJob = job => render_(job, H2O.JobOutput, job);
       extendJobs = jobs => {
-        var job;
-        var _i;
-        var _len;
+        let job;
+        let _i;
+        let _len;
         for (_i = 0, _len = jobs.length; _i < _len; _i++) {
           job = jobs[_i];
           extendJob(job);
@@ -6338,11 +6338,11 @@
         origin
       });
       inspectRawObject_ = (name, origin, description, obj) => () => {
-        var k;
-        var v;
-        var vectors;
+        let k;
+        let v;
+        let vectors;
         vectors = (() => {
-          var _results;
+          let _results;
           _results = [];
           for (k in obj) {
             if ({}.hasOwnProperty.call(obj, k)) {
@@ -6382,14 +6382,14 @@
         ConfusionMatrix: { fields: null }
       };
       blacklistedAttributesBySchema = (() => {
-        var attrs;
-        var dict;
-        var dicts;
-        var field;
-        var schema;
-        var _i;
-        var _len;
-        var _ref1;
+        let attrs;
+        let dict;
+        let dicts;
+        let field;
+        let schema;
+        let _i;
+        let _len;
+        let _ref1;
         dicts = {};
         for (schema in _schemaHacks) {
           if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
@@ -6407,10 +6407,10 @@
         return dicts;
       })();
       schemaTransforms = (() => {
-        var attrs;
-        var schema;
-        var transform;
-        var transforms;
+        let attrs;
+        let schema;
+        let transform;
+        let transforms;
         transforms = {};
         for (schema in _schemaHacks) {
           if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
@@ -6423,16 +6423,16 @@
         return transforms;
       })();
       inspectObject = (inspections, name, origin, obj) => {
-        var attrs;
-        var blacklistedAttributes;
-        var k;
-        var meta;
-        var record;
-        var schemaType;
-        var transform;
-        var v;
-        var _ref1;
-        var _ref2;
+        let attrs;
+        let blacklistedAttributes;
+        let k;
+        let meta;
+        let record;
+        let schemaType;
+        let transform;
+        let v;
+        let _ref1;
+        let _ref2;
         schemaType = (_ref1 = obj.__meta) != null ? _ref1.schema_type : void 0;
         blacklistedAttributes = schemaType ? (attrs = blacklistedAttributesBySchema[schemaType]) ? attrs : {} : {};
         if (transform = schemaTransforms[schemaType]) {
@@ -6480,15 +6480,15 @@
         }
       };
       extendModel = model => {
-        var refresh;
+        let refresh;
         lodash.extend = model => {
-          var inspections;
-          var origin;
-          var table;
-          var tableName;
-          var _i;
-          var _len;
-          var _ref1;
+          let inspections;
+          let origin;
+          let table;
+          let tableName;
+          let _i;
+          let _len;
+          let _ref1;
           inspections = {};
           inspections.parameters = inspectModelParameters(model);
           origin = `getModel ${ flowPrelude$6.stringify(model.model_id.name) }`;
@@ -6516,8 +6516,8 @@
         return render_(model, h2oModelOutput, model, refresh);
       };
       extendGrid = (grid, opts) => {
-        var inspections;
-        var origin;
+        let inspections;
+        let origin;
         origin = `getGrid ${ flowPrelude$6.stringify(grid.grid_id.name) }`;
         if (opts) {
           origin += `, ${ flowPrelude$6.stringify(opts) }`;
@@ -6531,14 +6531,14 @@
       };
       extendGrids = grids => render_(grids, h2oGridsOutput, grids);
       extendModels = models => {
-        var algos;
-        var inspections;
-        var model;
+        let algos;
+        let inspections;
+        let model;
         inspections = {};
         algos = lodash.unique((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
@@ -6563,12 +6563,12 @@
         return predictions;
       };
       extendPrediction = result => {
-        var frameKey;
-        var inspections;
-        var modelKey;
-        var prediction;
-        var predictionFrame;
-        var _ref1;
+        let frameKey;
+        let inspections;
+        let modelKey;
+        let prediction;
+        let predictionFrame;
+        let _ref1;
         modelKey = result.model.name;
         frameKey = (_ref1 = result.frame) != null ? _ref1.name : void 0;
         prediction = lodash.head(result.model_metrics);
@@ -6584,23 +6584,23 @@
         return render_(prediction, h2oPredictOutput, prediction);
       };
       inspectFrameColumns = (tableLabel, frameKey, frame, frameColumns) => () => {
-        var actionsData;
-        var attr;
-        var attrs;
-        var column;
-        var i;
-        var labelVector;
-        var title;
-        var toColumnSummaryLink;
-        var toConversionLink;
-        var typeVector;
-        var vectors;
+        let actionsData;
+        let attr;
+        let attrs;
+        let column;
+        let i;
+        let labelVector;
+        let title;
+        let toColumnSummaryLink;
+        let toConversionLink;
+        let typeVector;
+        let vectors;
         attrs = ['label', 'type', 'missing_count|Missing', 'zero_count|Zeros', 'positive_infinity_count|+Inf', 'negative_infinity_count|-Inf', 'min', 'max', 'mean', 'sigma', 'cardinality'];
         toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${ flowPrelude$6.stringify(label) }>${ lodash.escape(label) }</a>`;
         toConversionLink = value => {
-          var label;
-          var type;
-          var _ref1;
+          let label;
+          let type;
+          let _ref1;
           _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
           switch (type) {
             case 'enum':
@@ -6613,10 +6613,10 @@
           }
         };
         vectors = (() => {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
+          let _i;
+          let _len;
+          let _ref1;
+          let _results;
           _results = [];
           for (_i = 0, _len = attrs.length; _i < _len; _i++) {
             attr = attrs[_i];
@@ -6625,9 +6625,9 @@
             switch (name) {
               case 'min':
                 _results.push(createVector(title, 'Number', (() => {
-                  var _j;
-                  var _len1;
-                  var _results1;
+                  let _j;
+                  let _len1;
+                  let _results1;
                   _results1 = [];
                   for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                     column = frameColumns[_j];
@@ -6638,9 +6638,9 @@
                 break;
               case 'max':
                 _results.push(createVector(title, 'Number', (() => {
-                  var _j;
-                  var _len1;
-                  var _results1;
+                  let _j;
+                  let _len1;
+                  let _results1;
                   _results1 = [];
                   for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                     column = frameColumns[_j];
@@ -6651,9 +6651,9 @@
                 break;
               case 'cardinality':
                 _results.push(createVector(title, 'Number', (() => {
-                  var _j;
-                  var _len1;
-                  var _results1;
+                  let _j;
+                  let _len1;
+                  let _results1;
                   _results1 = [];
                   for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                     column = frameColumns[_j];
@@ -6664,9 +6664,9 @@
                 break;
               case 'label':
                 _results.push(createFactor(title, 'String', (() => {
-                  var _j;
-                  var _len1;
-                  var _results1;
+                  let _j;
+                  let _len1;
+                  let _results1;
                   _results1 = [];
                   for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                     column = frameColumns[_j];
@@ -6677,9 +6677,9 @@
                 break;
               case 'type':
                 _results.push(createFactor(title, 'String', (() => {
-                  var _j;
-                  var _len1;
-                  var _results1;
+                  let _j;
+                  let _len1;
+                  let _results1;
                   _results1 = [];
                   for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                     column = frameColumns[_j];
@@ -6691,9 +6691,9 @@
               case 'mean':
               case 'sigma':
                 _results.push(createVector(title, 'Number', (() => {
-                  var _j;
-                  var _len1;
-                  var _results1;
+                  let _j;
+                  let _len1;
+                  let _results1;
                   _results1 = [];
                   for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                     column = frameColumns[_j];
@@ -6704,9 +6704,9 @@
                 break;
               default:
                 _results.push(createVector(title, 'Number', (() => {
-                  var _j;
-                  var _len1;
-                  var _results1;
+                  let _j;
+                  let _len1;
+                  let _results1;
                   _results1 = [];
                   for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                     column = frameColumns[_j];
@@ -6720,9 +6720,9 @@
         })();
         labelVector = vectors[0], typeVector = vectors[1];
         actionsData = (() => {
-          var _i;
-          var _ref1;
-          var _results;
+          let _i;
+          let _ref1;
+          let _results;
           _results = [];
           for (i = _i = 0, _ref1 = frameColumns.length; _ref1 >= 0 ? _i < _ref1 : _i > _ref1; i = _ref1 >= 0 ? ++_i : --_i) {
             _results.push(`${ typeVector.valueAt(i) }\0${ labelVector.valueAt(i) }`);
@@ -6737,17 +6737,17 @@
         });
       };
       inspectFrameData = (frameKey, frame) => () => {
-        var column;
-        var domain;
-        var frameColumns;
-        var index;
-        var rowIndex;
-        var vectors;
+        let column;
+        let domain;
+        let frameColumns;
+        let index;
+        let rowIndex;
+        let vectors;
         frameColumns = frame.columns;
         vectors = (() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = frameColumns.length; _i < _len; _i++) {
             column = frameColumns[_i];
@@ -6759,10 +6759,10 @@
               case 'enum':
                 domain = column.domain;
                 _results.push(createFactor(column.label, 'String', (() => {
-                  var _j;
-                  var _len1;
-                  var _ref1;
-                  var _results1;
+                  let _j;
+                  let _len1;
+                  let _ref1;
+                  let _results1;
                   _ref1 = column.data;
                   _results1 = [];
                   for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -6786,10 +6786,10 @@
           return _results;
         })();
         vectors.unshift(createVector('Row', 'Number', (() => {
-          var _i;
-          var _ref1;
-          var _ref2;
-          var _results;
+          let _i;
+          let _ref1;
+          let _ref2;
+          let _results;
           _results = [];
           for (rowIndex = _i = _ref1 = frame.row_offset, _ref2 = frame.row_count; _ref1 <= _ref2 ? _i < _ref2 : _i > _ref2; rowIndex = _ref1 <= _ref2 ? ++_i : --_i) {
             _results.push(rowIndex + 1);
@@ -6802,27 +6802,27 @@
         });
       };
       extendFrameData = (frameKey, frame) => {
-        var inspections;
-        var origin;
+        let inspections;
+        let origin;
         inspections = { data: inspectFrameData(frameKey, frame) };
         origin = `getFrameData ${ flowPrelude$6.stringify(frameKey) }`;
         inspect_(frame, inspections);
         return render_(frame, h2oFrameDataOutput, frame);
       };
       extendFrame = (frameKey, frame) => {
-        var column;
-        var enumColumns;
-        var inspections;
-        var origin;
+        let column;
+        let enumColumns;
+        let inspections;
+        let origin;
         inspections = {
           columns: inspectFrameColumns('columns', frameKey, frame, frame.columns),
           data: inspectFrameData(frameKey, frame)
         };
         enumColumns = (() => {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
+          let _i;
+          let _len;
+          let _ref1;
+          let _results;
           _ref1 = frame.columns;
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -6843,16 +6843,16 @@
         return render_(frame, h2oFrameOutput, frame);
       };
       extendFrameSummary = (frameKey, frame) => {
-        var column;
-        var enumColumns;
-        var inspections;
-        var origin;
+        let column;
+        let enumColumns;
+        let inspections;
+        let origin;
         inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
         enumColumns = (() => {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
+          let _i;
+          let _len;
+          let _ref1;
+          let _results;
           _ref1 = frame.columns;
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -6873,18 +6873,18 @@
         return render_(frame, h2oFrameOutput, frame);
       };
       extendColumnSummary = (frameKey, frame, columnName) => {
-        var column;
-        var inspectCharacteristics;
-        var inspectDistribution;
-        var inspectDomain;
-        var inspectPercentiles;
-        var inspectSummary;
-        var inspections;
-        var rowCount;
+        let column;
+        let inspectCharacteristics;
+        let inspectDistribution;
+        let inspectDomain;
+        let inspectPercentiles;
+        let inspectSummary;
+        let inspections;
+        let rowCount;
         column = lodash.head(frame.columns);
         rowCount = frame.rows;
         inspectPercentiles = () => {
-          var vectors;
+          let vectors;
           vectors = [createVector('percentile', 'Number', frame.default_percentiles), createVector('value', 'Number', column.percentiles)];
           return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
             description: `Percentiles for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
@@ -6892,29 +6892,29 @@
           });
         };
         inspectDistribution = () => {
-          var base;
-          var binCount;
-          var binIndex;
-          var bins;
-          var count;
-          var countData;
-          var i;
-          var interval;
-          var intervalData;
-          var m;
-          var minBinCount;
-          var n;
-          var rows;
-          var stride;
-          var vectors;
-          var width;
-          var widthData;
-          var _i;
-          var _j;
-          var _k;
-          var _l;
-          var _len;
-          var _ref1;
+          let base;
+          let binCount;
+          let binIndex;
+          let bins;
+          let count;
+          let countData;
+          let i;
+          let interval;
+          let intervalData;
+          let m;
+          let minBinCount;
+          let n;
+          let rows;
+          let stride;
+          let vectors;
+          let width;
+          let widthData;
+          let _i;
+          let _j;
+          let _k;
+          let _l;
+          let _len;
+          let _ref1;
           minBinCount = 32;
           base = column.histogram_base, stride = column.histogram_stride, bins = column.histogram_bins;
           width = Math.ceil(bins.length / minBinCount);
@@ -6967,24 +6967,24 @@
           });
         };
         inspectCharacteristics = () => {
-          var characteristicData;
-          var count;
-          var countData;
-          var missing_count;
-          var negative_infinity_count;
-          var other;
-          var percentData;
-          var positive_infinity_count;
-          var vectors;
-          var zero_count;
+          let characteristicData;
+          let count;
+          let countData;
+          let missing_count;
+          let negative_infinity_count;
+          let other;
+          let percentData;
+          let positive_infinity_count;
+          let vectors;
+          let zero_count;
           missing_count = column.missing_count, zero_count = column.zero_count, positive_infinity_count = column.positive_infinity_count, negative_infinity_count = column.negative_infinity_count;
           other = rowCount - missing_count - zero_count - positive_infinity_count - negative_infinity_count;
           characteristicData = ['Missing', '-Inf', 'Zero', '+Inf', 'Other'];
           countData = [missing_count, negative_infinity_count, zero_count, positive_infinity_count, other];
           percentData = (() => {
-            var _i;
-            var _len;
-            var _results;
+            let _i;
+            let _len;
+            let _results;
             _results = [];
             for (_i = 0, _len = countData.length; _i < _len; _i++) {
               count = countData[_i];
@@ -7000,16 +7000,16 @@
           });
         };
         inspectSummary = () => {
-          var defaultPercentiles;
-          var maximum;
-          var mean;
-          var minimum;
-          var outliers;
-          var percentiles;
-          var q1;
-          var q2;
-          var q3;
-          var vectors;
+          let defaultPercentiles;
+          let maximum;
+          let mean;
+          let minimum;
+          let outliers;
+          let percentiles;
+          let q1;
+          let q2;
+          let q3;
+          let vectors;
           defaultPercentiles = frame.default_percentiles;
           percentiles = column.percentiles;
           mean = column.mean;
@@ -7027,17 +7027,17 @@
           });
         };
         inspectDomain = () => {
-          var counts;
-          var i;
-          var labels;
-          var level;
-          var levels;
-          var percents;
-          var sortedLevels;
-          var vectors;
-          var _i;
-          var _len;
-          var _ref1;
+          let counts;
+          let i;
+          let labels;
+          let level;
+          let levels;
+          let percents;
+          let sortedLevels;
+          let vectors;
+          let _i;
+          let _len;
+          let _ref1;
           levels = lodash.map(column.histogram_bins, (count, index) => ({
             count,
             index
@@ -7140,18 +7140,18 @@
         return go(null, extendPartialDependence(result));
       });
       computeSplits = (ratios, keys) => {
-        var i;
-        var key;
-        var part;
-        var parts;
-        var ratio;
-        var splits;
-        var sum;
-        var _i;
-        var _j;
-        var _len;
-        var _len1;
-        var _ref1;
+        let i;
+        let key;
+        let part;
+        let parts;
+        let ratio;
+        let splits;
+        let sum;
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
+        let _ref1;
         parts = [];
         sum = 0;
         _ref1 = keys.slice(0, ratios.length);
@@ -7187,16 +7187,16 @@
         return go(null, extendBindFrames(key, result));
       });
       requestSplitFrame = (frameKey, splitRatios, splitKeys, seed, go) => {
-        var g;
-        var i;
-        var l;
-        var part;
-        var randomVecKey;
-        var sliceExpr;
-        var splits;
-        var statements;
-        var _i;
-        var _len;
+        let g;
+        let i;
+        let l;
+        let part;
+        let randomVecKey;
+        let sliceExpr;
+        let splits;
+        let statements;
+        let _i;
+        let _len;
         if (splitRatios.length === splitKeys.length - 1) {
           splits = computeSplits(splitRatios, splitKeys);
           randomVecKey = createTempKey();
@@ -7231,9 +7231,9 @@
         return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));
       };
       requestMergeFrames = (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows, go) => {
-        var lr;
-        var rr;
-        var statement;
+        let lr;
+        let rr;
+        let statement;
         lr = includeAllLeftRows ? 'TRUE' : 'FALSE';
         rr = includeAllRightRows ? 'TRUE' : 'FALSE';
         statement = `(assign ${ destinationKey } (merge ${ leftFrameKey } ${ rightFrameKey } ${ lr } ${ rr } ${ leftColumnIndex } ${ rightColumnIndex } "radix"))`;
@@ -7338,7 +7338,7 @@
         return assist(exportFrame, frameKey, path, opts);
       };
       requestDeleteFrames = (frameKeys, go) => {
-        var futures;
+        let futures;
         futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, frameKey));
         return Flow.Async.join(futures, (error, results) => {
           if (error) {
@@ -7365,7 +7365,7 @@
         return go(null, extendModels(models));
       });
       requestModelsByKeys = (modelKeys, go) => {
-        var futures;
+        let futures;
         futures = lodash.map(modelKeys, key => _fork(_.requestModel, key));
         return Flow.Async.join(futures, (error, models) => {
           if (error) {
@@ -7419,11 +7419,11 @@
         }
       };
       findColumnIndexByColumnLabel = (frame, columnLabel) => {
-        var column;
-        var i;
-        var _i;
-        var _len;
-        var _ref1;
+        let column;
+        let i;
+        let _i;
+        let _len;
+        let _ref1;
         _ref1 = frame.columns;
         for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
           column = _ref1[i];
@@ -7434,10 +7434,10 @@
         throw new Flow.Error(`Column [${ columnLabel }] not found in frame`);
       };
       findColumnIndicesByColumnLabels = (frame, columnLabels) => {
-        var columnLabel;
-        var _i;
-        var _len;
-        var _results;
+        let columnLabel;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = columnLabels.length; _i < _len; _i++) {
           columnLabel = columnLabels[_i];
@@ -7446,19 +7446,19 @@
         return _results;
       };
       requestImputeColumn = (opts, go) => {
-        var column;
-        var combineMethod;
-        var frame;
-        var groupByColumns;
-        var method;
+        let column;
+        let combineMethod;
+        let frame;
+        let groupByColumns;
+        let method;
         frame = opts.frame, column = opts.column, method = opts.method, combineMethod = opts.combineMethod, groupByColumns = opts.groupByColumns;
         combineMethod = combineMethod != null ? combineMethod : 'interpolate';
         return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-          var columnIndex;
-          var columnIndicesError;
-          var columnKeyError;
-          var groupByArg;
-          var groupByColumnIndices;
+          let columnIndex;
+          let columnIndicesError;
+          let columnKeyError;
+          let groupByArg;
+          let groupByColumnIndices;
           if (error) {
             return go(error);
           }
@@ -7488,15 +7488,15 @@
         });
       };
       requestChangeColumnType = (opts, go) => {
-        var column;
-        var frame;
-        var method;
-        var type;
+        let column;
+        let frame;
+        let method;
+        let type;
         frame = opts.frame, column = opts.column, type = opts.type;
         method = type === 'enum' ? 'as.factor' : 'as.numeric';
         return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-          var columnIndex;
-          var columnKeyError;
+          let columnIndex;
+          let columnKeyError;
           try {
             columnIndex = findColumnIndexByColumnLabel(result, column);
           } catch (_error) {
@@ -7562,7 +7562,7 @@
         return assist(exportModel, modelKey, path, opts);
       };
       requestDeleteModels = (modelKeys, go) => {
-        var futures;
+        let futures;
         futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, modelKey));
         return Flow.Async.join(futures, (error, results) => {
           if (error) {
@@ -7639,7 +7639,7 @@
       };
       extendParseSetupResults = (args, parseSetupResults) => render_(parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
       requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
-        var sourceKeys;
+        let sourceKeys;
         if (error) {
           return go(error);
         }
@@ -7667,7 +7667,7 @@
       };
       extendParseResult = parseResult => render_(parseResult, H2O.JobOutput, parseResult.job);
       requestImportAndParseFiles = (paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestImportFiles(paths, (error, importResults) => {
-        var sourceKeys;
+        let sourceKeys;
         if (error) {
           return go(error);
         }
@@ -7686,16 +7686,16 @@
         return go(null, extendParseResult(parseResult));
       });
       parseFiles = opts => {
-        var checkHeader;
-        var chunkSize;
-        var columnCount;
-        var columnNames;
-        var columnTypes;
-        var deleteOnDone;
-        var destinationKey;
-        var parseType;
-        var separator;
-        var useSingleQuotes;
+        let checkHeader;
+        let chunkSize;
+        let columnCount;
+        let columnNames;
+        let columnTypes;
+        let deleteOnDone;
+        let destinationKey;
+        let parseType;
+        let separator;
+        let useSingleQuotes;
         destinationKey = opts.destination_frame;
         parseType = opts.parse_type;
         separator = opts.separator;
@@ -7712,17 +7712,17 @@
         return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       };
       requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
-        var messages;
-        var validation;
+        let messages;
+        let validation;
         if (error) {
           return go(error);
         }
         if (result.error_count > 0) {
           messages = (() => {
-            var _i;
-            var _len;
-            var _ref1;
-            var _results;
+            let _i;
+            let _len;
+            let _ref1;
+            let _results;
             _ref1 = result.messages;
             _results = [];
             for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -7736,7 +7736,7 @@
         return go(null, extendJob(result.job));
       });
       requestAutoModelBuild = (opts, go) => {
-        var params;
+        let params;
         params = {
           input_spec: {
             training_frame: opts.frame,
@@ -7771,11 +7771,11 @@
       };
       requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(go));
       requestPredicts = (opts, go) => {
-        var futures;
+        let futures;
         futures = lodash.map(opts, opt => {
-          var frameKey;
-          var modelKey;
-          var options;
+          let frameKey;
+          let modelKey;
+          let options;
           modelKey = opt.model, frameKey = opt.frame, options = opt.options;
           return _fork(_.requestPredict, null, modelKey, frameKey, options || {});
         });
@@ -7787,20 +7787,20 @@
         });
       };
       predict = opts => {
-        var combos;
-        var deep_features_hidden_layer;
-        var exemplar_index;
-        var frame;
-        var frames;
-        var leaf_node_assignment;
-        var model;
-        var models;
-        var predictions_frame;
-        var reconstruction_error;
-        var _i;
-        var _j;
-        var _len;
-        var _len1;
+        let combos;
+        let deep_features_hidden_layer;
+        let exemplar_index;
+        let frame;
+        let frames;
+        let leaf_node_assignment;
+        let model;
+        let models;
+        let predictions_frame;
+        let reconstruction_error;
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
         if (opts == null) {
           opts = {};
         }
@@ -7853,18 +7853,18 @@
       };
       requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(go));
       requestPredictions = (opts, go) => {
-        var frameKey;
-        var futures;
-        var modelKey;
+        let frameKey;
+        let futures;
+        let modelKey;
         if (lodash.isArray(opts)) {
           futures = lodash.map(opts, opt => {
-            var frameKey;
-            var modelKey;
+            let frameKey;
+            let modelKey;
             modelKey = opt.model, frameKey = opt.frame;
             return _fork(_.requestPredictions, modelKey, frameKey);
           });
           return Flow.Async.join(futures, (error, predictions) => {
-            var uniquePredictions;
+            let uniquePredictions;
             if (error) {
               return go(error);
             }
@@ -7881,9 +7881,9 @@
         });
       };
       getPrediction = opts => {
-        var frame;
-        var model;
-        var predictions_frame;
+        let frame;
+        let model;
+        let predictions_frame;
         if (opts == null) {
           opts = {};
         }
@@ -7925,7 +7925,7 @@
       });
       getStackTrace = () => _fork(requestStackTrace);
       requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
-        var NODE_INDEX_SELF;
+        let NODE_INDEX_SELF;
         if (error) {
           return go(error);
         }
@@ -8064,8 +8064,8 @@
         return _fork(requestProfile, opts.depth);
       };
       loadScript = (path, go) => {
-        var onDone;
-        var onFail;
+        let onDone;
+        let onFail;
         onDone = (script, status) => go(null, {
           script,
           status
@@ -8087,8 +8087,8 @@
         return Flow.Async.async(() => f);
       };
       assist = function () {
-        var args;
-        var func;
+        let args;
+        let func;
         func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         if (func === void 0) {
           return _fork(proceed, h2oAssist, [_assistance]);
@@ -8232,21 +8232,21 @@
   }
 
   function coreUtils() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var EOL;
-    var describeCount;
-    var format1d0;
-    var formatBytes;
-    var formatClockTime;
-    var formatElapsedTime;
-    var formatMilliseconds;
-    var fromNow;
-    var highlight;
-    var multilineTextToHTML;
-    var padTime;
-    var sanitizeName;
-    var splitTime;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let EOL;
+    let describeCount;
+    let format1d0;
+    let formatBytes;
+    let formatClockTime;
+    let formatElapsedTime;
+    let formatMilliseconds;
+    let fromNow;
+    let highlight;
+    let multilineTextToHTML;
+    let padTime;
+    let sanitizeName;
+    let splitTime;
     describeCount = (count, singular, plural) => {
       if (!plural) {
         plural = `${ singular }s`;
@@ -8262,8 +8262,8 @@
     };
     fromNow = date => moment(date).fromNow();
     formatBytes = bytes => {
-      var i;
-      var sizes;
+      let i;
+      let sizes;
       sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
       if (bytes === 0) {
         return '0 Byte';
@@ -8273,10 +8273,10 @@
     };
     padTime = n => `${ n < 10 ? '0' : '' }${ n }`;
     splitTime = s => {
-      var hrs;
-      var mins;
-      var ms;
-      var secs;
+      let hrs;
+      let mins;
+      let ms;
+      let secs;
       ms = s % 1000;
       s = (s - ms) / 1000;
       secs = s % 60;
@@ -8286,21 +8286,21 @@
       return [hrs, mins, secs, ms];
     };
     formatMilliseconds = s => {
-      var hrs;
-      var mins;
-      var ms;
-      var secs;
-      var _ref;
+      let hrs;
+      let mins;
+      let ms;
+      let secs;
+      let _ref;
       _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
       return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
     };
     format1d0 = n => Math.round(n * 10) / 10;
     formatElapsedTime = s => {
-      var hrs;
-      var mins;
-      var ms;
-      var secs;
-      var _ref;
+      let hrs;
+      let mins;
+      let ms;
+      let secs;
+      let _ref;
       _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
       if (hrs !== 0) {
         return `${ format1d0((hrs * 60 + mins) / 60) }h`;
@@ -8336,29 +8336,29 @@
   }
 
   function localStorage() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var keyOf;
-    var list;
-    var purge;
-    var purgeAll;
-    var read;
-    var write;
-    var _ls;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let keyOf;
+    let list;
+    let purge;
+    let purgeAll;
+    let read;
+    let write;
+    let _ls;
     if (!(typeof window !== 'undefined' && window !== null ? window.localStorage : void 0)) {
       return;
     }
     _ls = window.localStorage;
     keyOf = (type, id) => `${ type }:${ id }`;
     list = type => {
-      var i;
-      var id;
-      var key;
-      var objs;
-      var t;
-      var _i;
-      var _ref;
-      var _ref1;
+      let i;
+      let id;
+      let key;
+      let objs;
+      let t;
+      let _i;
+      let _ref;
+      let _ref1;
       objs = [];
       for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
         key = _ls.key(i);
@@ -8370,7 +8370,7 @@
       return objs;
     };
     read = (type, id) => {
-      var raw;
+      let raw;
       if (raw = _ls.getobj(keyOf(type, id))) {
         return JSON.parse(raw);
       }
@@ -8384,15 +8384,15 @@
       return purgeAll(type);
     };
     purgeAll = type => {
-      var allKeys;
-      var i;
-      var key;
-      var _i;
-      var _len;
+      let allKeys;
+      let i;
+      let key;
+      let _i;
+      let _len;
       allKeys = (() => {
-        var _i;
-        var _ref;
-        var _results;
+        let _i;
+        let _ref;
+        let _results;
         _results = [];
         for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
           _results.push(_ls.key(i));
@@ -8415,14 +8415,14 @@
   }
 
   function knockout() {
-    var lodash = window._;
+    const lodash = window._;
     if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
       return;
     }
     ko.bindingHandlers.raw = {
       update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var $element;
-        var arg;
+        let $element;
+        let arg;
         arg = ko.unwrap(valueAccessor());
         if (arg) {
           $element = $(element);
@@ -8433,9 +8433,9 @@
     };
     ko.bindingHandlers.markdown = {
       update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var data;
-        var error;
-        var html;
+        let data;
+        let error;
+        let html;
         data = ko.unwrap(valueAccessor());
         try {
           html = marked(data || '');
@@ -8448,15 +8448,15 @@
     };
     ko.bindingHandlers.stringify = {
       update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var data;
+        let data;
         data = ko.unwrap(valueAccessor());
         return $(element).text(JSON.stringify(data, null, 2));
       }
     };
     ko.bindingHandlers.enterKey = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var $element;
-        var action;
+        let $element;
+        let action;
         if (action = ko.unwrap(valueAccessor())) {
           if (lodash.isFunction(action)) {
             $element = $(element);
@@ -8473,8 +8473,8 @@
     };
     ko.bindingHandlers.typeahead = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var $element;
-        var action;
+        let $element;
+        let action;
         if (action = ko.unwrap(valueAccessor())) {
           if (lodash.isFunction(action)) {
             $element = $(element);
@@ -8490,7 +8490,7 @@
     };
     ko.bindingHandlers.cursorPosition = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var arg;
+        let arg;
         if (arg = ko.unwrap(valueAccessor())) {
           arg.getCursorPosition = () => $(element).textrange('get', 'position');
         }
@@ -8498,9 +8498,9 @@
     };
     ko.bindingHandlers.autoResize = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var $el;
-        var arg;
-        var resize;
+        let $el;
+        let arg;
+        let resize;
         if (arg = ko.unwrap(valueAccessor())) {
           arg.autoResize = resize = () => lodash.defer(() => $el.css('height', 'auto').height(element.scrollHeight));
           $el = $(element).on('input', resize);
@@ -8510,16 +8510,16 @@
     };
     ko.bindingHandlers.scrollIntoView = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var $el;
-        var $viewport;
-        var arg;
+        let $el;
+        let $viewport;
+        let arg;
         if (arg = ko.unwrap(valueAccessor())) {
           $el = $(element);
           $viewport = $el.closest('.flow-box-notebook');
           arg.scrollIntoView = immediate => {
-            var height;
-            var position;
-            var top;
+            let height;
+            let position;
+            let top;
             if (immediate == null) {
               immediate = false;
             }
@@ -8538,14 +8538,14 @@
     };
     ko.bindingHandlers.collapse = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var $caretEl;
-        var $el;
-        var $nextEl;
-        var caretDown;
-        var caretEl;
-        var caretRight;
-        var isCollapsed;
-        var toggle;
+        let $caretEl;
+        let $el;
+        let $nextEl;
+        let caretDown;
+        let caretEl;
+        let caretRight;
+        let isCollapsed;
+        let toggle;
         caretDown = 'fa-caret-down';
         caretRight = 'fa-caret-right';
         isCollapsed = ko.unwrap(valueAccessor());
@@ -8578,8 +8578,8 @@
     };
     ko.bindingHandlers.dom = {
       update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var $element;
-        var arg;
+        let $element;
+        let arg;
         arg = ko.unwrap(valueAccessor());
         if (arg) {
           $element = $(element);
@@ -8590,7 +8590,7 @@
     };
     ko.bindingHandlers.dump = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var object;
+        let object;
         return object = ko.unwrap(valueAccessor());
       }
     };
@@ -8601,8 +8601,8 @@
     };
     ko.bindingHandlers.file = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var $file;
-        var file;
+        let $file;
+        let file;
         file = valueAccessor();
         if (file) {
           $file = $(element);
@@ -8614,9 +8614,9 @@
     };
     ko.bindingHandlers.codemirror = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var editor;
-        var internalTextArea;
-        var options;
+        let editor;
+        let internalTextArea;
+        let options;
         options = ko.unwrap(valueAccessor());
         editor = CodeMirror.fromTextArea(element, options);
         editor.on('change', cm => allBindings().value(cm.getValue()));
@@ -8639,15 +8639,15 @@
   }
 
   function html() {
-    var lodash = window._;
-    var Flow = window.Flow;
+    const lodash = window._;
+    const Flow = window.Flow;
     if ((typeof window !== 'undefined' && window !== null ? window.diecut : void 0) == null) {
       return;
     }
     Flow.HTML = {
       template: diecut,
       render(name, html) {
-        var el;
+        let el;
         el = document.createElement(name);
         if (html) {
           if (lodash.isString(html)) {
@@ -8662,18 +8662,18 @@
   }
 
   function format() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var Digits;
-    var formatDate;
-    var formatReal;
-    var formatTime;
-    var significantDigitsBeforeDecimal;
-    var __formatReal;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let Digits;
+    let formatDate;
+    let formatReal;
+    let formatTime;
+    let significantDigitsBeforeDecimal;
+    let __formatReal;
     significantDigitsBeforeDecimal = value => 1 + Math.floor(Math.log(Math.abs(value)) / Math.LN10);
     Digits = (digits, value) => {
-      var magnitude;
-      var sd;
+      let magnitude;
+      let sd;
       if (value === 0) {
         return 0;
       }
@@ -8695,8 +8695,8 @@
     };
     __formatReal = {};
     formatReal = precision => {
-      var cached;
-      var format;
+      let cached;
+      let format;
       format = (cached = __formatReal[precision]) ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${ precision }f`);
       return value => format(value);
     };
@@ -8709,12 +8709,12 @@
   }
 
   function error$1() {
-    var Flow = window.Flow;
-    var FlowError;
-    var __hasProp = {}.hasOwnProperty;
+    const Flow = window.Flow;
+    let FlowError;
+    const __hasProp = {}.hasOwnProperty;
 
-    var __extends = (child, parent) => {
-      var key;
+    const __extends = (child, parent) => {
+      let key;
       for (key in parent) {
         if (__hasProp.call(parent, key)) {
           child[key] = parent[key];
@@ -8732,8 +8732,8 @@
     FlowError = (_super => {
       __extends(FlowError, _super);
       function FlowError(message, cause) {
-        var error;
-        var _ref;
+        let error;
+        let _ref;
         this.message = message;
         this.cause = cause;
         this.name = 'FlowError';
@@ -8754,10 +8754,10 @@
   }
 
   function flowConfirmDialog(_, _message, _opts, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var accept;
-    var decline;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let accept;
+    let decline;
     if (_opts == null) {
       _opts = {};
     }
@@ -8780,9 +8780,9 @@
   }
 
   function flowAlertDialog(_, _message, _opts, _go) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var accept;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let accept;
     if (_opts == null) {
       _opts = {};
     }
@@ -8801,17 +8801,17 @@
   }
 
   function dialogs() {
-    var Flow = window.Flow;
-    var __slice = [].slice;
+    const Flow = window.Flow;
+    const __slice = [].slice;
     Flow.Dialogs = _ => {
-      var showDialog;
-      var _dialog;
+      let showDialog;
+      let _dialog;
       _dialog = Flow.Dataflow.signal(null);
       showDialog = (ctor, args, _go) => {
-        var $dialog;
-        var dialog;
-        var go;
-        var responded;
+        let $dialog;
+        let dialog;
+        let go;
+        let responded;
         responded = false;
         go = response => {
           if (!responded) {
@@ -8836,10 +8836,10 @@
         });
       };
       Flow.Dataflow.link(_.dialog, function () {
-        var args;
-        var ctor;
-        var go;
-        var _i;
+        let args;
+        let ctor;
+        let go;
+        let _i;
         ctor = arguments[0], args = arguments.length >= 3 ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), go = arguments[_i++];
         return showDialog(ctor, args, go);
       });
@@ -8857,31 +8857,31 @@
   const flowPrelude$34 = flowPreludeFunction();
 
   function dataflow() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var __slice = [].slice;
+    const lodash = window._;
+    const Flow = window.Flow;
+    const __slice = [].slice;
     Flow.Dataflow = (() => {
-      var createObservable;
-      var createObservableArray;
-      var createSignal;
-      var createSignals;
-      var createSlot;
-      var createSlots;
-      var isObservable;
-      var _act;
-      var _apply;
-      var _isSignal;
-      var _lift;
-      var _link;
-      var _merge;
-      var _react;
-      var _unlink;
+      let createObservable;
+      let createObservableArray;
+      let createSignal;
+      let createSignals;
+      let createSlot;
+      let createSlots;
+      let isObservable;
+      let _act;
+      let _apply;
+      let _isSignal;
+      let _lift;
+      let _link;
+      let _merge;
+      let _react;
+      let _unlink;
       createSlot = () => {
-        var arrow;
-        var self;
+        let arrow;
+        let self;
         arrow = null;
         self = function () {
-          var args;
+          let args;
           args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
           if (arrow) {
             return arrow.func.apply(null, args);
@@ -8909,16 +8909,16 @@
         return self;
       };
       createSlots = () => {
-        var arrows;
-        var self;
+        let arrows;
+        let self;
         arrows = [];
         self = function () {
-          var args;
+          let args;
           args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
           return lodash.map(arrows, arrow => arrow.func.apply(null, args));
         };
         self.subscribe = func => {
-          var arrow;
+          let arrow;
           console.assert(lodash.isFunction(func));
           arrows.push(arrow = {
             func,
@@ -8937,23 +8937,23 @@
         isObservable = ko.isObservable;
       } else {
         createObservable = initialValue => {
-          var arrows;
-          var currentValue;
-          var notifySubscribers;
-          var self;
+          let arrows;
+          let currentValue;
+          let notifySubscribers;
+          let self;
           arrows = [];
           currentValue = initialValue;
           notifySubscribers = (arrows, newValue) => {
-            var arrow;
-            var _i;
-            var _len;
+            let arrow;
+            let _i;
+            let _len;
             for (_i = 0, _len = arrows.length; _i < _len; _i++) {
               arrow = arrows[_i];
               arrow.func(newValue);
             }
           };
           self = function (newValue) {
-            var unchanged;
+            let unchanged;
             if (arguments.length === 0) {
               return currentValue;
             }
@@ -8964,7 +8964,7 @@
             }
           };
           self.subscribe = func => {
-            var arrow;
+            let arrow;
             console.assert(lodash.isFunction(func));
             arrows.push(arrow = {
               func,
@@ -8986,7 +8986,7 @@
         };
       }
       createSignal = function (value, equalityComparer) {
-        var observable;
+        let observable;
         if (arguments.length === 0) {
           return createSignal(void 0, flowPrelude$34.never);
         }
@@ -9005,10 +9005,10 @@
         return source.subscribe(func);
       };
       _unlink = arrows => {
-        var arrow;
-        var _i;
-        var _len;
-        var _results;
+        let arrow;
+        let _i;
+        let _len;
+        let _results;
         if (lodash.isArray(arrows)) {
           _results = [];
           for (_i = 0, _len = arrows.length; _i < _len; _i++) {
@@ -9023,26 +9023,26 @@
       };
       _apply = (sources, func) => func(...lodash.map(sources, source => source()));
       _act = (...args) => {
-        var func;
-        var sources;
-        var _i;
+        let func;
+        let sources;
+        let _i;
         sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
         _apply(sources, func);
         return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
       };
       _react = (...args) => {
-        var func;
-        var sources;
-        var _i;
+        let func;
+        let sources;
+        let _i;
         sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
         return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
       };
       _lift = (...args) => {
-        var evaluate;
-        var func;
-        var sources;
-        var target;
-        var _i;
+        let evaluate;
+        let func;
+        let sources;
+        let target;
+        let _i;
         sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
         evaluate = () => _apply(sources, func);
         target = createSignal(evaluate());
@@ -9050,11 +9050,11 @@
         return target;
       };
       _merge = (...args) => {
-        var evaluate;
-        var func;
-        var sources;
-        var target;
-        var _i;
+        let evaluate;
+        let func;
+        let sources;
+        let target;
+        let _i;
         sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []), target = args[_i++], func = args[_i++];
         evaluate = () => _apply(sources, func);
         target(evaluate());
@@ -9077,43 +9077,43 @@
   }
 
   function data() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var combineRanges;
-    var computeRange;
-    var createAbstractVariable;
-    var createCompiledPrototype;
-    var createFactor;
-    var createNumericVariable;
-    var createRecordConstructor;
-    var createTable;
-    var createVariable;
-    var factor;
-    var includeZeroInRange;
-    var nextPrototypeName;
-    var permute;
-    var _prototypeCache;
-    var _prototypeId;
-    var __slice = [].slice;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let combineRanges;
+    let computeRange;
+    let createAbstractVariable;
+    let createCompiledPrototype;
+    let createFactor;
+    let createNumericVariable;
+    let createRecordConstructor;
+    let createTable;
+    let createVariable;
+    let factor;
+    let includeZeroInRange;
+    let nextPrototypeName;
+    let permute;
+    let _prototypeCache;
+    let _prototypeId;
+    const __slice = [].slice;
     _prototypeId = 0;
     nextPrototypeName = () => `Map${ ++_prototypeId }`;
     _prototypeCache = {};
     createCompiledPrototype = attrs => {
-      var attr;
-      var cacheKey;
-      var i;
-      var inits;
-      var params;
-      var proto;
-      var prototypeName;
+      let attr;
+      let cacheKey;
+      let i;
+      let inits;
+      let params;
+      let proto;
+      let prototypeName;
       cacheKey = attrs.join('\0');
       if (proto = _prototypeCache[cacheKey]) {
         return proto;
       }
       params = (() => {
-        var _i;
-        var _ref;
-        var _results;
+        let _i;
+        let _ref;
+        let _results;
         _results = [];
         for (i = _i = 0, _ref = attrs.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
           _results.push(`a${ i }`);
@@ -9121,9 +9121,9 @@
         return _results;
       })();
       inits = (() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (i = _i = 0, _len = attrs.length; _i < _len; i = ++_i) {
           attr = attrs[i];
@@ -9135,11 +9135,11 @@
       return _prototypeCache[cacheKey] = new Function(`function ${ prototypeName }(${ params.join(',') }){${ inits.join('') }} return ${ prototypeName };`)();
     };
     createRecordConstructor = variables => {
-      var variable;
+      let variable;
       return createCompiledPrototype((() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = variables.length; _i < _len; _i++) {
           variable = variables[_i];
@@ -9149,17 +9149,17 @@
       })());
     };
     createTable = opts => {
-      var description;
-      var expand;
-      var fill;
-      var label;
-      var meta;
-      var rows;
-      var schema;
-      var variable;
-      var variables;
-      var _i;
-      var _len;
+      let description;
+      let expand;
+      let fill;
+      let label;
+      let meta;
+      let rows;
+      let schema;
+      let variable;
+      let variables;
+      let _i;
+      let _len;
       label = opts.label, description = opts.description, variables = opts.variables, rows = opts.rows, meta = opts.meta;
       if (!description) {
         description = 'No description available.';
@@ -9171,11 +9171,11 @@
       }
       fill = (i, go) => {
         _fill(i, (error, result) => {
-          var index;
-          var startIndex;
-          var value;
-          var _j;
-          var _len1;
+          let index;
+          let startIndex;
+          let value;
+          let _j;
+          let _len1;
           if (error) {
             return go(error);
           }
@@ -9188,11 +9188,11 @@
         });
       };
       expand = (...args) => {
-        var type;
-        var types;
-        var _j;
-        var _len1;
-        var _results;
+        let type;
+        let types;
+        let _j;
+        let _len1;
+        let _results;
         types = args.length >= 1 ? __slice.call(args, 0) : [];
         _results = [];
         for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
@@ -9215,8 +9215,8 @@
       };
     };
     includeZeroInRange = range => {
-      var hi;
-      var lo;
+      let hi;
+      let lo;
       lo = range[0], hi = range[1];
       if (lo > 0 && hi > 0) {
         return [0, hi];
@@ -9226,13 +9226,13 @@
       return range;
     };
     combineRanges = (...args) => {
-      var hi;
-      var lo;
-      var range;
-      var ranges;
-      var value;
-      var _i;
-      var _len;
+      let hi;
+      let lo;
+      let range;
+      let ranges;
+      let value;
+      let _i;
+      let _len;
       ranges = args.length >= 1 ? __slice.call(args, 0) : [];
       lo = Number.POSITIVE_INFINITY;
       hi = Number.NEGATIVE_INFINITY;
@@ -9248,12 +9248,12 @@
       return [lo, hi];
     };
     computeRange = (rows, attr) => {
-      var hi;
-      var lo;
-      var row;
-      var value;
-      var _i;
-      var _len;
+      let hi;
+      let lo;
+      let row;
+      let value;
+      let _i;
+      let _len;
       if (rows.length) {
         lo = Number.POSITIVE_INFINITY;
         hi = Number.NEGATIVE_INFINITY;
@@ -9272,11 +9272,11 @@
       return [-1, 1];
     };
     permute = (array, indices) => {
-      var i;
-      var index;
-      var permuted;
-      var _i;
-      var _len;
+      let i;
+      let index;
+      let permuted;
+      let _i;
+      let _len;
       permuted = new Array(array.length);
       for (i = _i = 0, _len = indices.length; _i < _len; i = ++_i) {
         index = indices[i];
@@ -9292,7 +9292,7 @@
       read: _read
     });
     createNumericVariable = (_label, _domain, _format, _read) => {
-      var self;
+      let self;
       self = createAbstractVariable(_label, 'Number', _domain || [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY], _format, _read);
       if (!self.read) {
         self.read = datum => {
@@ -9314,13 +9314,13 @@
       return createAbstractVariable(_label, _type, _domain, _format, _read);
     };
     createFactor = (_label, _domain, _format, _read) => {
-      var level;
-      var self;
-      var _i;
-      var _id;
-      var _len;
-      var _levels;
-      var _ref;
+      let level;
+      let self;
+      let _i;
+      let _id;
+      let _len;
+      let _levels;
+      let _ref;
       self = createAbstractVariable(_label, 'Factor', _domain || [], _format, _read);
       _id = 0;
       _levels = {};
@@ -9333,7 +9333,7 @@
       }
       if (!self.read) {
         self.read = datum => {
-          var id;
+          let id;
           level = datum === void 0 || datum === null ? 'null' : datum;
           if (void 0 === (id = _levels[level])) {
             _levels[level] = id = _id++;
@@ -9345,15 +9345,15 @@
       return self;
     };
     factor = array => {
-      var data;
-      var domain;
-      var i;
-      var id;
-      var level;
-      var levels;
-      var _i;
-      var _id;
-      var _len;
+      let data;
+      let domain;
+      let i;
+      let id;
+      let level;
+      let levels;
+      let _i;
+      let _id;
+      let _len;
       _id = 0;
       levels = {};
       domain = [];
@@ -9392,26 +9392,26 @@
   const flowPrelude$35 = flowPreludeFunction();
 
   function async() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createBuffer;
-    var iterate;
-    var pipe;
-    var _applicate;
-    var _async;
-    var _find;
-    var _find$2;
-    var _find$3;
-    var _fork;
-    var _get;
-    var _isFuture;
-    var _join;
-    var _noop;
-    var __slice = [].slice;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createBuffer;
+    let iterate;
+    let pipe;
+    let _applicate;
+    let _async;
+    let _find;
+    let _find$2;
+    let _find$3;
+    let _fork;
+    let _get;
+    let _isFuture;
+    let _join;
+    let _noop;
+    const __slice = [].slice;
     createBuffer = array => {
-      var buffer;
-      var _array;
-      var _go;
+      let buffer;
+      let _array;
+      let _go;
       _array = array || [];
       _go = null;
       buffer = element => {
@@ -9436,12 +9436,12 @@
       }
     };
     _fork = (f, args) => {
-      var self;
+      let self;
       if (!lodash.isFunction(f)) {
         throw new Error('Not a function.');
       }
       self = go => {
-        var canGo;
+        let canGo;
         canGo = lodash.isFunction(go);
         if (self.settled) {
           if (self.rejected) {
@@ -9502,14 +9502,14 @@
       return false;
     };
     _join = (args, go) => {
-      var arg;
-      var i;
-      var _actual;
-      var _i;
-      var _len;
-      var _results;
-      var _settled;
-      var _tasks;
+      let arg;
+      let i;
+      let _actual;
+      let _i;
+      let _len;
+      let _results;
+      let _settled;
+      let _tasks;
       if (args.length === 0) {
         return go(null, []);
       }
@@ -9549,16 +9549,16 @@
       }));
     };
     pipe = tasks => {
-      var next;
-      var _tasks;
+      let next;
+      let _tasks;
       _tasks = tasks.slice(0);
       next = (args, go) => {
-        var task;
+        let task;
         task = _tasks.shift();
         if (task) {
           return task(...args.concat(function () {
-            var error;
-            var results;
+            let error;
+            let results;
             error = arguments[0], results = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
             if (error) {
               return go(error);
@@ -9569,21 +9569,21 @@
         return go(...[null].concat(args));
       };
       return function () {
-        var args;
-        var go;
-        var _i;
+        let args;
+        let go;
+        let _i;
         args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
         return next(args, go);
       };
     };
     iterate = tasks => {
-      var next;
-      var _results;
-      var _tasks;
+      let next;
+      let _results;
+      let _tasks;
       _tasks = tasks.slice(0);
       _results = [];
       next = go => {
-        var task;
+        let task;
         task = _tasks.shift();
         if (task) {
           return task((error, result) => {
@@ -9599,16 +9599,16 @@
       return go => next(go);
     };
     _async = function () {
-      var args;
-      var f;
-      var later;
+      let args;
+      let f;
+      let later;
       f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
       later = function () {
-        var args;
-        var error;
-        var go;
-        var result;
-        var _i;
+        let args;
+        let error;
+        let go;
+        let result;
+        let _i;
         args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
         try {
           result = f(...args);
@@ -9621,9 +9621,9 @@
       return _fork(later, args);
     };
     _find$3 = (attr, prop, obj) => {
-      var v;
-      var _i;
-      var _len;
+      let v;
+      let _i;
+      let _len;
       if (_isFuture(obj)) {
         return _async(_find$3, attr, prop, obj);
       } else if (lodash.isArray(obj)) {
@@ -9647,13 +9647,13 @@
       }
     };
     _find = function () {
-      var a;
-      var args;
-      var b;
-      var c;
-      var ta;
-      var tb;
-      var tc;
+      let a;
+      let args;
+      let b;
+      let c;
+      let ta;
+      let tb;
+      let tc;
       args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
       switch (args.length) {
         case 3:
@@ -9710,12 +9710,12 @@
   const flowPrelude$36 = flowPreludeFunction();
 
   function objectBrowser() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var isExpandable;
-    var preview;
-    var previewArray;
-    var previewObject;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let isExpandable;
+    let preview;
+    let previewArray;
+    let previewObject;
     isExpandable = type => {
       switch (type) {
         case 'null':
@@ -9733,15 +9733,15 @@
       }
     };
     previewArray = array => {
-      var element;
-      var ellipsis;
-      var previews;
+      let element;
+      let ellipsis;
+      let previews;
       ellipsis = array.length > 5 ? ', ...' : '';
       previews = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = lodash.head(array, 5);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -9753,11 +9753,11 @@
       return `[${ previews.join(', ') }${ ellipsis }]`;
     };
     previewObject = object => {
-      var count;
-      var ellipsis;
-      var key;
-      var previews;
-      var value;
+      let count;
+      let ellipsis;
+      let key;
+      let previews;
+      let value;
       count = 0;
       previews = [];
       ellipsis = '';
@@ -9777,7 +9777,7 @@
       return `{${ previews.join(', ') }${ ellipsis }}`;
     };
     preview = (element, recurse) => {
-      var type;
+      let type;
       if (recurse == null) {
         recurse = false;
       }
@@ -9808,18 +9808,18 @@
       }
     };
     Flow.ObjectBrowserElement = (key, object) => {
-      var toggle;
-      var _canExpand;
-      var _expansions;
-      var _isExpanded;
-      var _type;
+      let toggle;
+      let _canExpand;
+      let _expansions;
+      let _isExpanded;
+      let _type;
       _expansions = Flow.Dataflow.signal(null);
       _isExpanded = Flow.Dataflow.signal(false);
       _type = flowPrelude$36.typeOf(object);
       _canExpand = isExpandable(_type);
       toggle = () => {
-        var expansions;
-        var value;
+        let expansions;
+        let value;
         if (!_canExpand) {
           return;
         }
@@ -9856,49 +9856,49 @@
   }
 
   function help() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var _catalog;
-    var _homeContent;
-    var _homeMarkdown;
-    var _index;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let _catalog;
+    let _homeContent;
+    let _homeMarkdown;
+    let _index;
     _catalog = null;
     _index = {};
     _homeContent = null;
     _homeMarkdown = '<blockquote>\nUsing Flow for the first time?\n<br/>\n<div style=\'margin-top:10px\'>\n  <button type=\'button\' data-action=\'get-flow\' data-pack-name=\'examples\' data-flow-name=\'QuickStartVideos.flow\' class=\'flow-button\'><i class=\'fa fa-file-movie-o\'></i><span>Quickstart Videos</span>\n  </button>\n</div>\n</blockquote>\n\nOr, <a href=\'#\' data-action=\'get-pack\' data-pack-name=\'examples\'>view example Flows</a> to explore and learn H<sub>2</sub>O.\n\n###### Star H2O on Github!\n\n<iframe src="https://ghbtns.com/github-btn.html?user=h2oai&repo=h2o-3&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>\n\n###### General\n\n%HELP_TOPICS%\n\n###### Examples\n\nFlow packs are a great way to explore and learn H<sub>2</sub>O. Try out these Flows and run them in your browser.<br/><a href=\'#\' data-action=\'get-packs\'>Browse installed packs...</a>\n\n###### H<sub>2</sub>O REST API\n\n- <a href=\'#\' data-action=\'endpoints\'>Routes</a>\n- <a href=\'#\' data-action=\'schemas\'>Schemas</a>\n';
     Flow.Help = _ => {
-      var buildToc;
-      var buildTopics;
-      var displayEndpoint;
-      var displayEndpoints;
-      var displayFlows;
-      var displayHtml;
-      var displayPacks;
-      var displaySchema;
-      var displaySchemas;
-      var fixImageSources;
-      var goBack;
-      var goForward;
-      var goHome;
-      var goTo;
-      var initialize;
-      var performAction;
-      var _canGoBack;
-      var _canGoForward;
-      var _content;
-      var _history;
-      var _historyIndex;
+      let buildToc;
+      let buildTopics;
+      let displayEndpoint;
+      let displayEndpoints;
+      let displayFlows;
+      let displayHtml;
+      let displayPacks;
+      let displaySchema;
+      let displaySchemas;
+      let fixImageSources;
+      let goBack;
+      let goForward;
+      let goHome;
+      let goTo;
+      let initialize;
+      let performAction;
+      let _canGoBack;
+      let _canGoForward;
+      let _content;
+      let _history;
+      let _historyIndex;
       _content = Flow.Dataflow.signal(null);
       _history = [];
       _historyIndex = -1;
       _canGoBack = Flow.Dataflow.signal(false);
       _canGoForward = Flow.Dataflow.signal(false);
       goTo = index => {
-        var content;
+        let content;
         content = _history[_historyIndex = index];
         $('a, button', $(content)).each(function (i) {
-          var $a;
-          var action;
+          let $a;
+          let action;
           $a = $(this);
           if (action = $a.attr('data-action')) {
             return $a.click(() => performAction(action, $a));
@@ -9928,20 +9928,20 @@
       };
       fixImageSources = html => html.replace(/\s+src\s*=\s*"images\//g, ' src="help/images/');
       performAction = (action, $el) => {
-        var packName;
-        var routeIndex;
-        var schemaName;
-        var topic;
+        let packName;
+        let routeIndex;
+        let schemaName;
+        let topic;
         switch (action) {
           case 'help':
             topic = _index[$el.attr('data-topic')];
             _.requestHelpContent(topic.name, (error, html) => {
-              var contents;
-              var div;
-              var h5;
-              var h6;
-              var mark;
-              var _ref;
+              let contents;
+              let div;
+              let h5;
+              let h6;
+              let mark;
+              let _ref;
               _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6'), div = _ref[0], mark = _ref[1], h5 = _ref[2], h6 = _ref[3];
               contents = [mark('Help'), h5(topic.title), fixImageSources(div(html))];
               if (topic.children.length) {
@@ -9974,7 +9974,7 @@
               acceptCaption: 'Load Notebook',
               declineCaption: 'Cancel'
             }, accept => {
-              var flowName;
+              let flowName;
               if (accept) {
                 packName = $el.attr('data-pack-name');
                 flowName = $el.attr('data-flow-name');
@@ -10020,17 +10020,17 @@
         }
       };
       buildToc = nodes => {
-        var a;
-        var li;
-        var ul;
-        var _ref;
+        let a;
+        let li;
+        let ul;
+        let _ref;
         _ref = Flow.HTML.template('ul', 'li', 'a href=\'#\' data-action=\'help\' data-topic=\'$1\''), ul = _ref[0], li = _ref[1], a = _ref[2];
         return ul(lodash.map(nodes, node => li(a(node.title, node.name))));
       };
       buildTopics = (index, topics) => {
-        var topic;
-        var _i;
-        var _len;
+        let topic;
+        let _i;
+        let _len;
         for (_i = 0, _len = topics.length; _i < _len; _i++) {
           topic = topics[_i];
           index[topic.name] = topic;
@@ -10040,40 +10040,40 @@
         }
       };
       displayPacks = packNames => {
-        var a;
-        var div;
-        var h5;
-        var i;
-        var mark;
-        var p;
-        var _ref;
+        let a;
+        let div;
+        let h5;
+        let i;
+        let mark;
+        let p;
+        let _ref;
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-folder-o', 'a href=\'#\' data-action=\'get-pack\' data-pack-name=\'$1\''), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], i = _ref[4], a = _ref[5];
         displayHtml(Flow.HTML.render('div', div([mark('Packs'), h5('Installed Packs'), div(lodash.map(packNames, packName => p([i(), a(packName, packName)])))])));
       };
       displayFlows = (packName, flowNames) => {
-        var a;
-        var div;
-        var h5;
-        var i;
-        var mark;
-        var p;
-        var _ref;
+        let a;
+        let div;
+        let h5;
+        let i;
+        let mark;
+        let p;
+        let _ref;
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-file-text-o', `a href=\'#\' data-action=\'get-flow\' data-pack-name=\'${ packName }\' data-flow-name=\'$1\'`), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], i = _ref[4], a = _ref[5];
         displayHtml(Flow.HTML.render('div', div([mark('Pack'), h5(packName), div(lodash.map(flowNames, flowName => p([i(), a(flowName, flowName)])))])));
       };
       displayEndpoints = routes => {
-        var action;
-        var code;
-        var div;
-        var els;
-        var h5;
-        var mark;
-        var p;
-        var route;
-        var routeIndex;
-        var _i;
-        var _len;
-        var _ref;
+        let action;
+        let code;
+        let div;
+        let els;
+        let h5;
+        let mark;
+        let p;
+        let route;
+        let routeIndex;
+        let _i;
+        let _len;
+        let _ref;
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'a href=\'#\' data-action=\'endpoint\' data-index=\'$1\'', 'code'), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], action = _ref[4], code = _ref[5];
         els = [mark('API'), h5('List of Routes')];
         for (routeIndex = _i = 0, _len = routes.length; _i < _len; routeIndex = ++_i) {
@@ -10084,35 +10084,35 @@
       };
       goHome = () => displayHtml(Flow.HTML.render('div', _homeContent));
       displayEndpoint = route => {
-        var action;
-        var code;
-        var div;
-        var h5;
-        var h6;
-        var mark;
-        var p;
-        var _ref;
-        var _ref1;
+        let action;
+        let code;
+        let div;
+        let h5;
+        let h6;
+        let mark;
+        let p;
+        let _ref;
+        let _ref1;
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'', 'code'), div = _ref[0], mark = _ref[1], h5 = _ref[2], h6 = _ref[3], p = _ref[4], action = _ref[5], code = _ref[6];
         return displayHtml(Flow.HTML.render('div', div([mark('Route'), h5(route.url_pattern), h6('Method'), p(code(route.http_method)), h6('Summary'), p(route.summary), h6('Parameters'), p(((_ref1 = route.path_params) != null ? _ref1.length : void 0) ? route.path_params.join(', ') : '-'), h6('Input Schema'), p(action(code(route.input_schema), route.input_schema)), h6('Output Schema'), p(action(code(route.output_schema), route.output_schema))])));
       };
       displaySchemas = schemas => {
-        var action;
-        var code;
-        var div;
-        var els;
-        var h5;
-        var li;
-        var mark;
-        var schema;
-        var ul;
-        var variable;
-        var _ref;
+        let action;
+        let code;
+        let div;
+        let els;
+        let h5;
+        let li;
+        let mark;
+        let schema;
+        let ul;
+        let variable;
+        let _ref;
         _ref = Flow.HTML.template('div', 'h5', 'ul', 'li', 'var', 'mark', 'code', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\''), div = _ref[0], h5 = _ref[1], ul = _ref[2], li = _ref[3], variable = _ref[4], mark = _ref[5], code = _ref[6], action = _ref[7];
         els = [mark('API'), h5('List of Schemas'), ul((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = schemas.length; _i < _len; _i++) {
             schema = schemas[_i];
@@ -10123,20 +10123,20 @@
         return displayHtml(Flow.HTML.render('div', div(els)));
       };
       displaySchema = schema => {
-        var code;
-        var content;
-        var div;
-        var field;
-        var h5;
-        var h6;
-        var mark;
-        var p;
-        var small;
-        var variable;
-        var _i;
-        var _len;
-        var _ref;
-        var _ref1;
+        let code;
+        let content;
+        let div;
+        let field;
+        let h5;
+        let h6;
+        let mark;
+        let p;
+        let small;
+        let variable;
+        let _i;
+        let _len;
+        let _ref;
+        let _ref1;
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'code', 'var', 'small'), div = _ref[0], mark = _ref[1], h5 = _ref[2], h6 = _ref[3], p = _ref[4], code = _ref[5], variable = _ref[6], small = _ref[7];
         content = [mark('Schema'), h5(`${ schema.name } (${ lodash.escape(schema.type) })`), h6('Fields')];
         _ref1 = schema.fields;
@@ -10171,7 +10171,7 @@
   }
 
   function flowHeading(_, level) {
-    var render;
+    let render;
     render = (input, output) => {
       output.data({
         text: input.trim() || '(Untitled)',
@@ -10184,35 +10184,35 @@
   }
 
   function flowCoffeescriptKernel() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var coalesceScopes;
-    var compileCoffeescript;
-    var compileJavascript;
-    var createGlobalScope;
-    var createLocalScope;
-    var createRootScope;
-    var deleteAstNode;
-    var executeJavascript;
-    var generateJavascript;
-    var identifyDeclarations;
-    var parseDeclarations;
-    var parseJavascript;
-    var removeHoistedDeclarations;
-    var rewriteJavascript;
-    var safetyWrapCoffeescript;
-    var traverseJavascript;
-    var traverseJavascriptScoped;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let coalesceScopes;
+    let compileCoffeescript;
+    let compileJavascript;
+    let createGlobalScope;
+    let createLocalScope;
+    let createRootScope;
+    let deleteAstNode;
+    let executeJavascript;
+    let generateJavascript;
+    let identifyDeclarations;
+    let parseDeclarations;
+    let parseJavascript;
+    let removeHoistedDeclarations;
+    let rewriteJavascript;
+    let safetyWrapCoffeescript;
+    let traverseJavascript;
+    let traverseJavascriptScoped;
     safetyWrapCoffeescript = guid => (cs, go) => {
-      var block;
-      var lines;
+      let block;
+      let lines;
       lines = cs.replace(/[\n\r]/g, '\n').split('\n');
       block = lodash.map(lines, line => `  ${ line }`);
       block.unshift(`_h2o_results_[\'${ guid }\'].result do ->`);
       return go(null, block.join('\n'));
     };
     compileCoffeescript = (cs, go) => {
-      var error;
+      let error;
       try {
         return go(null, CoffeeScript.compile(cs, { bare: true }));
       } catch (_error) {
@@ -10221,7 +10221,7 @@
       }
     };
     parseJavascript = (js, go) => {
-      var error;
+      let error;
       try {
         return go(null, esprima.parse(js));
       } catch (_error) {
@@ -10230,17 +10230,17 @@
       }
     };
     identifyDeclarations = node => {
-      var declaration;
+      let declaration;
       if (!node) {
         return null;
       }
       switch (node.type) {
         case 'VariableDeclaration':
           return (() => {
-            var _i;
-            var _len;
-            var _ref;
-            var _results;
+            let _i;
+            let _len;
+            let _ref;
+            let _results;
             _ref = node.declarations;
             _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -10271,15 +10271,15 @@
       return null;
     };
     parseDeclarations = block => {
-      var declaration;
-      var declarations;
-      var identifiers;
-      var node;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
-      var _ref;
+      let declaration;
+      let declarations;
+      let identifiers;
+      let node;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      let _ref;
       identifiers = [];
       _ref = block.body;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -10294,8 +10294,8 @@
       return lodash.indexBy(identifiers, identifier => identifier.name);
     };
     traverseJavascript = (parent, key, node, f) => {
-      var child;
-      var i;
+      let child;
+      let i;
       if (lodash.isArray(node)) {
         i = node.length;
         while (i--) {
@@ -10325,11 +10325,11 @@
       }
     };
     createLocalScope = node => {
-      var localScope;
-      var param;
-      var _i;
-      var _len;
-      var _ref;
+      let localScope;
+      let param;
+      let _i;
+      let _len;
+      let _ref;
       localScope = parseDeclarations(node.body);
       _ref = node.params;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -10344,13 +10344,13 @@
       return localScope;
     };
     coalesceScopes = scopes => {
-      var currentScope;
-      var i;
-      var identifier;
-      var name;
-      var scope;
-      var _i;
-      var _len;
+      let currentScope;
+      let i;
+      let identifier;
+      let name;
+      let scope;
+      let _i;
+      let _len;
       currentScope = {};
       for (i = _i = 0, _len = scopes.length; _i < _len; i = ++_i) {
         scope = scopes[i];
@@ -10373,9 +10373,9 @@
       return currentScope;
     };
     traverseJavascriptScoped = (scopes, parentScope, parent, key, node, f) => {
-      var child;
-      var currentScope;
-      var isNewScope;
+      let child;
+      let currentScope;
+      let isNewScope;
       isNewScope = node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
       if (isNewScope) {
         scopes.push(createLocalScope(node));
@@ -10397,9 +10397,9 @@
       }
     };
     createRootScope = sandbox => function (program, go) {
-      var error;
-      var name;
-      var rootScope;
+      let error;
+      let name;
+      let rootScope;
       try {
         rootScope = parseDeclarations(program.body[0].expression.arguments[0].callee.body);
         for (name in sandbox.context) {
@@ -10417,10 +10417,10 @@
       }
     };
     removeHoistedDeclarations = (rootScope, program, go) => {
-      var error;
+      let error;
       try {
         traverseJavascript(null, null, program, (parent, key, node) => {
-          var declarations;
+          let declarations;
           if (node.type === 'VariableDeclaration') {
             declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
             if (declarations.length === 0) {
@@ -10436,9 +10436,9 @@
       }
     };
     createGlobalScope = (rootScope, routines) => {
-      var globalScope;
-      var identifier;
-      var name;
+      let globalScope;
+      let identifier;
+      let name;
       globalScope = {};
       for (name in rootScope) {
         if ({}.hasOwnProperty.call(rootScope, name)) {
@@ -10457,12 +10457,12 @@
       return globalScope;
     };
     rewriteJavascript = sandbox => (rootScope, program, go) => {
-      var error;
-      var globalScope;
+      let error;
+      let globalScope;
       globalScope = createGlobalScope(rootScope, sandbox.routines);
       try {
         traverseJavascriptScoped([globalScope], globalScope, null, null, program, (globalScope, parent, key, node) => {
-          var identifier;
+          let identifier;
           if (node.type === 'Identifier') {
             if (parent.type === 'VariableDeclarator' && key === 'id') {
               return;
@@ -10494,7 +10494,7 @@
       }
     };
     generateJavascript = (program, go) => {
-      var error;
+      let error;
       try {
         return go(null, escodegen.generate(program));
       } catch (_error) {
@@ -10503,8 +10503,8 @@
       }
     };
     compileJavascript = (js, go) => {
-      var closure;
-      var error;
+      let closure;
+      let error;
       try {
         closure = new Function('h2o', '_h2o_context_', '_h2o_results_', 'print', js);
         return go(null, closure);
@@ -10514,7 +10514,7 @@
       }
     };
     executeJavascript = (sandbox, print) => (closure, go) => {
-      var error;
+      let error;
       try {
         return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
       } catch (_error) {
@@ -10536,12 +10536,12 @@
   }
 
   function flowCoffeescript(_, guid, sandbox) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var isRoutine;
-    var print;
-    var render;
-    var _kernel;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let isRoutine;
+    let print;
+    let render;
+    let _kernel;
     _kernel = flowCoffeescriptKernel();
     print = arg => {
       if (arg !== print) {
@@ -10550,9 +10550,9 @@
       return print;
     };
     isRoutine = f => {
-      var name;
-      var routine;
-      var _ref;
+      let name;
+      let routine;
+      let _ref;
       _ref = sandbox.routines;
       for (name in _ref) {
         if ({}.hasOwnProperty.call(_ref, name)) {
@@ -10565,10 +10565,10 @@
       return false;
     };
     render = (input, output) => {
-      var cellResult;
-      var evaluate;
-      var outputBuffer;
-      var tasks;
+      let cellResult;
+      let evaluate;
+      let outputBuffer;
+      let tasks;
       sandbox.results[guid] = cellResult = {
         result: Flow.Dataflow.signal(null),
         outputs: outputBuffer = Flow.Async.createBuffer([])
@@ -10576,7 +10576,7 @@
       evaluate = ft => {
         if (ft != null ? ft.isFuture : void 0) {
           return ft((error, result) => {
-            var _ref;
+            let _ref;
             if (error) {
               output.error(new Flow.Error('Error evaluating cell', error));
               return output.end();
@@ -10592,7 +10592,7 @@
       outputBuffer.subscribe(evaluate);
       tasks = [_kernel.safetyWrapCoffeescript(guid), _kernel.compileCoffeescript, _kernel.parseJavascript, _kernel.createRootScope(sandbox), _kernel.removeHoistedDeclarations, _kernel.rewriteJavascript(sandbox), _kernel.generateJavascript, _kernel.compileJavascript, _kernel.executeJavascript(sandbox, print)];
       return Flow.Async.pipe(tasks)(input, error => {
-        var result;
+        let result;
         if (error) {
           output.error(error);
         }
@@ -10611,7 +10611,7 @@
   }
 
   function flowRaw(_) {
-    var render;
+    let render;
     render = (input, output) => {
       output.data({
         text: input,
@@ -10624,19 +10624,19 @@
   }
 
   function flowStatus(_) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var defaultMessage;
-    var onStatus;
-    var _connections;
-    var _isBusy;
-    var _message;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let defaultMessage;
+    let onStatus;
+    let _connections;
+    let _isBusy;
+    let _message;
     defaultMessage = 'Ready';
     _message = Flow.Dataflow.signal(defaultMessage);
     _connections = Flow.Dataflow.signal(0);
     _isBusy = Flow.Dataflow.lift(_connections, connections => connections > 0);
     onStatus = (category, type, data) => {
-      var connections;
+      let connections;
       console.debug('Status:', category, type, data);
       switch (category) {
         case 'server':
@@ -10667,23 +10667,23 @@
   }
 
   function flowBrowser(_) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var createNotebookView;
-    var loadNotebooks;
-    var _docs;
-    var _hasDocs;
-    var _sortedDocs;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let createNotebookView;
+    let loadNotebooks;
+    let _docs;
+    let _hasDocs;
+    let _sortedDocs;
     _docs = Flow.Dataflow.signals([]);
     _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
     _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
     createNotebookView = notebook => {
-      var load;
-      var purge;
-      var self;
-      var _date;
-      var _fromNow;
-      var _name;
+      let load;
+      let purge;
+      let self;
+      let _date;
+      let _fromNow;
+      let _name;
       _name = notebook.name;
       _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
       _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
@@ -10701,7 +10701,7 @@
       }, accept => {
         if (accept) {
           return _.requestDeleteObject('notebook', _name, error => {
-            var _ref;
+            let _ref;
             if (error) {
               return _alert((_ref = error.message) != null ? _ref : error);
             }
@@ -10737,20 +10737,20 @@
   }
 
   function flowSidebar(_, cells) {
-    var Flow = window.Flow;
-    var switchToBrowser;
-    var switchToClipboard;
-    var switchToHelp;
-    var switchToOutline;
-    var _browser;
-    var _clipboard;
-    var _help;
-    var _isBrowserMode;
-    var _isClipboardMode;
-    var _isHelpMode;
-    var _isOutlineMode;
-    var _mode;
-    var _outline;
+    const Flow = window.Flow;
+    let switchToBrowser;
+    let switchToClipboard;
+    let switchToHelp;
+    let switchToOutline;
+    let _browser;
+    let _clipboard;
+    let _help;
+    let _isBrowserMode;
+    let _isClipboardMode;
+    let _isHelpMode;
+    let _isOutlineMode;
+    let _mode;
+    let _outline;
     _mode = Flow.Dataflow.signal('help');
     _outline = flowOutline(_, cells);
     _isOutlineMode = Flow.Dataflow.lift(_mode, mode => mode === 'outline');
@@ -10787,36 +10787,36 @@
   }
 
   function flowCell(_, _renderers, type, input) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var activate;
-    var clear;
-    var clip;
-    var execute;
-    var navigate;
-    var select;
-    var self;
-    var toggleInput;
-    var toggleOutput;
-    var _actions;
-    var _errors;
-    var _guid;
-    var _hasError;
-    var _hasInput;
-    var _hasOutput;
-    var _input;
-    var _isActive;
-    var _isBusy;
-    var _isCode;
-    var _isInputVisible;
-    var _isOutputHidden;
-    var _isReady;
-    var _isSelected;
-    var _outputs;
-    var _render;
-    var _result;
-    var _time;
-    var _type;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let activate;
+    let clear;
+    let clip;
+    let execute;
+    let navigate;
+    let select;
+    let self;
+    let toggleInput;
+    let toggleOutput;
+    let _actions;
+    let _errors;
+    let _guid;
+    let _hasError;
+    let _hasInput;
+    let _hasOutput;
+    let _input;
+    let _isActive;
+    let _isBusy;
+    let _isCode;
+    let _isInputVisible;
+    let _isOutputHidden;
+    let _isReady;
+    let _isSelected;
+    let _outputs;
+    let _render;
+    let _result;
+    let _time;
+    let _type;
     if (type == null) {
       type = 'cs';
     }
@@ -10878,8 +10878,8 @@
       }
     };
     execute = go => {
-      var render;
-      var startTime;
+      let render;
+      let startTime;
       startTime = Date.now();
       _time(`Started at ${ Flow.Util.formatClockTime(startTime) }`);
       input = _input().trim();
@@ -10971,15 +10971,15 @@
   }
 
   function flowFileOpenDialog(_, _go) {
-    var Flow = window.Flow;
-    var accept;
-    var checkIfNameIsInUse;
-    var decline;
-    var uploadFile;
-    var _canAccept;
-    var _file;
-    var _form;
-    var _overwrite;
+    const Flow = window.Flow;
+    let accept;
+    let checkIfNameIsInUse;
+    let decline;
+    let uploadFile;
+    let _canAccept;
+    let _file;
+    let _form;
+    let _overwrite;
     _overwrite = Flow.Dataflow.signal(false);
     _form = Flow.Dataflow.signal(null);
     _file = Flow.Dataflow.signal(null);
@@ -10995,8 +10995,8 @@
       filename
     }));
     accept = () => {
-      var basename;
-      var file;
+      let basename;
+      let file;
       if (file = _file()) {
         basename = H2O.Util.getFileBaseName(file.name, '.flow');
         if (_overwrite()) {
@@ -11023,12 +11023,12 @@
   }
 
   function flowFileUploadDialog(_, _go) {
-    var Flow = window.Flow;
-    var accept;
-    var decline;
-    var uploadFile;
-    var _file;
-    var _form;
+    const Flow = window.Flow;
+    let accept;
+    let decline;
+    let uploadFile;
+    let _file;
+    let _form;
     _form = Flow.Dataflow.signal(null);
     _file = Flow.Dataflow.signal(null);
     uploadFile = key => _.requestUploadFile(key, new FormData(_form()), (error, result) => _go({
@@ -11036,7 +11036,7 @@
       result
     }));
     accept = () => {
-      var file;
+      let file;
       if (file = _file()) {
         return uploadFile(file.name);
       }
@@ -11052,9 +11052,9 @@
   }
 
   function flowMarkdown(_) {
-    var render;
+    let render;
     render = (input, output) => {
-      var error;
+      let error;
       try {
         return output.data({
           html: marked(input.trim() || '(No content)'),
@@ -11074,9 +11074,9 @@
   const flowPrelude$37 = flowPreludeFunction();
 
   function notebook() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var __slice = [].slice;
+    const lodash = window._;
+    const Flow = window.Flow;
+    const __slice = [].slice;
     Flow.Renderers = (_, _sandbox) => ({
       h1() {
         return flowHeading(_, 'h1');
@@ -11119,128 +11119,128 @@
       }
     });
     Flow.Notebook = (_, _renderers) => {
-      var appendCell;
-      var appendCellAndRun;
-      var checkConsistency;
-      var checkIfNameIsInUse;
-      var clearAllCells;
-      var clearCell;
-      var cloneCell;
-      var continueRunningAllCells;
-      var convertCellToCode;
-      var convertCellToHeading;
-      var convertCellToMarkdown;
-      var convertCellToRaw;
-      var convertCellToScala;
-      var copyCell;
-      var createCell;
-      var createMenu;
-      var createMenuHeader;
-      var createMenuItem;
-      var createNotebook;
-      var createShortcutHint;
-      var createTool;
-      var cutCell;
-      var deleteCell;
-      var deserialize;
-      var displayAbout;
-      var displayDocumentation;
-      var displayFAQ;
-      var displayKeyboardShortcuts;
-      var duplicateNotebook;
-      var editModeKeyboardShortcuts;
-      var editModeKeyboardShortcutsHelp;
-      var editName;
-      var executeAllCells;
-      var executeCommand;
-      var exportNotebook;
-      var findBuildProperty;
-      var getBuildProperties;
-      var goToH2OUrl;
-      var goToUrl;
-      var initialize;
-      var initializeMenus;
-      var insertAbove;
-      var insertBelow;
-      var insertCell;
-      var insertCellAbove;
-      var insertCellAboveAndRun;
-      var insertCellBelow;
-      var insertCellBelowAndRun;
-      var insertNewCellAbove;
-      var insertNewCellBelow;
-      var insertNewScalaCellAbove;
-      var insertNewScalaCellBelow;
-      var loadNotebook;
-      var menuCell;
-      var menuCellSW;
-      var menuDivider;
-      var mergeCellAbove;
-      var mergeCellBelow;
-      var moveCellDown;
-      var moveCellUp;
-      var normalModeKeyboardShortcuts;
-      var normalModeKeyboardShortcutsHelp;
-      var notImplemented;
-      var openNotebook;
-      var pasteCellAbove;
-      var pasteCellBelow;
-      var pasteCellandReplace;
-      var promptForNotebook;
-      var removeCell;
-      var runAllCells;
-      var runCell;
-      var runCellAndInsertBelow;
-      var runCellAndSelectBelow;
-      var saveName;
-      var saveNotebook;
-      var selectCell;
-      var selectNextCell;
-      var selectPreviousCell;
-      var serialize;
-      var setupKeyboardHandling;
-      var setupMenus;
-      var showBrowser;
-      var showClipboard;
-      var showHelp;
-      var showOutline;
-      var shutdown;
-      var splitCell;
-      var startTour;
-      var stopRunningAll;
-      var storeNotebook;
-      var switchToCommandMode;
-      var switchToEditMode;
-      var toKeyboardHelp;
-      var toggleAllInputs;
-      var toggleAllOutputs;
-      var toggleInput;
-      var toggleOutput;
-      var toggleSidebar;
-      var undoLastDelete;
-      var uploadFile;
-      var _about;
-      var _areInputsHidden;
-      var _areOutputsHidden;
-      var _cells;
-      var _clipboardCell;
-      var _dialogs;
-      var _initializeInterpreter;
-      var _isEditingName;
-      var _isRunningAll;
-      var _isSidebarHidden;
-      var _lastDeletedCell;
-      var _localName;
-      var _menus;
-      var _remoteName;
-      var _runningCaption;
-      var _runningCellInput;
-      var _runningPercent;
-      var _selectedCell;
-      var _selectedCellIndex;
-      var _sidebar;
-      var _status;
-      var _toolbar;
+      let appendCell;
+      let appendCellAndRun;
+      let checkConsistency;
+      let checkIfNameIsInUse;
+      let clearAllCells;
+      let clearCell;
+      let cloneCell;
+      let continueRunningAllCells;
+      let convertCellToCode;
+      let convertCellToHeading;
+      let convertCellToMarkdown;
+      let convertCellToRaw;
+      let convertCellToScala;
+      let copyCell;
+      let createCell;
+      let createMenu;
+      let createMenuHeader;
+      let createMenuItem;
+      let createNotebook;
+      let createShortcutHint;
+      let createTool;
+      let cutCell;
+      let deleteCell;
+      let deserialize;
+      let displayAbout;
+      let displayDocumentation;
+      let displayFAQ;
+      let displayKeyboardShortcuts;
+      let duplicateNotebook;
+      let editModeKeyboardShortcuts;
+      let editModeKeyboardShortcutsHelp;
+      let editName;
+      let executeAllCells;
+      let executeCommand;
+      let exportNotebook;
+      let findBuildProperty;
+      let getBuildProperties;
+      let goToH2OUrl;
+      let goToUrl;
+      let initialize;
+      let initializeMenus;
+      let insertAbove;
+      let insertBelow;
+      let insertCell;
+      let insertCellAbove;
+      let insertCellAboveAndRun;
+      let insertCellBelow;
+      let insertCellBelowAndRun;
+      let insertNewCellAbove;
+      let insertNewCellBelow;
+      let insertNewScalaCellAbove;
+      let insertNewScalaCellBelow;
+      let loadNotebook;
+      let menuCell;
+      let menuCellSW;
+      let menuDivider;
+      let mergeCellAbove;
+      let mergeCellBelow;
+      let moveCellDown;
+      let moveCellUp;
+      let normalModeKeyboardShortcuts;
+      let normalModeKeyboardShortcutsHelp;
+      let notImplemented;
+      let openNotebook;
+      let pasteCellAbove;
+      let pasteCellBelow;
+      let pasteCellandReplace;
+      let promptForNotebook;
+      let removeCell;
+      let runAllCells;
+      let runCell;
+      let runCellAndInsertBelow;
+      let runCellAndSelectBelow;
+      let saveName;
+      let saveNotebook;
+      let selectCell;
+      let selectNextCell;
+      let selectPreviousCell;
+      let serialize;
+      let setupKeyboardHandling;
+      let setupMenus;
+      let showBrowser;
+      let showClipboard;
+      let showHelp;
+      let showOutline;
+      let shutdown;
+      let splitCell;
+      let startTour;
+      let stopRunningAll;
+      let storeNotebook;
+      let switchToCommandMode;
+      let switchToEditMode;
+      let toKeyboardHelp;
+      let toggleAllInputs;
+      let toggleAllOutputs;
+      let toggleInput;
+      let toggleOutput;
+      let toggleSidebar;
+      let undoLastDelete;
+      let uploadFile;
+      let _about;
+      let _areInputsHidden;
+      let _areOutputsHidden;
+      let _cells;
+      let _clipboardCell;
+      let _dialogs;
+      let _initializeInterpreter;
+      let _isEditingName;
+      let _isRunningAll;
+      let _isSidebarHidden;
+      let _lastDeletedCell;
+      let _localName;
+      let _menus;
+      let _remoteName;
+      let _runningCaption;
+      let _runningCellInput;
+      let _runningPercent;
+      let _selectedCell;
+      let _selectedCellIndex;
+      let _sidebar;
+      let _status;
+      let _toolbar;
       _localName = Flow.Dataflow.signal('Untitled Flow');
       Flow.Dataflow.react(_localName, name => document.title = `H2O${ name && name.trim() ? `- ${ name }` : '' }`);
       _remoteName = Flow.Dataflow.signal(null);
@@ -11270,13 +11270,13 @@
         return _.scalaIntpId(response.session_id);
       });
       serialize = () => {
-        var cell;
-        var cells;
+        let cell;
+        let cells;
         cells = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = _cells();
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -11294,18 +11294,18 @@
         };
       };
       deserialize = (localName, remoteName, doc) => {
-        var cell;
-        var cells;
-        var _i;
-        var _len;
-        var _ref;
+        let cell;
+        let cells;
+        let _i;
+        let _len;
+        let _ref;
         _localName(localName);
         _remoteName(remoteName);
         cells = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = doc.cells;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -11334,12 +11334,12 @@
         return flowCell(_, _renderers, type, input);
       };
       checkConsistency = () => {
-        var cell;
-        var i;
-        var selectionCount;
-        var _i;
-        var _len;
-        var _ref;
+        let cell;
+        let i;
+        let selectionCount;
+        let _i;
+        let _len;
+        let _ref;
         selectionCount = 0;
         _ref = _cells();
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -11408,8 +11408,8 @@
         return removeCell();
       };
       removeCell = () => {
-        var cells;
-        var removedCell;
+        let cells;
+        let removedCell;
         cells = _cells();
         if (cells.length > 1) {
           if (_selectedCellIndex === cells.length - 1) {
@@ -11439,25 +11439,25 @@
       insertNewScalaCellAbove = () => insertAbove(createCell('sca'));
       insertNewScalaCellBelow = () => insertBelow(createCell('sca'));
       insertCellAboveAndRun = (type, input) => {
-        var cell;
+        let cell;
         cell = insertAbove(createCell(type, input));
         cell.execute();
         return cell;
       };
       insertCellBelowAndRun = (type, input) => {
-        var cell;
+        let cell;
         cell = insertBelow(createCell(type, input));
         cell.execute();
         return cell;
       };
       appendCellAndRun = (type, input) => {
-        var cell;
+        let cell;
         cell = appendCell(createCell(type, input));
         cell.execute();
         return cell;
       };
       moveCellDown = () => {
-        var cells;
+        let cells;
         cells = _cells();
         if (_selectedCellIndex !== cells.length - 1) {
           _cells.splice(_selectedCellIndex, 1);
@@ -11466,7 +11466,7 @@
         }
       };
       moveCellUp = () => {
-        var cells;
+        let cells;
         if (_selectedCellIndex !== 0) {
           cells = _cells();
           _cells.splice(_selectedCellIndex, 1);
@@ -11475,8 +11475,8 @@
         }
       };
       mergeCellBelow = () => {
-        var cells;
-        var nextCell;
+        let cells;
+        let nextCell;
         cells = _cells();
         if (_selectedCellIndex !== cells.length - 1) {
           nextCell = cells[_selectedCellIndex + 1];
@@ -11487,10 +11487,10 @@
         }
       };
       splitCell = () => {
-        var cursorPosition;
-        var input;
-        var left;
-        var right;
+        let cursorPosition;
+        let input;
+        let left;
+        let right;
         if (_selectedCell.isActive()) {
           input = _selectedCell.input();
           if (input.length > 1) {
@@ -11551,8 +11551,8 @@
         return _.saved();
       });
       saveNotebook = () => {
-        var localName;
-        var remoteName;
+        let localName;
+        let remoteName;
         localName = Flow.Util.sanitizeName(_localName());
         if (localName === '') {
           return _.alert('Invalid notebook name.');
@@ -11576,9 +11576,9 @@
         });
       };
       promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
-        var error;
-        var filename;
-        var _ref;
+        let error;
+        let filename;
+        let _ref;
         if (result) {
           error = result.error, filename = result.filename;
           if (error) {
@@ -11589,8 +11589,8 @@
         }
       });
       uploadFile = () => _.dialog(flowFileUploadDialog, result => {
-        var error;
-        var _ref;
+        let error;
+        let _ref;
         if (result) {
           error = result.error;
           if (error) {
@@ -11603,11 +11603,11 @@
       toggleInput = () => _selectedCell.toggleInput();
       toggleOutput = () => _selectedCell.toggleOutput();
       toggleAllInputs = () => {
-        var cell;
-        var wereHidden;
-        var _i;
-        var _len;
-        var _ref;
+        let cell;
+        let wereHidden;
+        let _i;
+        let _len;
+        let _ref;
         wereHidden = _areInputsHidden();
         _areInputsHidden(!wereHidden);
         if (wereHidden) {
@@ -11633,7 +11633,7 @@
         return _.showClipboard();
       };
       selectNextCell = () => {
-        var cells;
+        let cells;
         cells = _cells();
         if (_selectedCellIndex !== cells.length - 1) {
           selectCell(cells[_selectedCellIndex + 1]);
@@ -11641,7 +11641,7 @@
         return false;
       };
       selectPreviousCell = () => {
-        var cells;
+        let cells;
         if (_selectedCellIndex !== 0) {
           cells = _cells();
           selectCell(cells[_selectedCellIndex - 1]);
@@ -11650,7 +11650,7 @@
       };
       displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
       findBuildProperty = caption => {
-        var entry;
+        let entry;
         if (Flow.BuildProperties) {
           if (entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption)) {
             return entry.value;
@@ -11660,16 +11660,16 @@
         return void 0;
       };
       getBuildProperties = () => {
-        var projectVersion;
+        let projectVersion;
         projectVersion = findBuildProperty('H2O Build project version');
         return [findBuildProperty('H2O Build git branch'), projectVersion, projectVersion ? lodash.last(projectVersion.split('.')) : void 0, findBuildProperty('H2O Build git hash') || 'master'];
       };
       displayDocumentation = () => {
-        var buildVersion;
-        var gitBranch;
-        var gitHash;
-        var projectVersion;
-        var _ref;
+        let buildVersion;
+        let gitBranch;
+        let gitHash;
+        let projectVersion;
+        let _ref;
         _ref = getBuildProperties(), gitBranch = _ref[0], projectVersion = _ref[1], buildVersion = _ref[2], gitHash = _ref[3];
         if (buildVersion && buildVersion !== '99999') {
           return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${ gitBranch }/${ buildVersion }/docs-website/h2o-docs/index.html`, '_blank');
@@ -11677,11 +11677,11 @@
         return window.open(`https://github.com/h2oai/h2o-3/blob/${ gitHash }/h2o-docs/src/product/flow/README.md`, '_blank');
       };
       displayFAQ = () => {
-        var buildVersion;
-        var gitBranch;
-        var gitHash;
-        var projectVersion;
-        var _ref;
+        let buildVersion;
+        let gitBranch;
+        let gitHash;
+        let projectVersion;
+        let _ref;
         _ref = getBuildProperties(), gitBranch = _ref[0], projectVersion = _ref[1], buildVersion = _ref[2], gitHash = _ref[3];
         if (buildVersion && buildVersion !== '99999') {
           return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${ gitBranch }/${ buildVersion }/docs-website/h2o-docs/index.html`, '_blank');
@@ -11704,7 +11704,7 @@
         acceptCaption: 'Create New Notebook',
         declineCaption: 'Cancel'
       }, accept => {
-        var currentTime;
+        let currentTime;
         if (accept) {
           currentTime = new Date().getTime();
           return deserialize('Untitled Flow', null, {
@@ -11718,14 +11718,14 @@
       duplicateNotebook = () => deserialize(`Copy of ${ _localName() }`, null, serialize());
       openNotebook = (name, doc) => deserialize(name, null, doc);
       loadNotebook = name => _.requestObject('notebook', name, (error, doc) => {
-        var _ref;
+        let _ref;
         if (error) {
           return _.alert((_ref = error.message) != null ? _ref : error);
         }
         return deserialize(name, name, doc);
       });
       exportNotebook = () => {
-        var remoteName;
+        let remoteName;
         if (remoteName = _remoteName()) {
           return window.open(`/3/NodePersistentStorage.bin/notebook/${ remoteName }`, '_blank');
         }
@@ -11734,10 +11734,10 @@
       goToH2OUrl = url => () => window.open(window.Flow.ContextPath + url, '_blank');
       goToUrl = url => () => window.open(url, '_blank');
       executeAllCells = (fromBeginning, go) => {
-        var cellCount;
-        var cellIndex;
-        var cells;
-        var executeNextCell;
+        let cellCount;
+        let cellIndex;
+        let cells;
+        let executeNextCell;
         _isRunningAll(true);
         cells = _cells().slice(0);
         cellCount = cells.length;
@@ -11747,7 +11747,7 @@
           cellIndex = _selectedCellIndex;
         }
         executeNextCell = () => {
-          var cell;
+          let cell;
           if (_isRunningAll()) {
             cell = cells.shift();
             if (cell) {
@@ -11792,10 +11792,10 @@
         return _selectedCell.autoResize();
       };
       clearAllCells = () => {
-        var cell;
-        var _i;
-        var _len;
-        var _ref;
+        let cell;
+        let _i;
+        let _len;
+        let _ref;
         _ref = _cells();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cell = _ref[_i];
@@ -11817,7 +11817,7 @@
       });
       createShortcutHint = shortcut => `<span style=\'float:right\'>${ lodash.map(shortcut, key => `<kbd>${ key }</kbd>`).join(' ') }</span>`;
       createMenuItem = (label, action, shortcut) => {
-        var kbds;
+        let kbds;
         kbds = shortcut ? createShortcutHint(shortcut) : '';
         return {
           label: `${ lodash.escape(label) }${ kbds }`,
@@ -11835,7 +11835,7 @@
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
       }
       initializeMenus = builder => {
-        var modelMenuItems;
+        let modelMenuItems;
         modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$37.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
         return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')), createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')), createMenuItem('Shut Down', shutdown)]), createMenu('Help', [createMenuItem('Assist Me', executeCommand('assist')), menuDivider, createMenuItem('Contents', showHelp), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider, createMenuItem('About', displayAbout)])];
       };
@@ -11858,9 +11858,9 @@
       }
       editModeKeyboardShortcuts = [['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
       toKeyboardHelp = shortcut => {
-        var caption;
-        var keystrokes;
-        var seq;
+        let caption;
+        let keystrokes;
+        let seq;
         seq = shortcut[0], caption = shortcut[1];
         keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${ key }</kbd>`).join(' ');
         return {
@@ -11871,15 +11871,15 @@
       normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
       editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
       setupKeyboardHandling = mode => {
-        var caption;
-        var f;
-        var shortcut;
-        var _i;
-        var _j;
-        var _len;
-        var _len1;
-        var _ref;
-        var _ref1;
+        let caption;
+        let f;
+        let shortcut;
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
+        let _ref;
+        let _ref1;
         for (_i = 0, _len = normalModeKeyboardShortcuts.length; _i < _len; _i++) {
           _ref = normalModeKeyboardShortcuts[_i], shortcut = _ref[0], caption = _ref[1], f = _ref[2];
           Mousetrap.bind(shortcut, f);
@@ -11940,8 +11940,8 @@
   }
 
   function failure() {
-    var Flow = window.Flow;
-    var traceCauses;
+    const Flow = window.Flow;
+    let traceCauses;
     traceCauses = (error, causes) => {
       causes.push(error.message);
       if (error.cause) {
@@ -11950,10 +11950,10 @@
       return causes;
     };
     Flow.Failure = (_, error) => {
-      var causes;
-      var message;
-      var toggleStack;
-      var _isStackVisible;
+      let causes;
+      let message;
+      let toggleStack;
+      let _isStackVisible;
       causes = traceCauses(error, []);
       message = causes.shift();
       _isStackVisible = Flow.Dataflow.signal(false);
@@ -11973,28 +11973,28 @@
   const flowPrelude$38 = flowPreludeFunction();
 
   function clipboard() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var SystemClips;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let SystemClips;
     SystemClips = ['assist', 'importFiles', 'getFrames', 'getModels', 'getPredictions', 'getJobs', 'buildModel', 'predict'];
     Flow.Clipboard = _ => {
-      var addClip;
-      var createClip;
-      var emptyTrash;
-      var initialize;
-      var lengthOf;
-      var loadUserClips;
-      var removeClip;
-      var saveUserClips;
-      var serializeUserClips;
-      var _hasTrashClips;
-      var _hasUserClips;
-      var _systemClipCount;
-      var _systemClips;
-      var _trashClipCount;
-      var _trashClips;
-      var _userClipCount;
-      var _userClips;
+      let addClip;
+      let createClip;
+      let emptyTrash;
+      let initialize;
+      let lengthOf;
+      let loadUserClips;
+      let removeClip;
+      let saveUserClips;
+      let serializeUserClips;
+      let _hasTrashClips;
+      let _hasUserClips;
+      let _systemClipCount;
+      let _systemClips;
+      let _trashClipCount;
+      let _trashClips;
+      let _userClipCount;
+      let _userClips;
       lengthOf = array => {
         if (array.length) {
           return `(${ array.length })`;
@@ -12010,9 +12010,9 @@
       _trashClipCount = Flow.Dataflow.lift(_trashClips, lengthOf);
       _hasTrashClips = Flow.Dataflow.lift(_trashClips, clips => clips.length > 0);
       createClip = (_list, _type, _input, _canRemove) => {
-        var execute;
-        var insert;
-        var self;
+        let execute;
+        let insert;
+        let self;
         if (_canRemove == null) {
           _canRemove = true;
         }
@@ -12096,23 +12096,23 @@
   }
 
   function about() {
-    var Flow = window.Flow;
+    const Flow = window.Flow;
     Flow.Version = '0.4.54';
     Flow.About = _ => {
-      var _properties;
+      let _properties;
       _properties = Flow.Dataflow.signals([]);
       Flow.Dataflow.link(_.ready, () => {
         if (Flow.BuildProperties) {
           return _properties(Flow.BuildProperties);
         }
         return _.requestAbout((error, response) => {
-          var name;
-          var properties;
-          var value;
-          var _i;
-          var _len;
-          var _ref;
-          var _ref1;
+          let name;
+          let properties;
+          let value;
+          let _i;
+          let _len;
+          let _ref;
+          let _ref1;
           properties = [];
           if (!error) {
             _ref = response.entries;
@@ -12136,21 +12136,21 @@
   }
 
   function gui() {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var button;
-    var checkbox;
-    var content;
-    var control;
-    var dropdown;
-    var html;
-    var listbox;
-    var markdown;
-    var text;
-    var textarea;
-    var textbox;
-    var wrapArray;
-    var wrapValue;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let button;
+    let checkbox;
+    let content;
+    let control;
+    let dropdown;
+    let html;
+    let listbox;
+    let markdown;
+    let text;
+    let textarea;
+    let textbox;
+    let wrapArray;
+    let wrapValue;
     wrapValue = (value, init) => {
       if (value === void 0) {
         return Flow.Dataflow.signal(init);
@@ -12161,7 +12161,7 @@
       return Flow.Dataflow.signal(value);
     };
     wrapArray = elements => {
-      var element;
+      let element;
       if (elements) {
         if (Flow.Dataflow.isSignal(elements)) {
           element = elements();
@@ -12175,7 +12175,7 @@
       return Flow.Dataflow.signals([]);
     };
     control = (type, opts) => {
-      var guid;
+      let guid;
       if (!opts) {
         opts = {};
       }
@@ -12194,7 +12194,7 @@
       };
     };
     content = (type, opts) => {
-      var self;
+      let self;
       self = control(type, opts);
       self.value = wrapValue(opts.value, '');
       return self;
@@ -12203,13 +12203,13 @@
     html = opts => content('html', opts);
     markdown = opts => content('markdown', opts);
     checkbox = opts => {
-      var self;
+      let self;
       self = control('checkbox', opts);
       self.value = wrapValue(opts.value, opts.value);
       return self;
     };
     dropdown = opts => {
-      var self;
+      let self;
       self = control('dropdown', opts);
       self.options = opts.options || [];
       self.value = wrapValue(opts.value);
@@ -12217,21 +12217,21 @@
       return self;
     };
     listbox = opts => {
-      var self;
+      let self;
       self = control('listbox', opts);
       self.options = opts.options || [];
       self.values = wrapArray(opts.values);
       return self;
     };
     textbox = opts => {
-      var self;
+      let self;
       self = control('textbox', opts);
       self.value = wrapValue(opts.value, '');
       self.event = lodash.isString(opts.event) ? opts.event : null;
       return self;
     };
     textarea = opts => {
-      var self;
+      let self;
       self = control('textarea', opts);
       self.value = wrapValue(opts.value, '');
       self.event = lodash.isString(opts.event) ? opts.event : null;
@@ -12239,7 +12239,7 @@
       return self;
     };
     button = opts => {
-      var self;
+      let self;
       self = control('button', opts);
       self.click = lodash.isFunction(opts.click) ? opts.click : lodash.noop;
       return self;
@@ -12258,7 +12258,7 @@
   }
 
   function h2oApplicationContext(_) {
-    var Flow = window.Flow;
+    const Flow = window.Flow;
     _.requestFileGlob = Flow.Dataflow.slot();
     _.requestCreateFrame = Flow.Dataflow.slot();
     _.requestSplitFrame = Flow.Dataflow.slot();
@@ -12343,109 +12343,109 @@
   }
 
   function h2oProxy(_) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    var cacheModelBuilders;
-    var composePath;
-    var doDelete;
-    var doGet;
-    var doPost;
-    var doPostJSON;
-    var doPut;
-    var doUpload;
-    var download;
-    var encodeArrayForPost;
-    var encodeObject;
-    var encodeObjectForPost;
-    var getGridModelBuilderEndpoint;
-    var getLines;
-    var getModelBuilderEndpoint;
-    var getModelBuilders;
-    var http;
-    var mapWithKey;
-    var optsToString;
-    var requestAbout;
-    var requestAsDataFrame;
-    var requestAsH2OFrameFromDF;
-    var requestAsH2OFrameFromRDD;
-    var requestAutoModelBuild;
-    var requestCancelJob;
-    var requestCloud;
-    var requestColumnSummary;
-    var requestCreateFrame;
-    var requestDataFrames;
-    var requestDeleteFrame;
-    var requestDeleteModel;
-    var requestDeleteObject;
-    var requestEcho;
-    var requestEndpoint;
-    var requestEndpoints;
-    var requestExec;
-    var requestExportFrame;
-    var requestExportModel;
-    var requestFileGlob;
-    var requestFlow;
-    var requestFrame;
-    var requestFrameSlice;
-    var requestFrameSummary;
-    var requestFrameSummarySlice;
-    var requestFrameSummaryWithoutData;
-    var requestFrames;
-    var requestGrid;
-    var requestGrids;
-    var requestHelpContent;
-    var requestHelpIndex;
-    var requestImportFile;
-    var requestImportFiles;
-    var requestImportModel;
-    var requestInspect;
-    var requestIsStorageConfigured;
-    var requestJob;
-    var requestJobs;
-    var requestLogFile;
-    var requestModel;
-    var requestModelBuild;
-    var requestModelBuilder;
-    var requestModelBuilders;
-    var requestModelBuildersVisibility;
-    var requestModelInputValidation;
-    var requestModels;
-    var requestNetworkTest;
-    var requestObject;
-    var requestObjectExists;
-    var requestObjects;
-    var requestPack;
-    var requestPacks;
-    var requestParseFiles;
-    var requestParseSetup;
-    var requestParseSetupPreview;
-    var requestPartialDependence;
-    var requestPartialDependenceData;
-    var requestPojoPreview;
-    var requestPredict;
-    var requestPrediction;
-    var requestPredictions;
-    var requestProfile;
-    var requestPutObject;
-    var requestRDDs;
-    var requestRemoveAll;
-    var requestScalaCode;
-    var requestScalaIntp;
-    var requestSchema;
-    var requestSchemas;
-    var requestShutdown;
-    var requestSplitFrame;
-    var requestStackTrace;
-    var requestTimeline;
-    var requestUploadFile;
-    var requestUploadObject;
-    var requestWithOpts;
-    var trackPath;
-    var unwrap;
-    var __gridModelBuilderEndpoints;
-    var __modelBuilderEndpoints;
-    var __modelBuilders;
-    var _storageConfiguration;
+    const lodash = window._;
+    const Flow = window.Flow;
+    let cacheModelBuilders;
+    let composePath;
+    let doDelete;
+    let doGet;
+    let doPost;
+    let doPostJSON;
+    let doPut;
+    let doUpload;
+    let download;
+    let encodeArrayForPost;
+    let encodeObject;
+    let encodeObjectForPost;
+    let getGridModelBuilderEndpoint;
+    let getLines;
+    let getModelBuilderEndpoint;
+    let getModelBuilders;
+    let http;
+    let mapWithKey;
+    let optsToString;
+    let requestAbout;
+    let requestAsDataFrame;
+    let requestAsH2OFrameFromDF;
+    let requestAsH2OFrameFromRDD;
+    let requestAutoModelBuild;
+    let requestCancelJob;
+    let requestCloud;
+    let requestColumnSummary;
+    let requestCreateFrame;
+    let requestDataFrames;
+    let requestDeleteFrame;
+    let requestDeleteModel;
+    let requestDeleteObject;
+    let requestEcho;
+    let requestEndpoint;
+    let requestEndpoints;
+    let requestExec;
+    let requestExportFrame;
+    let requestExportModel;
+    let requestFileGlob;
+    let requestFlow;
+    let requestFrame;
+    let requestFrameSlice;
+    let requestFrameSummary;
+    let requestFrameSummarySlice;
+    let requestFrameSummaryWithoutData;
+    let requestFrames;
+    let requestGrid;
+    let requestGrids;
+    let requestHelpContent;
+    let requestHelpIndex;
+    let requestImportFile;
+    let requestImportFiles;
+    let requestImportModel;
+    let requestInspect;
+    let requestIsStorageConfigured;
+    let requestJob;
+    let requestJobs;
+    let requestLogFile;
+    let requestModel;
+    let requestModelBuild;
+    let requestModelBuilder;
+    let requestModelBuilders;
+    let requestModelBuildersVisibility;
+    let requestModelInputValidation;
+    let requestModels;
+    let requestNetworkTest;
+    let requestObject;
+    let requestObjectExists;
+    let requestObjects;
+    let requestPack;
+    let requestPacks;
+    let requestParseFiles;
+    let requestParseSetup;
+    let requestParseSetupPreview;
+    let requestPartialDependence;
+    let requestPartialDependenceData;
+    let requestPojoPreview;
+    let requestPredict;
+    let requestPrediction;
+    let requestPredictions;
+    let requestProfile;
+    let requestPutObject;
+    let requestRDDs;
+    let requestRemoveAll;
+    let requestScalaCode;
+    let requestScalaIntp;
+    let requestSchema;
+    let requestSchemas;
+    let requestShutdown;
+    let requestSplitFrame;
+    let requestStackTrace;
+    let requestTimeline;
+    let requestUploadFile;
+    let requestUploadObject;
+    let requestWithOpts;
+    let trackPath;
+    let unwrap;
+    let __gridModelBuilderEndpoints;
+    let __modelBuilderEndpoints;
+    let __modelBuilders;
+    let _storageConfiguration;
     download = (type, url, go) => {
       if (url.substring(0, 1) === '/') {
         url = window.Flow.ContextPath + url.substring(1);
@@ -12462,7 +12462,7 @@
       });
     };
     optsToString = opts => {
-      var str;
+      let str;
       if (opts != null) {
         str = ` with opts ${ JSON.stringify(opts) }`;
         if (str.length > 50) {
@@ -12473,7 +12473,7 @@
       return '';
     };
     http = (method, path, opts, go) => {
-      var req;
+      let req;
       if (path.substring(0, 1) === '/') {
         path = window.Flow.ContextPath + path.substring(1);
       }
@@ -12516,7 +12516,7 @@
         }
       })();
       req.done((data, status, xhr) => {
-        var error;
+        let error;
         _.status('server', 'response', path);
         try {
           return go(null, data);
@@ -12526,10 +12526,10 @@
         }
       });
       return req.fail((xhr, status, error) => {
-        var cause;
-        var meta;
-        var response;
-        var serverError;
+        let cause;
+        let meta;
+        let response;
+        let serverError;
         _.status('server', 'error', path);
         response = xhr.responseJSON;
         cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
@@ -12543,14 +12543,14 @@
     doUpload = (path, formData, go) => http('UPLOAD', path, formData, go);
     doDelete = (path, go) => http('DELETE', path, null, go);
     trackPath = path => {
-      var base;
-      var e;
-      var name;
-      var other;
-      var root;
-      var version;
-      var _ref;
-      var _ref1;
+      let base;
+      let e;
+      let name;
+      let other;
+      let root;
+      let version;
+      let _ref;
+      let _ref1;
       try {
         _ref = path.split('/'), root = _ref[0], version = _ref[1], name = _ref[2];
         _ref1 = name.split('?'), base = _ref1[0], other = _ref1[1];
@@ -12562,9 +12562,9 @@
       }
     };
     mapWithKey = (obj, f) => {
-      var key;
-      var result;
-      var value;
+      let key;
+      let result;
+      let value;
       result = [];
       for (key in obj) {
         if ({}.hasOwnProperty.call(obj, key)) {
@@ -12575,7 +12575,7 @@
       return result;
     };
     composePath = (path, opts) => {
-      var params;
+      let params;
       if (opts) {
         params = mapWithKey(opts, (v, k) => `${ k }=${ v }`);
         return `${ path }?${ params.join('&') }`;
@@ -12597,9 +12597,9 @@
       return null;
     };
     encodeObject = source => {
-      var k;
-      var target;
-      var v;
+      let k;
+      let target;
+      let v;
       target = {};
       for (k in source) {
         if ({}.hasOwnProperty.call(source, k)) {
@@ -12610,9 +12610,9 @@
       return target;
     };
     encodeObjectForPost = source => {
-      var k;
-      var target;
-      var v;
+      let k;
+      let target;
+      let v;
       target = {};
       for (k in source) {
         if ({}.hasOwnProperty.call(source, k)) {
@@ -12638,13 +12638,13 @@
       return go(null, result);
     });
     requestInspect = (key, go) => {
-      var opts;
+      let opts;
       opts = { key: encodeURIComponent(key) };
       return requestWithOpts('/3/Inspect', opts, go);
     };
     requestCreateFrame = (opts, go) => doPost('/3/CreateFrame', opts, go);
     requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
-      var opts;
+      let opts;
       opts = {
         dataset: frameKey,
         ratios: encodeArrayForPost(splitRatios),
@@ -12670,7 +12670,7 @@
     });
     requestDeleteFrame = (key, go) => doDelete(`/3/Frames/${ encodeURIComponent(key) }`, go);
     requestExportFrame = (key, path, overwrite, go) => {
-      var params;
+      let params;
       params = {
         path,
         force: overwrite ? 'true' : 'false'
@@ -12697,7 +12697,7 @@
       return go(null);
     });
     requestFileGlob = (path, limit, go) => {
-      var opts;
+      let opts;
       opts = {
         src: encodeURIComponent(path),
         limit
@@ -12705,22 +12705,22 @@
       return requestWithOpts('/3/Typeahead/files', opts, go);
     };
     requestImportFiles = (paths, go) => {
-      var tasks;
+      let tasks;
       tasks = lodash.map(paths, path => go => requestImportFile(path, go));
       return Flow.Async.iterate(tasks)(go);
     };
     requestImportFile = (path, go) => {
-      var opts;
+      let opts;
       opts = { path: encodeURIComponent(path) };
       return requestWithOpts('/3/ImportFiles', opts, go);
     };
     requestParseSetup = (sourceKeys, go) => {
-      var opts;
+      let opts;
       opts = { source_frames: encodeArrayForPost(sourceKeys) };
       return doPost('/3/ParseSetup', opts, go);
     };
     requestParseSetupPreview = (sourceKeys, parseType, separator, useSingleQuotes, checkHeader, columnTypes, go) => {
-      var opts;
+      let opts;
       opts = {
         source_frames: encodeArrayForPost(sourceKeys),
         parse_type: parseType,
@@ -12732,7 +12732,7 @@
       return doPost('/3/ParseSetup', opts, go);
     };
     requestParseFiles = (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => {
-      var opts;
+      let opts;
       opts = {
         destination_frame: destinationKey,
         source_frames: encodeArrayForPost(sourceKeys),
@@ -12768,7 +12768,7 @@
       return go(error, result.models);
     });
     requestGrid = (key, opts, go) => {
-      var params;
+      let params;
       params = void 0;
       if (opts) {
         params = {};
@@ -12790,7 +12790,7 @@
     requestPojoPreview = (key, go) => download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
     requestDeleteModel = (key, go) => doDelete(`/3/Models/${ encodeURIComponent(key) }`, go);
     requestImportModel = (path, overwrite, go) => {
-      var opts;
+      let opts;
       opts = {
         dir: path,
         force: overwrite
@@ -12803,11 +12803,11 @@
     __modelBuilderEndpoints = null;
     __gridModelBuilderEndpoints = null;
     cacheModelBuilders = modelBuilders => {
-      var gridModelBuilderEndpoints;
-      var modelBuilder;
-      var modelBuilderEndpoints;
-      var _i;
-      var _len;
+      let gridModelBuilderEndpoints;
+      let modelBuilder;
+      let modelBuilderEndpoints;
+      let _i;
+      let _len;
       modelBuilderEndpoints = {};
       gridModelBuilderEndpoints = {};
       for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
@@ -12823,20 +12823,20 @@
     getModelBuilderEndpoint = algo => __modelBuilderEndpoints[algo];
     getGridModelBuilderEndpoint = algo => __gridModelBuilderEndpoints[algo];
     requestModelBuilders = go => {
-      var modelBuilders;
-      var visibility;
+      let modelBuilders;
+      let visibility;
       if (modelBuilders = getModelBuilders()) {
         return go(null, modelBuilders);
       }
       visibility = 'Stable';
       return doGet('/3/ModelBuilders', unwrap(go, result => {
-        var algo;
-        var availableBuilders;
-        var builder;
-        var builders;
+        let algo;
+        let availableBuilders;
+        let builder;
+        let builders;
         builders = (() => {
-          var _ref;
-          var _results;
+          let _ref;
+          let _results;
           _ref = result.model_builders;
           _results = [];
           for (algo in _ref) {
@@ -12848,12 +12848,12 @@
           return _results;
         })();
         availableBuilders = (() => {
-          var _i;
-          var _j;
-          var _len;
-          var _len1;
-          var _results;
-          var _results1;
+          let _i;
+          let _j;
+          let _len;
+          let _len1;
+          let _results;
+          let _results1;
           switch (visibility) {
             case 'Stable':
               _results = [];
@@ -12897,8 +12897,8 @@
     };
     requestAutoModelBuild = (parameters, go) => doPostJSON('/3/AutoMLBuilder', parameters, go);
     requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
-      var opt;
-      var opts;
+      let opt;
+      let opts;
       opts = {};
       if (destinationKey) {
         opts.predictions_frame = destinationKey;
@@ -12929,18 +12929,18 @@
       return go(null, result);
     });
     requestPredictions = (modelKey, frameKey, _go) => {
-      var go;
+      let go;
       go = (error, result) => {
-        var prediction;
-        var predictions;
+        let prediction;
+        let predictions;
         if (error) {
           return _go(error);
         }
         predictions = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = result.model_metrics;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -12956,9 +12956,9 @@
           return _results;
         })();
         return _go(null, (() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = predictions.length; _i < _len; _i++) {
             prediction = predictions[_i];
@@ -12993,7 +12993,7 @@
     requestObject = (type, name, go) => doGet(`/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, unwrap(go, result => JSON.parse(result.value)));
     requestDeleteObject = (type, name, go) => doDelete(`/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
     requestPutObject = (type, name, value, go) => {
-      var uri;
+      let uri;
       uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
       if (name) {
         uri += `/${ encodeURIComponent(name) }`;
@@ -13001,7 +13001,7 @@
       return doPost(uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
     };
     requestUploadObject = (type, name, formData, go) => {
-      var uri;
+      let uri;
       uri = `/3/NodePersistentStorage.bin/${ encodeURIComponent(type) }`;
       if (name) {
         uri += `/${ encodeURIComponent(name) }`;
@@ -13137,7 +13137,7 @@
   }
 
   function flowApplicationContext(_) {
-    var Flow = window.Flow;
+    const Flow = window.Flow;
     _.ready = Flow.Dataflow.slots();
     _.initialized = Flow.Dataflow.slots();
     _.open = Flow.Dataflow.slot();
@@ -13173,8 +13173,8 @@
   }
 
   function flowAnalytics(_) {
-    var lodash = window._;
-    var Flow = window.Flow;
+    const lodash = window._;
+    const Flow = window.Flow;
     Flow.Dataflow.link(_.trackEvent, (category, action, label, value) => lodash.defer(() => window.ga('send', 'event', category, action, label, value)));
     return Flow.Dataflow.link(_.trackException, description => lodash.defer(() => {
       _.requestEcho(`FLOW: ${ description }`, () => {});
@@ -13188,7 +13188,7 @@
   }
 
   function flowGrowl(_) {
-    var Flow = window.Flow;
+    const Flow = window.Flow;
     return Flow.Dataflow.link(_.growl, (message, type) => {
       if (type) {
         return $.bootstrapGrowl(message, { type });
@@ -13198,12 +13198,12 @@
   }
 
   function flowAutosave(_) {
-    var Flow = window.Flow;
-    var setDirty;
-    var setPristine;
-    var warnOnExit;
+    const Flow = window.Flow;
+    let setDirty;
+    let setPristine;
+    let warnOnExit;
     warnOnExit = e => {
-      var message;
+      let message;
       message = 'Warning: you are about to exit Flow.';
       if (e = e != null ? e : window.event) {
         e.returnValue = message;
@@ -13219,10 +13219,10 @@
   }
 
   function flowApplication(_, routines) {
-    var Flow = window.Flow;
-    var _notebook;
-    var _renderers;
-    var _sandbox;
+    const Flow = window.Flow;
+    let _notebook;
+    let _renderers;
+    let _sandbox;
     flowApplicationContext(_);
     _sandbox = flowSandbox(_, routines(_));
     _renderers = Flow.Renderers(_, _sandbox);
@@ -13238,9 +13238,9 @@
   }
 
   function flow() {
-    var Flow = window.Flow;
-    var checkSparklingWater;
-    var getContextPath;
+    const Flow = window.Flow;
+    let checkSparklingWater;
+    let getContextPath;
     getContextPath = () => {
       window.Flow.ContextPath = '/';
       return $.ajax({
@@ -13261,11 +13261,11 @@
         type: 'GET',
         dataType: 'json',
         success(response) {
-          var route;
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let route;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = response.routes;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -13283,7 +13283,7 @@
     };
     if ((typeof window !== 'undefined' && window !== null ? window.$ : void 0) != null) {
       $(() => {
-        var context;
+        let context;
         context = {};
         getContextPath();
         checkSparklingWater(context);
@@ -13302,7 +13302,7 @@
   // parent IIFE for the rest of this file
   // defer for now
   (function () {
-    var lodash = window._;
+    const lodash = window._;
     window.Flow = {};
     window.H2O = {};
     flow();

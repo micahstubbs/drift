@@ -1,34 +1,34 @@
 export function h2oCloudOutput(_, _go, _cloud) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var avg;
-  var createGrid;
-  var createNodeRow;
-  var createTotalRow;
-  var format3f;
-  var formatMilliseconds;
-  var formatThreads;
-  var prettyPrintBytes;
-  var refresh;
-  var sum;
-  var toggleExpansion;
-  var toggleRefresh;
-  var updateCloud;
-  var _exception;
-  var _hasConsensus;
-  var _headers;
-  var _isBusy;
-  var _isExpanded;
-  var _isHealthy;
-  var _isLive;
-  var _isLocked;
-  var _name;
-  var _nodeCounts;
-  var _nodes;
-  var _size;
-  var _sizes;
-  var _uptime;
-  var _version;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let avg;
+  let createGrid;
+  let createNodeRow;
+  let createTotalRow;
+  let format3f;
+  let formatMilliseconds;
+  let formatThreads;
+  let prettyPrintBytes;
+  let refresh;
+  let sum;
+  let toggleExpansion;
+  let toggleRefresh;
+  let updateCloud;
+  let _exception;
+  let _hasConsensus;
+  let _headers;
+  let _isBusy;
+  let _isExpanded;
+  let _isHealthy;
+  let _isLive;
+  let _isLocked;
+  let _name;
+  let _nodeCounts;
+  let _nodes;
+  let _size;
+  let _sizes;
+  let _uptime;
+  let _version;
   _exception = Flow.Dataflow.signal(null);
   _isLive = Flow.Dataflow.signal(false);
   _isBusy = Flow.Dataflow.signal(false);
@@ -56,7 +56,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     'YB'
   ];
   prettyPrintBytes = bytes => {
-    var i;
+    let i;
     if (bytes === 0) {
       return '-';
     }
@@ -64,13 +64,13 @@ export function h2oCloudOutput(_, _go, _cloud) {
     return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${_sizes[i]}`;
   };
   formatThreads = fjs => {
-    var i;
-    var max_lo;
-    var s;
-    var _i;
-    var _j;
-    var _k;
-    var _ref;
+    let i;
+    let max_lo;
+    let s;
+    let _i;
+    let _j;
+    let _k;
+    let _ref;
     for (max_lo = _i = 120; _i > 0; max_lo = --_i) {
       if (fjs[max_lo - 1] !== -1) {
         break;
@@ -91,10 +91,10 @@ export function h2oCloudOutput(_, _go, _cloud) {
     return s;
   };
   sum = (nodes, attrOf) => {
-    var node;
-    var total;
-    var _i;
-    var _len;
+    let node;
+    let total;
+    let _i;
+    let _len;
     total = 0;
     for (_i = 0, _len = nodes.length; _i < _len; _i++) {
       node = nodes[_i];
@@ -213,7 +213,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     formatThreads(node.fjqueue)
   ];
   createTotalRow = cloud => {
-    var nodes;
+    let nodes;
     nodes = cloud.nodes;
     return [
       cloud.cloud_healthy,
@@ -240,33 +240,33 @@ export function h2oCloudOutput(_, _go, _cloud) {
     ];
   };
   createGrid = (cloud, isExpanded) => {
-    var caption;
-    var cell;
-    var danger;
-    var grid;
-    var i;
-    var nodeRows;
-    var row;
-    var showAlways;
-    var success;
-    var table;
-    var tbody;
-    var td;
-    var tds;
-    var th;
-    var thead;
-    var ths;
-    var tr;
-    var trs;
-    var _ref;
+    let caption;
+    let cell;
+    let danger;
+    let grid;
+    let i;
+    let nodeRows;
+    let row;
+    let showAlways;
+    let success;
+    let table;
+    let tbody;
+    let td;
+    let tds;
+    let th;
+    let thead;
+    let ths;
+    let tr;
+    let trs;
+    let _ref;
     _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'i.fa.fa-check-circle.text-success', 'i.fa.fa-exclamation-circle.text-danger'), grid = _ref[0], table = _ref[1], thead = _ref[2], tbody = _ref[3], tr = _ref[4], th = _ref[5], td = _ref[6], success = _ref[7], danger = _ref[8];
     nodeRows = lodash.map(cloud.nodes, createNodeRow);
     nodeRows.push(createTotalRow(cloud));
     ths = (() => {
-      var _i;
-      var _len;
-      var _ref1;
-      var _results;
+      let _i;
+      let _len;
+      let _ref1;
+      let _results;
       _results = [];
       for (_i = 0, _len = _headers.length; _i < _len; _i++) {
         _ref1 = _headers[_i], caption = _ref1[0], showAlways = _ref1[1];
@@ -277,16 +277,16 @@ export function h2oCloudOutput(_, _go, _cloud) {
       return _results;
     })();
     trs = (() => {
-      var _i;
-      var _len;
-      var _results;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = nodeRows.length; _i < _len; _i++) {
         row = nodeRows[_i];
         tds = (() => {
-          var _j;
-          var _len1;
-          var _results1;
+          let _j;
+          let _len1;
+          let _results1;
           _results1 = [];
           for (i = _j = 0, _len1 = row.length; _j < _len1; i = ++_j) {
             cell = row[i];

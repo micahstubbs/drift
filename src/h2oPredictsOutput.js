@@ -2,25 +2,25 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oPredictsOutput(_, _go, opts, _predictions) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var arePredictionsComparable;
-  var comparePredictions;
-  var createPredictionView;
-  var initialize;
-  var inspectAll;
-  var plotMetrics;
-  var plotPredictions;
-  var plotScores;
-  var predict;
-  var _canComparePredictions;
-  var _checkAllPredictions;
-  var _isCheckingAll;
-  var _metricsTable;
-  var _predictionViews;
-  var _predictionsTable;
-  var _rocCurve;
-  var _scoresTable;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let arePredictionsComparable;
+  let comparePredictions;
+  let createPredictionView;
+  let initialize;
+  let inspectAll;
+  let plotMetrics;
+  let plotPredictions;
+  let plotScores;
+  let predict;
+  let _canComparePredictions;
+  let _checkAllPredictions;
+  let _isCheckingAll;
+  let _metricsTable;
+  let _predictionViews;
+  let _predictionsTable;
+  let _rocCurve;
+  let _scoresTable;
   _predictionViews = Flow.Dataflow.signal([]);
   _checkAllPredictions = Flow.Dataflow.signal(false);
   _canComparePredictions = Flow.Dataflow.signal(false);
@@ -33,10 +33,10 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
   };
   _isCheckingAll = false;
   Flow.Dataflow.react(_checkAllPredictions, checkAll => {
-    var view;
-    var _i;
-    var _len;
-    var _ref;
+    let view;
+    let _i;
+    let _len;
+    let _ref;
     _isCheckingAll = true;
     _ref = _predictionViews();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -47,28 +47,28 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
     _isCheckingAll = false;
   });
   createPredictionView = prediction => {
-    var inspect;
-    var view;
-    var _frameKey;
-    var _hasFrame;
-    var _isChecked;
-    var _modelKey;
-    var _ref;
+    let inspect;
+    let view;
+    let _frameKey;
+    let _hasFrame;
+    let _isChecked;
+    let _modelKey;
+    let _ref;
     _modelKey = prediction.model.name;
     _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
     _hasFrame = _frameKey;
     _isChecked = Flow.Dataflow.signal(false);
     Flow.Dataflow.react(_isChecked, () => {
-      var checkedViews;
-      var view;
+      let checkedViews;
+      let view;
       if (_isCheckingAll) {
         return;
       }
       checkedViews = (() => {
-        var _i;
-        var _len;
-        var _ref1;
-        var _results;
+        let _i;
+        let _len;
+        let _ref1;
+        let _results;
         _ref1 = _predictionViews();
         _results = [];
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -105,13 +105,13 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
   _metricsTable = _.inspect('metrics', _predictions);
   _scoresTable = _.inspect('scores', _predictions);
   comparePredictions = () => {
-    var selectedKeys;
-    var view;
+    let selectedKeys;
+    let view;
     selectedKeys = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _predictionViews();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

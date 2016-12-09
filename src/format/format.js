@@ -1,16 +1,16 @@
 export function format() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var Digits;
-  var formatDate;
-  var formatReal;
-  var formatTime;
-  var significantDigitsBeforeDecimal;
-  var __formatReal;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let Digits;
+  let formatDate;
+  let formatReal;
+  let formatTime;
+  let significantDigitsBeforeDecimal;
+  let __formatReal;
   significantDigitsBeforeDecimal = value => 1 + Math.floor(Math.log(Math.abs(value)) / Math.LN10);
   Digits = (digits, value) => {
-    var magnitude;
-    var sd;
+    let magnitude;
+    let sd;
     if (value === 0) {
       return 0;
     }
@@ -32,8 +32,8 @@ export function format() {
   };
   __formatReal = {};
   formatReal = precision => {
-    var cached;
-    var format;
+    let cached;
+    let format;
     format = (cached = __formatReal[precision]) ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${precision}f`);
     return value => format(value);
   };

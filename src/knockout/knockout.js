@@ -1,12 +1,12 @@
 export function knockout() {
-  var lodash = window._;
+  const lodash = window._;
   if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
     return;
   }
   ko.bindingHandlers.raw = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var $element;
-      var arg;
+      let $element;
+      let arg;
       arg = ko.unwrap(valueAccessor());
       if (arg) {
         $element = $(element);
@@ -17,9 +17,9 @@ export function knockout() {
   };
   ko.bindingHandlers.markdown = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var data;
-      var error;
-      var html;
+      let data;
+      let error;
+      let html;
       data = ko.unwrap(valueAccessor());
       try {
         html = marked(data || '');
@@ -32,15 +32,15 @@ export function knockout() {
   };
   ko.bindingHandlers.stringify = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var data;
+      let data;
       data = ko.unwrap(valueAccessor());
       return $(element).text(JSON.stringify(data, null, 2));
     }
   };
   ko.bindingHandlers.enterKey = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var $element;
-      var action;
+      let $element;
+      let action;
       if (action = ko.unwrap(valueAccessor())) {
         if (lodash.isFunction(action)) {
           $element = $(element);
@@ -57,8 +57,8 @@ export function knockout() {
   };
   ko.bindingHandlers.typeahead = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var $element;
-      var action;
+      let $element;
+      let action;
       if (action = ko.unwrap(valueAccessor())) {
         if (lodash.isFunction(action)) {
           $element = $(element);
@@ -74,7 +74,7 @@ export function knockout() {
   };
   ko.bindingHandlers.cursorPosition = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var arg;
+      let arg;
       if (arg = ko.unwrap(valueAccessor())) {
         arg.getCursorPosition = () => $(element).textrange('get', 'position');
       }
@@ -82,9 +82,9 @@ export function knockout() {
   };
   ko.bindingHandlers.autoResize = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var $el;
-      var arg;
-      var resize;
+      let $el;
+      let arg;
+      let resize;
       if (arg = ko.unwrap(valueAccessor())) {
         arg.autoResize = resize = () => lodash.defer(() => $el.css('height', 'auto').height(element.scrollHeight));
         $el = $(element).on('input', resize);
@@ -94,16 +94,16 @@ export function knockout() {
   };
   ko.bindingHandlers.scrollIntoView = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var $el;
-      var $viewport;
-      var arg;
+      let $el;
+      let $viewport;
+      let arg;
       if (arg = ko.unwrap(valueAccessor())) {
         $el = $(element);
         $viewport = $el.closest('.flow-box-notebook');
         arg.scrollIntoView = immediate => {
-          var height;
-          var position;
-          var top;
+          let height;
+          let position;
+          let top;
           if (immediate == null) {
             immediate = false;
           }
@@ -122,14 +122,14 @@ export function knockout() {
   };
   ko.bindingHandlers.collapse = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var $caretEl;
-      var $el;
-      var $nextEl;
-      var caretDown;
-      var caretEl;
-      var caretRight;
-      var isCollapsed;
-      var toggle;
+      let $caretEl;
+      let $el;
+      let $nextEl;
+      let caretDown;
+      let caretEl;
+      let caretRight;
+      let isCollapsed;
+      let toggle;
       caretDown = 'fa-caret-down';
       caretRight = 'fa-caret-right';
       isCollapsed = ko.unwrap(valueAccessor());
@@ -162,8 +162,8 @@ export function knockout() {
   };
   ko.bindingHandlers.dom = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var $element;
-      var arg;
+      let $element;
+      let arg;
       arg = ko.unwrap(valueAccessor());
       if (arg) {
         $element = $(element);
@@ -174,7 +174,7 @@ export function knockout() {
   };
   ko.bindingHandlers.dump = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var object;
+      let object;
       return object = ko.unwrap(valueAccessor());
     }
   };
@@ -185,8 +185,8 @@ export function knockout() {
   };
   ko.bindingHandlers.file = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var $file;
-      var file;
+      let $file;
+      let file;
       file = valueAccessor();
       if (file) {
         $file = $(element);
@@ -198,9 +198,9 @@ export function knockout() {
   };
   ko.bindingHandlers.codemirror = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      var editor;
-      var internalTextArea;
-      var options;
+      let editor;
+      let internalTextArea;
+      let options;
       options = ko.unwrap(valueAccessor());
       editor = CodeMirror.fromTextArea(element, options);
       editor.on('change', cm => allBindings().value(cm.getValue()));

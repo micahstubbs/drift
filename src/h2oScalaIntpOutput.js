@@ -1,8 +1,8 @@
 export function h2oScalaIntpOutput(_, _go, _result) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createScalaIntpView;
-  var _scalaIntpView;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createScalaIntpView;
+  let _scalaIntpView;
   _scalaIntpView = Flow.Dataflow.signal(null);
   createScalaIntpView = result => ({
     session_id: result.session_id

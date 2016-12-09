@@ -2,12 +2,12 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oImportModelInput(_, _go, path, opt) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var importModel;
-  var _canImportModel;
-  var _overwrite;
-  var _path;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let importModel;
+  let _canImportModel;
+  let _overwrite;
+  let _path;
   if (opt == null) {
     opt = {};
   }

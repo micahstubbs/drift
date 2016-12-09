@@ -1,34 +1,34 @@
 export function flowCell(_, _renderers, type, input) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var activate;
-  var clear;
-  var clip;
-  var execute;
-  var navigate;
-  var select;
-  var self;
-  var toggleInput;
-  var toggleOutput;
-  var _actions;
-  var _errors;
-  var _guid;
-  var _hasError;
-  var _hasInput;
-  var _hasOutput;
-  var _input;
-  var _isActive;
-  var _isBusy;
-  var _isCode;
-  var _isInputVisible;
-  var _isOutputHidden;
-  var _isReady;
-  var _isSelected;
-  var _outputs;
-  var _render;
-  var _result;
-  var _time;
-  var _type;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let activate;
+  let clear;
+  let clip;
+  let execute;
+  let navigate;
+  let select;
+  let self;
+  let toggleInput;
+  let toggleOutput;
+  let _actions;
+  let _errors;
+  let _guid;
+  let _hasError;
+  let _hasInput;
+  let _hasOutput;
+  let _input;
+  let _isActive;
+  let _isBusy;
+  let _isCode;
+  let _isInputVisible;
+  let _isOutputHidden;
+  let _isReady;
+  let _isSelected;
+  let _outputs;
+  let _render;
+  let _result;
+  let _time;
+  let _type;
   if (type == null) {
     type = 'cs';
   }
@@ -90,8 +90,8 @@ export function flowCell(_, _renderers, type, input) {
     }
   };
   execute = go => {
-    var render;
-    var startTime;
+    let render;
+    let startTime;
     startTime = Date.now();
     _time(`Started at ${Flow.Util.formatClockTime(startTime)}`);
     input = _input().trim();

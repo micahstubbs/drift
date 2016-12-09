@@ -2,9 +2,9 @@ import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function clipboard() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var SystemClips;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let SystemClips;
   SystemClips = [
     'assist',
     'importFiles',
@@ -16,23 +16,23 @@ export function clipboard() {
     'predict'
   ];
   Flow.Clipboard = _ => {
-    var addClip;
-    var createClip;
-    var emptyTrash;
-    var initialize;
-    var lengthOf;
-    var loadUserClips;
-    var removeClip;
-    var saveUserClips;
-    var serializeUserClips;
-    var _hasTrashClips;
-    var _hasUserClips;
-    var _systemClipCount;
-    var _systemClips;
-    var _trashClipCount;
-    var _trashClips;
-    var _userClipCount;
-    var _userClips;
+    let addClip;
+    let createClip;
+    let emptyTrash;
+    let initialize;
+    let lengthOf;
+    let loadUserClips;
+    let removeClip;
+    let saveUserClips;
+    let serializeUserClips;
+    let _hasTrashClips;
+    let _hasUserClips;
+    let _systemClipCount;
+    let _systemClips;
+    let _trashClipCount;
+    let _trashClips;
+    let _userClipCount;
+    let _userClips;
     lengthOf = array => {
       if (array.length) {
         return `(${array.length})`;
@@ -48,9 +48,9 @@ export function clipboard() {
     _trashClipCount = Flow.Dataflow.lift(_trashClips, lengthOf);
     _hasTrashClips = Flow.Dataflow.lift(_trashClips, clips => clips.length > 0);
     createClip = (_list, _type, _input, _canRemove) => {
-      var execute;
-      var insert;
-      var self;
+      let execute;
+      let insert;
+      let self;
       if (_canRemove == null) {
         _canRemove = true;
       }

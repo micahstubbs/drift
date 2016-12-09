@@ -1,19 +1,19 @@
 export function gui() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var button;
-  var checkbox;
-  var content;
-  var control;
-  var dropdown;
-  var html;
-  var listbox;
-  var markdown;
-  var text;
-  var textarea;
-  var textbox;
-  var wrapArray;
-  var wrapValue;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let button;
+  let checkbox;
+  let content;
+  let control;
+  let dropdown;
+  let html;
+  let listbox;
+  let markdown;
+  let text;
+  let textarea;
+  let textbox;
+  let wrapArray;
+  let wrapValue;
   wrapValue = (value, init) => {
     if (value === void 0) {
       return Flow.Dataflow.signal(init);
@@ -24,7 +24,7 @@ export function gui() {
     return Flow.Dataflow.signal(value);
   };
   wrapArray = elements => {
-    var element;
+    let element;
     if (elements) {
       if (Flow.Dataflow.isSignal(elements)) {
         element = elements();
@@ -38,7 +38,7 @@ export function gui() {
     return Flow.Dataflow.signals([]);
   };
   control = (type, opts) => {
-    var guid;
+    let guid;
     if (!opts) {
       opts = {};
     }
@@ -57,7 +57,7 @@ export function gui() {
     };
   };
   content = (type, opts) => {
-    var self;
+    let self;
     self = control(type, opts);
     self.value = wrapValue(opts.value, '');
     return self;
@@ -66,13 +66,13 @@ export function gui() {
   html = opts => content('html', opts);
   markdown = opts => content('markdown', opts);
   checkbox = opts => {
-    var self;
+    let self;
     self = control('checkbox', opts);
     self.value = wrapValue(opts.value, opts.value);
     return self;
   };
   dropdown = opts => {
-    var self;
+    let self;
     self = control('dropdown', opts);
     self.options = opts.options || [];
     self.value = wrapValue(opts.value);
@@ -80,21 +80,21 @@ export function gui() {
     return self;
   };
   listbox = opts => {
-    var self;
+    let self;
     self = control('listbox', opts);
     self.options = opts.options || [];
     self.values = wrapArray(opts.values);
     return self;
   };
   textbox = opts => {
-    var self;
+    let self;
     self = control('textbox', opts);
     self.value = wrapValue(opts.value, '');
     self.event = lodash.isString(opts.event) ? opts.event : null;
     return self;
   };
   textarea = opts => {
-    var self;
+    let self;
     self = control('textarea', opts);
     self.value = wrapValue(opts.value, '');
     self.event = lodash.isString(opts.event) ? opts.event : null;
@@ -102,7 +102,7 @@ export function gui() {
     return self;
   };
   button = opts => {
-    var self;
+    let self;
     self = control('button', opts);
     self.click = lodash.isFunction(opts.click) ? opts.click : lodash.noop;
     return self;

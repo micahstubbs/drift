@@ -1,8 +1,8 @@
 export function h2oRDDsOutput(_, _go, _rDDs) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createRDDView;
-  var _rDDViews;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createRDDView;
+  let _rDDViews;
   _rDDViews = Flow.Dataflow.signal([]);
   createRDDView = rDD => ({
     id: rDD.rdd_id,

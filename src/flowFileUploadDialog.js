@@ -1,10 +1,10 @@
 export function flowFileUploadDialog(_, _go) {
-  var Flow = window.Flow;
-  var accept;
-  var decline;
-  var uploadFile;
-  var _file;
-  var _form;
+  const Flow = window.Flow;
+  let accept;
+  let decline;
+  let uploadFile;
+  let _file;
+  let _form;
   _form = Flow.Dataflow.signal(null);
   _file = Flow.Dataflow.signal(null);
   uploadFile = key => _.requestUploadFile(key, new FormData(_form()), (error, result) => _go({
@@ -12,7 +12,7 @@ export function flowFileUploadDialog(_, _go) {
     result
   }));
   accept = () => {
-    var file;
+    let file;
     if (file = _file()) {
       return uploadFile(file.name);
     }

@@ -50,34 +50,34 @@ import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function routines() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var combineTables;
-  var computeFalsePositiveRate;
-  var computeTruePositiveRate;
-  var concatArrays;
-  var convertColumnToVector;
-  var convertTableToFrame;
-  var createArrays;
-  var createDataframe;
-  var createFactor;
-  var createList;
-  var createTempKey;
-  var createVector;
-  var format4f;
-  var format6fi;
-  var formatConfusionMatrix;
-  var formulateGetPredictionsOrigin;
-  var getTwoDimData;
-  var lightning;
-  var parseAndFormatArray;
-  var parseAndFormatObjectArray;
-  var parseNaNs;
-  var parseNulls;
-  var parseNumbers;
-  var repeatValues;
-  var _assistance;
-  var __slice = [].slice;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let combineTables;
+  let computeFalsePositiveRate;
+  let computeTruePositiveRate;
+  let concatArrays;
+  let convertColumnToVector;
+  let convertTableToFrame;
+  let createArrays;
+  let createDataframe;
+  let createFactor;
+  let createList;
+  let createTempKey;
+  let createVector;
+  let format4f;
+  let format6fi;
+  let formatConfusionMatrix;
+  let formulateGetPredictionsOrigin;
+  let getTwoDimData;
+  let lightning;
+  let parseAndFormatArray;
+  let parseAndFormatObjectArray;
+  let parseNaNs;
+  let parseNulls;
+  let parseNumbers;
+  let repeatValues;
+  let _assistance;
+  const __slice = [].slice;
   lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
   if (lightning.settings) {
     lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
@@ -135,11 +135,11 @@ export function routines() {
     }
   };
   parseNumbers = source => {
-    var i;
-    var target;
-    var value;
-    var _i;
-    var _len;
+    let i;
+    let target;
+    let value;
+    let _i;
+    let _len;
     target = new Array(source.length);
     for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
       value = source[i];
@@ -167,14 +167,14 @@ export function routines() {
     }
   };
   convertTableToFrame = (table, tableName, metadata) => {
-    var column;
-    var i;
-    var vectors;
+    let column;
+    let i;
+    let vectors;
     vectors = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = table.columns;
       _results = [];
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -186,7 +186,7 @@ export function routines() {
     return createDataframe(tableName, vectors, lodash.range(table.rowcount), null, metadata);
   };
   getTwoDimData = (table, columnName) => {
-    var columnIndex;
+    let columnIndex;
     columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
     if (columnIndex >= 0) {
       return table.data[columnIndex];
@@ -212,23 +212,23 @@ export function routines() {
     return number;
   };
   combineTables = tables => {
-    var columnCount;
-    var columnData;
-    var data;
-    var element;
-    var i;
-    var index;
-    var leader;
-    var rowCount;
-    var table;
-    var _i;
-    var _j;
-    var _k;
-    var _l;
-    var _len;
-    var _len1;
-    var _len2;
-    var _ref;
+    let columnCount;
+    let columnData;
+    let data;
+    let element;
+    let i;
+    let index;
+    let leader;
+    let rowCount;
+    let table;
+    let _i;
+    let _j;
+    let _k;
+    let _l;
+    let _len;
+    let _len1;
+    let _len2;
+    let _ref;
     leader = lodash.head(tables);
     rowCount = 0;
     columnCount = leader.data.length;
@@ -257,9 +257,9 @@ export function routines() {
     };
   };
   createArrays = (count, length) => {
-    var i;
-    var _i;
-    var _results;
+    let i;
+    let _i;
+    let _results;
     _results = [];
     for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
       _results.push(new Array(length));
@@ -267,11 +267,11 @@ export function routines() {
     return _results;
   };
   parseNaNs = source => {
-    var element;
-    var i;
-    var target;
-    var _i;
-    var _len;
+    let element;
+    let i;
+    let target;
+    let _i;
+    let _len;
     target = new Array(source.length);
     for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
       element = source[i];
@@ -280,11 +280,11 @@ export function routines() {
     return target;
   };
   parseNulls = source => {
-    var element;
-    var i;
-    var target;
-    var _i;
-    var _len;
+    let element;
+    let i;
+    let target;
+    let _i;
+    let _len;
     target = new Array(source.length);
     for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
       element = source[i];
@@ -293,11 +293,11 @@ export function routines() {
     return target;
   };
   parseAndFormatArray = source => {
-    var element;
-    var i;
-    var target;
-    var _i;
-    var _len;
+    let element;
+    let i;
+    let target;
+    let _i;
+    let _len;
     target = new Array(source.length);
     for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
       element = source[i];
@@ -306,13 +306,13 @@ export function routines() {
     return target;
   };
   parseAndFormatObjectArray = source => {
-    var element;
-    var i;
-    var target;
-    var _i;
-    var _len;
-    var _ref;
-    var _ref1;
+    let element;
+    let i;
+    let target;
+    let _i;
+    let _len;
+    let _ref;
+    let _ref1;
     target = new Array(source.length);
     for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
       element = source[i];
@@ -321,9 +321,9 @@ export function routines() {
     return target;
   };
   repeatValues = (count, value) => {
-    var i;
-    var target;
-    var _i;
+    let i;
+    let target;
+    let _i;
     target = new Array(count);
     for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
       target[i] = value;
@@ -331,7 +331,7 @@ export function routines() {
     return target;
   };
   concatArrays = arrays => {
-    var a;
+    let a;
     switch (arrays.length) {
       case 0:
         return [];
@@ -343,43 +343,43 @@ export function routines() {
     }
   };
   computeTruePositiveRate = cm => {
-    var fn;
-    var fp;
-    var tn;
-    var tp;
-    var _ref;
-    var _ref1;
+    let fn;
+    let fp;
+    let tn;
+    let tp;
+    let _ref;
+    let _ref1;
     (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
     return tp / (tp + fn);
   };
   computeFalsePositiveRate = cm => {
-    var fn;
-    var fp;
-    var tn;
-    var tp;
-    var _ref;
-    var _ref1;
+    let fn;
+    let fp;
+    let tn;
+    let tp;
+    let _ref;
+    let _ref1;
     (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
     return fp / (fp + tn);
   };
   formatConfusionMatrix = cm => {
-    var domain;
-    var fn;
-    var fnr;
-    var fp;
-    var fpr;
-    var normal;
-    var strong;
-    var table;
-    var tbody;
-    var tn;
-    var tp;
-    var tr;
-    var yellow;
-    var _ref;
-    var _ref1;
-    var _ref2;
-    var _ref3;
+    let domain;
+    let fn;
+    let fnr;
+    let fp;
+    let fpr;
+    let normal;
+    let strong;
+    let table;
+    let tbody;
+    let tn;
+    let tp;
+    let tr;
+    let yellow;
+    let _ref;
+    let _ref1;
+    let _ref2;
+    let _ref3;
     _ref = cm.matrix, (_ref1 = _ref[0], tn = _ref1[0], fp = _ref1[1]), (_ref2 = _ref[1], fn = _ref2[0], tp = _ref2[1]);
     fnr = fn / (tp + fn);
     fpr = fp / (fp + tn);
@@ -417,16 +417,16 @@ export function routines() {
     ])]);
   };
   formulateGetPredictionsOrigin = opts => {
-    var frameKey;
-    var modelKey;
-    var opt;
-    var sanitizedOpt;
-    var sanitizedOpts;
+    let frameKey;
+    let modelKey;
+    let opt;
+    let sanitizedOpt;
+    let sanitizedOpts;
     if (lodash.isArray(opts)) {
       sanitizedOpts = (() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = opts.length; _i < _len; _i++) {
           opt = opts[_i];
@@ -454,216 +454,216 @@ export function routines() {
     return 'getPredictions()';
   };
   H2O.Routines = _ => {
-    var asDataFrame;
-    var asH2OFrameFromDF;
-    var asH2OFrameFromRDD;
-    var assist;
-    var attrname;
-    var bindFrames;
-    var blacklistedAttributesBySchema;
-    var buildAutoModel;
-    var buildModel;
-    var buildPartialDependence;
-    var cancelJob;
-    var changeColumnType;
-    var computeSplits;
-    var createFrame;
-    var createGui;
-    var createPlot;
-    var deleteAll;
-    var deleteFrame;
-    var deleteFrames;
-    var deleteModel;
-    var deleteModels;
-    var dump;
-    var dumpFuture;
-    var exportFrame;
-    var exportModel;
-    var extendAsDataFrame;
-    var extendAsH2OFrame;
-    var extendBindFrames;
-    var extendCancelJob;
-    var extendCloud;
-    var extendColumnSummary;
-    var extendDataFrames;
-    var extendDeletedKeys;
-    var extendExportFrame;
-    var extendExportModel;
-    var extendFrame;
-    var extendFrameData;
-    var extendFrameSummary;
-    var extendFrames;
-    var extendGrid;
-    var extendGrids;
-    var extendGuiForm;
-    var extendImportModel;
-    var extendImportResults;
-    var extendJob;
-    var extendJobs;
-    var extendLogFile;
-    var extendMergeFramesResult;
-    var extendModel;
-    var extendModels;
-    var extendNetworkTest;
-    var extendParseResult;
-    var extendParseSetupResults;
-    var extendPartialDependence;
-    var extendPlot;
-    var extendPrediction;
-    var extendPredictions;
-    var extendProfile;
-    var extendRDDs;
-    var extendScalaCode;
-    var extendScalaIntp;
-    var extendSplitFrameResult;
-    var extendStackTrace;
-    var extendTimeline;
-    var f;
-    var findColumnIndexByColumnLabel;
-    var findColumnIndicesByColumnLabels;
-    var flow_;
-    var getCloud;
-    var getColumnSummary;
-    var getDataFrames;
-    var getFrame;
-    var getFrameData;
-    var getFrameSummary;
-    var getFrames;
-    var getGrid;
-    var getGrids;
-    var getJob;
-    var getJobs;
-    var getLogFile;
-    var getModel;
-    var getModelParameterValue;
-    var getModels;
-    var getPartialDependence;
-    var getPrediction;
-    var getPredictions;
-    var getProfile;
-    var getRDDs;
-    var getScalaIntp;
-    var getStackTrace;
-    var getTimeline;
-    var grid;
-    var gui;
-    var importFiles;
-    var importModel;
-    var imputeColumn;
-    var initAssistanceSparklingWater;
-    var inspect;
-    var inspect$1;
-    var inspect$2;
-    var inspectFrameColumns;
-    var inspectFrameData;
-    var inspectModelParameters;
-    var inspectNetworkTestResult;
-    var inspectObject;
-    var inspectObjectArray_;
-    var inspectParametersAcrossModels;
-    var inspectRawArray_;
-    var inspectRawObject_;
-    var inspectTwoDimTable_;
-    var inspect_;
-    var loadScript;
-    var ls;
-    var mergeFrames;
-    var name;
-    var parseFiles;
-    var plot;
-    var predict;
-    var proceed;
-    var read;
-    var render_;
-    var requestAsDataFrame;
-    var requestAsH2OFrameFromDF;
-    var requestAsH2OFrameFromRDD;
-    var requestAutoModelBuild;
-    var requestBindFrames;
-    var requestCancelJob;
-    var requestChangeColumnType;
-    var requestCloud;
-    var requestColumnSummary;
-    var requestCreateFrame;
-    var requestDataFrames;
-    var requestDeleteFrame;
-    var requestDeleteFrames;
-    var requestDeleteModel;
-    var requestDeleteModels;
-    var requestExportFrame;
-    var requestExportModel;
-    var requestFrame;
-    var requestFrameData;
-    var requestFrameSummary;
-    var requestFrameSummarySlice;
-    var requestFrames;
-    var requestGrid;
-    var requestGrids;
-    var requestImportAndParseFiles;
-    var requestImportAndParseSetup;
-    var requestImportFiles;
-    var requestImportModel;
-    var requestImputeColumn;
-    var requestJob;
-    var requestJobs;
-    var requestLogFile;
-    var requestMergeFrames;
-    var requestModel;
-    var requestModelBuild;
-    var requestModels;
-    var requestModelsByKeys;
-    var requestNetworkTest;
-    var requestParseFiles;
-    var requestParseSetup;
-    var requestPartialDependence;
-    var requestPartialDependenceData;
-    var requestPredict;
-    var requestPrediction;
-    var requestPredictions;
-    var requestPredicts;
-    var requestProfile;
-    var requestRDDs;
-    var requestRemoveAll;
-    var requestScalaCode;
-    var requestScalaIntp;
-    var requestSplitFrame;
-    var requestStackTrace;
-    var requestTimeline;
-    var routines;
-    var routinesOnSw;
-    var runScalaCode;
-    var schemaTransforms;
-    var setupParse;
-    var splitFrame;
-    var testNetwork;
-    var transformBinomialMetrics;
-    var unwrapPrediction;
-    var _apply;
-    var _async;
-    var _call;
-    var _fork;
-    var _get;
-    var _isFuture;
-    var _join;
-    var _plot;
-    var _ref;
-    var _schemaHacks;
+    let asDataFrame;
+    let asH2OFrameFromDF;
+    let asH2OFrameFromRDD;
+    let assist;
+    let attrname;
+    let bindFrames;
+    let blacklistedAttributesBySchema;
+    let buildAutoModel;
+    let buildModel;
+    let buildPartialDependence;
+    let cancelJob;
+    let changeColumnType;
+    let computeSplits;
+    let createFrame;
+    let createGui;
+    let createPlot;
+    let deleteAll;
+    let deleteFrame;
+    let deleteFrames;
+    let deleteModel;
+    let deleteModels;
+    let dump;
+    let dumpFuture;
+    let exportFrame;
+    let exportModel;
+    let extendAsDataFrame;
+    let extendAsH2OFrame;
+    let extendBindFrames;
+    let extendCancelJob;
+    let extendCloud;
+    let extendColumnSummary;
+    let extendDataFrames;
+    let extendDeletedKeys;
+    let extendExportFrame;
+    let extendExportModel;
+    let extendFrame;
+    let extendFrameData;
+    let extendFrameSummary;
+    let extendFrames;
+    let extendGrid;
+    let extendGrids;
+    let extendGuiForm;
+    let extendImportModel;
+    let extendImportResults;
+    let extendJob;
+    let extendJobs;
+    let extendLogFile;
+    let extendMergeFramesResult;
+    let extendModel;
+    let extendModels;
+    let extendNetworkTest;
+    let extendParseResult;
+    let extendParseSetupResults;
+    let extendPartialDependence;
+    let extendPlot;
+    let extendPrediction;
+    let extendPredictions;
+    let extendProfile;
+    let extendRDDs;
+    let extendScalaCode;
+    let extendScalaIntp;
+    let extendSplitFrameResult;
+    let extendStackTrace;
+    let extendTimeline;
+    let f;
+    let findColumnIndexByColumnLabel;
+    let findColumnIndicesByColumnLabels;
+    let flow_;
+    let getCloud;
+    let getColumnSummary;
+    let getDataFrames;
+    let getFrame;
+    let getFrameData;
+    let getFrameSummary;
+    let getFrames;
+    let getGrid;
+    let getGrids;
+    let getJob;
+    let getJobs;
+    let getLogFile;
+    let getModel;
+    let getModelParameterValue;
+    let getModels;
+    let getPartialDependence;
+    let getPrediction;
+    let getPredictions;
+    let getProfile;
+    let getRDDs;
+    let getScalaIntp;
+    let getStackTrace;
+    let getTimeline;
+    let grid;
+    let gui;
+    let importFiles;
+    let importModel;
+    let imputeColumn;
+    let initAssistanceSparklingWater;
+    let inspect;
+    let inspect$1;
+    let inspect$2;
+    let inspectFrameColumns;
+    let inspectFrameData;
+    let inspectModelParameters;
+    let inspectNetworkTestResult;
+    let inspectObject;
+    let inspectObjectArray_;
+    let inspectParametersAcrossModels;
+    let inspectRawArray_;
+    let inspectRawObject_;
+    let inspectTwoDimTable_;
+    let inspect_;
+    let loadScript;
+    let ls;
+    let mergeFrames;
+    let name;
+    let parseFiles;
+    let plot;
+    let predict;
+    let proceed;
+    let read;
+    let render_;
+    let requestAsDataFrame;
+    let requestAsH2OFrameFromDF;
+    let requestAsH2OFrameFromRDD;
+    let requestAutoModelBuild;
+    let requestBindFrames;
+    let requestCancelJob;
+    let requestChangeColumnType;
+    let requestCloud;
+    let requestColumnSummary;
+    let requestCreateFrame;
+    let requestDataFrames;
+    let requestDeleteFrame;
+    let requestDeleteFrames;
+    let requestDeleteModel;
+    let requestDeleteModels;
+    let requestExportFrame;
+    let requestExportModel;
+    let requestFrame;
+    let requestFrameData;
+    let requestFrameSummary;
+    let requestFrameSummarySlice;
+    let requestFrames;
+    let requestGrid;
+    let requestGrids;
+    let requestImportAndParseFiles;
+    let requestImportAndParseSetup;
+    let requestImportFiles;
+    let requestImportModel;
+    let requestImputeColumn;
+    let requestJob;
+    let requestJobs;
+    let requestLogFile;
+    let requestMergeFrames;
+    let requestModel;
+    let requestModelBuild;
+    let requestModels;
+    let requestModelsByKeys;
+    let requestNetworkTest;
+    let requestParseFiles;
+    let requestParseSetup;
+    let requestPartialDependence;
+    let requestPartialDependenceData;
+    let requestPredict;
+    let requestPrediction;
+    let requestPredictions;
+    let requestPredicts;
+    let requestProfile;
+    let requestRDDs;
+    let requestRemoveAll;
+    let requestScalaCode;
+    let requestScalaIntp;
+    let requestSplitFrame;
+    let requestStackTrace;
+    let requestTimeline;
+    let routines;
+    let routinesOnSw;
+    let runScalaCode;
+    let schemaTransforms;
+    let setupParse;
+    let splitFrame;
+    let testNetwork;
+    let transformBinomialMetrics;
+    let unwrapPrediction;
+    let _apply;
+    let _async;
+    let _call;
+    let _fork;
+    let _get;
+    let _isFuture;
+    let _join;
+    let _plot;
+    let _ref;
+    let _schemaHacks;
     _fork = function () {
-      var args;
-      var f;
+      let args;
+      let f;
       f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
       return Flow.Async.fork(f, args);
     };
     _join = function () {
-      var args;
-      var go;
-      var _i;
+      let args;
+      let go;
+      let _i;
       args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
       return Flow.Async.join(args, Flow.Async.applicate(go));
     };
     _call = function () {
-      var args;
-      var go;
+      let args;
+      let go;
       go = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
       return Flow.Async.join(args, Flow.Async.applicate(go));
     };
@@ -692,9 +692,9 @@ export function routines() {
       return raw;
     };
     render_ = function () {
-      var args;
-      var raw;
-      var render;
+      let args;
+      let raw;
+      let render;
       raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
       flow_(raw).render = go => render(...[
         _,
@@ -703,8 +703,8 @@ export function routines() {
       return raw;
     };
     inspect_ = (raw, inspectors) => {
-      var attr;
-      var root;
+      let attr;
+      let root;
       root = flow_(raw);
       if (root.inspect == null) {
         root.inspect = {};
@@ -724,10 +724,10 @@ export function routines() {
       return inspect$2(a, b);
     };
     inspect$1 = obj => {
-      var attr;
-      var inspections;
-      var inspectors;
-      var _ref1;
+      let attr;
+      let inspections;
+      let inspectors;
+      let _ref1;
       if (_isFuture(obj)) {
         return _async(inspect, obj);
       }
@@ -745,8 +745,8 @@ export function routines() {
       return {};
     };
     ls = obj => {
-      var inspectors;
-      var _ref1;
+      let inspectors;
+      let _ref1;
       if (_isFuture(obj)) {
         return _async(ls, obj);
       }
@@ -756,11 +756,11 @@ export function routines() {
       return [];
     };
     inspect$2 = (attr, obj) => {
-      var cached;
-      var inspection;
-      var inspectors;
-      var key;
-      var root;
+      let cached;
+      let inspection;
+      let inspectors;
+      let key;
+      let root;
       if (!attr) {
         return;
       }
@@ -812,15 +812,15 @@ export function routines() {
     };
     grid = f => plot(g => g(g.select(), g.from(f)));
     transformBinomialMetrics = metrics => {
-      var cms;
-      var domain;
-      var fns;
-      var fps;
-      var i;
-      var scores;
-      var tns;
-      var tp;
-      var tps;
+      let cms;
+      let domain;
+      let fns;
+      let fps;
+      let i;
+      let scores;
+      let tns;
+      let tp;
+      let tps;
       if (scores = metrics.thresholds_and_metric_scores) {
         domain = metrics.domain;
         tps = getTwoDimData(scores, 'tps');
@@ -828,9 +828,9 @@ export function routines() {
         fps = getTwoDimData(scores, 'fps');
         fns = getTwoDimData(scores, 'fns');
         cms = (() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (i = _i = 0, _len = tps.length; _i < _len; i = ++_i) {
             tp = tps[i];
@@ -886,13 +886,13 @@ export function routines() {
       return result;
     };
     extendPartialDependence = result => {
-      var data;
-      var i;
-      var inspections;
-      var origin;
-      var _i;
-      var _len;
-      var _ref1;
+      let data;
+      let i;
+      let inspections;
+      let origin;
+      let _i;
+      let _len;
+      let _ref1;
       inspections = {};
       _ref1 = result.partial_dependence_data;
       for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
@@ -927,27 +927,27 @@ export function routines() {
       }
     };
     inspectParametersAcrossModels = models => () => {
-      var data;
-      var i;
-      var leader;
-      var model;
-      var modelKeys;
-      var parameter;
-      var vectors;
+      let data;
+      let i;
+      let leader;
+      let model;
+      let modelKeys;
+      let parameter;
+      let vectors;
       leader = lodash.head(models);
       vectors = (() => {
-        var _i;
-        var _len;
-        var _ref1;
-        var _results;
+        let _i;
+        let _len;
+        let _ref1;
+        let _results;
         _ref1 = leader.parameters;
         _results = [];
         for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
           parameter = _ref1[i];
           data = (() => {
-            var _j;
-            var _len1;
-            var _results1;
+            let _j;
+            let _len1;
+            let _results1;
             _results1 = [];
             for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
               model = models[_j];
@@ -998,9 +998,9 @@ export function routines() {
         return _results;
       })();
       modelKeys = (() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
@@ -1014,13 +1014,13 @@ export function routines() {
       });
     };
     inspectModelParameters = model => () => {
-      var attr;
-      var attrs;
-      var data;
-      var i;
-      var parameter;
-      var parameters;
-      var vectors;
+      let attr;
+      let attrs;
+      let data;
+      let i;
+      let parameter;
+      let parameters;
+      let vectors;
       parameters = model.parameters;
       attrs = [
         'label',
@@ -1030,11 +1030,11 @@ export function routines() {
         'default_value'
       ];
       vectors = (() => {
-        var _i;
-        var _j;
-        var _len;
-        var _len1;
-        var _results;
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
+        let _results;
         _results = [];
         for (_i = 0, _len = attrs.length; _i < _len; _i++) {
           attr = attrs[_i];
@@ -1054,9 +1054,9 @@ export function routines() {
     };
     extendJob = job => render_(job, H2O.JobOutput, job);
     extendJobs = jobs => {
-      var job;
-      var _i;
-      var _len;
+      let job;
+      let _i;
+      let _len;
       for (_i = 0, _len = jobs.length; _i < _len; _i++) {
         job = jobs[_i];
         extendJob(job);
@@ -1078,11 +1078,11 @@ export function routines() {
       origin
     });
     inspectRawObject_ = (name, origin, description, obj) => () => {
-      var k;
-      var v;
-      var vectors;
+      let k;
+      let v;
+      let vectors;
       vectors = (() => {
-        var _results;
+        let _results;
         _results = [];
         for (k in obj) {
           if ({}.hasOwnProperty.call(obj, k)) {
@@ -1122,14 +1122,14 @@ export function routines() {
       ConfusionMatrix: { fields: null }
     };
     blacklistedAttributesBySchema = (() => {
-      var attrs;
-      var dict;
-      var dicts;
-      var field;
-      var schema;
-      var _i;
-      var _len;
-      var _ref1;
+      let attrs;
+      let dict;
+      let dicts;
+      let field;
+      let schema;
+      let _i;
+      let _len;
+      let _ref1;
       dicts = {};
       for (schema in _schemaHacks) {
         if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
@@ -1147,10 +1147,10 @@ export function routines() {
       return dicts;
     })();
     schemaTransforms = (() => {
-      var attrs;
-      var schema;
-      var transform;
-      var transforms;
+      let attrs;
+      let schema;
+      let transform;
+      let transforms;
       transforms = {};
       for (schema in _schemaHacks) {
         if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
@@ -1163,16 +1163,16 @@ export function routines() {
       return transforms;
     })();
     inspectObject = (inspections, name, origin, obj) => {
-      var attrs;
-      var blacklistedAttributes;
-      var k;
-      var meta;
-      var record;
-      var schemaType;
-      var transform;
-      var v;
-      var _ref1;
-      var _ref2;
+      let attrs;
+      let blacklistedAttributes;
+      let k;
+      let meta;
+      let record;
+      let schemaType;
+      let transform;
+      let v;
+      let _ref1;
+      let _ref2;
       schemaType = (_ref1 = obj.__meta) != null ? _ref1.schema_type : void 0;
       blacklistedAttributes = schemaType ? (attrs = blacklistedAttributesBySchema[schemaType]) ? attrs : {} : {};
       if (transform = schemaTransforms[schemaType]) {
@@ -1220,15 +1220,15 @@ export function routines() {
       }
     };
     extendModel = model => {
-      var refresh;
+      let refresh;
       lodash.extend = model => {
-        var inspections;
-        var origin;
-        var table;
-        var tableName;
-        var _i;
-        var _len;
-        var _ref1;
+        let inspections;
+        let origin;
+        let table;
+        let tableName;
+        let _i;
+        let _len;
+        let _ref1;
         inspections = {};
         inspections.parameters = inspectModelParameters(model);
         origin = `getModel ${flowPrelude.stringify(model.model_id.name)}`;
@@ -1256,8 +1256,8 @@ export function routines() {
       return render_(model, h2oModelOutput, model, refresh);
     };
     extendGrid = (grid, opts) => {
-      var inspections;
-      var origin;
+      let inspections;
+      let origin;
       origin = `getGrid ${flowPrelude.stringify(grid.grid_id.name)}`;
       if (opts) {
         origin += `, ${flowPrelude.stringify(opts)}`;
@@ -1271,14 +1271,14 @@ export function routines() {
     };
     extendGrids = grids => render_(grids, h2oGridsOutput, grids);
     extendModels = models => {
-      var algos;
-      var inspections;
-      var model;
+      let algos;
+      let inspections;
+      let model;
       inspections = {};
       algos = lodash.unique((() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
@@ -1303,12 +1303,12 @@ export function routines() {
       return predictions;
     };
     extendPrediction = result => {
-      var frameKey;
-      var inspections;
-      var modelKey;
-      var prediction;
-      var predictionFrame;
-      var _ref1;
+      let frameKey;
+      let inspections;
+      let modelKey;
+      let prediction;
+      let predictionFrame;
+      let _ref1;
       modelKey = result.model.name;
       frameKey = (_ref1 = result.frame) != null ? _ref1.name : void 0;
       prediction = lodash.head(result.model_metrics);
@@ -1324,17 +1324,17 @@ export function routines() {
       return render_(prediction, h2oPredictOutput, prediction);
     };
     inspectFrameColumns = (tableLabel, frameKey, frame, frameColumns) => () => {
-      var actionsData;
-      var attr;
-      var attrs;
-      var column;
-      var i;
-      var labelVector;
-      var title;
-      var toColumnSummaryLink;
-      var toConversionLink;
-      var typeVector;
-      var vectors;
+      let actionsData;
+      let attr;
+      let attrs;
+      let column;
+      let i;
+      let labelVector;
+      let title;
+      let toColumnSummaryLink;
+      let toConversionLink;
+      let typeVector;
+      let vectors;
       attrs = [
         'label',
         'type',
@@ -1350,9 +1350,9 @@ export function routines() {
       ];
       toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${flowPrelude.stringify(label)}>${lodash.escape(label)}</a>`;
       toConversionLink = value => {
-        var label;
-        var type;
-        var _ref1;
+        let label;
+        let type;
+        let _ref1;
         _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
         switch (type) {
           case 'enum':
@@ -1365,10 +1365,10 @@ export function routines() {
         }
       };
       vectors = (() => {
-        var _i;
-        var _len;
-        var _ref1;
-        var _results;
+        let _i;
+        let _len;
+        let _ref1;
+        let _results;
         _results = [];
         for (_i = 0, _len = attrs.length; _i < _len; _i++) {
           attr = attrs[_i];
@@ -1377,9 +1377,9 @@ export function routines() {
           switch (name) {
             case 'min':
               _results.push(createVector(title, 'Number', (() => {
-                var _j;
-                var _len1;
-                var _results1;
+                let _j;
+                let _len1;
+                let _results1;
                 _results1 = [];
                 for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                   column = frameColumns[_j];
@@ -1390,9 +1390,9 @@ export function routines() {
               break;
             case 'max':
               _results.push(createVector(title, 'Number', (() => {
-                var _j;
-                var _len1;
-                var _results1;
+                let _j;
+                let _len1;
+                let _results1;
                 _results1 = [];
                 for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                   column = frameColumns[_j];
@@ -1403,9 +1403,9 @@ export function routines() {
               break;
             case 'cardinality':
               _results.push(createVector(title, 'Number', (() => {
-                var _j;
-                var _len1;
-                var _results1;
+                let _j;
+                let _len1;
+                let _results1;
                 _results1 = [];
                 for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                   column = frameColumns[_j];
@@ -1416,9 +1416,9 @@ export function routines() {
               break;
             case 'label':
               _results.push(createFactor(title, 'String', (() => {
-                var _j;
-                var _len1;
-                var _results1;
+                let _j;
+                let _len1;
+                let _results1;
                 _results1 = [];
                 for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                   column = frameColumns[_j];
@@ -1429,9 +1429,9 @@ export function routines() {
               break;
             case 'type':
               _results.push(createFactor(title, 'String', (() => {
-                var _j;
-                var _len1;
-                var _results1;
+                let _j;
+                let _len1;
+                let _results1;
                 _results1 = [];
                 for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                   column = frameColumns[_j];
@@ -1443,9 +1443,9 @@ export function routines() {
             case 'mean':
             case 'sigma':
               _results.push(createVector(title, 'Number', (() => {
-                var _j;
-                var _len1;
-                var _results1;
+                let _j;
+                let _len1;
+                let _results1;
                 _results1 = [];
                 for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                   column = frameColumns[_j];
@@ -1456,9 +1456,9 @@ export function routines() {
               break;
             default:
               _results.push(createVector(title, 'Number', (() => {
-                var _j;
-                var _len1;
-                var _results1;
+                let _j;
+                let _len1;
+                let _results1;
                 _results1 = [];
                 for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
                   column = frameColumns[_j];
@@ -1472,9 +1472,9 @@ export function routines() {
       })();
       labelVector = vectors[0], typeVector = vectors[1];
       actionsData = (() => {
-        var _i;
-        var _ref1;
-        var _results;
+        let _i;
+        let _ref1;
+        let _results;
         _results = [];
         for (i = _i = 0, _ref1 = frameColumns.length; _ref1 >= 0 ? _i < _ref1 : _i > _ref1; i = _ref1 >= 0 ? ++_i : --_i) {
           _results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);
@@ -1489,17 +1489,17 @@ export function routines() {
       });
     };
     inspectFrameData = (frameKey, frame) => () => {
-      var column;
-      var domain;
-      var frameColumns;
-      var index;
-      var rowIndex;
-      var vectors;
+      let column;
+      let domain;
+      let frameColumns;
+      let index;
+      let rowIndex;
+      let vectors;
       frameColumns = frame.columns;
       vectors = (() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = frameColumns.length; _i < _len; _i++) {
           column = frameColumns[_i];
@@ -1511,10 +1511,10 @@ export function routines() {
             case 'enum':
               domain = column.domain;
               _results.push(createFactor(column.label, 'String', (() => {
-                var _j;
-                var _len1;
-                var _ref1;
-                var _results1;
+                let _j;
+                let _len1;
+                let _ref1;
+                let _results1;
                 _ref1 = column.data;
                 _results1 = [];
                 for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -1538,10 +1538,10 @@ export function routines() {
         return _results;
       })();
       vectors.unshift(createVector('Row', 'Number', (() => {
-        var _i;
-        var _ref1;
-        var _ref2;
-        var _results;
+        let _i;
+        let _ref1;
+        let _ref2;
+        let _results;
         _results = [];
         for (rowIndex = _i = _ref1 = frame.row_offset, _ref2 = frame.row_count; _ref1 <= _ref2 ? _i < _ref2 : _i > _ref2; rowIndex = _ref1 <= _ref2 ? ++_i : --_i) {
           _results.push(rowIndex + 1);
@@ -1554,27 +1554,27 @@ export function routines() {
       });
     };
     extendFrameData = (frameKey, frame) => {
-      var inspections;
-      var origin;
+      let inspections;
+      let origin;
       inspections = { data: inspectFrameData(frameKey, frame) };
       origin = `getFrameData ${flowPrelude.stringify(frameKey)}`;
       inspect_(frame, inspections);
       return render_(frame, h2oFrameDataOutput, frame);
     };
     extendFrame = (frameKey, frame) => {
-      var column;
-      var enumColumns;
-      var inspections;
-      var origin;
+      let column;
+      let enumColumns;
+      let inspections;
+      let origin;
       inspections = {
         columns: inspectFrameColumns('columns', frameKey, frame, frame.columns),
         data: inspectFrameData(frameKey, frame)
       };
       enumColumns = (() => {
-        var _i;
-        var _len;
-        var _ref1;
-        var _results;
+        let _i;
+        let _len;
+        let _ref1;
+        let _results;
         _ref1 = frame.columns;
         _results = [];
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -1595,16 +1595,16 @@ export function routines() {
       return render_(frame, h2oFrameOutput, frame);
     };
     extendFrameSummary = (frameKey, frame) => {
-      var column;
-      var enumColumns;
-      var inspections;
-      var origin;
+      let column;
+      let enumColumns;
+      let inspections;
+      let origin;
       inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
       enumColumns = (() => {
-        var _i;
-        var _len;
-        var _ref1;
-        var _results;
+        let _i;
+        let _len;
+        let _ref1;
+        let _results;
         _ref1 = frame.columns;
         _results = [];
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -1625,18 +1625,18 @@ export function routines() {
       return render_(frame, h2oFrameOutput, frame);
     };
     extendColumnSummary = (frameKey, frame, columnName) => {
-      var column;
-      var inspectCharacteristics;
-      var inspectDistribution;
-      var inspectDomain;
-      var inspectPercentiles;
-      var inspectSummary;
-      var inspections;
-      var rowCount;
+      let column;
+      let inspectCharacteristics;
+      let inspectDistribution;
+      let inspectDomain;
+      let inspectPercentiles;
+      let inspectSummary;
+      let inspections;
+      let rowCount;
       column = lodash.head(frame.columns);
       rowCount = frame.rows;
       inspectPercentiles = () => {
-        var vectors;
+        let vectors;
         vectors = [
           createVector('percentile', 'Number', frame.default_percentiles),
           createVector('value', 'Number', column.percentiles)
@@ -1647,29 +1647,29 @@ export function routines() {
         });
       };
       inspectDistribution = () => {
-        var base;
-        var binCount;
-        var binIndex;
-        var bins;
-        var count;
-        var countData;
-        var i;
-        var interval;
-        var intervalData;
-        var m;
-        var minBinCount;
-        var n;
-        var rows;
-        var stride;
-        var vectors;
-        var width;
-        var widthData;
-        var _i;
-        var _j;
-        var _k;
-        var _l;
-        var _len;
-        var _ref1;
+        let base;
+        let binCount;
+        let binIndex;
+        let bins;
+        let count;
+        let countData;
+        let i;
+        let interval;
+        let intervalData;
+        let m;
+        let minBinCount;
+        let n;
+        let rows;
+        let stride;
+        let vectors;
+        let width;
+        let widthData;
+        let _i;
+        let _j;
+        let _k;
+        let _l;
+        let _len;
+        let _ref1;
         minBinCount = 32;
         base = column.histogram_base, stride = column.histogram_stride, bins = column.histogram_bins;
         width = Math.ceil(bins.length / minBinCount);
@@ -1726,16 +1726,16 @@ export function routines() {
         });
       };
       inspectCharacteristics = () => {
-        var characteristicData;
-        var count;
-        var countData;
-        var missing_count;
-        var negative_infinity_count;
-        var other;
-        var percentData;
-        var positive_infinity_count;
-        var vectors;
-        var zero_count;
+        let characteristicData;
+        let count;
+        let countData;
+        let missing_count;
+        let negative_infinity_count;
+        let other;
+        let percentData;
+        let positive_infinity_count;
+        let vectors;
+        let zero_count;
         missing_count = column.missing_count, zero_count = column.zero_count, positive_infinity_count = column.positive_infinity_count, negative_infinity_count = column.negative_infinity_count;
         other = rowCount - missing_count - zero_count - positive_infinity_count - negative_infinity_count;
         characteristicData = [
@@ -1753,9 +1753,9 @@ export function routines() {
           other
         ];
         percentData = (() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = countData.length; _i < _len; _i++) {
             count = countData[_i];
@@ -1775,16 +1775,16 @@ export function routines() {
         });
       };
       inspectSummary = () => {
-        var defaultPercentiles;
-        var maximum;
-        var mean;
-        var minimum;
-        var outliers;
-        var percentiles;
-        var q1;
-        var q2;
-        var q3;
-        var vectors;
+        let defaultPercentiles;
+        let maximum;
+        let mean;
+        let minimum;
+        let outliers;
+        let percentiles;
+        let q1;
+        let q2;
+        let q3;
+        let vectors;
         defaultPercentiles = frame.default_percentiles;
         percentiles = column.percentiles;
         mean = column.mean;
@@ -1810,17 +1810,17 @@ export function routines() {
         });
       };
       inspectDomain = () => {
-        var counts;
-        var i;
-        var labels;
-        var level;
-        var levels;
-        var percents;
-        var sortedLevels;
-        var vectors;
-        var _i;
-        var _len;
-        var _ref1;
+        let counts;
+        let i;
+        let labels;
+        let level;
+        let levels;
+        let percents;
+        let sortedLevels;
+        let vectors;
+        let _i;
+        let _len;
+        let _ref1;
         levels = lodash.map(column.histogram_bins, (count, index) => ({
           count,
           index
@@ -1927,18 +1927,18 @@ export function routines() {
       return go(null, extendPartialDependence(result));
     });
     computeSplits = (ratios, keys) => {
-      var i;
-      var key;
-      var part;
-      var parts;
-      var ratio;
-      var splits;
-      var sum;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
-      var _ref1;
+      let i;
+      let key;
+      let part;
+      let parts;
+      let ratio;
+      let splits;
+      let sum;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      let _ref1;
       parts = [];
       sum = 0;
       _ref1 = keys.slice(0, ratios.length);
@@ -1974,16 +1974,16 @@ export function routines() {
       return go(null, extendBindFrames(key, result));
     });
     requestSplitFrame = (frameKey, splitRatios, splitKeys, seed, go) => {
-      var g;
-      var i;
-      var l;
-      var part;
-      var randomVecKey;
-      var sliceExpr;
-      var splits;
-      var statements;
-      var _i;
-      var _len;
+      let g;
+      let i;
+      let l;
+      let part;
+      let randomVecKey;
+      let sliceExpr;
+      let splits;
+      let statements;
+      let _i;
+      let _len;
       if (splitRatios.length === splitKeys.length - 1) {
         splits = computeSplits(splitRatios, splitKeys);
         randomVecKey = createTempKey();
@@ -2027,9 +2027,9 @@ export function routines() {
       includeAllRightRows,
       go
     ) => {
-      var lr;
-      var rr;
-      var statement;
+      let lr;
+      let rr;
+      let statement;
       lr = includeAllLeftRows ? 'TRUE' : 'FALSE';
       rr = includeAllRightRows ? 'TRUE' : 'FALSE';
       statement = `(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;
@@ -2142,7 +2142,7 @@ export function routines() {
       return assist(exportFrame, frameKey, path, opts);
     };
     requestDeleteFrames = (frameKeys, go) => {
-      var futures;
+      let futures;
       futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, frameKey));
       return Flow.Async.join(futures, (error, results) => {
         if (error) {
@@ -2169,7 +2169,7 @@ export function routines() {
       return go(null, extendModels(models));
     });
     requestModelsByKeys = (modelKeys, go) => {
-      var futures;
+      let futures;
       futures = lodash.map(modelKeys, key => _fork(_.requestModel, key));
       return Flow.Async.join(futures, (error, models) => {
         if (error) {
@@ -2223,11 +2223,11 @@ export function routines() {
       }
     };
     findColumnIndexByColumnLabel = (frame, columnLabel) => {
-      var column;
-      var i;
-      var _i;
-      var _len;
-      var _ref1;
+      let column;
+      let i;
+      let _i;
+      let _len;
+      let _ref1;
       _ref1 = frame.columns;
       for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
         column = _ref1[i];
@@ -2238,10 +2238,10 @@ export function routines() {
       throw new Flow.Error(`Column [${columnLabel}] not found in frame`);
     };
     findColumnIndicesByColumnLabels = (frame, columnLabels) => {
-      var columnLabel;
-      var _i;
-      var _len;
-      var _results;
+      let columnLabel;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = columnLabels.length; _i < _len; _i++) {
         columnLabel = columnLabels[_i];
@@ -2250,19 +2250,19 @@ export function routines() {
       return _results;
     };
     requestImputeColumn = (opts, go) => {
-      var column;
-      var combineMethod;
-      var frame;
-      var groupByColumns;
-      var method;
+      let column;
+      let combineMethod;
+      let frame;
+      let groupByColumns;
+      let method;
       frame = opts.frame, column = opts.column, method = opts.method, combineMethod = opts.combineMethod, groupByColumns = opts.groupByColumns;
       combineMethod = combineMethod != null ? combineMethod : 'interpolate';
       return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-        var columnIndex;
-        var columnIndicesError;
-        var columnKeyError;
-        var groupByArg;
-        var groupByColumnIndices;
+        let columnIndex;
+        let columnIndicesError;
+        let columnKeyError;
+        let groupByArg;
+        let groupByColumnIndices;
         if (error) {
           return go(error);
         }
@@ -2292,15 +2292,15 @@ export function routines() {
       });
     };
     requestChangeColumnType = (opts, go) => {
-      var column;
-      var frame;
-      var method;
-      var type;
+      let column;
+      let frame;
+      let method;
+      let type;
       frame = opts.frame, column = opts.column, type = opts.type;
       method = type === 'enum' ? 'as.factor' : 'as.numeric';
       return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-        var columnIndex;
-        var columnKeyError;
+        let columnIndex;
+        let columnKeyError;
         try {
           columnIndex = findColumnIndexByColumnLabel(result, column);
         } catch (_error) {
@@ -2366,7 +2366,7 @@ export function routines() {
       return assist(exportModel, modelKey, path, opts);
     };
     requestDeleteModels = (modelKeys, go) => {
-      var futures;
+      let futures;
       futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, modelKey));
       return Flow.Async.join(futures, (error, results) => {
         if (error) {
@@ -2443,7 +2443,7 @@ export function routines() {
     };
     extendParseSetupResults = (args, parseSetupResults) => render_(parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
     requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
-      var sourceKeys;
+      let sourceKeys;
       if (error) {
         return go(error);
       }
@@ -2484,7 +2484,7 @@ export function routines() {
       chunkSize,
       go
     ) => _.requestImportFiles(paths, (error, importResults) => {
-      var sourceKeys;
+      let sourceKeys;
       if (error) {
         return go(error);
       }
@@ -2516,16 +2516,16 @@ export function routines() {
       return go(null, extendParseResult(parseResult));
     });
     parseFiles = opts => {
-      var checkHeader;
-      var chunkSize;
-      var columnCount;
-      var columnNames;
-      var columnTypes;
-      var deleteOnDone;
-      var destinationKey;
-      var parseType;
-      var separator;
-      var useSingleQuotes;
+      let checkHeader;
+      let chunkSize;
+      let columnCount;
+      let columnNames;
+      let columnTypes;
+      let deleteOnDone;
+      let destinationKey;
+      let parseType;
+      let separator;
+      let useSingleQuotes;
       destinationKey = opts.destination_frame;
       parseType = opts.parse_type;
       separator = opts.separator;
@@ -2542,17 +2542,17 @@ export function routines() {
       return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
     };
     requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
-      var messages;
-      var validation;
+      let messages;
+      let validation;
       if (error) {
         return go(error);
       }
       if (result.error_count > 0) {
         messages = (() => {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
+          let _i;
+          let _len;
+          let _ref1;
+          let _results;
           _ref1 = result.messages;
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -2566,7 +2566,7 @@ export function routines() {
       return go(null, extendJob(result.job));
     });
     requestAutoModelBuild = (opts, go) => {
-      var params;
+      let params;
       params = {
         input_spec: {
           training_frame: opts.frame,
@@ -2601,11 +2601,11 @@ export function routines() {
     };
     requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(go));
     requestPredicts = (opts, go) => {
-      var futures;
+      let futures;
       futures = lodash.map(opts, opt => {
-        var frameKey;
-        var modelKey;
-        var options;
+        let frameKey;
+        let modelKey;
+        let options;
         modelKey = opt.model, frameKey = opt.frame, options = opt.options;
         return _fork(_.requestPredict, null, modelKey, frameKey, options || {});
       });
@@ -2617,20 +2617,20 @@ export function routines() {
       });
     };
     predict = opts => {
-      var combos;
-      var deep_features_hidden_layer;
-      var exemplar_index;
-      var frame;
-      var frames;
-      var leaf_node_assignment;
-      var model;
-      var models;
-      var predictions_frame;
-      var reconstruction_error;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
+      let combos;
+      let deep_features_hidden_layer;
+      let exemplar_index;
+      let frame;
+      let frames;
+      let leaf_node_assignment;
+      let model;
+      let models;
+      let predictions_frame;
+      let reconstruction_error;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
       if (opts == null) {
         opts = {};
       }
@@ -2683,18 +2683,18 @@ export function routines() {
     };
     requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(go));
     requestPredictions = (opts, go) => {
-      var frameKey;
-      var futures;
-      var modelKey;
+      let frameKey;
+      let futures;
+      let modelKey;
       if (lodash.isArray(opts)) {
         futures = lodash.map(opts, opt => {
-          var frameKey;
-          var modelKey;
+          let frameKey;
+          let modelKey;
           modelKey = opt.model, frameKey = opt.frame;
           return _fork(_.requestPredictions, modelKey, frameKey);
         });
         return Flow.Async.join(futures, (error, predictions) => {
-          var uniquePredictions;
+          let uniquePredictions;
           if (error) {
             return go(error);
           }
@@ -2711,9 +2711,9 @@ export function routines() {
       });
     };
     getPrediction = opts => {
-      var frame;
-      var model;
-      var predictions_frame;
+      let frame;
+      let model;
+      let predictions_frame;
       if (opts == null) {
         opts = {};
       }
@@ -2755,7 +2755,7 @@ export function routines() {
     });
     getStackTrace = () => _fork(requestStackTrace);
     requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
-      var NODE_INDEX_SELF;
+      let NODE_INDEX_SELF;
       if (error) {
         return go(error);
       }
@@ -2894,8 +2894,8 @@ export function routines() {
       return _fork(requestProfile, opts.depth);
     };
     loadScript = (path, go) => {
-      var onDone;
-      var onFail;
+      let onDone;
+      let onFail;
       onDone = (script, status) => go(null, {
         script,
         status
@@ -2917,8 +2917,8 @@ export function routines() {
       return Flow.Async.async(() => f);
     };
     assist = function () {
-      var args;
-      var func;
+      let args;
+      let func;
       func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
       if (func === void 0) {
         return _fork(proceed, h2oAssist, [_assistance]);

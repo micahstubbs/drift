@@ -1,15 +1,15 @@
 export function h2oTimelineOutput(_, _go, _timeline) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createEvent;
-  var refresh;
-  var toggleRefresh;
-  var updateTimeline;
-  var _data;
-  var _headers;
-  var _isBusy;
-  var _isLive;
-  var _timestamp;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createEvent;
+  let refresh;
+  let toggleRefresh;
+  let updateTimeline;
+  let _data;
+  let _headers;
+  let _isBusy;
+  let _isLive;
+  let _timestamp;
   _isLive = Flow.Dataflow.signal(false);
   _isBusy = Flow.Dataflow.signal(false);
   _headers = [
@@ -59,19 +59,19 @@ export function h2oTimelineOutput(_, _go, _timeline) {
     }
   };
   updateTimeline = timeline => {
-    var cell;
-    var event;
-    var grid;
-    var header;
-    var table;
-    var tbody;
-    var td;
-    var th;
-    var thead;
-    var ths;
-    var tr;
-    var trs;
-    var _ref;
+    let cell;
+    let event;
+    let grid;
+    let header;
+    let table;
+    let tbody;
+    let td;
+    let th;
+    let thead;
+    let ths;
+    let tr;
+    let trs;
+    let _ref;
     _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td');
     grid = _ref[0];
     table = _ref[1];
@@ -81,9 +81,9 @@ export function h2oTimelineOutput(_, _go, _timeline) {
     th = _ref[5];
     td = _ref[6];
     ths = ((() => {
-      var _i;
-      var _len;
-      var _results;
+      let _i;
+      let _len;
+      let _results;
       _results = [];
       for (_i = 0, _len = _headers.length; _i < _len; _i++) {
         header = _headers[_i];

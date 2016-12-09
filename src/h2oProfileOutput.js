@@ -1,23 +1,23 @@
 export function h2oProfileOutput(_, _go, _profile) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createNode;
-  var i;
-  var node;
-  var _activeNode;
-  var _nodes;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createNode;
+  let i;
+  let node;
+  let _activeNode;
+  let _nodes;
   _activeNode = Flow.Dataflow.signal(null);
   createNode = node => {
-    var display;
-    var entries;
-    var entry;
-    var self;
+    let display;
+    let entries;
+    let entry;
+    let self;
     display = () => _activeNode(self);
     entries = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = node.entries;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -37,10 +37,10 @@ export function h2oProfileOutput(_, _go, _profile) {
     };
   };
   _nodes = ((() => {
-    var _i;
-    var _len;
-    var _ref;
-    var _results;
+    let _i;
+    let _len;
+    let _ref;
+    let _results;
     _ref = _profile.nodes;
     _results = [];
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {

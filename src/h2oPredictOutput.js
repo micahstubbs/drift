@@ -2,32 +2,32 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oPredictOutput(_, _go, prediction) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var frame;
-  var inspect;
-  var model;
-  var renderPlot;
-  var table;
-  var tableName;
-  var _canInspect;
-  var _i;
-  var _len;
-  var _plots;
-  var _ref;
-  var _ref1;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let frame;
+  let inspect;
+  let model;
+  let renderPlot;
+  let table;
+  let tableName;
+  let _canInspect;
+  let _i;
+  let _len;
+  let _plots;
+  let _ref;
+  let _ref1;
   if (prediction) {
     frame = prediction.frame, model = prediction.model;
   }
   _plots = Flow.Dataflow.signals([]);
   _canInspect = prediction.__meta;
   renderPlot = (title, prediction, render) => {
-    var combineWithFrame;
-    var container;
+    let combineWithFrame;
+    let container;
     container = Flow.Dataflow.signal(null);
     combineWithFrame = () => {
-      var predictionsFrameName;
-      var targetFrameName;
+      let predictionsFrameName;
+      let targetFrameName;
       predictionsFrameName = prediction.predictions.frame_id.name;
       targetFrameName = `combined-${predictionsFrameName}`;
       return _.insertAndExecuteCell('cs', `bindFrames ${flowPrelude.stringify(targetFrameName)}, [ ${flowPrelude.stringify(predictionsFrameName)}, ${flowPrelude.stringify(frame.name)} ]`);
@@ -37,7 +37,7 @@ export function h2oPredictOutput(_, _go, prediction) {
         return console.debug(error);
       }
       $('a', vis.element).on('click', e => {
-        var $a;
+        let $a;
         $a = $(e.target);
         switch ($a.attr('data-type')) {
           case 'frame':

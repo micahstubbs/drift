@@ -2,32 +2,32 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oFrameOutput(_, _go, _frame) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var MaxItemsPerPage;
-  var createModel;
-  var deleteFrame;
-  var download;
-  var exportFrame;
-  var goToNextPage;
-  var goToPreviousPage;
-  var inspect;
-  var inspectData;
-  var predict;
-  var refreshColumns;
-  var renderFrame;
-  var renderGrid;
-  var renderPlot;
-  var splitFrame;
-  var _canGoToNextPage;
-  var _canGoToPreviousPage;
-  var _chunkSummary;
-  var _columnNameSearchTerm;
-  var _currentPage;
-  var _distributionSummary;
-  var _grid;
-  var _lastUsedSearchTerm;
-  var _maxPages;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let MaxItemsPerPage;
+  let createModel;
+  let deleteFrame;
+  let download;
+  let exportFrame;
+  let goToNextPage;
+  let goToPreviousPage;
+  let inspect;
+  let inspectData;
+  let predict;
+  let refreshColumns;
+  let renderFrame;
+  let renderGrid;
+  let renderPlot;
+  let splitFrame;
+  let _canGoToNextPage;
+  let _canGoToPreviousPage;
+  let _chunkSummary;
+  let _columnNameSearchTerm;
+  let _currentPage;
+  let _distributionSummary;
+  let _grid;
+  let _lastUsedSearchTerm;
+  let _maxPages;
   MaxItemsPerPage = 20;
   _grid = Flow.Dataflow.signal(null);
   _chunkSummary = Flow.Dataflow.signal(null);
@@ -48,7 +48,7 @@ export function h2oFrameOutput(_, _go, _frame) {
       return console.debug(error);
     }
     $('a', vis.element).on('click', e => {
-      var $a;
+      let $a;
       $a = $(e.target);
       switch ($a.attr('data-type')) {
         case 'summary-link':
@@ -83,9 +83,9 @@ export function h2oFrameOutput(_, _go, _frame) {
   };
   _lastUsedSearchTerm = null;
   refreshColumns = pageIndex => {
-    var itemCount;
-    var searchTerm;
-    var startIndex;
+    let itemCount;
+    let searchTerm;
+    let startIndex;
     searchTerm = _columnNameSearchTerm();
     if (searchTerm !== _lastUsedSearchTerm) {
       pageIndex = 0;
@@ -103,14 +103,14 @@ export function h2oFrameOutput(_, _go, _frame) {
     });
   };
   goToPreviousPage = () => {
-    var currentPage;
+    let currentPage;
     currentPage = _currentPage();
     if (currentPage > 0) {
       refreshColumns(currentPage - 1);
     }
   };
   goToNextPage = () => {
-    var currentPage;
+    let currentPage;
     currentPage = _currentPage();
     if (currentPage < _maxPages() - 1) {
       refreshColumns(currentPage + 1);

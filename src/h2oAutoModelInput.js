@@ -1,15 +1,15 @@
 export function h2oAutoModelInput(_, _go, opts) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var buildModel;
-  var defaultMaxRunTime;
-  var _canBuildModel;
-  var _column;
-  var _columns;
-  var _frame;
-  var _frames;
-  var _hasFrame;
-  var _maxRunTime;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let buildModel;
+  let defaultMaxRunTime;
+  let _canBuildModel;
+  let _column;
+  let _columns;
+  let _frame;
+  let _frames;
+  let _hasFrame;
+  let _maxRunTime;
   if (opts == null) {
     opts = {};
   }
@@ -27,9 +27,9 @@ export function h2oAutoModelInput(_, _go, opts) {
   defaultMaxRunTime = 3600;
   _maxRunTime = Flow.Dataflow.signal(defaultMaxRunTime);
   buildModel = () => {
-    var arg;
-    var maxRunTime;
-    var parsed;
+    let arg;
+    let maxRunTime;
+    let parsed;
     maxRunTime = defaultMaxRunTime;
     if (!lodash.isNaN(parsed = parseInt(_maxRunTime(), 10))) {
       maxRunTime = parsed;
@@ -42,14 +42,14 @@ export function h2oAutoModelInput(_, _go, opts) {
     return _.insertAndExecuteCell('cs', `buildAutoModel ${JSON.stringify(arg)}`);
   };
   _.requestFrames((error, frames) => {
-    var frame;
+    let frame;
     if (error) {
       // empty
     } else {
       _frames((() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = frames.length; _i < _len; _i++) {
           frame = frames[_i];
@@ -67,15 +67,15 @@ export function h2oAutoModelInput(_, _go, opts) {
   Flow.Dataflow.react(_frame, frame => {
     if (frame) {
       return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
-        var column;
+        let column;
         if (error) {
           // empty
         } else {
           _columns((() => {
-            var _i;
-            var _len;
-            var _ref;
-            var _results;
+            let _i;
+            let _len;
+            let _ref;
+            let _results;
             _ref = frame.columns;
             _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {

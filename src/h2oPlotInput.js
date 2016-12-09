@@ -2,25 +2,25 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oPlotInput(_, _go, _frame) {
-  var plot;
-  var vector;
-  var _canPlot;
-  var _color;
-  var _type;
-  var _types;
-  var _vectors;
-  var _x;
-  var _y;
+  let plot;
+  let vector;
+  let _canPlot;
+  let _color;
+  let _type;
+  let _types;
+  let _vectors;
+  let _x;
+  let _y;
   _types = [
     'point',
     'path',
     'rect'
   ];
   _vectors = (() => {
-    var _i;
-    var _len;
-    var _ref;
-    var _results;
+    let _i;
+    let _len;
+    let _ref;
+    let _results;
     _ref = _frame.vectors;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -37,8 +37,8 @@ export function h2oPlotInput(_, _go, _frame) {
   _color = Flow.Dataflow.signal(null);
   _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
   plot = () => {
-    var color;
-    var command;
+    let color;
+    let command;
     command = (color = _color()) ? `plot (g) -> g(\n  g.${_type()}(\n    g.position ${flowPrelude.stringify(_x())}, ${flowPrelude.stringify(_y())}\n    g.color ${flowPrelude.stringify(color)}\n  )\n  g.from inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)` : `plot (g) -> g(\n  g.${_type()}(\n    g.position ${flowPrelude.stringify(_x())}, ${flowPrelude.stringify(_y())}\n  )\n  g.from inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)`;
     return _.insertAndExecuteCell('cs', command);
   };

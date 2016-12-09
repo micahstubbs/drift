@@ -2,17 +2,17 @@ import { flowConfirmDialog } from '../flowConfirmDialog';
 import { flowAlertDialog } from '../flowAlertDialog';
 
 export function dialogs() {
-  var Flow = window.Flow;
-  var __slice = [].slice;
+  const Flow = window.Flow;
+  const __slice = [].slice;
   Flow.Dialogs = _ => {
-    var showDialog;
-    var _dialog;
+    let showDialog;
+    let _dialog;
     _dialog = Flow.Dataflow.signal(null);
     showDialog = (ctor, args, _go) => {
-      var $dialog;
-      var dialog;
-      var go;
-      var responded;
+      let $dialog;
+      let dialog;
+      let go;
+      let responded;
       responded = false;
       go = response => {
         if (!responded) {
@@ -37,10 +37,10 @@ export function dialogs() {
       });
     };
     Flow.Dataflow.link(_.dialog, function () {
-      var args;
-      var ctor;
-      var go;
-      var _i;
+      let args;
+      let ctor;
+      let go;
+      let _i;
       ctor = arguments[0], args = arguments.length >= 3 ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), go = arguments[_i++];
       return showDialog(ctor, args, go);
     });

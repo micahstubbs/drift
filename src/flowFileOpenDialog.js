@@ -1,13 +1,13 @@
 export function flowFileOpenDialog(_, _go) {
-  var Flow = window.Flow;
-  var accept;
-  var checkIfNameIsInUse;
-  var decline;
-  var uploadFile;
-  var _canAccept;
-  var _file;
-  var _form;
-  var _overwrite;
+  const Flow = window.Flow;
+  let accept;
+  let checkIfNameIsInUse;
+  let decline;
+  let uploadFile;
+  let _canAccept;
+  let _file;
+  let _form;
+  let _overwrite;
   _overwrite = Flow.Dataflow.signal(false);
   _form = Flow.Dataflow.signal(null);
   _file = Flow.Dataflow.signal(null);
@@ -23,8 +23,8 @@ export function flowFileOpenDialog(_, _go) {
     filename
   }));
   accept = () => {
-    var basename;
-    var file;
+    let basename;
+    let file;
     if (file = _file()) {
       basename = H2O.Util.getFileBaseName(file.name, '.flow');
       if (_overwrite()) {

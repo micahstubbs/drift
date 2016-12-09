@@ -2,17 +2,17 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var column;
-  var impute;
-  var inspect;
-  var renderPlot;
-  var table;
-  var _characteristicsPlot;
-  var _distributionPlot;
-  var _domainPlot;
-  var _summaryPlot;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let column;
+  let impute;
+  let inspect;
+  let renderPlot;
+  let table;
+  let _characteristicsPlot;
+  let _distributionPlot;
+  let _domainPlot;
+  let _summaryPlot;
   column = lodash.head(frame.columns);
   _characteristicsPlot = Flow.Dataflow.signal(null);
   _summaryPlot = Flow.Dataflow.signal(null);

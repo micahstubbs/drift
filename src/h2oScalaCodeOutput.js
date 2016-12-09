@@ -1,10 +1,10 @@
 export function h2oScalaCodeOutput(_, _go, _result) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createScalaCodeView;
-  var _scalaCodeView;
-  var _scalaLinkText;
-  var _scalaResponseVisible;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createScalaCodeView;
+  let _scalaCodeView;
+  let _scalaLinkText;
+  let _scalaResponseVisible;
   _scalaCodeView = Flow.Dataflow.signal(null);
   _scalaResponseVisible = Flow.Dataflow.signal(false);
   _scalaLinkText = Flow.Dataflow.signal('Show Scala Response');

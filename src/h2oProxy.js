@@ -1,107 +1,107 @@
 export function h2oProxy(_) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var cacheModelBuilders;
-  var composePath;
-  var doDelete;
-  var doGet;
-  var doPost;
-  var doPostJSON;
-  var doPut;
-  var doUpload;
-  var download;
-  var encodeArrayForPost;
-  var encodeObject;
-  var encodeObjectForPost;
-  var getGridModelBuilderEndpoint;
-  var getLines;
-  var getModelBuilderEndpoint;
-  var getModelBuilders;
-  var http;
-  var mapWithKey;
-  var optsToString;
-  var requestAbout;
-  var requestAsDataFrame;
-  var requestAsH2OFrameFromDF;
-  var requestAsH2OFrameFromRDD;
-  var requestAutoModelBuild;
-  var requestCancelJob;
-  var requestCloud;
-  var requestColumnSummary;
-  var requestCreateFrame;
-  var requestDataFrames;
-  var requestDeleteFrame;
-  var requestDeleteModel;
-  var requestDeleteObject;
-  var requestEcho;
-  var requestEndpoint;
-  var requestEndpoints;
-  var requestExec;
-  var requestExportFrame;
-  var requestExportModel;
-  var requestFileGlob;
-  var requestFlow;
-  var requestFrame;
-  var requestFrameSlice;
-  var requestFrameSummary;
-  var requestFrameSummarySlice;
-  var requestFrameSummaryWithoutData;
-  var requestFrames;
-  var requestGrid;
-  var requestGrids;
-  var requestHelpContent;
-  var requestHelpIndex;
-  var requestImportFile;
-  var requestImportFiles;
-  var requestImportModel;
-  var requestInspect;
-  var requestIsStorageConfigured;
-  var requestJob;
-  var requestJobs;
-  var requestLogFile;
-  var requestModel;
-  var requestModelBuild;
-  var requestModelBuilder;
-  var requestModelBuilders;
-  var requestModelBuildersVisibility;
-  var requestModelInputValidation;
-  var requestModels;
-  var requestNetworkTest;
-  var requestObject;
-  var requestObjectExists;
-  var requestObjects;
-  var requestPack;
-  var requestPacks;
-  var requestParseFiles;
-  var requestParseSetup;
-  var requestParseSetupPreview;
-  var requestPartialDependence;
-  var requestPartialDependenceData;
-  var requestPojoPreview;
-  var requestPredict;
-  var requestPrediction;
-  var requestPredictions;
-  var requestProfile;
-  var requestPutObject;
-  var requestRDDs;
-  var requestRemoveAll;
-  var requestScalaCode;
-  var requestScalaIntp;
-  var requestSchema;
-  var requestSchemas;
-  var requestShutdown;
-  var requestSplitFrame;
-  var requestStackTrace;
-  var requestTimeline;
-  var requestUploadFile;
-  var requestUploadObject;
-  var requestWithOpts;
-  var trackPath;
-  var unwrap;
-  var __gridModelBuilderEndpoints;
-  var __modelBuilderEndpoints;
-  var __modelBuilders;
-  var _storageConfiguration;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let cacheModelBuilders;
+  let composePath;
+  let doDelete;
+  let doGet;
+  let doPost;
+  let doPostJSON;
+  let doPut;
+  let doUpload;
+  let download;
+  let encodeArrayForPost;
+  let encodeObject;
+  let encodeObjectForPost;
+  let getGridModelBuilderEndpoint;
+  let getLines;
+  let getModelBuilderEndpoint;
+  let getModelBuilders;
+  let http;
+  let mapWithKey;
+  let optsToString;
+  let requestAbout;
+  let requestAsDataFrame;
+  let requestAsH2OFrameFromDF;
+  let requestAsH2OFrameFromRDD;
+  let requestAutoModelBuild;
+  let requestCancelJob;
+  let requestCloud;
+  let requestColumnSummary;
+  let requestCreateFrame;
+  let requestDataFrames;
+  let requestDeleteFrame;
+  let requestDeleteModel;
+  let requestDeleteObject;
+  let requestEcho;
+  let requestEndpoint;
+  let requestEndpoints;
+  let requestExec;
+  let requestExportFrame;
+  let requestExportModel;
+  let requestFileGlob;
+  let requestFlow;
+  let requestFrame;
+  let requestFrameSlice;
+  let requestFrameSummary;
+  let requestFrameSummarySlice;
+  let requestFrameSummaryWithoutData;
+  let requestFrames;
+  let requestGrid;
+  let requestGrids;
+  let requestHelpContent;
+  let requestHelpIndex;
+  let requestImportFile;
+  let requestImportFiles;
+  let requestImportModel;
+  let requestInspect;
+  let requestIsStorageConfigured;
+  let requestJob;
+  let requestJobs;
+  let requestLogFile;
+  let requestModel;
+  let requestModelBuild;
+  let requestModelBuilder;
+  let requestModelBuilders;
+  let requestModelBuildersVisibility;
+  let requestModelInputValidation;
+  let requestModels;
+  let requestNetworkTest;
+  let requestObject;
+  let requestObjectExists;
+  let requestObjects;
+  let requestPack;
+  let requestPacks;
+  let requestParseFiles;
+  let requestParseSetup;
+  let requestParseSetupPreview;
+  let requestPartialDependence;
+  let requestPartialDependenceData;
+  let requestPojoPreview;
+  let requestPredict;
+  let requestPrediction;
+  let requestPredictions;
+  let requestProfile;
+  let requestPutObject;
+  let requestRDDs;
+  let requestRemoveAll;
+  let requestScalaCode;
+  let requestScalaIntp;
+  let requestSchema;
+  let requestSchemas;
+  let requestShutdown;
+  let requestSplitFrame;
+  let requestStackTrace;
+  let requestTimeline;
+  let requestUploadFile;
+  let requestUploadObject;
+  let requestWithOpts;
+  let trackPath;
+  let unwrap;
+  let __gridModelBuilderEndpoints;
+  let __modelBuilderEndpoints;
+  let __modelBuilders;
+  let _storageConfiguration;
   download = (type, url, go) => {
     if (url.substring(0, 1) === '/') {
       url = window.Flow.ContextPath + url.substring(1);
@@ -118,7 +118,7 @@ export function h2oProxy(_) {
     });
   };
   optsToString = opts => {
-    var str;
+    let str;
     if (opts != null) {
       str = ` with opts ${JSON.stringify(opts)}`;
       if (str.length > 50) {
@@ -129,7 +129,7 @@ export function h2oProxy(_) {
     return '';
   };
   http = (method, path, opts, go) => {
-    var req;
+    let req;
     if (path.substring(0, 1) === '/') {
       path = window.Flow.ContextPath + path.substring(1);
     }
@@ -172,7 +172,7 @@ export function h2oProxy(_) {
       }
     })();
     req.done((data, status, xhr) => {
-      var error;
+      let error;
       _.status('server', 'response', path);
       try {
         return go(null, data);
@@ -182,10 +182,10 @@ export function h2oProxy(_) {
       }
     });
     return req.fail((xhr, status, error) => {
-      var cause;
-      var meta;
-      var response;
-      var serverError;
+      let cause;
+      let meta;
+      let response;
+      let serverError;
       _.status('server', 'error', path);
       response = xhr.responseJSON;
       cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
@@ -199,14 +199,14 @@ export function h2oProxy(_) {
   doUpload = (path, formData, go) => http('UPLOAD', path, formData, go);
   doDelete = (path, go) => http('DELETE', path, null, go);
   trackPath = path => {
-    var base;
-    var e;
-    var name;
-    var other;
-    var root;
-    var version;
-    var _ref;
-    var _ref1;
+    let base;
+    let e;
+    let name;
+    let other;
+    let root;
+    let version;
+    let _ref;
+    let _ref1;
     try {
       _ref = path.split('/'), root = _ref[0], version = _ref[1], name = _ref[2];
       _ref1 = name.split('?'), base = _ref1[0], other = _ref1[1];
@@ -218,9 +218,9 @@ export function h2oProxy(_) {
     }
   };
   mapWithKey = (obj, f) => {
-    var key;
-    var result;
-    var value;
+    let key;
+    let result;
+    let value;
     result = [];
     for (key in obj) {
       if ({}.hasOwnProperty.call(obj, key)) {
@@ -231,7 +231,7 @@ export function h2oProxy(_) {
     return result;
   };
   composePath = (path, opts) => {
-    var params;
+    let params;
     if (opts) {
       params = mapWithKey(opts, (v, k) => `${k}=${v}`);
       return `${path}?${params.join('&')}`;
@@ -249,9 +249,9 @@ export function h2oProxy(_) {
     return null;
   };
   encodeObject = source => {
-    var k;
-    var target;
-    var v;
+    let k;
+    let target;
+    let v;
     target = {};
     for (k in source) {
       if ({}.hasOwnProperty.call(source, k)) {
@@ -262,9 +262,9 @@ export function h2oProxy(_) {
     return target;
   };
   encodeObjectForPost = source => {
-    var k;
-    var target;
-    var v;
+    let k;
+    let target;
+    let v;
     target = {};
     for (k in source) {
       if ({}.hasOwnProperty.call(source, k)) {
@@ -290,13 +290,13 @@ export function h2oProxy(_) {
     return go(null, result);
   });
   requestInspect = (key, go) => {
-    var opts;
+    let opts;
     opts = { key: encodeURIComponent(key) };
     return requestWithOpts('/3/Inspect', opts, go);
   };
   requestCreateFrame = (opts, go) => doPost('/3/CreateFrame', opts, go);
   requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
-    var opts;
+    let opts;
     opts = {
       dataset: frameKey,
       ratios: encodeArrayForPost(splitRatios),
@@ -322,7 +322,7 @@ export function h2oProxy(_) {
   });
   requestDeleteFrame = (key, go) => doDelete(`/3/Frames/${encodeURIComponent(key)}`, go);
   requestExportFrame = (key, path, overwrite, go) => {
-    var params;
+    let params;
     params = {
       path,
       force: overwrite ? 'true' : 'false'
@@ -349,7 +349,7 @@ export function h2oProxy(_) {
     return go(null);
   });
   requestFileGlob = (path, limit, go) => {
-    var opts;
+    let opts;
     opts = {
       src: encodeURIComponent(path),
       limit
@@ -357,17 +357,17 @@ export function h2oProxy(_) {
     return requestWithOpts('/3/Typeahead/files', opts, go);
   };
   requestImportFiles = (paths, go) => {
-    var tasks;
+    let tasks;
     tasks = lodash.map(paths, path => go => requestImportFile(path, go));
     return Flow.Async.iterate(tasks)(go);
   };
   requestImportFile = (path, go) => {
-    var opts;
+    let opts;
     opts = { path: encodeURIComponent(path) };
     return requestWithOpts('/3/ImportFiles', opts, go);
   };
   requestParseSetup = (sourceKeys, go) => {
-    var opts;
+    let opts;
     opts = { source_frames: encodeArrayForPost(sourceKeys) };
     return doPost('/3/ParseSetup', opts, go);
   };
@@ -380,7 +380,7 @@ export function h2oProxy(_) {
     columnTypes,
     go
   ) => {
-    var opts;
+    let opts;
     opts = {
       source_frames: encodeArrayForPost(sourceKeys),
       parse_type: parseType,
@@ -405,7 +405,7 @@ export function h2oProxy(_) {
     chunkSize,
     go
   ) => {
-    var opts;
+    let opts;
     opts = {
       destination_frame: destinationKey,
       source_frames: encodeArrayForPost(sourceKeys),
@@ -441,7 +441,7 @@ export function h2oProxy(_) {
     return go(error, result.models);
   });
   requestGrid = (key, opts, go) => {
-    var params;
+    let params;
     params = void 0;
     if (opts) {
       params = {};
@@ -463,7 +463,7 @@ export function h2oProxy(_) {
   requestPojoPreview = (key, go) => download('text', `/3/Models.java/${encodeURIComponent(key)}/preview`, go);
   requestDeleteModel = (key, go) => doDelete(`/3/Models/${encodeURIComponent(key)}`, go);
   requestImportModel = (path, overwrite, go) => {
-    var opts;
+    let opts;
     opts = {
       dir: path,
       force: overwrite
@@ -476,11 +476,11 @@ export function h2oProxy(_) {
   __modelBuilderEndpoints = null;
   __gridModelBuilderEndpoints = null;
   cacheModelBuilders = modelBuilders => {
-    var gridModelBuilderEndpoints;
-    var modelBuilder;
-    var modelBuilderEndpoints;
-    var _i;
-    var _len;
+    let gridModelBuilderEndpoints;
+    let modelBuilder;
+    let modelBuilderEndpoints;
+    let _i;
+    let _len;
     modelBuilderEndpoints = {};
     gridModelBuilderEndpoints = {};
     for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
@@ -496,20 +496,20 @@ export function h2oProxy(_) {
   getModelBuilderEndpoint = algo => __modelBuilderEndpoints[algo];
   getGridModelBuilderEndpoint = algo => __gridModelBuilderEndpoints[algo];
   requestModelBuilders = go => {
-    var modelBuilders;
-    var visibility;
+    let modelBuilders;
+    let visibility;
     if (modelBuilders = getModelBuilders()) {
       return go(null, modelBuilders);
     }
     visibility = 'Stable';
     return doGet('/3/ModelBuilders', unwrap(go, result => {
-      var algo;
-      var availableBuilders;
-      var builder;
-      var builders;
+      let algo;
+      let availableBuilders;
+      let builder;
+      let builders;
       builders = (() => {
-        var _ref;
-        var _results;
+        let _ref;
+        let _results;
         _ref = result.model_builders;
         _results = [];
         for (algo in _ref) {
@@ -521,12 +521,12 @@ export function h2oProxy(_) {
         return _results;
       })();
       availableBuilders = (() => {
-        var _i;
-        var _j;
-        var _len;
-        var _len1;
-        var _results;
-        var _results1;
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
+        let _results;
+        let _results1;
         switch (visibility) {
           case 'Stable':
             _results = [];
@@ -570,8 +570,8 @@ export function h2oProxy(_) {
   };
   requestAutoModelBuild = (parameters, go) => doPostJSON('/3/AutoMLBuilder', parameters, go);
   requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
-    var opt;
-    var opts;
+    let opt;
+    let opts;
     opts = {};
     if (destinationKey) {
       opts.predictions_frame = destinationKey;
@@ -602,18 +602,18 @@ export function h2oProxy(_) {
     return go(null, result);
   });
   requestPredictions = (modelKey, frameKey, _go) => {
-    var go;
+    let go;
     go = (error, result) => {
-      var prediction;
-      var predictions;
+      let prediction;
+      let predictions;
       if (error) {
         return _go(error);
       }
       predictions = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = result.model_metrics;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -629,9 +629,9 @@ export function h2oProxy(_) {
         return _results;
       })();
       return _go(null, (() => {
-        var _i;
-        var _len;
-        var _results;
+        let _i;
+        let _len;
+        let _results;
         _results = [];
         for (_i = 0, _len = predictions.length; _i < _len; _i++) {
           prediction = predictions[_i];
@@ -666,7 +666,7 @@ export function h2oProxy(_) {
   requestObject = (type, name, go) => doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, unwrap(go, result => JSON.parse(result.value)));
   requestDeleteObject = (type, name, go) => doDelete(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, go);
   requestPutObject = (type, name, value, go) => {
-    var uri;
+    let uri;
     uri = `/3/NodePersistentStorage/${encodeURIComponent(type)}`;
     if (name) {
       uri += `/${encodeURIComponent(name)}`;
@@ -674,7 +674,7 @@ export function h2oProxy(_) {
     return doPost(uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
   };
   requestUploadObject = (type, name, formData, go) => {
-    var uri;
+    let uri;
     uri = `/3/NodePersistentStorage.bin/${encodeURIComponent(type)}`;
     if (name) {
       uri += `/${encodeURIComponent(name)}`;

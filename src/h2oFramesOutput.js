@@ -2,26 +2,26 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oFramesOutput(_, _go, _frames) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var collectSelectedKeys;
-  var createFrameView;
-  var deleteFrames;
-  var importFiles;
-  var predictOnFrames;
-  var _checkAllFrames;
-  var _frameViews;
-  var _hasSelectedFrames;
-  var _isCheckingAll;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let collectSelectedKeys;
+  let createFrameView;
+  let deleteFrames;
+  let importFiles;
+  let predictOnFrames;
+  let _checkAllFrames;
+  let _frameViews;
+  let _hasSelectedFrames;
+  let _isCheckingAll;
   _frameViews = Flow.Dataflow.signal([]);
   _checkAllFrames = Flow.Dataflow.signal(false);
   _hasSelectedFrames = Flow.Dataflow.signal(false);
   _isCheckingAll = false;
   Flow.Dataflow.react(_checkAllFrames, checkAll => {
-    var view;
-    var _i;
-    var _len;
-    var _ref;
+    let view;
+    let _i;
+    let _len;
+    let _ref;
     _isCheckingAll = true;
     _ref = _frameViews();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -32,24 +32,24 @@ export function h2oFramesOutput(_, _go, _frames) {
     _isCheckingAll = false;
   });
   createFrameView = frame => {
-    var columnLabels;
-    var createModel;
-    var inspect;
-    var predict;
-    var view;
-    var _isChecked;
+    let columnLabels;
+    let createModel;
+    let inspect;
+    let predict;
+    let view;
+    let _isChecked;
     _isChecked = Flow.Dataflow.signal(false);
     Flow.Dataflow.react(_isChecked, () => {
-      var checkedViews;
-      var view;
+      let checkedViews;
+      let view;
       if (_isCheckingAll) {
         return;
       }
       checkedViews = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _frameViews();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -87,11 +87,11 @@ export function h2oFramesOutput(_, _go, _frames) {
   };
   importFiles = () => _.insertAndExecuteCell('cs', 'importFiles');
   collectSelectedKeys = () => {
-    var view;
-    var _i;
-    var _len;
-    var _ref;
-    var _results;
+    let view;
+    let _i;
+    let _len;
+    let _ref;
+    let _results;
     _ref = _frameViews();
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {

@@ -1,12 +1,12 @@
 import { flowCoffeescriptKernel } from './flowCoffeescriptKernel';
 
 export function flowCoffeescript(_, guid, sandbox) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var isRoutine;
-  var print;
-  var render;
-  var _kernel;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let isRoutine;
+  let print;
+  let render;
+  let _kernel;
   _kernel = flowCoffeescriptKernel();
   print = arg => {
     if (arg !== print) {
@@ -15,9 +15,9 @@ export function flowCoffeescript(_, guid, sandbox) {
     return print;
   };
   isRoutine = f => {
-    var name;
-    var routine;
-    var _ref;
+    let name;
+    let routine;
+    let _ref;
     _ref = sandbox.routines;
     for (name in _ref) {
       if ({}.hasOwnProperty.call(_ref, name)) {
@@ -30,10 +30,10 @@ export function flowCoffeescript(_, guid, sandbox) {
     return false;
   };
   render = (input, output) => {
-    var cellResult;
-    var evaluate;
-    var outputBuffer;
-    var tasks;
+    let cellResult;
+    let evaluate;
+    let outputBuffer;
+    let tasks;
     sandbox.results[guid] = cellResult = {
       result: Flow.Dataflow.signal(null),
       outputs: outputBuffer = Flow.Async.createBuffer([])
@@ -41,7 +41,7 @@ export function flowCoffeescript(_, guid, sandbox) {
     evaluate = ft => {
       if (ft != null ? ft.isFuture : void 0) {
         return ft((error, result) => {
-          var _ref;
+          let _ref;
           if (error) {
             output.error(new Flow.Error('Error evaluating cell', error));
             return output.end();
@@ -67,7 +67,7 @@ export function flowCoffeescript(_, guid, sandbox) {
       _kernel.executeJavascript(sandbox, print)
     ];
     return Flow.Async.pipe(tasks)(input, error => {
-      var result;
+      let result;
       if (error) {
         output.error(error);
       }

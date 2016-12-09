@@ -1,8 +1,8 @@
 export function h2oNetworkTestOutput(_, _go, _testResult) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var render;
-  var _result;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let render;
+  let _result;
   _result = Flow.Dataflow.signal(null);
   render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
   render((error, vis) => {

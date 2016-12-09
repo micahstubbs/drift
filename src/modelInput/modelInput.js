@@ -2,24 +2,24 @@ import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function modelInput() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createCheckboxControl;
-  var createControl;
-  var createControlFromParameter;
-  var createDropdownControl;
-  var createGridableValues;
-  var createListControl;
-  var createTextboxControl;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createCheckboxControl;
+  let createControl;
+  let createControlFromParameter;
+  let createDropdownControl;
+  let createGridableValues;
+  let createListControl;
+  let createTextboxControl;
   createControl = (kind, parameter) => {
-    var _hasError;
-    var _hasInfo;
-    var _hasMessage;
-    var _hasWarning;
-    var _isGrided;
-    var _isNotGrided;
-    var _isVisible;
-    var _message;
+    let _hasError;
+    let _hasInfo;
+    let _hasMessage;
+    let _hasWarning;
+    let _isGrided;
+    let _isNotGrided;
+    let _isVisible;
+    let _message;
     _hasError = Flow.Dataflow.signal(false);
     _hasWarning = Flow.Dataflow.signal(false);
     _hasInfo = Flow.Dataflow.signal(false);
@@ -51,17 +51,17 @@ export function modelInput() {
     };
   };
   createTextboxControl = (parameter, type) => {
-    var control;
-    var isArrayValued;
-    var isInt;
-    var isReal;
-    var textToValues;
-    var _ref;
-    var _ref1;
-    var _text;
-    var _textGrided;
-    var _value;
-    var _valueGrided;
+    let control;
+    let isArrayValued;
+    let isInt;
+    let isReal;
+    let textToValues;
+    let _ref;
+    let _ref1;
+    let _text;
+    let _textGrided;
+    let _value;
+    let _valueGrided;
     isArrayValued = isInt = isReal = false;
     switch (type) {
       case 'byte[]':
@@ -89,12 +89,12 @@ export function modelInput() {
     _text = Flow.Dataflow.signal(isArrayValued ? ((_ref = parameter.actual_value) != null ? _ref : []).join(', ') : (_ref1 = parameter.actual_value) != null ? _ref1 : '');
     _textGrided = Flow.Dataflow.signal(`${_text()};`);
     textToValues = text => {
-      var parsed;
-      var vals;
-      var value;
-      var _i;
-      var _len;
-      var _ref2;
+      let parsed;
+      let vals;
+      let value;
+      let _i;
+      let _len;
+      let _ref2;
       if (isArrayValued) {
         vals = [];
         _ref2 = text.split(/\s*,\s*/g);
@@ -118,11 +118,11 @@ export function modelInput() {
     };
     _value = Flow.Dataflow.lift(_text, textToValues);
     _valueGrided = Flow.Dataflow.lift(_textGrided, text => {
-      var part;
-      var token;
-      var _i;
-      var _len;
-      var _ref2;
+      let part;
+      let token;
+      let _i;
+      let _len;
+      let _ref2;
       lodash.values = [];
       _ref2 = (`${text}`).split(/\s*;\s*/g);
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
@@ -146,8 +146,8 @@ export function modelInput() {
     value: Flow.Dataflow.signal(true)
   }));
   createDropdownControl = parameter => {
-    var control;
-    var _value;
+    let control;
+    let _value;
     _value = Flow.Dataflow.signal(parameter.actual_value);
     control = createControl('dropdown', parameter);
     control.values = Flow.Dataflow.signals(parameter.values);
@@ -156,33 +156,33 @@ export function modelInput() {
     return control;
   };
   createListControl = parameter => {
-    var MaxItemsPerPage;
-    var blockSelectionUpdates;
-    var changeSelection;
-    var control;
-    var createEntry;
-    var deselectFiltered;
-    var filterItems;
-    var goToNextPage;
-    var goToPreviousPage;
-    var incrementSelectionCount;
-    var selectFiltered;
-    var _canGoToNextPage;
-    var _canGoToPreviousPage;
-    var _currentPage;
-    var _entries;
-    var _filteredItems;
-    var _hasFilteredItems;
-    var _ignoreNATerm;
-    var _isUpdatingSelectionCount;
-    var _lastUsedIgnoreNaTerm;
-    var _lastUsedSearchTerm;
-    var _maxPages;
-    var _searchCaption;
-    var _searchTerm;
-    var _selectionCount;
-    var _values;
-    var _visibleItems;
+    let MaxItemsPerPage;
+    let blockSelectionUpdates;
+    let changeSelection;
+    let control;
+    let createEntry;
+    let deselectFiltered;
+    let filterItems;
+    let goToNextPage;
+    let goToPreviousPage;
+    let incrementSelectionCount;
+    let selectFiltered;
+    let _canGoToNextPage;
+    let _canGoToPreviousPage;
+    let _currentPage;
+    let _entries;
+    let _filteredItems;
+    let _hasFilteredItems;
+    let _ignoreNATerm;
+    let _isUpdatingSelectionCount;
+    let _lastUsedIgnoreNaTerm;
+    let _lastUsedSearchTerm;
+    let _maxPages;
+    let _searchCaption;
+    let _searchTerm;
+    let _selectionCount;
+    let _values;
+    let _visibleItems;
     MaxItemsPerPage = 100;
     _searchTerm = Flow.Dataflow.signal('');
     _ignoreNATerm = Flow.Dataflow.signal('');
@@ -196,7 +196,7 @@ export function modelInput() {
     };
     incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
     createEntry = value => {
-      var isSelected;
+      let isSelected;
       isSelected = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(isSelected, isSelected => {
         if (!_isUpdatingSelectionCount) {
@@ -224,7 +224,7 @@ export function modelInput() {
     _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
     _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
     _searchCaption = Flow.Dataflow.lift(_entries, _filteredItems, _selectionCount, _currentPage, _maxPages, (entries, filteredItems, selectionCount, currentPage, maxPages) => {
-      var caption;
+      let caption;
       caption = maxPages === 0 ? '' : `Showing page ${(currentPage + 1)} of ${maxPages}.`;
       if (filteredItems.length !== entries.length) {
         caption += ` Filtered ${filteredItems.length} of ${entries.length}.`;
@@ -238,17 +238,17 @@ export function modelInput() {
     _lastUsedSearchTerm = null;
     _lastUsedIgnoreNaTerm = null;
     filterItems = force => {
-      var entry;
-      var filteredItems;
-      var hide;
-      var i;
-      var ignoreNATerm;
-      var missingPercent;
-      var searchTerm;
-      var start;
-      var _i;
-      var _len;
-      var _ref;
+      let entry;
+      let filteredItems;
+      let hide;
+      let i;
+      let ignoreNATerm;
+      let missingPercent;
+      let searchTerm;
+      let start;
+      let _i;
+      let _len;
+      let _ref;
       if (force == null) {
         force = false;
       }
@@ -279,16 +279,16 @@ export function modelInput() {
       _visibleItems(_filteredItems().slice(start, start + MaxItemsPerPage));
     };
     changeSelection = (source, value) => {
-      var entry;
-      var _i;
-      var _len;
+      let entry;
+      let _i;
+      let _len;
       for (_i = 0, _len = source.length; _i < _len; _i++) {
         entry = source[_i];
         entry.isSelected(value);
       }
     };
     selectFiltered = () => {
-      var entries;
+      let entries;
       entries = _filteredItems();
       blockSelectionUpdates(() => changeSelection(entries, true));
       return _selectionCount(entries.length);
@@ -328,8 +328,8 @@ export function modelInput() {
     return control;
   };
   createCheckboxControl = parameter => {
-    var control;
-    var _value;
+    let control;
+    let _value;
     _value = Flow.Dataflow.signal(parameter.actual_value);
     control = createControl('checkbox', parameter);
     control.clientId = lodash.uniqueId();
@@ -369,41 +369,41 @@ export function modelInput() {
     }
   };
   H2O.ModelBuilderForm = (_, _algorithm, _parameters) => {
-    var collectParameters;
-    var control;
-    var createModel;
-    var criticalControls;
-    var expertControls;
-    var findControl;
-    var findFormField;
-    var parameterTemplateOf;
-    var performValidations;
-    var revalidate;
-    var secondaryControls;
-    var _controlGroups;
-    var _exception;
-    var _form;
-    var _gridId;
-    var _gridMaxModels;
-    var _gridMaxRuntime;
-    var _gridStoppingMetric;
-    var _gridStoppingMetrics;
-    var _gridStoppingRounds;
-    var _gridStoppingTolerance;
-    var _gridStrategies;
-    var _gridStrategy;
-    var _hasValidationFailures;
-    var _i;
-    var _isGridRandomDiscrete;
-    var _isGrided;
-    var _j;
-    var _k;
-    var _len;
-    var _len1;
-    var _len2;
-    var _parametersByLevel;
-    var _revalidate;
-    var _validationFailureMessage;
+    let collectParameters;
+    let control;
+    let createModel;
+    let criticalControls;
+    let expertControls;
+    let findControl;
+    let findFormField;
+    let parameterTemplateOf;
+    let performValidations;
+    let revalidate;
+    let secondaryControls;
+    let _controlGroups;
+    let _exception;
+    let _form;
+    let _gridId;
+    let _gridMaxModels;
+    let _gridMaxRuntime;
+    let _gridStoppingMetric;
+    let _gridStoppingMetrics;
+    let _gridStoppingRounds;
+    let _gridStoppingTolerance;
+    let _gridStrategies;
+    let _gridStrategy;
+    let _hasValidationFailures;
+    let _i;
+    let _isGridRandomDiscrete;
+    let _isGrided;
+    let _j;
+    let _k;
+    let _len;
+    let _len1;
+    let _len2;
+    let _parametersByLevel;
+    let _revalidate;
+    let _validationFailureMessage;
     _exception = Flow.Dataflow.signal(null);
     _validationFailureMessage = Flow.Dataflow.signal('');
     _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude.isTruthy);
@@ -436,7 +436,7 @@ export function modelInput() {
       'secondary',
       'expert'
     ], type => {
-      var controls;
+      let controls;
       controls = lodash.filter(lodash.map(_parametersByLevel[type], createControlFromParameter), a => {
         if (a) {
           return true;
@@ -444,9 +444,9 @@ export function modelInput() {
         return false;
       });
       lodash.forEach(controls, control => Flow.Dataflow.react(control.isGrided, () => {
-        var isGrided;
-        var _i;
-        var _len;
+        let isGrided;
+        let _i;
+        let _len;
         isGrided = false;
         for (_i = 0, _len = controls.length; _i < _len; _i++) {
           control = controls[_i];
@@ -494,11 +494,11 @@ export function modelInput() {
       }
     }
     findControl = name => {
-      var controls;
-      var _l;
-      var _len3;
-      var _len4;
-      var _m;
+      let controls;
+      let _l;
+      let _len3;
+      let _len4;
+      let _m;
       for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
         controls = _controlGroups[_l];
         for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
@@ -512,14 +512,14 @@ export function modelInput() {
     parameterTemplateOf = control => `flow-${control.kind}-model-parameter`;
     findFormField = name => lodash.find(_form, field => field.name === name);
     ((() => {
-      var foldColumnParameter;
-      var ignoredColumnsParameter;
-      var offsetColumnsParameter;
-      var responseColumnParameter;
-      var trainingFrameParameter;
-      var validationFrameParameter;
-      var weightsColumnParameter;
-      var _ref;
+      let foldColumnParameter;
+      let ignoredColumnsParameter;
+      let offsetColumnsParameter;
+      let responseColumnParameter;
+      let trainingFrameParameter;
+      let validationFrameParameter;
+      let weightsColumnParameter;
+      let _ref;
       _ref = lodash.map([
         'training_frame',
         'validation_frame',
@@ -534,12 +534,12 @@ export function modelInput() {
           return Flow.Dataflow.act(trainingFrameParameter.value, frameKey => {
             if (frameKey) {
               _.requestFrameSummaryWithoutData(frameKey, (error, frame) => {
-                var columnLabels;
-                var columnValues;
+                let columnLabels;
+                let columnValues;
                 if (!error) {
                   columnValues = lodash.map(frame.columns, column => column.label);
                   columnLabels = lodash.map(frame.columns, column => {
-                    var missingPercent;
+                    let missingPercent;
                     missingPercent = 100 * column.missing_count / frame.rows;
                     return {
                       type: column.type === 'enum' ? `enum(${column.domain_cardinality})` : column.type,
@@ -575,26 +575,26 @@ export function modelInput() {
       }
     })());
     collectParameters = includeUnchangedParameters => {
-      var controls;
-      var entry;
-      var gridStoppingRounds;
-      var hyperParameters;
-      var isGrided;
-      var item;
-      var maxModels;
-      var maxRuntime;
-      var parameters;
-      var searchCriteria;
-      var selectedValues;
-      var stoppingTolerance;
-      var value;
-      var _l;
-      var _len3;
-      var _len4;
-      var _len5;
-      var _m;
-      var _n;
-      var _ref;
+      let controls;
+      let entry;
+      let gridStoppingRounds;
+      let hyperParameters;
+      let isGrided;
+      let item;
+      let maxModels;
+      let maxRuntime;
+      let parameters;
+      let searchCriteria;
+      let selectedValues;
+      let stoppingTolerance;
+      let value;
+      let _l;
+      let _len3;
+      let _len4;
+      let _len5;
+      let _m;
+      let _n;
+      let _ref;
       if (includeUnchangedParameters == null) {
         includeUnchangedParameters = false;
       }
@@ -639,9 +639,9 @@ export function modelInput() {
                 case 'list':
                   if (value.length) {
                     selectedValues = (() => {
-                      var _len6;
-                      var _o;
-                      var _results;
+                      let _len6;
+                      let _o;
+                      let _results;
                       _results = [];
                       for (_o = 0, _len6 = value.length; _o < _len6; _o++) {
                         entry = value[_o];
@@ -686,7 +686,7 @@ export function modelInput() {
       return parameters;
     };
     performValidations = (checkForErrors, go) => {
-      var parameters;
+      let parameters;
       _exception(null);
       parameters = collectParameters(true);
       if (parameters.hyper_parameters) {
@@ -694,17 +694,17 @@ export function modelInput() {
       }
       _validationFailureMessage('');
       return _.requestModelInputValidation(_algorithm, parameters, (error, modelBuilder) => {
-        var controls;
-        var hasErrors;
-        var validation;
-        var validations;
-        var validationsByControlName;
-        var _l;
-        var _len3;
-        var _len4;
-        var _len5;
-        var _m;
-        var _n;
+        let controls;
+        let hasErrors;
+        let validation;
+        let validations;
+        let validationsByControlName;
+        let _l;
+        let _len3;
+        let _len4;
+        let _len5;
+        let _m;
+        let _n;
         if (error) {
           return _exception(Flow.Failure(_, new Flow.Error('Error fetching initial model builder state', error)));
         }
@@ -760,7 +760,7 @@ export function modelInput() {
     createModel = () => {
       _exception(null);
       return performValidations(true, () => {
-        var parameters;
+        let parameters;
         parameters = collectParameters(false);
         return _.insertAndExecuteCell('cs', `buildModel \'${_algorithm}\', ${flowPrelude.stringify(parameters)}`);
       });
@@ -773,11 +773,11 @@ export function modelInput() {
     };
     revalidate = lodash.throttle(_revalidate, 100, { leading: false });
     performValidations(false, () => {
-      var controls;
-      var _l;
-      var _len3;
-      var _len4;
-      var _m;
+      let controls;
+      let _l;
+      let _len3;
+      let _len4;
+      let _m;
       for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
         controls = _controlGroups[_l];
         for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
@@ -807,13 +807,13 @@ export function modelInput() {
     };
   };
   H2O.ModelInput = (_, _go, _algo, _opts) => {
-    var createModel;
-    var populateFramesAndColumns;
-    var _algorithm;
-    var _algorithms;
-    var _canCreateModel;
-    var _exception;
-    var _modelForm;
+    let createModel;
+    let populateFramesAndColumns;
+    let _algorithm;
+    let _algorithms;
+    let _canCreateModel;
+    let _exception;
+    let _modelForm;
     _exception = Flow.Dataflow.signal(null);
     _algorithms = Flow.Dataflow.signal([]);
     _algorithm = Flow.Dataflow.signal(null);
@@ -825,8 +825,8 @@ export function modelInput() {
     });
     _modelForm = Flow.Dataflow.signal(null);
     populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
-      var classificationParameter;
-      var destinationKeyParameter;
+      let classificationParameter;
+      let destinationKeyParameter;
       destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
       if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
         destinationKeyParameter.actual_value = `${algorithm}-${Flow.Util.uuid()}`;
@@ -836,19 +836,19 @@ export function modelInput() {
         classificationParameter.actual_value = true;
       }
       return _.requestFrames((error, frames) => {
-        var frame;
-        var frameKeys;
-        var frameParameters;
-        var parameter;
-        var _i;
-        var _len;
+        let frame;
+        let frameKeys;
+        let frameParameters;
+        let parameter;
+        let _i;
+        let _len;
         if (error) {
           // empty
         } else {
           frameKeys = (() => {
-            var _i;
-            var _len;
-            var _results;
+            let _i;
+            let _len;
+            let _results;
             _results = [];
             for (_i = 0, _len = frames.length; _i < _len; _i++) {
               frame = frames[_i];
@@ -873,13 +873,13 @@ export function modelInput() {
       });
     };
     ((() => _.requestModelBuilders((error, modelBuilders) => {
-      var frameKey;
+      let frameKey;
       _algorithms(modelBuilders);
       _algorithm(_algo ? lodash.find(modelBuilders, builder => builder.algo === _algo) : void 0);
       frameKey = _opts != null ? _opts.training_frame : void 0;
       return Flow.Dataflow.act(_algorithm, builder => {
-        var algorithm;
-        var parameters;
+        let algorithm;
+        let parameters;
         if (builder) {
           algorithm = builder.algo;
           parameters = flowPrelude.deepClone(builder.parameters);

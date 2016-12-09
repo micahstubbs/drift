@@ -2,22 +2,22 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oModelsOutput(_, _go, _models) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var buildModel;
-  var collectSelectedKeys;
-  var compareModels;
-  var createModelView;
-  var deleteModels;
-  var initialize;
-  var inspectAll;
-  var predictUsingModels;
-  var _canCompareModels;
-  var _checkAllModels;
-  var _checkedModelCount;
-  var _hasSelectedModels;
-  var _isCheckingAll;
-  var _modelViews;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let buildModel;
+  let collectSelectedKeys;
+  let compareModels;
+  let createModelView;
+  let deleteModels;
+  let initialize;
+  let inspectAll;
+  let predictUsingModels;
+  let _canCompareModels;
+  let _checkAllModels;
+  let _checkedModelCount;
+  let _hasSelectedModels;
+  let _isCheckingAll;
+  let _modelViews;
   _modelViews = Flow.Dataflow.signal([]);
   _checkAllModels = Flow.Dataflow.signal(false);
   _checkedModelCount = Flow.Dataflow.signal(0);
@@ -25,10 +25,10 @@ export function h2oModelsOutput(_, _go, _models) {
   _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
   _isCheckingAll = false;
   Flow.Dataflow.react(_checkAllModels, checkAll => {
-    var view;
-    var views;
-    var _i;
-    var _len;
+    let view;
+    let views;
+    let _i;
+    let _len;
     _isCheckingAll = true;
     views = _modelViews();
     for (_i = 0, _len = views.length; _i < _len; _i++) {
@@ -39,23 +39,23 @@ export function h2oModelsOutput(_, _go, _models) {
     _isCheckingAll = false;
   });
   createModelView = model => {
-    var cloneModel;
-    var inspect;
-    var predict;
-    var view;
-    var _isChecked;
+    let cloneModel;
+    let inspect;
+    let predict;
+    let view;
+    let _isChecked;
     _isChecked = Flow.Dataflow.signal(false);
     Flow.Dataflow.react(_isChecked, () => {
-      var checkedViews;
-      var view;
+      let checkedViews;
+      let view;
       if (_isCheckingAll) {
         return;
       }
       checkedViews = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _modelViews();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -85,11 +85,11 @@ export function h2oModelsOutput(_, _go, _models) {
   };
   buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
   collectSelectedKeys = () => {
-    var view;
-    var _i;
-    var _len;
-    var _ref;
-    var _results;
+    let view;
+    let _i;
+    let _len;
+    let _ref;
+    let _results;
     _ref = _modelViews();
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -111,13 +111,13 @@ export function h2oModelsOutput(_, _go, _models) {
     }
   });
   inspectAll = () => {
-    var allKeys;
-    var view;
+    let allKeys;
+    let view;
     allKeys = (() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _modelViews();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

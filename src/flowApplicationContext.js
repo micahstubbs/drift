@@ -1,5 +1,5 @@
 export function flowApplicationContext(_) {
-  var Flow = window.Flow;
+  const Flow = window.Flow;
   _.ready = Flow.Dataflow.slots();
   _.initialized = Flow.Dataflow.slots();
   _.open = Flow.Dataflow.slot();

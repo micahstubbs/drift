@@ -2,29 +2,29 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oImportFilesInput(_, _go) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createFileItem;
-  var createFileItems;
-  var createSelectedFileItem;
-  var deselectAllFiles;
-  var importFiles;
-  var importSelectedFiles;
-  var listPathHints;
-  var processImportResult;
-  var selectAllFiles;
-  var tryImportFiles;
-  var _exception;
-  var _hasErrorMessage;
-  var _hasImportedFiles;
-  var _hasSelectedFiles;
-  var _hasUnselectedFiles;
-  var _importedFileCount;
-  var _importedFiles;
-  var _selectedFileCount;
-  var _selectedFiles;
-  var _selectedFilesDictionary;
-  var _specifiedPath;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createFileItem;
+  let createFileItems;
+  let createSelectedFileItem;
+  let deselectAllFiles;
+  let importFiles;
+  let importSelectedFiles;
+  let listPathHints;
+  let processImportResult;
+  let selectAllFiles;
+  let tryImportFiles;
+  let _exception;
+  let _hasErrorMessage;
+  let _hasImportedFiles;
+  let _hasSelectedFiles;
+  let _hasUnselectedFiles;
+  let _importedFileCount;
+  let _importedFiles;
+  let _selectedFileCount;
+  let _selectedFiles;
+  let _selectedFilesDictionary;
+  let _specifiedPath;
   _specifiedPath = Flow.Dataflow.signal('');
   _exception = Flow.Dataflow.signal('');
   _hasErrorMessage = Flow.Dataflow.lift(_exception, exception => {
@@ -34,7 +34,7 @@ export function h2oImportFilesInput(_, _go) {
     return false;
   });
   tryImportFiles = () => {
-    var specifiedPath;
+    let specifiedPath;
     specifiedPath = _specifiedPath();
     return _.requestFileGlob(specifiedPath, -1, (error, result) => {
       if (error) {
@@ -55,10 +55,10 @@ export function h2oImportFilesInput(_, _go) {
   _hasUnselectedFiles = Flow.Dataflow.lift(_importedFiles, files => lodash.some(files, file => !file.isSelected()));
   _selectedFiles = Flow.Dataflow.signals([]);
   _selectedFilesDictionary = Flow.Dataflow.lift(_selectedFiles, files => {
-    var dictionary;
-    var file;
-    var _i;
-    var _len;
+    let dictionary;
+    let file;
+    let _i;
+    let _len;
     dictionary = {};
     for (_i = 0, _len = files.length; _i < _len; _i++) {
       file = files[_i];
@@ -74,20 +74,20 @@ export function h2oImportFilesInput(_, _go) {
   });
   _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, files => files.length > 0);
   importFiles = files => {
-    var paths;
+    let paths;
     paths = lodash.map(files, file => flowPrelude.stringify(file.path));
     return _.insertAndExecuteCell('cs', `importFiles [ ${paths.join(',')} ]`);
   };
   importSelectedFiles = () => importFiles(_selectedFiles());
   createSelectedFileItem = path => {
-    var self;
+    let self;
     return self = {
       path,
       deselect() {
-        var file;
-        var _i;
-        var _len;
-        var _ref;
+        let file;
+        let _i;
+        let _len;
+        let _ref;
         _selectedFiles.remove(self);
         _ref = _importedFiles();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -100,7 +100,7 @@ export function h2oImportFilesInput(_, _go) {
     };
   };
   createFileItem = (path, isSelected) => {
-    var self;
+    let self;
     self = {
       path,
       isSelected: Flow.Dataflow.signal(isSelected),
@@ -121,14 +121,14 @@ export function h2oImportFilesInput(_, _go) {
     }
   });
   selectAllFiles = () => {
-    var dict;
-    var file;
-    var _i;
-    var _j;
-    var _len;
-    var _len1;
-    var _ref;
-    var _ref1;
+    let dict;
+    let file;
+    let _i;
+    let _j;
+    let _len;
+    let _len1;
+    let _ref;
+    let _ref1;
     dict = {};
     _ref = _selectedFiles();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -144,10 +144,10 @@ export function h2oImportFilesInput(_, _go) {
     }
   };
   deselectAllFiles = () => {
-    var file;
-    var _i;
-    var _len;
-    var _ref;
+    let file;
+    let _i;
+    let _len;
+    let _ref;
     _selectedFiles([]);
     _ref = _importedFiles();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -156,7 +156,7 @@ export function h2oImportFilesInput(_, _go) {
     }
   };
   processImportResult = result => {
-    var files;
+    let files;
     files = createFileItems(result);
     return _importedFiles(files);
   };

@@ -1,14 +1,14 @@
 export function imputeInput() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createOptions;
-  var _allCombineMethods;
-  var _allMethods;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createOptions;
+  let _allCombineMethods;
+  let _allMethods;
   createOptions = options => {
-    var option;
-    var _i;
-    var _len;
-    var _results;
+    let option;
+    let _i;
+    let _len;
+    let _results;
     _results = [];
     for (_i = 0, _len = options.length; _i < _len; _i++) {
       option = options[_i];
@@ -31,20 +31,20 @@ export function imputeInput() {
     'High'
   ]);
   H2O.ImputeInput = (_, _go, opts) => {
-    var impute;
-    var _canGroupByColumns;
-    var _canImpute;
-    var _canUseCombineMethod;
-    var _column;
-    var _columns;
-    var _combineMethod;
-    var _combineMethods;
-    var _frame;
-    var _frames;
-    var _groupByColumns;
-    var _hasFrame;
-    var _method;
-    var _methods;
+    let impute;
+    let _canGroupByColumns;
+    let _canImpute;
+    let _canUseCombineMethod;
+    let _column;
+    let _columns;
+    let _combineMethod;
+    let _combineMethods;
+    let _frame;
+    let _frames;
+    let _groupByColumns;
+    let _hasFrame;
+    let _method;
+    let _methods;
     if (opts == null) {
       opts = {};
     }
@@ -67,10 +67,10 @@ export function imputeInput() {
     _groupByColumns = Flow.Dataflow.signals([]);
     _canImpute = Flow.Dataflow.lift(_frame, _column, (frame, column) => frame && column);
     impute = () => {
-      var arg;
-      var combineMethod;
-      var groupByColumns;
-      var method;
+      let arg;
+      let combineMethod;
+      let groupByColumns;
+      let method;
       method = _method();
       arg = {
         frame: _frame(),
@@ -90,14 +90,14 @@ export function imputeInput() {
       return _.insertAndExecuteCell('cs', `imputeColumn ${JSON.stringify(arg)}`);
     };
     _.requestFrames((error, frames) => {
-      var frame;
+      let frame;
       if (error) {
         // empty
       } else {
         _frames((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = frames.length; _i < _len; _i++) {
             frame = frames[_i];
@@ -115,15 +115,15 @@ export function imputeInput() {
     Flow.Dataflow.react(_frame, frame => {
       if (frame) {
         return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
-          var column;
+          let column;
           if (error) {
             // empty
           } else {
             _columns((() => {
-              var _i;
-              var _len;
-              var _ref;
-              var _results;
+              let _i;
+              let _len;
+              let _ref;
+              let _results;
               _ref = frame.columns;
               _results = [];
               for (_i = 0, _len = _ref.length; _i < _len; _i++) {

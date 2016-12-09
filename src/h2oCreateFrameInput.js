@@ -2,28 +2,28 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oCreateFrameInput(_, _go) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var createFrame;
-  var _binaryFraction;
-  var _binaryOnesFraction;
-  var _categoricalFraction;
-  var _columns;
-  var _factors;
-  var _hasResponse;
-  var _integerFraction;
-  var _integerRange;
-  var _key;
-  var _missingFraction;
-  var _randomize;
-  var _realRange;
-  var _responseFactors;
-  var _rows;
-  var _seed;
-  var _seed_for_column_types;
-  var _stringFraction;
-  var _timeFraction;
-  var _value;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let createFrame;
+  let _binaryFraction;
+  let _binaryOnesFraction;
+  let _categoricalFraction;
+  let _columns;
+  let _factors;
+  let _hasResponse;
+  let _integerFraction;
+  let _integerRange;
+  let _key;
+  let _missingFraction;
+  let _randomize;
+  let _realRange;
+  let _responseFactors;
+  let _rows;
+  let _seed;
+  let _seed_for_column_types;
+  let _stringFraction;
+  let _timeFraction;
+  let _value;
   _key = Flow.Dataflow.signal('');
   _rows = Flow.Dataflow.signal(10000);
   _columns = Flow.Dataflow.signal(100);
@@ -44,7 +44,7 @@ export function h2oCreateFrameInput(_, _go) {
   _responseFactors = Flow.Dataflow.signal(2);
   _hasResponse = Flow.Dataflow.signal(false);
   createFrame = () => {
-    var opts;
+    let opts;
     opts = {
       dest: _key(),
       rows: _rows(),

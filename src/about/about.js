@@ -1,21 +1,21 @@
 export function about() {
-  var Flow = window.Flow;
+  const Flow = window.Flow;
   Flow.Version = '0.4.54';
   Flow.About = _ => {
-    var _properties;
+    let _properties;
     _properties = Flow.Dataflow.signals([]);
     Flow.Dataflow.link(_.ready, () => {
       if (Flow.BuildProperties) {
         return _properties(Flow.BuildProperties);
       }
       return _.requestAbout((error, response) => {
-        var name;
-        var properties;
-        var value;
-        var _i;
-        var _len;
-        var _ref;
-        var _ref1;
+        let name;
+        let properties;
+        let value;
+        let _i;
+        let _len;
+        let _ref;
+        let _ref1;
         properties = [];
         if (!error) {
           _ref = response.entries;

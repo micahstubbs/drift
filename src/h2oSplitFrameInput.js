@@ -2,27 +2,27 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oSplitFrameInput(_, _go, _frameKey) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var addSplit;
-  var addSplitRatio;
-  var collectKeys;
-  var collectRatios;
-  var computeSplits;
-  var createSplit;
-  var createSplitName;
-  var format4f;
-  var initialize;
-  var splitFrame;
-  var updateSplitRatiosAndNames;
-  var _frame;
-  var _frames;
-  var _lastSplitKey;
-  var _lastSplitRatio;
-  var _lastSplitRatioText;
-  var _seed;
-  var _splits;
-  var _validationMessage;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let addSplit;
+  let addSplitRatio;
+  let collectKeys;
+  let collectRatios;
+  let computeSplits;
+  let createSplit;
+  let createSplitName;
+  let format4f;
+  let initialize;
+  let splitFrame;
+  let updateSplitRatiosAndNames;
+  let _frame;
+  let _frames;
+  let _lastSplitKey;
+  let _lastSplitRatio;
+  let _lastSplitRatioText;
+  let _seed;
+  let _splits;
+  let _validationMessage;
   _frames = Flow.Dataflow.signal([]);
   _frame = Flow.Dataflow.signal(null);
   _lastSplitRatio = Flow.Dataflow.signal(1);
@@ -39,11 +39,11 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
   Flow.Dataflow.react(_splits, () => updateSplitRatiosAndNames());
   _validationMessage = Flow.Dataflow.signal('');
   collectRatios = () => {
-    var entry;
-    var _i;
-    var _len;
-    var _ref;
-    var _results;
+    let entry;
+    let _i;
+    let _len;
+    let _ref;
+    let _results;
     _ref = _splits();
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -53,13 +53,13 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     return _results;
   };
   collectKeys = () => {
-    var entry;
-    var splitKeys;
+    let entry;
+    let splitKeys;
     splitKeys = ((() => {
-      var _i;
-      var _len;
-      var _ref;
-      var _results;
+      let _i;
+      let _len;
+      let _ref;
+      let _results;
       _ref = _splits();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -73,18 +73,18 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
   };
   createSplitName = (key, ratio) => `${key}_${format4f(ratio)}`;
   updateSplitRatiosAndNames = () => {
-    var entry;
-    var frame;
-    var frameKey;
-    var lastSplitRatio;
-    var ratio;
-    var totalRatio;
-    var _i;
-    var _j;
-    var _len;
-    var _len1;
-    var _ref;
-    var _ref1;
+    let entry;
+    let frame;
+    let frameKey;
+    let lastSplitRatio;
+    let ratio;
+    let totalRatio;
+    let _i;
+    let _j;
+    let _len;
+    let _len1;
+    let _ref;
+    let _ref1;
     totalRatio = 0;
     _ref = collectRatios();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -101,15 +101,15 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     _lastSplitKey(createSplitName(frameKey, _lastSplitRatio()));
   };
   computeSplits = go => {
-    var key;
-    var ratio;
-    var splitKeys;
-    var splitRatios;
-    var totalRatio;
-    var _i;
-    var _j;
-    var _len;
-    var _len1;
+    let key;
+    let ratio;
+    let splitKeys;
+    let splitRatios;
+    let totalRatio;
+    let _i;
+    let _j;
+    let _len;
+    let _len1;
     if (!_frame()) {
       return go('Frame not specified.');
     }
@@ -145,10 +145,10 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     return go(null, splitRatios, splitKeys);
   };
   createSplit = ratio => {
-    var self;
-    var _key;
-    var _ratio;
-    var _ratioText;
+    let self;
+    let _key;
+    let _ratio;
+    let _ratioText;
     _ratioText = Flow.Dataflow.signal(`${ratio}`);
     _key = Flow.Dataflow.signal('');
     _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
@@ -173,13 +173,13 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
   });
   initialize = () => {
     _.requestFrames((error, frames) => {
-      var frame;
-      var frameKeys;
+      let frame;
+      let frameKeys;
       if (!error) {
         frameKeys = ((() => {
-          var _i;
-          var _len;
-          var _results;
+          let _i;
+          let _len;
+          let _results;
           _results = [];
           for (_i = 0, _len = frames.length; _i < _len; _i++) {
             frame = frames[_i];

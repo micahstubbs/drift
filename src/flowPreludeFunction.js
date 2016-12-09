@@ -1,17 +1,17 @@
 export function flowPreludeFunction() {
-  var Flow = window.Flow;
-  var _always;
-  var _copy;
-  var _deepClone;
-  var _isDefined;
-  var _isFalsy;
-  var _isTruthy;
-  var _negative;
-  var _never;
-  var _remove;
-  var _repeat;
-  var _typeOf;
-  var _words;
+  const Flow = window.Flow;
+  let _always;
+  let _copy;
+  let _deepClone;
+  let _isDefined;
+  let _isFalsy;
+  let _isTruthy;
+  let _negative;
+  let _never;
+  let _remove;
+  let _repeat;
+  let _typeOf;
+  let _words;
   _isDefined = value => !lodash.isUndefined(value);
   _isTruthy = value => {
     if (value) {
@@ -30,7 +30,7 @@ export function flowPreludeFunction() {
   _never = () => false;
   _copy = array => array.slice(0);
   _remove = (array, element) => {
-    var index;
+    let index;
     if ((index = lodash.indexOf(array, element)) > -1) {
       return lodash.head(array.splice(index, 1));
     }
@@ -38,9 +38,9 @@ export function flowPreludeFunction() {
   };
   _words = text => text.split(/\s+/);
   _repeat = (count, value) => {
-    var array;
-    var i;
-    var _i;
+    let array;
+    let i;
+    let _i;
     array = [];
     for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
       array.push(value);
@@ -48,7 +48,7 @@ export function flowPreludeFunction() {
     return array;
   };
   _typeOf = a => {
-    var type;
+    let type;
     type = Object.prototype.toString.call(a);
     if (a === null) {
       return 'null';

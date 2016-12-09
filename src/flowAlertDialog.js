@@ -1,7 +1,7 @@
 export function flowAlertDialog(_, _message, _opts, _go) {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var accept;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let accept;
   if (_opts == null) {
     _opts = {};
   }

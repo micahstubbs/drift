@@ -2,11 +2,11 @@ import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function jobOutput() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var getJobOutputStatusColor;
-  var getJobProgressPercent;
-  var jobOutputStatusColors;
+  const lodash = window._;
+  const Flow = window.Flow;
+  let getJobOutputStatusColor;
+  let getJobProgressPercent;
+  let jobOutputStatusColors;
   jobOutputStatusColors = {
     failed: '#d9534f',
     done: '#ccc',
@@ -25,30 +25,30 @@ export function jobOutput() {
   };
   getJobProgressPercent = progress => `${Math.ceil(100 * progress)}%`;
   H2O.JobOutput = (_, _go, _job) => {
-    var canView;
-    var cancel;
-    var initialize;
-    var isJobRunning;
-    var messageIcons;
-    var refresh;
-    var updateJob;
-    var view;
-    var _canCancel;
-    var _canView;
-    var _description;
-    var _destinationKey;
-    var _destinationType;
-    var _exception;
-    var _isBusy;
-    var _isLive;
-    var _key;
-    var _messages;
-    var _progress;
-    var _progressMessage;
-    var _remainingTime;
-    var _runTime;
-    var _status;
-    var _statusColor;
+    let canView;
+    let cancel;
+    let initialize;
+    let isJobRunning;
+    let messageIcons;
+    let refresh;
+    let updateJob;
+    let view;
+    let _canCancel;
+    let _canView;
+    let _description;
+    let _destinationKey;
+    let _destinationType;
+    let _exception;
+    let _isBusy;
+    let _isLive;
+    let _key;
+    let _messages;
+    let _progress;
+    let _progressMessage;
+    let _remainingTime;
+    let _runTime;
+    let _status;
+    let _statusColor;
     _isBusy = Flow.Dataflow.signal(false);
     _isLive = Flow.Dataflow.signal(false);
     _key = _job.key.name;
@@ -98,9 +98,9 @@ export function jobOutput() {
       }
     };
     updateJob = job => {
-      var cause;
-      var message;
-      var messages;
+      let cause;
+      let message;
+      let messages;
       _runTime(Flow.Util.formatMilliseconds(job.msec));
       _progress(getJobProgressPercent(job.progress));
       _remainingTime(job.progress ? Flow.Util.formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
@@ -109,10 +109,10 @@ export function jobOutput() {
       _statusColor(getJobOutputStatusColor(job.status));
       if (job.error_count) {
         messages = (() => {
-          var _i;
-          var _len;
-          var _ref;
-          var _results;
+          let _i;
+          let _len;
+          let _ref;
+          let _results;
           _ref = job.messages;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {

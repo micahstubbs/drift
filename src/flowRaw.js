@@ -1,5 +1,5 @@
 export function flowRaw(_) {
-  var render;
+  let render;
   render = (input, output) => {
     output.data({
       text: input,

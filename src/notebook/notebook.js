@@ -11,9 +11,9 @@ import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function notebook() {
-  var lodash = window._;
-  var Flow = window.Flow;
-  var __slice = [].slice;
+  const lodash = window._;
+  const Flow = window.Flow;
+  const __slice = [].slice;
   Flow.Renderers = (_, _sandbox) => ({
     h1() {
       return flowHeading(_, 'h1');
@@ -56,128 +56,128 @@ export function notebook() {
     }
   });
   Flow.Notebook = (_, _renderers) => {
-    var appendCell;
-    var appendCellAndRun;
-    var checkConsistency;
-    var checkIfNameIsInUse;
-    var clearAllCells;
-    var clearCell;
-    var cloneCell;
-    var continueRunningAllCells;
-    var convertCellToCode;
-    var convertCellToHeading;
-    var convertCellToMarkdown;
-    var convertCellToRaw;
-    var convertCellToScala;
-    var copyCell;
-    var createCell;
-    var createMenu;
-    var createMenuHeader;
-    var createMenuItem;
-    var createNotebook;
-    var createShortcutHint;
-    var createTool;
-    var cutCell;
-    var deleteCell;
-    var deserialize;
-    var displayAbout;
-    var displayDocumentation;
-    var displayFAQ;
-    var displayKeyboardShortcuts;
-    var duplicateNotebook;
-    var editModeKeyboardShortcuts;
-    var editModeKeyboardShortcutsHelp;
-    var editName;
-    var executeAllCells;
-    var executeCommand;
-    var exportNotebook;
-    var findBuildProperty;
-    var getBuildProperties;
-    var goToH2OUrl;
-    var goToUrl;
-    var initialize;
-    var initializeMenus;
-    var insertAbove;
-    var insertBelow;
-    var insertCell;
-    var insertCellAbove;
-    var insertCellAboveAndRun;
-    var insertCellBelow;
-    var insertCellBelowAndRun;
-    var insertNewCellAbove;
-    var insertNewCellBelow;
-    var insertNewScalaCellAbove;
-    var insertNewScalaCellBelow;
-    var loadNotebook;
-    var menuCell;
-    var menuCellSW;
-    var menuDivider;
-    var mergeCellAbove;
-    var mergeCellBelow;
-    var moveCellDown;
-    var moveCellUp;
-    var normalModeKeyboardShortcuts;
-    var normalModeKeyboardShortcutsHelp;
-    var notImplemented;
-    var openNotebook;
-    var pasteCellAbove;
-    var pasteCellBelow;
-    var pasteCellandReplace;
-    var promptForNotebook;
-    var removeCell;
-    var runAllCells;
-    var runCell;
-    var runCellAndInsertBelow;
-    var runCellAndSelectBelow;
-    var saveName;
-    var saveNotebook;
-    var selectCell;
-    var selectNextCell;
-    var selectPreviousCell;
-    var serialize;
-    var setupKeyboardHandling;
-    var setupMenus;
-    var showBrowser;
-    var showClipboard;
-    var showHelp;
-    var showOutline;
-    var shutdown;
-    var splitCell;
-    var startTour;
-    var stopRunningAll;
-    var storeNotebook;
-    var switchToCommandMode;
-    var switchToEditMode;
-    var toKeyboardHelp;
-    var toggleAllInputs;
-    var toggleAllOutputs;
-    var toggleInput;
-    var toggleOutput;
-    var toggleSidebar;
-    var undoLastDelete;
-    var uploadFile;
-    var _about;
-    var _areInputsHidden;
-    var _areOutputsHidden;
-    var _cells;
-    var _clipboardCell;
-    var _dialogs;
-    var _initializeInterpreter;
-    var _isEditingName;
-    var _isRunningAll;
-    var _isSidebarHidden;
-    var _lastDeletedCell;
-    var _localName;
-    var _menus;
-    var _remoteName;
-    var _runningCaption;
-    var _runningCellInput;
-    var _runningPercent;
-    var _selectedCell;
-    var _selectedCellIndex;
-    var _sidebar;
-    var _status;
-    var _toolbar;
+    let appendCell;
+    let appendCellAndRun;
+    let checkConsistency;
+    let checkIfNameIsInUse;
+    let clearAllCells;
+    let clearCell;
+    let cloneCell;
+    let continueRunningAllCells;
+    let convertCellToCode;
+    let convertCellToHeading;
+    let convertCellToMarkdown;
+    let convertCellToRaw;
+    let convertCellToScala;
+    let copyCell;
+    let createCell;
+    let createMenu;
+    let createMenuHeader;
+    let createMenuItem;
+    let createNotebook;
+    let createShortcutHint;
+    let createTool;
+    let cutCell;
+    let deleteCell;
+    let deserialize;
+    let displayAbout;
+    let displayDocumentation;
+    let displayFAQ;
+    let displayKeyboardShortcuts;
+    let duplicateNotebook;
+    let editModeKeyboardShortcuts;
+    let editModeKeyboardShortcutsHelp;
+    let editName;
+    let executeAllCells;
+    let executeCommand;
+    let exportNotebook;
+    let findBuildProperty;
+    let getBuildProperties;
+    let goToH2OUrl;
+    let goToUrl;
+    let initialize;
+    let initializeMenus;
+    let insertAbove;
+    let insertBelow;
+    let insertCell;
+    let insertCellAbove;
+    let insertCellAboveAndRun;
+    let insertCellBelow;
+    let insertCellBelowAndRun;
+    let insertNewCellAbove;
+    let insertNewCellBelow;
+    let insertNewScalaCellAbove;
+    let insertNewScalaCellBelow;
+    let loadNotebook;
+    let menuCell;
+    let menuCellSW;
+    let menuDivider;
+    let mergeCellAbove;
+    let mergeCellBelow;
+    let moveCellDown;
+    let moveCellUp;
+    let normalModeKeyboardShortcuts;
+    let normalModeKeyboardShortcutsHelp;
+    let notImplemented;
+    let openNotebook;
+    let pasteCellAbove;
+    let pasteCellBelow;
+    let pasteCellandReplace;
+    let promptForNotebook;
+    let removeCell;
+    let runAllCells;
+    let runCell;
+    let runCellAndInsertBelow;
+    let runCellAndSelectBelow;
+    let saveName;
+    let saveNotebook;
+    let selectCell;
+    let selectNextCell;
+    let selectPreviousCell;
+    let serialize;
+    let setupKeyboardHandling;
+    let setupMenus;
+    let showBrowser;
+    let showClipboard;
+    let showHelp;
+    let showOutline;
+    let shutdown;
+    let splitCell;
+    let startTour;
+    let stopRunningAll;
+    let storeNotebook;
+    let switchToCommandMode;
+    let switchToEditMode;
+    let toKeyboardHelp;
+    let toggleAllInputs;
+    let toggleAllOutputs;
+    let toggleInput;
+    let toggleOutput;
+    let toggleSidebar;
+    let undoLastDelete;
+    let uploadFile;
+    let _about;
+    let _areInputsHidden;
+    let _areOutputsHidden;
+    let _cells;
+    let _clipboardCell;
+    let _dialogs;
+    let _initializeInterpreter;
+    let _isEditingName;
+    let _isRunningAll;
+    let _isSidebarHidden;
+    let _lastDeletedCell;
+    let _localName;
+    let _menus;
+    let _remoteName;
+    let _runningCaption;
+    let _runningCellInput;
+    let _runningPercent;
+    let _selectedCell;
+    let _selectedCellIndex;
+    let _sidebar;
+    let _status;
+    let _toolbar;
     _localName = Flow.Dataflow.signal('Untitled Flow');
     Flow.Dataflow.react(_localName, name => document.title = `H2O${(name && name.trim() ? `- ${name}` : '')}`);
     _remoteName = Flow.Dataflow.signal(null);
@@ -207,13 +207,13 @@ export function notebook() {
       return _.scalaIntpId(response.session_id);
     });
     serialize = () => {
-      var cell;
-      var cells;
+      let cell;
+      let cells;
       cells = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = _cells();
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -231,18 +231,18 @@ export function notebook() {
       };
     };
     deserialize = (localName, remoteName, doc) => {
-      var cell;
-      var cells;
-      var _i;
-      var _len;
-      var _ref;
+      let cell;
+      let cells;
+      let _i;
+      let _len;
+      let _ref;
       _localName(localName);
       _remoteName(remoteName);
       cells = (() => {
-        var _i;
-        var _len;
-        var _ref;
-        var _results;
+        let _i;
+        let _len;
+        let _ref;
+        let _results;
         _ref = doc.cells;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -271,12 +271,12 @@ export function notebook() {
       return flowCell(_, _renderers, type, input);
     };
     checkConsistency = () => {
-      var cell;
-      var i;
-      var selectionCount;
-      var _i;
-      var _len;
-      var _ref;
+      let cell;
+      let i;
+      let selectionCount;
+      let _i;
+      let _len;
+      let _ref;
       selectionCount = 0;
       _ref = _cells();
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -345,8 +345,8 @@ export function notebook() {
       return removeCell();
     };
     removeCell = () => {
-      var cells;
-      var removedCell;
+      let cells;
+      let removedCell;
       cells = _cells();
       if (cells.length > 1) {
         if (_selectedCellIndex === cells.length - 1) {
@@ -376,25 +376,25 @@ export function notebook() {
     insertNewScalaCellAbove = () => insertAbove(createCell('sca'));
     insertNewScalaCellBelow = () => insertBelow(createCell('sca'));
     insertCellAboveAndRun = (type, input) => {
-      var cell;
+      let cell;
       cell = insertAbove(createCell(type, input));
       cell.execute();
       return cell;
     };
     insertCellBelowAndRun = (type, input) => {
-      var cell;
+      let cell;
       cell = insertBelow(createCell(type, input));
       cell.execute();
       return cell;
     };
     appendCellAndRun = (type, input) => {
-      var cell;
+      let cell;
       cell = appendCell(createCell(type, input));
       cell.execute();
       return cell;
     };
     moveCellDown = () => {
-      var cells;
+      let cells;
       cells = _cells();
       if (_selectedCellIndex !== cells.length - 1) {
         _cells.splice(_selectedCellIndex, 1);
@@ -403,7 +403,7 @@ export function notebook() {
       }
     };
     moveCellUp = () => {
-      var cells;
+      let cells;
       if (_selectedCellIndex !== 0) {
         cells = _cells();
         _cells.splice(_selectedCellIndex, 1);
@@ -412,8 +412,8 @@ export function notebook() {
       }
     };
     mergeCellBelow = () => {
-      var cells;
-      var nextCell;
+      let cells;
+      let nextCell;
       cells = _cells();
       if (_selectedCellIndex !== cells.length - 1) {
         nextCell = cells[_selectedCellIndex + 1];
@@ -424,10 +424,10 @@ export function notebook() {
       }
     };
     splitCell = () => {
-      var cursorPosition;
-      var input;
-      var left;
-      var right;
+      let cursorPosition;
+      let input;
+      let left;
+      let right;
       if (_selectedCell.isActive()) {
         input = _selectedCell.input();
         if (input.length > 1) {
@@ -491,8 +491,8 @@ export function notebook() {
       return _.saved();
     });
     saveNotebook = () => {
-      var localName;
-      var remoteName;
+      let localName;
+      let remoteName;
       localName = Flow.Util.sanitizeName(_localName());
       if (localName === '') {
         return _.alert('Invalid notebook name.');
@@ -516,9 +516,9 @@ export function notebook() {
       });
     };
     promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
-      var error;
-      var filename;
-      var _ref;
+      let error;
+      let filename;
+      let _ref;
       if (result) {
         error = result.error, filename = result.filename;
         if (error) {
@@ -529,8 +529,8 @@ export function notebook() {
       }
     });
     uploadFile = () => _.dialog(flowFileUploadDialog, result => {
-      var error;
-      var _ref;
+      let error;
+      let _ref;
       if (result) {
         error = result.error;
         if (error) {
@@ -543,11 +543,11 @@ export function notebook() {
     toggleInput = () => _selectedCell.toggleInput();
     toggleOutput = () => _selectedCell.toggleOutput();
     toggleAllInputs = () => {
-      var cell;
-      var wereHidden;
-      var _i;
-      var _len;
-      var _ref;
+      let cell;
+      let wereHidden;
+      let _i;
+      let _len;
+      let _ref;
       wereHidden = _areInputsHidden();
       _areInputsHidden(!wereHidden);
       if (wereHidden) {
@@ -573,7 +573,7 @@ export function notebook() {
       return _.showClipboard();
     };
     selectNextCell = () => {
-      var cells;
+      let cells;
       cells = _cells();
       if (_selectedCellIndex !== cells.length - 1) {
         selectCell(cells[_selectedCellIndex + 1]);
@@ -581,7 +581,7 @@ export function notebook() {
       return false;
     };
     selectPreviousCell = () => {
-      var cells;
+      let cells;
       if (_selectedCellIndex !== 0) {
         cells = _cells();
         selectCell(cells[_selectedCellIndex - 1]);
@@ -590,7 +590,7 @@ export function notebook() {
     };
     displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
     findBuildProperty = caption => {
-      var entry;
+      let entry;
       if (Flow.BuildProperties) {
         if (entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption)) {
           return entry.value;
@@ -600,7 +600,7 @@ export function notebook() {
       return void 0;
     };
     getBuildProperties = () => {
-      var projectVersion;
+      let projectVersion;
       projectVersion = findBuildProperty('H2O Build project version');
       return [
         findBuildProperty('H2O Build git branch'),
@@ -610,11 +610,11 @@ export function notebook() {
       ];
     };
     displayDocumentation = () => {
-      var buildVersion;
-      var gitBranch;
-      var gitHash;
-      var projectVersion;
-      var _ref;
+      let buildVersion;
+      let gitBranch;
+      let gitHash;
+      let projectVersion;
+      let _ref;
       _ref = getBuildProperties(), gitBranch = _ref[0], projectVersion = _ref[1], buildVersion = _ref[2], gitHash = _ref[3];
       if (buildVersion && buildVersion !== '99999') {
         return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${gitBranch}/${buildVersion}/docs-website/h2o-docs/index.html`, '_blank');
@@ -622,11 +622,11 @@ export function notebook() {
       return window.open(`https://github.com/h2oai/h2o-3/blob/${gitHash}/h2o-docs/src/product/flow/README.md`, '_blank');
     };
     displayFAQ = () => {
-      var buildVersion;
-      var gitBranch;
-      var gitHash;
-      var projectVersion;
-      var _ref;
+      let buildVersion;
+      let gitBranch;
+      let gitHash;
+      let projectVersion;
+      let _ref;
       _ref = getBuildProperties(), gitBranch = _ref[0], projectVersion = _ref[1], buildVersion = _ref[2], gitHash = _ref[3];
       if (buildVersion && buildVersion !== '99999') {
         return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${gitBranch}/${buildVersion}/docs-website/h2o-docs/index.html`, '_blank');
@@ -649,7 +649,7 @@ export function notebook() {
       acceptCaption: 'Create New Notebook',
       declineCaption: 'Cancel'
     }, accept => {
-      var currentTime;
+      let currentTime;
       if (accept) {
         currentTime = new Date().getTime();
         return deserialize('Untitled Flow', null, {
@@ -663,14 +663,14 @@ export function notebook() {
     duplicateNotebook = () => deserialize(`Copy of ${_localName()}`, null, serialize());
     openNotebook = (name, doc) => deserialize(name, null, doc);
     loadNotebook = name => _.requestObject('notebook', name, (error, doc) => {
-      var _ref;
+      let _ref;
       if (error) {
         return _.alert((_ref = error.message) != null ? _ref : error);
       }
       return deserialize(name, name, doc);
     });
     exportNotebook = () => {
-      var remoteName;
+      let remoteName;
       if (remoteName = _remoteName()) {
         return window.open(`/3/NodePersistentStorage.bin/notebook/${remoteName}`, '_blank');
       }
@@ -679,10 +679,10 @@ export function notebook() {
     goToH2OUrl = url => () => window.open(window.Flow.ContextPath + url, '_blank');
     goToUrl = url => () => window.open(url, '_blank');
     executeAllCells = (fromBeginning, go) => {
-      var cellCount;
-      var cellIndex;
-      var cells;
-      var executeNextCell;
+      let cellCount;
+      let cellIndex;
+      let cells;
+      let executeNextCell;
       _isRunningAll(true);
       cells = _cells().slice(0);
       cellCount = cells.length;
@@ -692,7 +692,7 @@ export function notebook() {
         cellIndex = _selectedCellIndex;
       }
       executeNextCell = () => {
-        var cell;
+        let cell;
         if (_isRunningAll()) {
           cell = cells.shift();
           if (cell) {
@@ -737,10 +737,10 @@ export function notebook() {
       return _selectedCell.autoResize();
     };
     clearAllCells = () => {
-      var cell;
-      var _i;
-      var _len;
-      var _ref;
+      let cell;
+      let _i;
+      let _len;
+      let _ref;
       _ref = _cells();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cell = _ref[_i];
@@ -763,7 +763,7 @@ export function notebook() {
     });
     createShortcutHint = shortcut => `<span style=\'float:right\'>${lodash.map(shortcut, key => `<kbd>${key}</kbd>`).join(' ')}</span>`;
     createMenuItem = (label, action, shortcut) => {
-      var kbds;
+      let kbds;
       kbds = shortcut ? createShortcutHint(shortcut) : '';
       return {
         label: `${lodash.escape(label)}${kbds}`,
@@ -819,7 +819,7 @@ export function notebook() {
       menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
     }
     initializeMenus = builder => {
-      var modelMenuItems;
+      let modelMenuItems;
       modelMenuItems = lodash.map(builder, builder => createMenuItem(`${builder.algo_full_name}...`, executeCommand(`buildModel ${flowPrelude.stringify(builder.algo)}`))).concat([
         menuDivider,
         createMenuItem('List All Models', executeCommand('getModels')),
@@ -1119,9 +1119,9 @@ export function notebook() {
       ]
     ];
     toKeyboardHelp = shortcut => {
-      var caption;
-      var keystrokes;
-      var seq;
+      let caption;
+      let keystrokes;
+      let seq;
       seq = shortcut[0], caption = shortcut[1];
       keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${key}</kbd>`).join(' ');
       return {
@@ -1132,15 +1132,15 @@ export function notebook() {
     normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
     editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
     setupKeyboardHandling = mode => {
-      var caption;
-      var f;
-      var shortcut;
-      var _i;
-      var _j;
-      var _len;
-      var _len1;
-      var _ref;
-      var _ref1;
+      let caption;
+      let f;
+      let shortcut;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      let _ref;
+      let _ref1;
       for (_i = 0, _len = normalModeKeyboardShortcuts.length; _i < _len; _i++) {
         _ref = normalModeKeyboardShortcuts[_i], shortcut = _ref[0], caption = _ref[1], f = _ref[2];
         Mousetrap.bind(shortcut, f);
