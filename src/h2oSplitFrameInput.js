@@ -4,64 +4,41 @@ const flowPrelude = flowPreludeFunction();
 export function h2oSplitFrameInput(_, _go, _frameKey) {
   const lodash = window._;
   const Flow = window.Flow;
-  let addSplit;
-  let addSplitRatio;
-  let collectKeys;
-  let collectRatios;
-  let computeSplits;
-  let createSplit;
-  let createSplitName;
-  let format4f;
-  let initialize;
-  let splitFrame;
-  let updateSplitRatiosAndNames;
-  let _frame;
-  let _frames;
-  let _lastSplitKey;
-  let _lastSplitRatio;
-  let _lastSplitRatioText;
-  let _seed;
-  let _splits;
-  let _validationMessage;
-  _frames = Flow.Dataflow.signal([]);
-  _frame = Flow.Dataflow.signal(null);
-  _lastSplitRatio = Flow.Dataflow.signal(1);
-  format4f = value => value.toPrecision(4).replace(/0+$/, '0');
-  _lastSplitRatioText = Flow.Dataflow.lift(_lastSplitRatio, ratio => {
+
+  const _frames = Flow.Dataflow.signal([]);
+  const _frame = Flow.Dataflow.signal(null);
+  const _lastSplitRatio = Flow.Dataflow.signal(1);
+  const format4f = value => value.toPrecision(4).replace(/0+$/, '0');
+  const _lastSplitRatioText = Flow.Dataflow.lift(_lastSplitRatio, ratio => {
     if (lodash.isNaN(ratio)) {
       return ratio;
     }
     return format4f(ratio);
   });
-  _lastSplitKey = Flow.Dataflow.signal('');
-  _splits = Flow.Dataflow.signals([]);
-  _seed = Flow.Dataflow.signal(Math.random() * 1000000 | 0);
+  const _lastSplitKey = Flow.Dataflow.signal('');
+  const _splits = Flow.Dataflow.signals([]);
+  const _seed = Flow.Dataflow.signal(Math.random() * 1000000 | 0);
   Flow.Dataflow.react(_splits, () => updateSplitRatiosAndNames());
-  _validationMessage = Flow.Dataflow.signal('');
-  collectRatios = () => {
+  const _validationMessage = Flow.Dataflow.signal('');
+  const collectRatios = () => {
     let entry;
     let _i;
     let _len;
-    let _ref;
-    let _results;
-    _ref = _splits();
-    _results = [];
+    const _ref = _splits();
+    const _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       entry = _ref[_i];
       _results.push(entry.ratio());
     }
     return _results;
   };
-  collectKeys = () => {
+  const collectKeys = () => {
     let entry;
-    let splitKeys;
-    splitKeys = ((() => {
+    const splitKeys = ((() => {
       let _i;
       let _len;
-      let _ref;
-      let _results;
-      _ref = _splits();
-      _results = [];
+      const _ref = _splits();
+      const _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         entry = _ref[_i];
         _results.push(entry.key().trim());
@@ -71,40 +48,34 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     splitKeys.push(_lastSplitKey().trim());
     return splitKeys;
   };
-  createSplitName = (key, ratio) => `${key}_${format4f(ratio)}`;
-  updateSplitRatiosAndNames = () => {
+  const createSplitName = (key, ratio) => `${key}_${format4f(ratio)}`;
+  function updateSplitRatiosAndNames() {
     let entry;
     let frame;
-    let frameKey;
-    let lastSplitRatio;
     let ratio;
     let totalRatio;
     let _i;
     let _j;
     let _len;
     let _len1;
-    let _ref;
-    let _ref1;
     totalRatio = 0;
-    _ref = collectRatios();
+    const _ref = collectRatios();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       ratio = _ref[_i];
       totalRatio += ratio;
     }
-    lastSplitRatio = _lastSplitRatio(1 - totalRatio);
-    frameKey = (frame = _frame()) ? frame : 'frame';
-    _ref1 = _splits();
+    const lastSplitRatio = _lastSplitRatio(1 - totalRatio);
+    const frameKey = (frame = _frame()) ? frame : 'frame';
+    const _ref1 = _splits();
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       entry = _ref1[_j];
       entry.key(createSplitName(frameKey, entry.ratio()));
     }
     _lastSplitKey(createSplitName(frameKey, _lastSplitRatio()));
-  };
-  computeSplits = go => {
+  }
+  const computeSplits = go => {
     let key;
     let ratio;
-    let splitKeys;
-    let splitRatios;
     let totalRatio;
     let _i;
     let _j;
@@ -113,7 +84,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     if (!_frame()) {
       return go('Frame not specified.');
     }
-    splitRatios = collectRatios();
+    const splitRatios = collectRatios();
     totalRatio = 0;
     for (_i = 0, _len = splitRatios.length; _i < _len; _i++) {
       ratio = splitRatios[_i];
@@ -129,7 +100,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     if (totalRatio >= 1) {
       return go('Sum of ratios is >= 1.');
     }
-    splitKeys = collectKeys();
+    const splitKeys = collectKeys();
     for (_j = 0, _len1 = splitKeys.length; _j < _len1; _j++) {
       key = splitKeys[_j];
       if (key === '') {
@@ -144,14 +115,11 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     }
     return go(null, splitRatios, splitKeys);
   };
-  createSplit = ratio => {
+  const createSplit = ratio => {
     let self;
-    let _key;
-    let _ratio;
-    let _ratioText;
-    _ratioText = Flow.Dataflow.signal(`${ratio}`);
-    _key = Flow.Dataflow.signal('');
-    _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
+    const _ratioText = Flow.Dataflow.signal(`${ratio}`);
+    const _key = Flow.Dataflow.signal('');
+    const _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
     Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
     flowPrelude.remove = () => _splits.remove(self);
     return self = {
@@ -161,9 +129,9 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
       remove: flowPrelude.remove
     };
   };
-  addSplitRatio = ratio => _splits.push(createSplit(ratio));
-  addSplit = () => addSplitRatio(0);
-  splitFrame = () => computeSplits((error, splitRatios, splitKeys) => {
+  const addSplitRatio = ratio => _splits.push(createSplit(ratio));
+  const addSplit = () => addSplitRatio(0);
+  const splitFrame = () => computeSplits((error, splitRatios, splitKeys) => {
     if (error) {
       return _validationMessage(error);
     }
@@ -171,7 +139,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     return _.insertAndExecuteCell('cs',
       `splitFrame ${flowPrelude.stringify(_frame())}, ${flowPrelude.stringify(splitRatios)}, ${flowPrelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
   });
-  initialize = () => {
+  const initialize = () => {
     _.requestFrames((error, frames) => {
       let frame;
       let frameKeys;
@@ -179,8 +147,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
         frameKeys = ((() => {
           let _i;
           let _len;
-          let _results;
-          _results = [];
+          const _results = [];
           for (_i = 0, _len = frames.length; _i < _len; _i++) {
             frame = frames[_i];
             if (!frame.is_text) {
