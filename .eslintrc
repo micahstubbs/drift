@@ -12,7 +12,6 @@
     "no-console": "off",
     "func-names": "off",
     "consistent-return": "off",
-    "no-undef": "off",
     "new-cap": "off",
     "no-underscore-dangle": "off",
     "no-loop-func": "off",
