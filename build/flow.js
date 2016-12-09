@@ -9619,48 +9619,26 @@
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
+    const marked = window.marked;
+    const $ = window.jQuery;
     let _catalog;
     let _homeContent;
-    let _homeMarkdown;
-    let _index;
     _catalog = null;
-    _index = {};
+    const _index = {};
     _homeContent = null;
-    _homeMarkdown = '<blockquote>\nUsing Flow for the first time?\n<br/>\n<div style=\'margin-top:10px\'>\n  <button type=\'button\' data-action=\'get-flow\' data-pack-name=\'examples\' data-flow-name=\'QuickStartVideos.flow\' class=\'flow-button\'><i class=\'fa fa-file-movie-o\'></i><span>Quickstart Videos</span>\n  </button>\n</div>\n</blockquote>\n\nOr, <a href=\'#\' data-action=\'get-pack\' data-pack-name=\'examples\'>view example Flows</a> to explore and learn H<sub>2</sub>O.\n\n###### Star H2O on Github!\n\n<iframe src="https://ghbtns.com/github-btn.html?user=h2oai&repo=h2o-3&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>\n\n###### General\n\n%HELP_TOPICS%\n\n###### Examples\n\nFlow packs are a great way to explore and learn H<sub>2</sub>O. Try out these Flows and run them in your browser.<br/><a href=\'#\' data-action=\'get-packs\'>Browse installed packs...</a>\n\n###### H<sub>2</sub>O REST API\n\n- <a href=\'#\' data-action=\'endpoints\'>Routes</a>\n- <a href=\'#\' data-action=\'schemas\'>Schemas</a>\n';
+    const _homeMarkdown = '<blockquote>\nUsing Flow for the first time?\n<br/>\n<div style=\'margin-top:10px\'>\n  <button type=\'button\' data-action=\'get-flow\' data-pack-name=\'examples\' data-flow-name=\'QuickStartVideos.flow\' class=\'flow-button\'><i class=\'fa fa-file-movie-o\'></i><span>Quickstart Videos</span>\n  </button>\n</div>\n</blockquote>\n\nOr, <a href=\'#\' data-action=\'get-pack\' data-pack-name=\'examples\'>view example Flows</a> to explore and learn H<sub>2</sub>O.\n\n###### Star H2O on Github!\n\n<iframe src="https://ghbtns.com/github-btn.html?user=h2oai&repo=h2o-3&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>\n\n###### General\n\n%HELP_TOPICS%\n\n###### Examples\n\nFlow packs are a great way to explore and learn H<sub>2</sub>O. Try out these Flows and run them in your browser.<br/><a href=\'#\' data-action=\'get-packs\'>Browse installed packs...</a>\n\n###### H<sub>2</sub>O REST API\n\n- <a href=\'#\' data-action=\'endpoints\'>Routes</a>\n- <a href=\'#\' data-action=\'schemas\'>Schemas</a>\n';
     Flow.Help = _ => {
-      let buildToc;
-      let buildTopics;
-      let displayEndpoint;
-      let displayEndpoints;
-      let displayFlows;
-      let displayHtml;
-      let displayPacks;
-      let displaySchema;
-      let displaySchemas;
-      let fixImageSources;
-      let goBack;
-      let goForward;
-      let goHome;
-      let goTo;
-      let initialize;
-      let performAction;
-      let _canGoBack;
-      let _canGoForward;
-      let _content;
-      let _history;
       let _historyIndex;
-      _content = Flow.Dataflow.signal(null);
-      _history = [];
+      const _content = Flow.Dataflow.signal(null);
+      const _history = [];
       _historyIndex = -1;
-      _canGoBack = Flow.Dataflow.signal(false);
-      _canGoForward = Flow.Dataflow.signal(false);
-      goTo = index => {
-        let content;
-        content = _history[_historyIndex = index];
+      const _canGoBack = Flow.Dataflow.signal(false);
+      const _canGoForward = Flow.Dataflow.signal(false);
+      const goTo = index => {
+        const content = _history[_historyIndex = index];
         $('a, button', $(content)).each(function (i) {
-          let $a;
           let action;
-          $a = $(this);
+          const $a = $(this);
           if (action = $a.attr('data-action')) {
             return $a.click(() => performAction(action, $a));
           }
@@ -9669,17 +9647,17 @@
         _canGoForward(_historyIndex < _history.length - 1);
         _canGoBack(_historyIndex > 0);
       };
-      goBack = () => {
+      const goBack = () => {
         if (_historyIndex > 0) {
           return goTo(_historyIndex - 1);
         }
       };
-      goForward = () => {
+      const goForward = () => {
         if (_historyIndex < _history.length - 1) {
           return goTo(_historyIndex + 1);
         }
       };
-      displayHtml = content => {
+      const displayHtml = content => {
         if (_historyIndex < _history.length - 1) {
           _history.splice(_historyIndex + 1, _history.length - (_historyIndex + 1), content);
         } else {
@@ -9687,8 +9665,8 @@
         }
         return goTo(_history.length - 1);
       };
-      fixImageSources = html => html.replace(/\s+src\s*=\s*"images\//g, ' src="help/images/');
-      performAction = (action, $el) => {
+      const fixImageSources = html => html.replace(/\s+src\s*=\s*"images\//g, ' src="help/images/');
+      function performAction(action, $el) {
         let packName;
         let routeIndex;
         let schemaName;
@@ -9697,14 +9675,13 @@
           case 'help':
             topic = _index[$el.attr('data-topic')];
             _.requestHelpContent(topic.name, (error, html) => {
-              let contents;
               let div;
               let h5;
               let h6;
               let mark;
               let _ref;
               _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6'), div = _ref[0], mark = _ref[1], h5 = _ref[2], h6 = _ref[3];
-              contents = [mark('Help'), h5(topic.title), fixImageSources(div(html))];
+              const contents = [mark('Help'), h5(topic.title), fixImageSources(div(html))];
               if (topic.children.length) {
                 contents.push(h6('Topics'));
                 contents.push(buildToc(topic.children));
@@ -9779,16 +9756,16 @@
               }
             });
         }
-      };
-      buildToc = nodes => {
+      }
+      function buildToc(nodes) {
         let a;
         let li;
         let ul;
         let _ref;
         _ref = Flow.HTML.template('ul', 'li', 'a href=\'#\' data-action=\'help\' data-topic=\'$1\''), ul = _ref[0], li = _ref[1], a = _ref[2];
         return ul(lodash.map(nodes, node => li(a(node.title, node.name))));
-      };
-      buildTopics = (index, topics) => {
+      }
+      const buildTopics = (index, topics) => {
         let topic;
         let _i;
         let _len;
@@ -9800,7 +9777,7 @@
           }
         }
       };
-      displayPacks = packNames => {
+      function displayPacks(packNames) {
         let a;
         let div;
         let h5;
@@ -9810,8 +9787,8 @@
         let _ref;
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-folder-o', 'a href=\'#\' data-action=\'get-pack\' data-pack-name=\'$1\''), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], i = _ref[4], a = _ref[5];
         displayHtml(Flow.HTML.render('div', div([mark('Packs'), h5('Installed Packs'), div(lodash.map(packNames, packName => p([i(), a(packName, packName)])))])));
-      };
-      displayFlows = (packName, flowNames) => {
+      }
+      function displayFlows(packName, flowNames) {
         let a;
         let div;
         let h5;
@@ -9821,12 +9798,11 @@
         let _ref;
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-file-text-o', `a href=\'#\' data-action=\'get-flow\' data-pack-name=\'${ packName }\' data-flow-name=\'$1\'`), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], i = _ref[4], a = _ref[5];
         displayHtml(Flow.HTML.render('div', div([mark('Pack'), h5(packName), div(lodash.map(flowNames, flowName => p([i(), a(flowName, flowName)])))])));
-      };
-      displayEndpoints = routes => {
+      }
+      function displayEndpoints(routes) {
         let action;
         let code;
         let div;
-        let els;
         let h5;
         let mark;
         let p;
@@ -9836,45 +9812,41 @@
         let _len;
         let _ref;
         _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'a href=\'#\' data-action=\'endpoint\' data-index=\'$1\'', 'code'), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], action = _ref[4], code = _ref[5];
-        els = [mark('API'), h5('List of Routes')];
+        const els = [mark('API'), h5('List of Routes')];
         for (routeIndex = _i = 0, _len = routes.length; _i < _len; routeIndex = ++_i) {
           route = routes[routeIndex];
           els.push(p(`${ action(code(`${ route.http_method } ${ route.url_pattern }`), routeIndex) }<br/>${ route.summary }`));
         }
         displayHtml(Flow.HTML.render('div', div(els)));
-      };
-      goHome = () => displayHtml(Flow.HTML.render('div', _homeContent));
-      displayEndpoint = route => {
-        let action;
-        let code;
-        let div;
-        let h5;
-        let h6;
-        let mark;
-        let p;
-        let _ref;
+      }
+      const goHome = () => displayHtml(Flow.HTML.render('div', _homeContent));
+      function displayEndpoint(route) {
         let _ref1;
-        _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'', 'code'), div = _ref[0], mark = _ref[1], h5 = _ref[2], h6 = _ref[3], p = _ref[4], action = _ref[5], code = _ref[6];
+        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'', 'code');
+        const div = _ref[0];
+        const mark = _ref[1];
+        const h5 = _ref[2];
+        const h6 = _ref[3];
+        const p = _ref[4];
+        const action = _ref[5];
+        const code = _ref[6];
         return displayHtml(Flow.HTML.render('div', div([mark('Route'), h5(route.url_pattern), h6('Method'), p(code(route.http_method)), h6('Summary'), p(route.summary), h6('Parameters'), p(((_ref1 = route.path_params) != null ? _ref1.length : void 0) ? route.path_params.join(', ') : '-'), h6('Input Schema'), p(action(code(route.input_schema), route.input_schema)), h6('Output Schema'), p(action(code(route.output_schema), route.output_schema))])));
-      };
-      displaySchemas = schemas => {
-        let action;
-        let code;
-        let div;
-        let els;
-        let h5;
-        let li;
-        let mark;
+      }
+      function displaySchemas(schemas) {
         let schema;
-        let ul;
-        let variable;
-        let _ref;
-        _ref = Flow.HTML.template('div', 'h5', 'ul', 'li', 'var', 'mark', 'code', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\''), div = _ref[0], h5 = _ref[1], ul = _ref[2], li = _ref[3], variable = _ref[4], mark = _ref[5], code = _ref[6], action = _ref[7];
-        els = [mark('API'), h5('List of Schemas'), ul((() => {
+        const _ref = Flow.HTML.template('div', 'h5', 'ul', 'li', 'var', 'mark', 'code', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'');
+        const div = _ref[0];
+        const h5 = _ref[1];
+        const ul = _ref[2];
+        const li = _ref[3];
+        const variable = _ref[4];
+        const mark = _ref[5];
+        const code = _ref[6];
+        const action = _ref[7];
+        const els = [mark('API'), h5('List of Schemas'), ul((() => {
           let _i;
           let _len;
-          let _results;
-          _results = [];
+          const _results = [];
           for (_i = 0, _len = schemas.length; _i < _len; _i++) {
             schema = schemas[_i];
             _results.push(li(`${ action(code(schema.name), schema.name) } ${ variable(lodash.escape(schema.type)) }`));
@@ -9882,25 +9854,22 @@
           return _results;
         })())];
         return displayHtml(Flow.HTML.render('div', div(els)));
-      };
-      displaySchema = schema => {
-        let code;
-        let content;
-        let div;
+      }
+      function displaySchema(schema) {
         let field;
-        let h5;
-        let h6;
-        let mark;
-        let p;
-        let small;
-        let variable;
         let _i;
         let _len;
-        let _ref;
-        let _ref1;
-        _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'code', 'var', 'small'), div = _ref[0], mark = _ref[1], h5 = _ref[2], h6 = _ref[3], p = _ref[4], code = _ref[5], variable = _ref[6], small = _ref[7];
-        content = [mark('Schema'), h5(`${ schema.name } (${ lodash.escape(schema.type) })`), h6('Fields')];
-        _ref1 = schema.fields;
+        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'code', 'var', 'small');
+        const div = _ref[0];
+        const mark = _ref[1];
+        const h5 = _ref[2];
+        const h6 = _ref[3];
+        const p = _ref[4];
+        const code = _ref[5];
+        const variable = _ref[6];
+        const small = _ref[7];
+        const content = [mark('Schema'), h5(`${ schema.name } (${ lodash.escape(schema.type) })`), h6('Fields')];
+        const _ref1 = schema.fields;
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           field = _ref1[_i];
           if (field.name !== '__meta') {
@@ -9908,8 +9877,8 @@
           }
         }
         return displayHtml(Flow.HTML.render('div', div(content)));
-      };
-      initialize = catalog => {
+      }
+      const initialize = catalog => {
         _catalog = catalog;
         buildTopics(_index, _catalog);
         _homeContent = marked(_homeMarkdown).replace('%HELP_TOPICS%', buildToc(_catalog));
