@@ -36,6 +36,7 @@ import { flow } from './flow/flow';
 // defer for now
 (function () {
   const lodash = window._;
+  const marked = window.marked;
   window.Flow = {};
   window.H2O = {};
   flow();
