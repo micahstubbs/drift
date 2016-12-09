@@ -10,6 +10,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
   let _isBusy;
   let _isLive;
   let _timestamp;
+  const _exception = Flow.Dataflow.signal(null);
   _isLive = Flow.Dataflow.signal(false);
   _isBusy = Flow.Dataflow.signal(false);
   _headers = [
