@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oImportFilesOutput(_, _go, _importResults) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -21,7 +24,7 @@ export function h2oImportFilesOutput(_, _go, _importResults) {
   _importViews = lodash.map(_importResults, createImportView);
   parse = function () {
     var paths;
-    paths = lodash.map(_allFrames, Flow.Prelude.stringify);
+    paths = lodash.map(_allFrames, flowPrelude.stringify);
     return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${paths.join(',')} ]`);
   };
   lodash.defer(_go);

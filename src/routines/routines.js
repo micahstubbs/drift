@@ -45,6 +45,9 @@ import { h2oImportModelInput } from '../h2oImportModelInput';
 import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
 
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function routines() {
   var lodash = window._;
   var Flow = window.Flow;
@@ -152,12 +155,12 @@ export function routines() {
       case 'int':
       case 'integer':
       case 'long':
-        return createVector(column.name, Flow.TNumber, parseNumbers(data));
+        return createVector(column.name, 'Number', parseNumbers(data));
       case 'float':
       case 'double':
-        return createVector(column.name, Flow.TNumber, parseNumbers(data), format4f);
+        return createVector(column.name, 'Number', parseNumbers(data), format4f);
       case 'string':
-        return createFactor(column.name, Flow.TString, data);
+        return createFactor(column.name, 'String', data);
       case 'matrix':
         return createList(column.name, data, formatConfusionMatrix);
       default:
@@ -316,7 +319,7 @@ export function routines() {
     target = new Array(source.length);
     for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
       element = source[i];
-      target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : element : void 0;
+      target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${flowPrelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : element : void 0;
     }
     return target;
   };
@@ -441,15 +444,15 @@ export function routines() {
         }
         return _results;
       }();
-      return `getPredictions ${Flow.Prelude.stringify(sanitizedOpts)}`;
+      return `getPredictions ${flowPrelude.stringify(sanitizedOpts)}`;
     }
     modelKey = opts.model, frameKey = opts.frame;
     if (modelKey && frameKey) {
-      return `getPredictions model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`;
+      return `getPredictions model: ${flowPrelude.stringify(modelKey)}, frame: ${flowPrelude.stringify(frameKey)}`;
     } else if (modelKey) {
-      return `getPredictions model: ${Flow.Prelude.stringify(modelKey)}`;
+      return `getPredictions model: ${flowPrelude.stringify(modelKey)}`;
     } else if (frameKey) {
-      return `getPredictions frame: ${Flow.Prelude.stringify(frameKey)}`;
+      return `getPredictions frame: ${flowPrelude.stringify(frameKey)}`;
     }
     return 'getPredictions()';
   };
@@ -939,7 +942,7 @@ export function routines() {
       _ref1 = result.partial_dependence_data;
       for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
         data = _ref1[i];
-        origin = `getPartialDependence ${Flow.Prelude.stringify(result.destination_key)}`;
+        origin = `getPartialDependence ${flowPrelude.stringify(result.destination_key)}`;
         inspections[`plot${(i + 1)}`] = inspectTwoDimTable_(origin, `plot${(i + 1)}`, data);
       }
       inspect_(result, inspections);
@@ -1002,7 +1005,7 @@ export function routines() {
               case 'enum':
               case 'Frame':
               case 'string':
-                _results.push(createFactor(parameter.label, Flow.TString, data));
+                _results.push(createFactor(parameter.label, 'String', data));
                 break;
               case 'byte':
               case 'short':
@@ -1010,7 +1013,7 @@ export function routines() {
               case 'long':
               case 'float':
               case 'double':
-                _results.push(createVector(parameter.label, Flow.TNumber, data));
+                _results.push(createVector(parameter.label, 'Number', data));
                 break;
               case 'string[]':
               case 'byte[]':
@@ -1053,7 +1056,7 @@ export function routines() {
         }();
         return createDataframe('parameters', vectors, lodash.range(models.length), null, {
           description: `Parameters for models ${modelKeys.join(', ')}`,
-          origin: `getModels ${Flow.Prelude.stringify(modelKeys)}`
+          origin: `getModels ${flowPrelude.stringify(modelKeys)}`
         });
       };
     };
@@ -1094,7 +1097,7 @@ export function routines() {
         }();
         return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
           description: `Parameters for model \'${model.model_id.name}\'`,
-          origin: `getModel ${Flow.Prelude.stringify(model.model_id.name)}`
+          origin: `getModel ${flowPrelude.stringify(model.model_id.name)}`
         });
       };
     };
@@ -1197,12 +1200,13 @@ export function routines() {
       var _len;
       var _ref1;
       dicts = {};
+      console.log('flowPrelude', flowPrelude);
       for (schema in _schemaHacks) {
         if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
           attrs = _schemaHacks[schema];
           dicts[schema] = dict = { __meta: true };
           if (attrs.fields) {
-            _ref1 = Flow.Prelude.words(attrs.fields);
+            _ref1 = flowPrelude.words(attrs.fields);
             for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
               field = _ref1[_i];
               dict[field] = true;
@@ -1265,11 +1269,11 @@ export function routines() {
                 } else if (lodash.isObject(v)) {
                   if (meta = v.__meta) {
                     if (meta.schema_type === 'Key<Frame>') {
-                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
+                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
                     } else if (meta.schema_type === 'Key<Model>') {
-                      record[k] = `<a href=\'#\' data-type=\'model\' data-key=${Flow.Prelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
+                      record[k] = `<a href=\'#\' data-type=\'model\' data-key=${flowPrelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
                     } else if (meta.schema_type === 'Frame') {
-                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${Flow.Prelude.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;
+                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;
                     } else {
                       inspectObject(inspections, `${name} - ${k}`, origin, v);
                     }
@@ -1297,7 +1301,7 @@ export function routines() {
         var _ref1;
         inspections = {};
         inspections.parameters = inspectModelParameters(model);
-        origin = `getModel ${Flow.Prelude.stringify(model.model_id.name)}`;
+        origin = `getModel ${flowPrelude.stringify(model.model_id.name)}`;
         inspectObject(inspections, 'output', origin, model.output);
         if (model.__meta.schema_type === 'NaiveBayesModel') {
           if (lodash.isArray(model.output.pcond)) {
@@ -1326,9 +1330,9 @@ export function routines() {
     extendGrid = function (grid, opts) {
       var inspections;
       var origin;
-      origin = `getGrid ${Flow.Prelude.stringify(grid.grid_id.name)}`;
+      origin = `getGrid ${flowPrelude.stringify(grid.grid_id.name)}`;
       if (opts) {
-        origin += `, ${Flow.Prelude.stringify(opts)}`;
+        origin += `, ${flowPrelude.stringify(opts)}`;
       }
       inspections = {
         summary: inspectTwoDimTable_(origin, 'summary', grid.summary_table),
@@ -1385,10 +1389,10 @@ export function routines() {
       predictionFrame = result.predictions_frame;
       inspections = {};
       if (prediction) {
-        inspectObject(inspections, 'Prediction', `getPrediction model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`, prediction);
+        inspectObject(inspections, 'Prediction', `getPrediction model: ${flowPrelude.stringify(modelKey)}, frame: ${flowPrelude.stringify(frameKey)}`, prediction);
       } else {
         prediction = {};
-        inspectObject(inspections, 'Prediction', `getPrediction model: ${Flow.Prelude.stringify(modelKey)}, frame: ${Flow.Prelude.stringify(frameKey)}`, { prediction_frame: predictionFrame });
+        inspectObject(inspections, 'Prediction', `getPrediction model: ${flowPrelude.stringify(modelKey)}, frame: ${flowPrelude.stringify(frameKey)}`, { prediction_frame: predictionFrame });
       }
       inspect_(prediction, inspections);
       return render_(prediction, h2oPredictOutput, prediction);
@@ -1420,7 +1424,7 @@ export function routines() {
           'cardinality'
         ];
         toColumnSummaryLink = function (label) {
-          return `<a href=\'#\' data-type=\'summary-link\' data-key=${Flow.Prelude.stringify(label)}>${lodash.escape(label)}</a>`;
+          return `<a href=\'#\' data-type=\'summary-link\' data-key=${flowPrelude.stringify(label)}>${lodash.escape(label)}</a>`;
         };
         toConversionLink = function (value) {
           var label;
@@ -1429,10 +1433,10 @@ export function routines() {
           _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
           switch (type) {
             case 'enum':
-              return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${Flow.Prelude.stringify(label)}>Convert to numeric</a>`;
+              return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${flowPrelude.stringify(label)}>Convert to numeric</a>`;
             case 'int':
             case 'string':
-              return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${Flow.Prelude.stringify(label)}>Convert to enum</a>'`;
+              return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude.stringify(label)}>Convert to enum</a>'`;
             default:
               return void 0;
           }
@@ -1449,7 +1453,7 @@ export function routines() {
             title = title != null ? title : name;
             switch (name) {
               case 'min':
-                _results.push(createVector(title, Flow.TNumber, function () {
+                _results.push(createVector(title, 'Number', function () {
                   var _j;
                   var _len1;
                   var _results1;
@@ -1462,7 +1466,7 @@ export function routines() {
                 }(), format4f));
                 break;
               case 'max':
-                _results.push(createVector(title, Flow.TNumber, function () {
+                _results.push(createVector(title, 'Number', function () {
                   var _j;
                   var _len1;
                   var _results1;
@@ -1475,7 +1479,7 @@ export function routines() {
                 }(), format4f));
                 break;
               case 'cardinality':
-                _results.push(createVector(title, Flow.TNumber, function () {
+                _results.push(createVector(title, 'Number', function () {
                   var _j;
                   var _len1;
                   var _results1;
@@ -1488,7 +1492,7 @@ export function routines() {
                 }()));
                 break;
               case 'label':
-                _results.push(createFactor(title, Flow.TString, function () {
+                _results.push(createFactor(title, 'String', function () {
                   var _j;
                   var _len1;
                   var _results1;
@@ -1501,7 +1505,7 @@ export function routines() {
                 }(), null, toColumnSummaryLink));
                 break;
               case 'type':
-                _results.push(createFactor(title, Flow.TString, function () {
+                _results.push(createFactor(title, 'String', function () {
                   var _j;
                   var _len1;
                   var _results1;
@@ -1515,7 +1519,7 @@ export function routines() {
                 break;
               case 'mean':
               case 'sigma':
-                _results.push(createVector(title, Flow.TNumber, function () {
+                _results.push(createVector(title, 'Number', function () {
                   var _j;
                   var _len1;
                   var _results1;
@@ -1528,7 +1532,7 @@ export function routines() {
                 }(), format4f));
                 break;
               default:
-                _results.push(createVector(title, Flow.TNumber, function () {
+                _results.push(createVector(title, 'Number', function () {
                   var _j;
                   var _len1;
                   var _results1;
@@ -1554,11 +1558,11 @@ export function routines() {
           }
           return _results;
         }();
-        vectors.push(createFactor('Actions', Flow.TString, actionsData, null, toConversionLink));
+        vectors.push(createFactor('Actions', 'String', actionsData, null, toConversionLink));
         return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
           description: `A list of ${tableLabel} in the H2O Frame.`,
-          origin: `getFrameSummary ${Flow.Prelude.stringify(frameKey)}`,
-          plot: `plot inspect \'${tableLabel}\', getFrameSummary ${Flow.Prelude.stringify(frameKey)}`
+          origin: `getFrameSummary ${flowPrelude.stringify(frameKey)}`,
+          plot: `plot inspect \'${tableLabel}\', getFrameSummary ${flowPrelude.stringify(frameKey)}`
         });
       };
     };
@@ -1581,11 +1585,11 @@ export function routines() {
             switch (column.type) {
               case 'int':
               case 'real':
-                _results.push(createVector(column.label, Flow.TNumber, parseNaNs(column.data), format4f));
+                _results.push(createVector(column.label, 'Number', parseNaNs(column.data), format4f));
                 break;
               case 'enum':
                 domain = column.domain;
-                _results.push(createFactor(column.label, Flow.TString, function () {
+                _results.push(createFactor(column.label, 'String', function () {
                   var _j;
                   var _len1;
                   var _ref1;
@@ -1600,7 +1604,7 @@ export function routines() {
                 }()));
                 break;
               case 'time':
-                _results.push(createVector(column.label, Flow.TNumber, parseNaNs(column.data)));
+                _results.push(createVector(column.label, 'Number', parseNaNs(column.data)));
                 break;
               case 'string':
               case 'uuid':
@@ -1612,7 +1616,7 @@ export function routines() {
           }
           return _results;
         }();
-        vectors.unshift(createVector('Row', Flow.TNumber, function () {
+        vectors.unshift(createVector('Row', 'Number', function () {
           var _i;
           var _ref1;
           var _ref2;
@@ -1625,7 +1629,7 @@ export function routines() {
         }()));
         return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
           description: 'A partial list of rows in the H2O Frame.',
-          origin: `getFrameData ${Flow.Prelude.stringify(frameKey)}`
+          origin: `getFrameData ${flowPrelude.stringify(frameKey)}`
         });
       };
     };
@@ -1633,7 +1637,7 @@ export function routines() {
       var inspections;
       var origin;
       inspections = { data: inspectFrameData(frameKey, frame) };
-      origin = `getFrameData ${Flow.Prelude.stringify(frameKey)}`;
+      origin = `getFrameData ${flowPrelude.stringify(frameKey)}`;
       inspect_(frame, inspections);
       return render_(frame, h2oFrameDataOutput, frame);
     };
@@ -1664,7 +1668,7 @@ export function routines() {
       if (enumColumns.length > 0) {
         inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
       }
-      origin = `getFrameSummary ${Flow.Prelude.stringify(frameKey)}`;
+      origin = `getFrameSummary ${flowPrelude.stringify(frameKey)}`;
       inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
       inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
       inspect_(frame, inspections);
@@ -1694,7 +1698,7 @@ export function routines() {
       if (enumColumns.length > 0) {
         inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
       }
-      origin = `getFrameSummary ${Flow.Prelude.stringify(frameKey)}`;
+      origin = `getFrameSummary ${flowPrelude.stringify(frameKey)}`;
       inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
       inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
       inspect_(frame, inspections);
@@ -1714,12 +1718,12 @@ export function routines() {
       inspectPercentiles = function () {
         var vectors;
         vectors = [
-          createVector('percentile', Flow.TNumber, frame.default_percentiles),
-          createVector('value', Flow.TNumber, column.percentiles)
+          createVector('percentile', 'Number', frame.default_percentiles),
+          createVector('value', 'Number', column.percentiles)
         ];
         return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
           description: `Percentiles for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
+          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
       inspectDistribution = function () {
@@ -1791,14 +1795,14 @@ export function routines() {
           }
         }
         vectors = [
-          createFactor('interval', Flow.TString, intervalData),
-          createVector('width', Flow.TNumber, widthData),
-          createVector('count', Flow.TNumber, countData)
+          createFactor('interval', 'String', intervalData),
+          createVector('width', 'Number', widthData),
+          createVector('count', 'Number', countData)
         ];
         return createDataframe('distribution', vectors, lodash.range(binCount), null, {
           description: `Distribution for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,
-          plot: `plot inspect \'distribution\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
+          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`,
+          plot: `plot inspect \'distribution\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
       inspectCharacteristics = function () {
@@ -1840,14 +1844,14 @@ export function routines() {
           return _results;
         }();
         vectors = [
-          createFactor('characteristic', Flow.TString, characteristicData),
-          createVector('count', Flow.TNumber, countData),
-          createVector('percent', Flow.TNumber, percentData)
+          createFactor('characteristic', 'String', characteristicData),
+          createVector('count', 'Number', countData),
+          createVector('percent', 'Number', percentData)
         ];
         return createDataframe('characteristics', vectors, lodash.range(characteristicData.length), null, {
           description: `Characteristics for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,
-          plot: `plot inspect \'characteristics\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
+          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`,
+          plot: `plot inspect \'characteristics\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
       inspectSummary = function () {
@@ -1871,18 +1875,18 @@ export function routines() {
         minimum = lodash.head(column.mins);
         maximum = lodash.head(column.maxs);
         vectors = [
-          createFactor('column', Flow.TString, [columnName]),
-          createVector('mean', Flow.TNumber, [mean]),
-          createVector('q1', Flow.TNumber, [q1]),
-          createVector('q2', Flow.TNumber, [q2]),
-          createVector('q3', Flow.TNumber, [q3]),
-          createVector('min', Flow.TNumber, [minimum]),
-          createVector('max', Flow.TNumber, [maximum])
+          createFactor('column', 'String', [columnName]),
+          createVector('mean', 'Number', [mean]),
+          createVector('q1', 'Number', [q1]),
+          createVector('q2', 'Number', [q2]),
+          createVector('q3', 'Number', [q3]),
+          createVector('min', 'Number', [minimum]),
+          createVector('max', 'Number', [maximum])
         ];
         return createDataframe('summary', vectors, lodash.range(1), null, {
           description: `Summary for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,
-          plot: `plot inspect \'summary\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
+          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`,
+          plot: `plot inspect \'summary\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
       inspectDomain = function () {
@@ -1914,14 +1918,14 @@ export function routines() {
           percents[i] = 100 * level.count / rowCount;
         }
         vectors = [
-          createFactor('label', Flow.TString, labels),
-          createVector('count', Flow.TNumber, counts),
-          createVector('percent', Flow.TNumber, percents)
+          createFactor('label', 'String', labels),
+          createVector('count', 'Number', counts),
+          createVector('percent', 'Number', percents)
         ];
         return createDataframe('domain', vectors, lodash.range(sortedLevels.length), null, {
           description: `Domain for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`,
-          plot: `plot inspect \'domain\', getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`
+          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`,
+          plot: `plot inspect \'domain\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
       inspections = { characteristics: inspectCharacteristics };
@@ -2170,7 +2174,7 @@ export function routines() {
       return _fork(requestFrames);
     };
     getFrame = function (frameKey) {
-      switch (Flow.Prelude.typeOf(frameKey)) {
+      switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
           return _fork(requestFrame, frameKey);
         default:
@@ -2181,7 +2185,7 @@ export function routines() {
       return _fork(requestBindFrames, key, sourceKeys);
     };
     getFrameSummary = function (frameKey) {
-      switch (Flow.Prelude.typeOf(frameKey)) {
+      switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
           return _fork(requestFrameSummary, frameKey);
         default:
@@ -2189,7 +2193,7 @@ export function routines() {
       }
     };
     getFrameData = function (frameKey) {
-      switch (Flow.Prelude.typeOf(frameKey)) {
+      switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
           return _fork(requestFrameData, frameKey, void 0, 0, 20);
         default:
@@ -2312,7 +2316,7 @@ export function routines() {
       });
     };
     getModel = function (modelKey) {
-      switch (Flow.Prelude.typeOf(modelKey)) {
+      switch (flowPrelude.typeOf(modelKey)) {
         case 'String':
           return _fork(requestModel, modelKey);
         default:
@@ -2328,7 +2332,7 @@ export function routines() {
       });
     };
     getGrid = function (gridKey, opts) {
-      switch (Flow.Prelude.typeOf(gridKey)) {
+      switch (flowPrelude.typeOf(gridKey)) {
         case 'String':
           return _fork(requestGrid, gridKey, opts);
         default:
@@ -2530,7 +2534,7 @@ export function routines() {
       return _fork(requestJobs);
     };
     getJob = function (arg) {
-      switch (Flow.Prelude.typeOf(arg)) {
+      switch (flowPrelude.typeOf(arg)) {
         case 'String':
           return _fork(requestJob, arg);
         case 'Object':
@@ -2552,7 +2556,7 @@ export function routines() {
       });
     };
     cancelJob = function (arg) {
-      switch (Flow.Prelude.typeOf(arg)) {
+      switch (flowPrelude.typeOf(arg)) {
         case 'String':
           return _fork(requestCancelJob, arg);
         default:
@@ -2571,7 +2575,7 @@ export function routines() {
       });
     };
     importFiles = function (paths) {
-      switch (Flow.Prelude.typeOf(paths)) {
+      switch (flowPrelude.typeOf(paths)) {
         case 'Array':
           return _fork(requestImportFiles, paths);
         default:

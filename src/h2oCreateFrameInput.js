@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oCreateFrameInput(_, _go) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -63,7 +66,7 @@ export function h2oCreateFrameInput(_, _go) {
       response_factors: _responseFactors(),
       has_response: _hasResponse()
     };
-    return _.insertAndExecuteCell('cs', `createFrame ${Flow.Prelude.stringify(opts)}`);
+    return _.insertAndExecuteCell('cs', `createFrame ${flowPrelude.stringify(opts)}`);
   };
   lodash.defer(_go);
   return {

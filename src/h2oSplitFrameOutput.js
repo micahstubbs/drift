@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
   var lodash = window._;
   var computeRatios;
@@ -30,7 +33,7 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     var self;
     var view;
     view = function () {
-      return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(key)}`);
+      return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(key)}`);
     };
     return self = {
       key,

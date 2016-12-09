@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oPredictsOutput(_, _go, opts, _predictions) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -82,12 +85,12 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
     });
     view = function () {
       if (_hasFrame) {
-        return _.insertAndExecuteCell('cs', `getPrediction model: ${Flow.Prelude.stringify(_modelKey)}, frame: ${Flow.Prelude.stringify(_frameKey)}`);
+        return _.insertAndExecuteCell('cs', `getPrediction model: ${flowPrelude.stringify(_modelKey)}, frame: ${flowPrelude.stringify(_frameKey)}`);
       }
     };
     inspect = function () {
       if (_hasFrame) {
-        return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${Flow.Prelude.stringify(_modelKey)}, frame: ${Flow.Prelude.stringify(_frameKey)}`);
+        return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(_modelKey)}, frame: ${flowPrelude.stringify(_frameKey)}`);
       }
     };
     return {
@@ -124,7 +127,7 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
       }
       return _results;
     }();
-    return _.insertAndExecuteCell('cs', `getPredictions ${Flow.Prelude.stringify(selectedKeys)}`);
+    return _.insertAndExecuteCell('cs', `getPredictions ${flowPrelude.stringify(selectedKeys)}`);
   };
   plotPredictions = function () {
     return _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);

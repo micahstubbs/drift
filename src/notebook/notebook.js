@@ -7,6 +7,8 @@ import { flowCell } from '../flowCell';
 import { flowFileOpenDialog } from '../flowFileOpenDialog';
 import { flowFileUploadDialog } from '../flowFileUploadDialog';
 import { flowMarkdown } from '../flowMarkdown';
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
 
 export function notebook() {
   var lodash = window._;
@@ -581,7 +583,7 @@ export function notebook() {
             return _.growl((_ref = error.message) != null ? _ref : error);
           }
           _.growl('File uploaded successfully!');
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${Flow.Prelude.stringify(result.result.destination_frame)}]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${flowPrelude.stringify(result.result.destination_frame)}]`);
         }
       });
     };
@@ -910,7 +912,7 @@ export function notebook() {
     initializeMenus = function (builder) {
       var modelMenuItems;
       modelMenuItems = lodash.map(builder, function (builder) {
-        return createMenuItem(`${builder.algo_full_name}...`, executeCommand(`buildModel ${Flow.Prelude.stringify(builder.algo)}`));
+        return createMenuItem(`${builder.algo_full_name}...`, executeCommand(`buildModel ${flowPrelude.stringify(builder.algo)}`));
       }).concat([
         menuDivider,
         createMenuItem('List All Models', executeCommand('getModels')),

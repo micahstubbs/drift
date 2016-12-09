@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oPredictInput(_, _go, opt) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -162,9 +165,9 @@ export function h2oPredictInput(_, _go, opt) {
       frameArg = _selectedFrame();
     }
     destinationKey = _destinationKey();
-    cs = `predict model: ${Flow.Prelude.stringify(modelArg)}, frame: ${Flow.Prelude.stringify(frameArg)}`;
+    cs = `predict model: ${flowPrelude.stringify(modelArg)}, frame: ${flowPrelude.stringify(frameArg)}`;
     if (destinationKey) {
-      cs += `, predictions_frame: ${Flow.Prelude.stringify(destinationKey)}`;
+      cs += `, predictions_frame: ${flowPrelude.stringify(destinationKey)}`;
     }
     if (_hasReconError()) {
       if (_computeReconstructionError()) {

@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oInspectsOutput(_, _go, _tables) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -7,10 +10,10 @@ export function h2oInspectsOutput(_, _go, _tables) {
     var inspect;
     var plot;
     inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect ${Flow.Prelude.stringify(table.label)}, ${table.metadata.origin}`);
+      return _.insertAndExecuteCell('cs', `inspect ${flowPrelude.stringify(table.label)}, ${table.metadata.origin}`);
     };
     grid = function () {
-      return _.insertAndExecuteCell('cs', `grid inspect ${Flow.Prelude.stringify(table.label)}, ${table.metadata.origin}`);
+      return _.insertAndExecuteCell('cs', `grid inspect ${flowPrelude.stringify(table.label)}, ${table.metadata.origin}`);
     };
     plot = function () {
       return _.insertAndExecuteCell('cs', table.metadata.plot);

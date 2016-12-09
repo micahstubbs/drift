@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function clipboard() {
   var lodash = window._;
   var Flow = window.Flow;
@@ -61,7 +64,7 @@ export function clipboard() {
       insert = function () {
         return _.insertCell(_type, _input);
       };
-      Flow.Prelude.remove = function () {
+      flowPrelude.remove = function () {
         if (_canRemove) {
           return removeClip(_list, self);
         }
@@ -71,7 +74,7 @@ export function clipboard() {
         input: _input,
         execute,
         insert,
-        remove: Flow.Prelude.remove,
+        remove: flowPrelude.remove,
         canRemove: _canRemove
       };
     };

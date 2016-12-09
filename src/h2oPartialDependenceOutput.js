@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oPartialDependenceOutput(_, _go, _result) {
   var data;
   var i;
@@ -46,7 +49,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
     }
   }
   _viewFrame = function () {
-    return _.insertAndExecuteCell('cs', `requestPartialDependenceData ${Flow.Prelude.stringify(_destinationKey)}`);
+    return _.insertAndExecuteCell('cs', `requestPartialDependenceData ${flowPrelude.stringify(_destinationKey)}`);
   };
   lodash.defer(_go);
   return {

@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -44,10 +47,10 @@ export function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
     }));
   }
   impute = function () {
-    return _.insertAndExecuteCell('cs', `imputeColumn frame: ${Flow.Prelude.stringify(frameKey)}, column: ${Flow.Prelude.stringify(columnName)}`);
+    return _.insertAndExecuteCell('cs', `imputeColumn frame: ${flowPrelude.stringify(frameKey)}, column: ${flowPrelude.stringify(columnName)}`);
   };
   inspect = function () {
-    return _.insertAndExecuteCell('cs', `inspect getColumnSummary ${Flow.Prelude.stringify(frameKey)}, ${Flow.Prelude.stringify(columnName)}`);
+    return _.insertAndExecuteCell('cs', `inspect getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`);
   };
   lodash.defer(_go);
   return {

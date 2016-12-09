@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function jobOutput() {
   var lodash = window._;
   var Flow = window.Flow;
@@ -170,13 +173,13 @@ export function jobOutput() {
       }
       switch (_destinationType) {
         case 'Frame':
-          return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(_destinationKey)}`);
+          return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(_destinationKey)}`);
         case 'Model':
-          return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(_destinationKey)}`);
+          return _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(_destinationKey)}`);
         case 'Grid':
-          return _.insertAndExecuteCell('cs', `getGrid ${Flow.Prelude.stringify(_destinationKey)}`);
+          return _.insertAndExecuteCell('cs', `getGrid ${flowPrelude.stringify(_destinationKey)}`);
         case 'PartialDependence':
-          return _.insertAndExecuteCell('cs', `getPartialDependence ${Flow.Prelude.stringify(_destinationKey)}`);
+          return _.insertAndExecuteCell('cs', `getPartialDependence ${flowPrelude.stringify(_destinationKey)}`);
         case 'Auto Model':
           return _.insertAndExecuteCell('cs', 'getGrids');
         case 'Void':

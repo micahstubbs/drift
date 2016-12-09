@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oPredictOutput(_, _go, prediction) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -27,7 +30,7 @@ export function h2oPredictOutput(_, _go, prediction) {
       var targetFrameName;
       predictionsFrameName = prediction.predictions.frame_id.name;
       targetFrameName = `combined-${predictionsFrameName}`;
-      return _.insertAndExecuteCell('cs', `bindFrames ${Flow.Prelude.stringify(targetFrameName)}, [ ${Flow.Prelude.stringify(predictionsFrameName)}, ${Flow.Prelude.stringify(frame.name)} ]`);
+      return _.insertAndExecuteCell('cs', `bindFrames ${flowPrelude.stringify(targetFrameName)}, [ ${flowPrelude.stringify(predictionsFrameName)}, ${flowPrelude.stringify(frame.name)} ]`);
     };
     render(function (error, vis) {
       if (error) {
@@ -38,9 +41,9 @@ export function h2oPredictOutput(_, _go, prediction) {
         $a = $(e.target);
         switch ($a.attr('data-type')) {
           case 'frame':
-            return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+            return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify($a.attr('data-key'))}`);
           case 'model':
-            return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+            return _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify($a.attr('data-key'))}`);
         }
       });
       return container(vis.element);
@@ -78,7 +81,7 @@ export function h2oPredictOutput(_, _go, prediction) {
     }
   }
   inspect = function () {
-    return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${Flow.Prelude.stringify(model.name)}, frame: ${Flow.Prelude.stringify(frame.name)}`);
+    return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(model.name)}, frame: ${flowPrelude.stringify(frame.name)}`);
   };
   lodash.defer(_go);
   return {

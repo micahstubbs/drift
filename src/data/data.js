@@ -234,7 +234,7 @@ export function data() {
   };
   createNumericVariable = function (_label, _domain, _format, _read) {
     var self;
-    self = createAbstractVariable(_label, Flow.TNumber, _domain || [
+    self = createAbstractVariable(_label, 'Number', _domain || [
       Number.POSITIVE_INFINITY,
       Number.NEGATIVE_INFINITY
     ], _format, _read);
@@ -252,7 +252,7 @@ export function data() {
     return self;
   };
   createVariable = function (_label, _type, _domain, _format, _read) {
-    if (_type === Flow.TNumber) {
+    if (_type === 'Number') {
       return createNumericVariable(_label, _domain, _format, _read);
     }
     return createAbstractVariable(_label, _type, _domain, _format, _read);
@@ -265,7 +265,7 @@ export function data() {
     var _len;
     var _levels;
     var _ref;
-    self = createAbstractVariable(_label, Flow.TFactor, _domain || [], _format, _read);
+    self = createAbstractVariable(_label, 'Factor', _domain || [], _format, _read);
     _id = 0;
     _levels = {};
     if (self.domain.length) {
@@ -320,9 +320,9 @@ export function data() {
     Variable: createVariable,
     Factor: createFactor,
     computeColumnInterpretation(type) {
-      if (type === Flow.TNumber) {
+      if (type === 'Number') {
         return 'c';
-      } else if (type === Flow.TFactor) {
+      } else if (type === 'Factor') {
         return 'd';
       }
       return 't';

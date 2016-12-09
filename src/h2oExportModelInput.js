@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oExportModelInput(_, _go, modelKey, path, opt) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -18,7 +21,7 @@ export function h2oExportModelInput(_, _go, modelKey, path, opt) {
     return modelKey && path;
   });
   exportModel = function () {
-    return _.insertAndExecuteCell('cs', `exportModel ${Flow.Prelude.stringify(_selectedModelKey())}, ${Flow.Prelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
+    return _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_selectedModelKey())}, ${flowPrelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
   };
   _.requestModels(function (error, models) {
     var model;

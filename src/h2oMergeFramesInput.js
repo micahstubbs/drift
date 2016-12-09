@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oMergeFramesInput(_, _go) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -61,7 +64,7 @@ export function h2oMergeFramesInput(_, _go) {
     if (!_canMerge()) {
       return;
     }
-    cs = `mergeFrames ${Flow.Prelude.stringify(_destinationKey())}, ${Flow.Prelude.stringify(_selectedLeftFrame())}, ${_selectedLeftColumn().index}, ${_includeAllLeftRows()}, ${Flow.Prelude.stringify(_selectedRightFrame())}, ${_selectedRightColumn().index}, ${_includeAllRightRows()}`;
+    cs = `mergeFrames ${flowPrelude.stringify(_destinationKey())}, ${flowPrelude.stringify(_selectedLeftFrame())}, ${_selectedLeftColumn().index}, ${_includeAllLeftRows()}, ${flowPrelude.stringify(_selectedRightFrame())}, ${_selectedRightColumn().index}, ${_includeAllRightRows()}`;
     return _.insertAndExecuteCell('cs', cs);
   };
   _.requestFrames(function (error, frames) {

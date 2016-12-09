@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oFramesOutput(_, _go, _frames) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -64,18 +67,18 @@ export function h2oFramesOutput(_, _go, _frames) {
     }), 15);
     view = function () {
       if (frame.is_text) {
-        return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${Flow.Prelude.stringify(frame.frame_id.name)} ]`);
+        return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${flowPrelude.stringify(frame.frame_id.name)} ]`);
       }
-      return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify(frame.frame_id.name)}`);
+      return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(frame.frame_id.name)}`);
     };
     predict = function () {
-      return _.insertAndExecuteCell('cs', `predict frame: ${Flow.Prelude.stringify(frame.frame_id.name)}`);
+      return _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
     };
     inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${Flow.Prelude.stringify(frame.frame_id.name)}`);
+      return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(frame.frame_id.name)}`);
     };
     createModel = function () {
-      return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${Flow.Prelude.stringify(frame.frame_id.name)}`);
+      return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
     };
     return {
       key: frame.frame_id.name,
@@ -110,7 +113,7 @@ export function h2oFramesOutput(_, _go, _frames) {
     return _results;
   };
   predictOnFrames = function () {
-    return _.insertAndExecuteCell('cs', `predict frames: ${Flow.Prelude.stringify(collectSelectedKeys())}`);
+    return _.insertAndExecuteCell('cs', `predict frames: ${flowPrelude.stringify(collectSelectedKeys())}`);
   };
   deleteFrames = function () {
     return _.confirm('Are you sure you want to delete these frames?', {
@@ -118,7 +121,7 @@ export function h2oFramesOutput(_, _go, _frames) {
       declineCaption: 'Cancel'
     }, function (accept) {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrames ${Flow.Prelude.stringify(collectSelectedKeys())}`);
+        return _.insertAndExecuteCell('cs', `deleteFrames ${flowPrelude.stringify(collectSelectedKeys())}`);
       }
     });
   };

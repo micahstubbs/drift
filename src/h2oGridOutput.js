@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oGridOutput(_, _go, _grid) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -78,17 +81,17 @@ export function h2oGridOutput(_, _go, _grid) {
       return _checkedModelCount(checkedViews.length);
     });
     predict = function () {
-      return _.insertAndExecuteCell('cs', `predict model: ${Flow.Prelude.stringify(model_id.name)}`);
+      return _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(model_id.name)}`);
     };
     cloneModel = function () {
       return alert('Not implemented');
-      // return _.insertAndExecuteCell('cs', `cloneModel ${Flow.Prelude.stringify(model_id.name)}`);
+      // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
     };
     view = function () {
-      return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify(model_id.name)}`);
+      return _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model_id.name)}`);
     };
     inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getModel ${Flow.Prelude.stringify(model_id.name)}`);
+      return _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(model_id.name)}`);
     };
     return {
       key: model_id.name,
@@ -119,10 +122,10 @@ export function h2oGridOutput(_, _go, _grid) {
     return _results;
   };
   compareModels = function () {
-    return _.insertAndExecuteCell('cs', `'inspect getModels ${Flow.Prelude.stringify(collectSelectedKeys())}`);
+    return _.insertAndExecuteCell('cs', `'inspect getModels ${flowPrelude.stringify(collectSelectedKeys())}`);
   };
   predictUsingModels = function () {
-    return _.insertAndExecuteCell('cs', `predict models: ${Flow.Prelude.stringify(collectSelectedKeys())}`);
+    return _.insertAndExecuteCell('cs', `predict models: ${flowPrelude.stringify(collectSelectedKeys())}`);
   };
   deleteModels = function () {
     return _.confirm('Are you sure you want to delete these models?', {
@@ -130,7 +133,7 @@ export function h2oGridOutput(_, _go, _grid) {
       declineCaption: 'Cancel'
     }, function (accept) {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${Flow.Prelude.stringify(collectSelectedKeys())}`);
+        return _.insertAndExecuteCell('cs', `deleteModels ${flowPrelude.stringify(collectSelectedKeys())}`);
       }
     });
   };
@@ -160,7 +163,7 @@ export function h2oGridOutput(_, _go, _grid) {
       }
       return _results;
     }();
-    return _.insertAndExecuteCell('cs', `inspect getModels ${Flow.Prelude.stringify(allKeys)}`);
+    return _.insertAndExecuteCell('cs', `inspect getModels ${flowPrelude.stringify(allKeys)}`);
   };
   initialize = function (grid) {
     var errorViews;

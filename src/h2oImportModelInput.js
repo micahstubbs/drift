@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oImportModelInput(_, _go, path, opt) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -14,7 +17,7 @@ export function h2oImportModelInput(_, _go, path, opt) {
     return path && path.length;
   });
   importModel = function () {
-    return _.insertAndExecuteCell('cs', `importModel ${Flow.Prelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
+    return _.insertAndExecuteCell('cs', `importModel ${flowPrelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
   };
   lodash.defer(_go);
   return {
@@ -25,4 +28,3 @@ export function h2oImportModelInput(_, _go, path, opt) {
     template: 'flow-import-model-input'
   };
 };
-  

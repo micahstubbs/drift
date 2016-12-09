@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oFrameOutput(_, _go, _frame) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -56,36 +59,36 @@ export function h2oFrameOutput(_, _go, _frame) {
         $a = $(e.target);
         switch ($a.attr('data-type')) {
           case 'summary-link':
-            return _.insertAndExecuteCell('cs', `getColumnSummary ${Flow.Prelude.stringify(_frame.frame_id.name)}, ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+            return _.insertAndExecuteCell('cs', `getColumnSummary ${flowPrelude.stringify(_frame.frame_id.name)}, ${flowPrelude.stringify($a.attr('data-key'))}`);
           case 'as-factor-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}, column: ${Flow.Prelude.stringify($a.attr('data-key'))}, type: \'enum\'`);
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${flowPrelude.stringify(_frame.frame_id.name)}, column: ${flowPrelude.stringify($a.attr('data-key'))}, type: \'enum\'`);
           case 'as-numeric-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}, column: ${Flow.Prelude.stringify($a.attr('data-key'))}, type: \'int\'`);
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${flowPrelude.stringify(_frame.frame_id.name)}, column: ${flowPrelude.stringify($a.attr('data-key'))}, type: \'int\'`);
         }
       });
       return _grid(vis.element);
     });
   };
   createModel = function () {
-    return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
+    return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
   };
   inspect = function () {
-    return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
+    return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(_frame.frame_id.name)}`);
   };
   inspectData = function () {
-    return _.insertAndExecuteCell('cs', `getFrameData ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
+    return _.insertAndExecuteCell('cs', `getFrameData ${flowPrelude.stringify(_frame.frame_id.name)}`);
   };
   splitFrame = function () {
-    return _.insertAndExecuteCell('cs', `assist splitFrame, ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
+    return _.insertAndExecuteCell('cs', `assist splitFrame, ${flowPrelude.stringify(_frame.frame_id.name)}`);
   };
   predict = function () {
-    return _.insertAndExecuteCell('cs', `predict frame: ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
+    return _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
   };
   download = function () {
     return window.open(`${window.Flow.ContextPath}${(`3/DownloadDataset?frame_id=${encodeURIComponent(_frame.frame_id.name)}`)}`, '_blank');
   };
   exportFrame = function () {
-    return _.insertAndExecuteCell('cs', `exportFrame ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
+    return _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
   };
   deleteFrame = function () {
     return _.confirm('Are you sure you want to delete this frame?', {
@@ -93,7 +96,7 @@ export function h2oFrameOutput(_, _go, _frame) {
       declineCaption: 'Cancel'
     }, function (accept) {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrame ${Flow.Prelude.stringify(_frame.frame_id.name)}`);
+        return _.insertAndExecuteCell('cs', `deleteFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
       }
     });
   };

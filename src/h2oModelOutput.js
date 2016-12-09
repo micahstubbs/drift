@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oModelOutput(_, _go, _model, refresh) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -201,9 +204,9 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           $a = $(e.target);
           switch ($a.attr('data-type')) {
             case 'frame':
-              return _.insertAndExecuteCell('cs', `getFrameSummary ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+              return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify($a.attr('data-key'))}`);
             case 'model':
-              return _.insertAndExecuteCell('cs', `getModel ${Flow.Prelude.stringify($a.attr('data-key'))}`);
+              return _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify($a.attr('data-key'))}`);
           }
         });
         container(vis.element);
@@ -605,10 +608,10 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       return alert('Not implemented');
     };
     predict = function () {
-      return _.insertAndExecuteCell('cs', `predict model: ${Flow.Prelude.stringify(_model.model_id.name)}`);
+      return _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(_model.model_id.name)}`);
     };
     inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getModel ${Flow.Prelude.stringify(_model.model_id.name)}`);
+      return _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_model.model_id.name)}`);
     };
     previewPojo = function () {
       return _.requestPojoPreview(_model.model_id.name, function (error, result) {
@@ -625,7 +628,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       return window.open(`/3/Models/${encodeURIComponent(_model.model_id.name)}/mojo`, '_blank');
     };
     exportModel = function () {
-      return _.insertAndExecuteCell('cs', `exportModel ${Flow.Prelude.stringify(_model.model_id.name)}`);
+      return _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_model.model_id.name)}`);
     };
     deleteModel = function () {
       return _.confirm('Are you sure you want to delete this model?', {
@@ -633,7 +636,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         declineCaption: 'Cancel'
       }, function (accept) {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModel ${Flow.Prelude.stringify(_model.model_id.name)}`);
+          return _.insertAndExecuteCell('cs', `deleteModel ${flowPrelude.stringify(_model.model_id.name)}`);
         }
       });
     };

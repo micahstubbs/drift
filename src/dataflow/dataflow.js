@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function dataflow() {
   var lodash = window._;
   var Flow = window.Flow;
@@ -67,13 +70,13 @@ export function dataflow() {
         arrows.push(arrow = {
           func,
           dispose() {
-            return Flow.Prelude.remove(arrows, arrow);
+            return flowPrelude.remove(arrows, arrow);
           }
         });
         return arrow;
       };
       self.dispose = function () {
-        return lodash.forEach(Flow.Prelude.copy(arrows), function (arrow) {
+        return lodash.forEach(flowPrelude.copy(arrows), function (arrow) {
           return arrow.dispose();
         });
       };
@@ -117,7 +120,7 @@ export function dataflow() {
           arrows.push(arrow = {
             func,
             dispose() {
-              return Flow.Prelude.remove(arrows, arrow);
+              return flowPrelude.remove(arrows, arrow);
             }
           });
           return arrow;
@@ -136,7 +139,7 @@ export function dataflow() {
     createSignal = function (value, equalityComparer) {
       var observable;
       if (arguments.length === 0) {
-        return createSignal(void 0, Flow.Prelude.never);
+        return createSignal(void 0, flowPrelude.never);
       }
       observable = createObservable(value);
       if (lodash.isFunction(equalityComparer)) {

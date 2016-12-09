@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oGridsOutput(_, _go, _grids) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -9,7 +12,7 @@ export function h2oGridsOutput(_, _go, _grids) {
   createGridView = function (grid) {
     var view;
     view = function () {
-      return _.insertAndExecuteCell('cs', `getGrid ${Flow.Prelude.stringify(grid.grid_id.name)}`);
+      return _.insertAndExecuteCell('cs', `getGrid ${flowPrelude.stringify(grid.grid_id.name)}`);
     };
     return {
       key: grid.grid_id.name,

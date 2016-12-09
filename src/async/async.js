@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function async() {
   var lodash = window._;
   var Flow = window.Flow;
@@ -275,9 +278,9 @@ export function async() {
     switch (args.length) {
       case 3:
         a = args[0], b = args[1], c = args[2];
-        ta = Flow.Prelude.typeOf(a);
-        tb = Flow.Prelude.typeOf(b);
-        tc = Flow.Prelude.typeOf(c);
+        ta = flowPrelude.typeOf(a);
+        tb = flowPrelude.typeOf(b);
+        tc = flowPrelude.typeOf(c);
         if (ta === 'Array' && tb === 'String') {
           return _find$3(b, c, a);
         } else if (ta === 'String' && (tc = 'Array')) {

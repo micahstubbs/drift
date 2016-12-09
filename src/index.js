@@ -5,6 +5,8 @@ import { h2oApplication } from './h2oApplication';
 
 
 import { flowForm } from './flowForm';
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
 
 import { modelInput } from './modelInput/modelInput';
 import { parseInput } from './parseInput/parseInput';
@@ -13,7 +15,6 @@ import { imputeInput } from './imputeInput/imputeInput';
 import { util } from './util/util';
 import { routines } from './routines/routines';
 import { coreUtils } from './coreUtils/coreUtils';
-import { types } from './types/types';
 import { localStorage } from './localStorage/localStorage';
 import { knockout } from './knockout/knockout';
 import { html } from './html/html';
@@ -36,7 +37,10 @@ import { gui } from './gui/gui';
 // parent IIFE for the rest of this file
 // defer for now
 (function () {
-  var lodash = window._; window.Flow = {}; window.H2O = {}; (function () {
+  var lodash = window._; 
+  window.Flow = {}; 
+  window.H2O = {}; 
+  (function () {
     var checkSparklingWater;
     var getContextPath;
     getContextPath = function () {
@@ -126,124 +130,6 @@ import { gui } from './gui/gui';
       }
     });
   }.call(this));
-  // this is used many places
-  // 179 matches across 29 files, in fact
-  // defer for now
-  (function () {
-    Flow.Prelude = function () {
-      var _always;
-      var _copy;
-      var _deepClone;
-      var _isDefined;
-      var _isFalsy;
-      var _isTruthy;
-      var _negative;
-      var _never;
-      var _remove;
-      var _repeat;
-      var _typeOf;
-      var _words;
-      _isDefined = function (value) {
-        return !lodash.isUndefined(value);
-      };
-      _isTruthy = function (value) {
-        if (value) {
-          return true;
-        }
-        return false;
-      };
-      _isFalsy = function (value) {
-        if (value) {
-          return false;
-        }
-        return true;
-      };
-      _negative = function (value) {
-        return !value;
-      };
-      _always = function () {
-        return true;
-      };
-      _never = function () {
-        return false;
-      };
-      _copy = function (array) {
-        return array.slice(0);
-      };
-      _remove = function (array, element) {
-        var index;
-        if ((index = lodash.indexOf(array, element)) > -1) {
-          return lodash.head(array.splice(index, 1));
-        }
-        return void 0;
-      };
-      _words = function (text) {
-        return text.split(/\s+/);
-      };
-      _repeat = function (count, value) {
-        var array;
-        var i;
-        var _i;
-        array = [];
-        for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
-          array.push(value);
-        }
-        return array;
-      };
-      _typeOf = function (a) {
-        var type;
-        type = Object.prototype.toString.call(a);
-        if (a === null) {
-          return Flow.TNull;
-        } else if (a === void 0) {
-          return Flow.TUndefined;
-        } else if (a === true || a === false || type === '[object Boolean]') {
-          return Flow.TBoolean;
-        }
-        switch (type) {
-          case '[object String]':
-            return Flow.TString;
-          case '[object Number]':
-            return Flow.TNumber;
-          case '[object Function]':
-            return Flow.TFunction;
-          case '[object Object]':
-            return Flow.TObject;
-          case '[object Array]':
-            return Flow.TArray;
-          case '[object Arguments]':
-            return Flow.TArguments;
-          case '[object Date]':
-            return Flow.TDate;
-          case '[object RegExp]':
-            return Flow.TRegExp;
-          case '[object Error]':
-            return Flow.TError;
-          default:
-            return type;
-        }
-      };
-      _deepClone = function (obj) {
-        return JSON.parse(JSON.stringify(obj));
-      };
-      return {
-        isDefined: _isDefined,
-        isTruthy: _isTruthy,
-        isFalsy: _isFalsy,
-        negative: _negative,
-        always: _always,
-        never: _never,
-        copy: _copy,
-        remove: _remove,
-        words: _words,
-        repeat: _repeat,
-        typeOf: _typeOf,
-        deepClone: _deepClone,
-        stringify: JSON.stringify
-      };
-    }();
-  }.call(this));
-  types();
   coreUtils();
   // abstracting out this IIFE produces an error
   // defer for now 
@@ -875,9 +761,9 @@ import { gui } from './gui/gui';
       requestModelBuild = function (algo, parameters, go) {
         _.trackEvent('model', algo);
         if (parameters.hyper_parameters) {
-          parameters.hyper_parameters = Flow.Prelude.stringify(parameters.hyper_parameters);
+          parameters.hyper_parameters = flowPrelude.stringify(parameters.hyper_parameters);
           if (parameters.search_criteria) {
-            parameters.search_criteria = Flow.Prelude.stringify(parameters.search_criteria);
+            parameters.search_criteria = flowPrelude.stringify(parameters.search_criteria);
           }
           return doPost(getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
         }

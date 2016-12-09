@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function modelInput() {
   var lodash = window._;
   var Flow = window.Flow;
@@ -429,7 +432,7 @@ export function modelInput() {
     var _validationFailureMessage;
     _exception = Flow.Dataflow.signal(null);
     _validationFailureMessage = Flow.Dataflow.signal('');
-    _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, Flow.Prelude.isTruthy);
+    _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude.isTruthy);
     _gridStrategies = [
       'Cartesian',
       'RandomDiscrete'
@@ -801,7 +804,7 @@ export function modelInput() {
       return performValidations(true, function () {
         var parameters;
         parameters = collectParameters(false);
-        return _.insertAndExecuteCell('cs', `buildModel \'${_algorithm}\', ${Flow.Prelude.stringify(parameters)}`);
+        return _.insertAndExecuteCell('cs', `buildModel \'${_algorithm}\', ${flowPrelude.stringify(parameters)}`);
       });
     };
     _revalidate = function (value) {
@@ -930,7 +933,7 @@ export function modelInput() {
           var parameters;
           if (builder) {
             algorithm = builder.algo;
-            parameters = Flow.Prelude.deepClone(builder.parameters);
+            parameters = flowPrelude.deepClone(builder.parameters);
             return populateFramesAndColumns(frameKey, algorithm, parameters, function () {
               return _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters));
             });

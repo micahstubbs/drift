@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oJobsOutput(_, _go, jobs) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -21,7 +24,7 @@ export function h2oJobsOutput(_, _go, jobs) {
     var type;
     var view;
     view = function () {
-      return _.insertAndExecuteCell('cs', `getJob ${Flow.Prelude.stringify(job.key.name)}`);
+      return _.insertAndExecuteCell('cs', `getJob ${flowPrelude.stringify(job.key.name)}`);
     };
     type = function () {
       switch (job.dest.type) {

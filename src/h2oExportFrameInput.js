@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oExportFrameInput(_, _go, frameKey, path, opt) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -15,7 +18,7 @@ export function h2oExportFrameInput(_, _go, frameKey, path, opt) {
     return frame && path;
   });
   exportFrame = function () {
-    return _.insertAndExecuteCell('cs', `exportFrame ${Flow.Prelude.stringify(_selectedFrame())}, ${Flow.Prelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
+    return _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_selectedFrame())}, ${flowPrelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
   };
   _.requestFrames(function (error, frames) {
     var frame;

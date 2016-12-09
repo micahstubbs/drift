@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function objectBrowser() {
   var lodash = window._;
   var Flow = window.Flow;
@@ -70,7 +73,7 @@ export function objectBrowser() {
     if (recurse == null) {
       recurse = false;
     }
-    type = Flow.Prelude.typeOf(element);
+    type = flowPrelude.typeOf(element);
     switch (type) {
       case 'Boolean':
       case 'String':
@@ -104,7 +107,7 @@ export function objectBrowser() {
     var _type;
     _expansions = Flow.Dataflow.signal(null);
     _isExpanded = Flow.Dataflow.signal(false);
-    _type = Flow.Prelude.typeOf(object);
+    _type = flowPrelude.typeOf(object);
     _canExpand = isExpandable(_type);
     toggle = function () {
       var expansions;

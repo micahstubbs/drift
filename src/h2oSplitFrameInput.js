@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oSplitFrameInput(_, _go, _frameKey) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -158,14 +161,14 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
       return parseFloat(text);
     });
     Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
-    Flow.Prelude.remove = function () {
+    flowPrelude.remove = function () {
       return _splits.remove(self);
     };
     return self = {
       key: _key,
       ratioText: _ratioText,
       ratio: _ratio,
-      remove: Flow.Prelude.remove
+      remove: flowPrelude.remove
     };
   };
   addSplitRatio = function (ratio) {
@@ -181,7 +184,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
       }
       _validationMessage('');
       return _.insertAndExecuteCell('cs',
-        `splitFrame ${Flow.Prelude.stringify(_frame())}, ${Flow.Prelude.stringify(splitRatios)}, ${Flow.Prelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
+        `splitFrame ${flowPrelude.stringify(_frame())}, ${flowPrelude.stringify(splitRatios)}, ${flowPrelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
     });
   };
   initialize = function () {

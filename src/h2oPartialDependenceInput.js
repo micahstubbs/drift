@@ -1,3 +1,6 @@
+import { flowPreludeFunction } from './flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
 export function h2oPartialDependenceInput(_, _go) {
   var lodash = window._;
   var Flow = window.Flow;
@@ -32,7 +35,7 @@ export function h2oPartialDependenceInput(_, _go) {
       frame_id: _selectedFrame(),
       nbins: _nbins()
     };
-    cs = `buildPartialDependence ${Flow.Prelude.stringify(opts)}`;
+    cs = `buildPartialDependence ${flowPrelude.stringify(opts)}`;
     return _.insertAndExecuteCell('cs', cs);
   };
   _.requestFrames(function (error, frames) {
