@@ -60,7 +60,6 @@ export function notebook() {
     let appendCellAndRun;
     let checkConsistency;
     let checkIfNameIsInUse;
-    let clearAllCells;
     let clearCell;
     let cloneCell;
     let continueRunningAllCells;
@@ -71,12 +70,7 @@ export function notebook() {
     let convertCellToScala;
     let copyCell;
     let createCell;
-    let createMenu;
-    let createMenuHeader;
-    let createMenuItem;
     let createNotebook;
-    let createShortcutHint;
-    let createTool;
     let cutCell;
     let deleteCell;
     let deserialize;
@@ -85,8 +79,6 @@ export function notebook() {
     let displayFAQ;
     let displayKeyboardShortcuts;
     let duplicateNotebook;
-    let editModeKeyboardShortcuts;
-    let editModeKeyboardShortcutsHelp;
     let editName;
     let executeAllCells;
     let executeCommand;
@@ -95,8 +87,6 @@ export function notebook() {
     let getBuildProperties;
     let goToH2OUrl;
     let goToUrl;
-    let initialize;
-    let initializeMenus;
     let insertAbove;
     let insertBelow;
     let insertCell;
@@ -110,19 +100,12 @@ export function notebook() {
     let insertNewScalaCellBelow;
     let loadNotebook;
     let menuCell;
-    let menuCellSW;
-    let menuDivider;
-    let mergeCellAbove;
     let mergeCellBelow;
     let moveCellDown;
     let moveCellUp;
-    let normalModeKeyboardShortcuts;
-    let normalModeKeyboardShortcutsHelp;
-    let notImplemented;
     let openNotebook;
     let pasteCellAbove;
     let pasteCellBelow;
-    let pasteCellandReplace;
     let promptForNotebook;
     let removeCell;
     let runAllCells;
@@ -135,20 +118,16 @@ export function notebook() {
     let selectNextCell;
     let selectPreviousCell;
     let serialize;
-    let setupKeyboardHandling;
-    let setupMenus;
     let showBrowser;
     let showClipboard;
     let showHelp;
     let showOutline;
     let shutdown;
     let splitCell;
-    let startTour;
     let stopRunningAll;
     let storeNotebook;
     let switchToCommandMode;
     let switchToEditMode;
-    let toKeyboardHelp;
     let toggleAllInputs;
     let toggleAllOutputs;
     let toggleInput;
@@ -168,7 +147,6 @@ export function notebook() {
     let _isSidebarHidden;
     let _lastDeletedCell;
     let _localName;
-    let _menus;
     let _remoteName;
     let _runningCaption;
     let _runningCellInput;
@@ -177,7 +155,6 @@ export function notebook() {
     let _selectedCellIndex;
     let _sidebar;
     let _status;
-    let _toolbar;
     _localName = Flow.Dataflow.signal('Untitled Flow');
     Flow.Dataflow.react(_localName, name => document.title = `H2O${(name && name.trim() ? `- ${name}` : '')}`);
     _remoteName = Flow.Dataflow.signal(null);
@@ -740,41 +717,39 @@ export function notebook() {
       let cell;
       let _i;
       let _len;
-      let _ref;
-      _ref = _cells();
+      const _ref = _cells();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cell = _ref[_i];
         cell.clear();
         cell.autoResize();
       }
     };
-    notImplemented = () => {
+    const notImplemented = () => {
     };
-    pasteCellandReplace = notImplemented;
-    mergeCellAbove = notImplemented;
-    startTour = notImplemented;
-    createMenu = (label, items) => ({
+    const pasteCellandReplace = notImplemented;
+    const mergeCellAbove = notImplemented;
+    const startTour = notImplemented;
+    const createMenu = (label, items) => ({
       label,
       items
     });
-    createMenuHeader = label => ({
+    const createMenuHeader = label => ({
       label,
       action: null
     });
-    createShortcutHint = shortcut => `<span style=\'float:right\'>${lodash.map(shortcut, key => `<kbd>${key}</kbd>`).join(' ')}</span>`;
-    createMenuItem = (label, action, shortcut) => {
-      let kbds;
-      kbds = shortcut ? createShortcutHint(shortcut) : '';
+    const createShortcutHint = shortcut => `<span style=\'float:right\'>${lodash.map(shortcut, key => `<kbd>${key}</kbd>`).join(' ')}</span>`;
+    const createMenuItem = (label, action, shortcut) => {
+      const kbds = shortcut ? createShortcutHint(shortcut) : '';
       return {
         label: `${lodash.escape(label)}${kbds}`,
         action
       };
     };
-    menuDivider = {
+    const menuDivider = {
       label: null,
       action: null
     };
-    _menus = Flow.Dataflow.signal(null);
+    const _menus = Flow.Dataflow.signal(null);
     menuCell = [
       createMenuItem('Run Cell', runCell, [
         'ctrl',
@@ -810,7 +785,7 @@ export function notebook() {
       createMenuItem('Toggle Cell Output', toggleOutput, ['o']),
       createMenuItem('Clear Cell Output', clearCell)
     ];
-    menuCellSW = [
+    const menuCellSW = [
       menuDivider,
       createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove),
       createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow)
@@ -818,9 +793,8 @@ export function notebook() {
     if (_.onSparklingWater) {
       menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
     }
-    initializeMenus = builder => {
-      let modelMenuItems;
-      modelMenuItems = lodash.map(builder, builder => createMenuItem(`${builder.algo_full_name}...`, executeCommand(`buildModel ${flowPrelude.stringify(builder.algo)}`))).concat([
+    const initializeMenus = builder => {
+      const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${builder.algo_full_name}...`, executeCommand(`buildModel ${flowPrelude.stringify(builder.algo)}`))).concat([
         menuDivider,
         createMenuItem('List All Models', executeCommand('getModels')),
         createMenuItem('List Grid Search Results', executeCommand('getGrids')),
@@ -895,8 +869,8 @@ export function notebook() {
         ])
       ];
     };
-    setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
-    createTool = (icon, label, action, isDisabled) => {
+    const setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
+    const createTool = (icon, label, action, isDisabled) => {
       if (isDisabled == null) {
         isDisabled = false;
       }
@@ -907,7 +881,7 @@ export function notebook() {
         icon: `fa fa-${icon}`
       };
     };
-    _toolbar = [
+    const _toolbar = [
       [
         createTool('file-o', 'New', createNotebook),
         createTool('folder-open-o', 'Open', promptForNotebook),
@@ -932,7 +906,7 @@ export function notebook() {
       ],
           [createTool('question-circle', 'Assist Me', executeCommand('assist'))]
     ];
-    normalModeKeyboardShortcuts = [
+    const normalModeKeyboardShortcuts = [
       [
         'enter',
         'edit mode',
@@ -1081,7 +1055,7 @@ export function notebook() {
         convertCellToScala
       ]);
     }
-    editModeKeyboardShortcuts = [
+    const editModeKeyboardShortcuts = [
       [
         'esc',
         'command mode',
@@ -1118,20 +1092,19 @@ export function notebook() {
         saveNotebook
       ]
     ];
-    toKeyboardHelp = shortcut => {
+    const toKeyboardHelp = shortcut => {
       let caption;
-      let keystrokes;
       let seq;
       seq = shortcut[0], caption = shortcut[1];
-      keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${key}</kbd>`).join(' ');
+      const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${key}</kbd>`).join(' ');
       return {
         keystrokes,
         caption
       };
     };
-    normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
-    editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
-    setupKeyboardHandling = mode => {
+    const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
+    const editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
+    const setupKeyboardHandling = mode => {
       let caption;
       let f;
       let shortcut;
@@ -1150,7 +1123,7 @@ export function notebook() {
         Mousetrap.bindGlobal(shortcut, f);
       }
     };
-    initialize = () => {
+    const initialize = () => {
       setupKeyboardHandling('normal');
       setupMenus();
       Flow.Dataflow.link(_.load, loadNotebook);

@@ -11052,7 +11052,6 @@
       let appendCellAndRun;
       let checkConsistency;
       let checkIfNameIsInUse;
-      let clearAllCells;
       let clearCell;
       let cloneCell;
       let continueRunningAllCells;
@@ -11063,12 +11062,7 @@
       let convertCellToScala;
       let copyCell;
       let createCell;
-      let createMenu;
-      let createMenuHeader;
-      let createMenuItem;
       let createNotebook;
-      let createShortcutHint;
-      let createTool;
       let cutCell;
       let deleteCell;
       let deserialize;
@@ -11077,8 +11071,6 @@
       let displayFAQ;
       let displayKeyboardShortcuts;
       let duplicateNotebook;
-      let editModeKeyboardShortcuts;
-      let editModeKeyboardShortcutsHelp;
       let editName;
       let executeAllCells;
       let executeCommand;
@@ -11087,8 +11079,6 @@
       let getBuildProperties;
       let goToH2OUrl;
       let goToUrl;
-      let initialize;
-      let initializeMenus;
       let insertAbove;
       let insertBelow;
       let insertCell;
@@ -11102,19 +11092,12 @@
       let insertNewScalaCellBelow;
       let loadNotebook;
       let menuCell;
-      let menuCellSW;
-      let menuDivider;
-      let mergeCellAbove;
       let mergeCellBelow;
       let moveCellDown;
       let moveCellUp;
-      let normalModeKeyboardShortcuts;
-      let normalModeKeyboardShortcutsHelp;
-      let notImplemented;
       let openNotebook;
       let pasteCellAbove;
       let pasteCellBelow;
-      let pasteCellandReplace;
       let promptForNotebook;
       let removeCell;
       let runAllCells;
@@ -11127,20 +11110,16 @@
       let selectNextCell;
       let selectPreviousCell;
       let serialize;
-      let setupKeyboardHandling;
-      let setupMenus;
       let showBrowser;
       let showClipboard;
       let showHelp;
       let showOutline;
       let shutdown;
       let splitCell;
-      let startTour;
       let stopRunningAll;
       let storeNotebook;
       let switchToCommandMode;
       let switchToEditMode;
-      let toKeyboardHelp;
       let toggleAllInputs;
       let toggleAllOutputs;
       let toggleInput;
@@ -11160,7 +11139,6 @@
       let _isSidebarHidden;
       let _lastDeletedCell;
       let _localName;
-      let _menus;
       let _remoteName;
       let _runningCaption;
       let _runningCellInput;
@@ -11169,7 +11147,6 @@
       let _selectedCellIndex;
       let _sidebar;
       let _status;
-      let _toolbar;
       _localName = Flow.Dataflow.signal('Untitled Flow');
       Flow.Dataflow.react(_localName, name => document.title = `H2O${ name && name.trim() ? `- ${ name }` : '' }`);
       _remoteName = Flow.Dataflow.signal(null);
@@ -11724,52 +11701,49 @@
         let cell;
         let _i;
         let _len;
-        let _ref;
-        _ref = _cells();
+        const _ref = _cells();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cell = _ref[_i];
           cell.clear();
           cell.autoResize();
         }
       };
-      notImplemented = () => {};
-      pasteCellandReplace = notImplemented;
-      mergeCellAbove = notImplemented;
-      startTour = notImplemented;
-      createMenu = (label, items) => ({
+      const notImplemented = () => {};
+      const pasteCellandReplace = notImplemented;
+      const mergeCellAbove = notImplemented;
+      const startTour = notImplemented;
+      const createMenu = (label, items) => ({
         label,
         items
       });
-      createMenuHeader = label => ({
+      const createMenuHeader = label => ({
         label,
         action: null
       });
-      createShortcutHint = shortcut => `<span style=\'float:right\'>${ lodash.map(shortcut, key => `<kbd>${ key }</kbd>`).join(' ') }</span>`;
-      createMenuItem = (label, action, shortcut) => {
-        let kbds;
-        kbds = shortcut ? createShortcutHint(shortcut) : '';
+      const createShortcutHint = shortcut => `<span style=\'float:right\'>${ lodash.map(shortcut, key => `<kbd>${ key }</kbd>`).join(' ') }</span>`;
+      const createMenuItem = (label, action, shortcut) => {
+        const kbds = shortcut ? createShortcutHint(shortcut) : '';
         return {
           label: `${ lodash.escape(label) }${ kbds }`,
           action
         };
       };
-      menuDivider = {
+      const menuDivider = {
         label: null,
         action: null
       };
-      _menus = Flow.Dataflow.signal(null);
+      const _menus = Flow.Dataflow.signal(null);
       menuCell = [createMenuItem('Run Cell', runCell, ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell, ['c']), createMenuItem('Paste Cell Above', pasteCellAbove, ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow, ['v']), createMenuItem('Delete Cell', deleteCell, ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete, ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp, ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown, ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']), menuDivider, createMenuItem('Toggle Cell Input', toggleInput), createMenuItem('Toggle Cell Output', toggleOutput, ['o']), createMenuItem('Clear Cell Output', clearCell)];
-      menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow)];
+      const menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow)];
       if (_.onSparklingWater) {
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
       }
-      initializeMenus = builder => {
-        let modelMenuItems;
-        modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$37.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
+      const initializeMenus = builder => {
+        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$37.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
         return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')), createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')), createMenuItem('Shut Down', shutdown)]), createMenu('Help', [createMenuItem('Assist Me', executeCommand('assist')), menuDivider, createMenuItem('Contents', showHelp), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider, createMenuItem('About', displayAbout)])];
       };
-      setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
-      createTool = (icon, label, action, isDisabled) => {
+      const setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
+      const createTool = (icon, label, action, isDisabled) => {
         if (isDisabled == null) {
           isDisabled = false;
         }
@@ -11780,26 +11754,25 @@
           icon: `fa fa-${ icon }`
         };
       };
-      _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown)], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell)], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
-      normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode], ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(1)], ['2', 'to heading 2', convertCellToHeading(2)], ['3', 'to heading 3', convertCellToHeading(3)], ['4', 'to heading 4', convertCellToHeading(4)], ['5', 'to heading 5', convertCellToHeading(5)], ['6', 'to heading 6', convertCellToHeading(6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook], ['o', 'toggle output', toggleOutput], ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
+      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown)], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell)], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
+      const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode], ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(1)], ['2', 'to heading 2', convertCellToHeading(2)], ['3', 'to heading 3', convertCellToHeading(3)], ['4', 'to heading 4', convertCellToHeading(4)], ['5', 'to heading 5', convertCellToHeading(5)], ['6', 'to heading 6', convertCellToHeading(6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook], ['o', 'toggle output', toggleOutput], ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
       if (_.onSparklingWater) {
         normalModeKeyboardShortcuts.push(['q', 'to Scala', convertCellToScala]);
       }
-      editModeKeyboardShortcuts = [['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
-      toKeyboardHelp = shortcut => {
+      const editModeKeyboardShortcuts = [['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
+      const toKeyboardHelp = shortcut => {
         let caption;
-        let keystrokes;
         let seq;
         seq = shortcut[0], caption = shortcut[1];
-        keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${ key }</kbd>`).join(' ');
+        const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${ key }</kbd>`).join(' ');
         return {
           keystrokes,
           caption
         };
       };
-      normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
-      editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
-      setupKeyboardHandling = mode => {
+      const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
+      const editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
+      const setupKeyboardHandling = mode => {
         let caption;
         let f;
         let shortcut;
@@ -11818,7 +11791,7 @@
           Mousetrap.bindGlobal(shortcut, f);
         }
       };
-      initialize = () => {
+      const initialize = () => {
         setupKeyboardHandling('normal');
         setupMenus();
         Flow.Dataflow.link(_.load, loadNotebook);
