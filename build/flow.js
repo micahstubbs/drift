@@ -5,7 +5,6 @@
 }(this, function () { 'use strict';
 
   function flowPreludeFunction() {
-    console.log('window.Flow', window.Flow);
     var Flow = window.Flow;
     var _always;
     var _copy;
@@ -119,9 +118,9 @@
     };
   };
 
-  const flowPrelude$1 = flowPreludeFunction();
-
   const flowPrelude$2 = flowPreludeFunction();
+
+  const flowPrelude$3 = flowPreludeFunction();
 
   function modelInput() {
     var lodash = window._;
@@ -554,7 +553,7 @@
       var _validationFailureMessage;
       _exception = Flow.Dataflow.signal(null);
       _validationFailureMessage = Flow.Dataflow.signal('');
-      _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$2.isTruthy);
+      _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$3.isTruthy);
       _gridStrategies = ['Cartesian', 'RandomDiscrete'];
       _isGrided = Flow.Dataflow.signal(false);
       _gridId = Flow.Dataflow.signal(`grid-${ Flow.Util.uuid() }`);
@@ -898,7 +897,7 @@
         return performValidations(true, function () {
           var parameters;
           parameters = collectParameters(false);
-          return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ flowPrelude$2.stringify(parameters) }`);
+          return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ flowPrelude$3.stringify(parameters) }`);
         });
       };
       _revalidate = function (value) {
@@ -1026,7 +1025,7 @@
             var parameters;
             if (builder) {
               algorithm = builder.algo;
-              parameters = flowPrelude$2.deepClone(builder.parameters);
+              parameters = flowPrelude$3.deepClone(builder.parameters);
               return populateFramesAndColumns(frameKey, algorithm, parameters, function () {
                 return _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters));
               });
@@ -1051,7 +1050,7 @@
     };
   }
 
-  const flowPrelude$3 = flowPreludeFunction();
+  const flowPrelude$4 = flowPreludeFunction();
 
   function parseInput() {
     var lodash = window._;
@@ -1280,7 +1279,7 @@
           }
           return _results;
         }();
-        return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude$3.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude$3.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude$3.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude$3.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude$3.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
+        return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude$4.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude$4.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude$4.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude$4.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude$4.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
       };
       _canGoToNextPage = Flow.Dataflow.lift(_activePage, function (currentPage) {
         return (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length;
@@ -1325,7 +1324,7 @@
     };
   }
 
-  const flowPrelude$4 = flowPreludeFunction();
+  const flowPrelude$5 = flowPreludeFunction();
 
   function jobOutput() {
     var lodash = window._;
@@ -1499,13 +1498,13 @@
         }
         switch (_destinationType) {
           case 'Frame':
-            return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$4.stringify(_destinationKey) }`);
+            return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$5.stringify(_destinationKey) }`);
           case 'Model':
-            return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$4.stringify(_destinationKey) }`);
+            return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$5.stringify(_destinationKey) }`);
           case 'Grid':
-            return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$4.stringify(_destinationKey) }`);
+            return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$5.stringify(_destinationKey) }`);
           case 'PartialDependence':
-            return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$4.stringify(_destinationKey) }`);
+            return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$5.stringify(_destinationKey) }`);
           case 'Auto Model':
             return _.insertAndExecuteCell('cs', 'getGrids');
           case 'Void':
@@ -1730,7 +1729,7 @@
     };
   }
 
-  const flowPrelude$6 = flowPreludeFunction();
+  const flowPrelude$7 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
     var lodash = window._;
@@ -1741,10 +1740,10 @@
       var inspect;
       var plot;
       inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$6.stringify(table.label) }, ${ table.metadata.origin }`);
+        return _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$7.stringify(table.label) }, ${ table.metadata.origin }`);
       };
       grid = function () {
-        return _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$6.stringify(table.label) }, ${ table.metadata.origin }`);
+        return _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$7.stringify(table.label) }, ${ table.metadata.origin }`);
       };
       plot = function () {
         return _.insertAndExecuteCell('cs', table.metadata.plot);
@@ -1766,7 +1765,7 @@
     };
   };
 
-  const flowPrelude$7 = flowPreludeFunction();
+  const flowPrelude$8 = flowPreludeFunction();
 
   function h2oInspectOutput(_, _go, _frame) {
     var lodash = window._;
@@ -1774,7 +1773,7 @@
     var plot;
     var view;
     view = function () {
-      return _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$7.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
+      return _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$8.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
     };
     plot = function () {
       return _.insertAndExecuteCell('cs', _frame.metadata.plot);
@@ -1799,7 +1798,7 @@
     };
   };
 
-  const flowPrelude$8 = flowPreludeFunction();
+  const flowPrelude$9 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
     var plot;
@@ -1837,7 +1836,7 @@
     plot = function () {
       var color;
       var command;
-      command = (color = _color()) ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$8.stringify(_x()) }, ${ flowPrelude$8.stringify(_y()) }\n    g.color ${ flowPrelude$8.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$8.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$8.stringify(_x()) }, ${ flowPrelude$8.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$8.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      command = (color = _color()) ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$9.stringify(_x()) }, ${ flowPrelude$9.stringify(_y()) }\n    g.color ${ flowPrelude$9.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$9.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$9.stringify(_x()) }, ${ flowPrelude$9.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$9.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
       return _.insertAndExecuteCell('cs', command);
     };
     lodash.defer(_go);
@@ -2436,7 +2435,7 @@
     };
   };
 
-  const flowPrelude$9 = flowPreludeFunction();
+  const flowPrelude$10 = flowPreludeFunction();
 
   function h2oFramesOutput(_, _go, _frames) {
     var lodash = window._;
@@ -2504,18 +2503,18 @@
       }), 15);
       view = function () {
         if (frame.is_text) {
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$9.stringify(frame.frame_id.name) } ]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$10.stringify(frame.frame_id.name) } ]`);
         }
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$9.stringify(frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$10.stringify(frame.frame_id.name) }`);
       };
       predict = function () {
-        return _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$9.stringify(frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$10.stringify(frame.frame_id.name) }`);
       };
       inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$9.stringify(frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$10.stringify(frame.frame_id.name) }`);
       };
       createModel = function () {
-        return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$9.stringify(frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$10.stringify(frame.frame_id.name) }`);
       };
       return {
         key: frame.frame_id.name,
@@ -2550,7 +2549,7 @@
       return _results;
     };
     predictOnFrames = function () {
-      return _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$9.stringify(collectSelectedKeys()) }`);
+      return _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$10.stringify(collectSelectedKeys()) }`);
     };
     deleteFrames = function () {
       return _.confirm('Are you sure you want to delete these frames?', {
@@ -2558,7 +2557,7 @@
         declineCaption: 'Cancel'
       }, function (accept) {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$9.stringify(collectSelectedKeys()) }`);
+          return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$10.stringify(collectSelectedKeys()) }`);
         }
       });
     };
@@ -2576,7 +2575,7 @@
     };
   };
 
-  const flowPrelude$10 = flowPreludeFunction();
+  const flowPrelude$11 = flowPreludeFunction();
 
   function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     var lodash = window._;
@@ -2610,7 +2609,7 @@
       var self;
       var view;
       view = function () {
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$10.stringify(key) }`);
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$11.stringify(key) }`);
       };
       return self = {
         key,
@@ -2639,7 +2638,7 @@
     };
   };
 
-  const flowPrelude$11 = flowPreludeFunction();
+  const flowPrelude$12 = flowPreludeFunction();
 
   function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
     var lodash = window._;
@@ -2648,7 +2647,7 @@
     var _viewFrame;
     _frameKey = _mergeFramesResult.key;
     _viewFrame = function () {
-      return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$11.stringify(_frameKey) }`);
+      return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$12.stringify(_frameKey) }`);
     };
     lodash.defer(_go);
     return {
@@ -2658,7 +2657,7 @@
     };
   };
 
-  const flowPrelude$12 = flowPreludeFunction();
+  const flowPrelude$13 = flowPreludeFunction();
 
   function h2oPartialDependenceOutput(_, _go, _result) {
     var data;
@@ -2708,7 +2707,7 @@
       }
     }
     _viewFrame = function () {
-      return _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ flowPrelude$12.stringify(_destinationKey) }`);
+      return _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ flowPrelude$13.stringify(_destinationKey) }`);
     };
     lodash.defer(_go);
     return {
@@ -2721,7 +2720,7 @@
     };
   };
 
-  const flowPrelude$13 = flowPreludeFunction();
+  const flowPrelude$14 = flowPreludeFunction();
 
   function h2oJobsOutput(_, _go, jobs) {
     var lodash = window._;
@@ -2746,7 +2745,7 @@
       var type;
       var view;
       view = function () {
-        return _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$13.stringify(job.key.name) }`);
+        return _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$14.stringify(job.key.name) }`);
       };
       type = function () {
         switch (job.dest.type) {
@@ -2828,7 +2827,7 @@
     };
   };
 
-  const flowPrelude$14 = flowPreludeFunction();
+  const flowPrelude$15 = flowPreludeFunction();
 
   function h2oModelOutput(_, _go, _model, refresh) {
     var lodash = window._;
@@ -3033,9 +3032,9 @@
             $a = $(e.target);
             switch ($a.attr('data-type')) {
               case 'frame':
-                return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
+                return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$15.stringify($a.attr('data-key')) }`);
               case 'model':
-                return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
+                return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$15.stringify($a.attr('data-key')) }`);
             }
           });
           container(vis.element);
@@ -3437,10 +3436,10 @@
         return alert('Not implemented');
       };
       predict = function () {
-        return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$15.stringify(_model.model_id.name) }`);
       };
       inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$15.stringify(_model.model_id.name) }`);
       };
       previewPojo = function () {
         return _.requestPojoPreview(_model.model_id.name, function (error, result) {
@@ -3457,7 +3456,7 @@
         return window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
       };
       exportModel = function () {
-        return _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$15.stringify(_model.model_id.name) }`);
       };
       deleteModel = function () {
         return _.confirm('Are you sure you want to delete this model?', {
@@ -3465,7 +3464,7 @@
           declineCaption: 'Cancel'
         }, function (accept) {
           if (accept) {
-            return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+            return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$15.stringify(_model.model_id.name) }`);
           }
         });
       };
@@ -3517,7 +3516,7 @@
     };
   };
 
-  const flowPrelude$15 = flowPreludeFunction();
+  const flowPrelude$16 = flowPreludeFunction();
 
   function h2oGridOutput(_, _go, _grid) {
     var lodash = window._;
@@ -3599,17 +3598,17 @@
         return _checkedModelCount(checkedViews.length);
       });
       predict = function () {
-        return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$15.stringify(model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$16.stringify(model_id.name) }`);
       };
       cloneModel = function () {
         return alert('Not implemented');
         // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
       };
       view = function () {
-        return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$15.stringify(model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$16.stringify(model_id.name) }`);
       };
       inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$15.stringify(model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$16.stringify(model_id.name) }`);
       };
       return {
         key: model_id.name,
@@ -3640,10 +3639,10 @@
       return _results;
     };
     compareModels = function () {
-      return _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$15.stringify(collectSelectedKeys()) }`);
+      return _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$16.stringify(collectSelectedKeys()) }`);
     };
     predictUsingModels = function () {
-      return _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$15.stringify(collectSelectedKeys()) }`);
+      return _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$16.stringify(collectSelectedKeys()) }`);
     };
     deleteModels = function () {
       return _.confirm('Are you sure you want to delete these models?', {
@@ -3651,7 +3650,7 @@
         declineCaption: 'Cancel'
       }, function (accept) {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$15.stringify(collectSelectedKeys()) }`);
+          return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$16.stringify(collectSelectedKeys()) }`);
         }
       });
     };
@@ -3681,7 +3680,7 @@
         }
         return _results;
       }();
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$15.stringify(allKeys) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$16.stringify(allKeys) }`);
     };
     initialize = function (grid) {
       var errorViews;
@@ -3726,7 +3725,7 @@
     };
   };
 
-  const flowPrelude$16 = flowPreludeFunction();
+  const flowPrelude$17 = flowPreludeFunction();
 
   function h2oGridsOutput(_, _go, _grids) {
     var lodash = window._;
@@ -3739,7 +3738,7 @@
     createGridView = function (grid) {
       var view;
       view = function () {
-        return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$16.stringify(grid.grid_id.name) }`);
+        return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$17.stringify(grid.grid_id.name) }`);
       };
       return {
         key: grid.grid_id.name,
@@ -3763,7 +3762,7 @@
     };
   };
 
-  const flowPrelude$17 = flowPreludeFunction();
+  const flowPrelude$18 = flowPreludeFunction();
 
   function h2oModelsOutput(_, _go, _models) {
     var lodash = window._;
@@ -3837,17 +3836,17 @@
         return _checkedModelCount(checkedViews.length);
       });
       predict = function () {
-        return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(model.model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$18.stringify(model.model_id.name) }`);
       };
       cloneModel = function () {
         return alert('Not implemented');
         // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
       };
       view = function () {
-        return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$18.stringify(model.model_id.name) }`);
       };
       inspect = function () {
-        return _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
+        return _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$18.stringify(model.model_id.name) }`);
       };
       return {
         key: model.model_id.name,
@@ -3879,10 +3878,10 @@
       return _results;
     };
     compareModels = function () {
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$18.stringify(collectSelectedKeys()) }`);
     };
     predictUsingModels = function () {
-      return _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
+      return _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$18.stringify(collectSelectedKeys()) }`);
     };
     deleteModels = function () {
       return _.confirm('Are you sure you want to delete these models?', {
@@ -3890,7 +3889,7 @@
         declineCaption: 'Cancel'
       }, function (accept) {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
+          return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$18.stringify(collectSelectedKeys()) }`);
         }
       });
     };
@@ -3910,7 +3909,7 @@
         }
         return _results;
       }();
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$17.stringify(allKeys) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$18.stringify(allKeys) }`);
     };
     initialize = function (models) {
       _modelViews(lodash.map(models, createModelView));
@@ -3933,7 +3932,7 @@
     };
   };
 
-  const flowPrelude$18 = flowPreludeFunction();
+  const flowPrelude$19 = flowPreludeFunction();
 
   function h2oPredictsOutput(_, _go, opts, _predictions) {
     var lodash = window._;
@@ -4019,12 +4018,12 @@
       });
       view = function () {
         if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$18.stringify(_modelKey) }, frame: ${ flowPrelude$18.stringify(_frameKey) }`);
+          return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$19.stringify(_modelKey) }, frame: ${ flowPrelude$19.stringify(_frameKey) }`);
         }
       };
       inspect = function () {
         if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$18.stringify(_modelKey) }, frame: ${ flowPrelude$18.stringify(_frameKey) }`);
+          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$19.stringify(_modelKey) }, frame: ${ flowPrelude$19.stringify(_frameKey) }`);
         }
       };
       return {
@@ -4061,7 +4060,7 @@
         }
         return _results;
       }();
-      return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$18.stringify(selectedKeys) }`);
+      return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$19.stringify(selectedKeys) }`);
     };
     plotPredictions = function () {
       return _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
@@ -4099,7 +4098,7 @@
     };
   };
 
-  const flowPrelude$19 = flowPreludeFunction();
+  const flowPrelude$20 = flowPreludeFunction();
 
   function h2oPredictOutput(_, _go, prediction) {
     var lodash = window._;
@@ -4130,7 +4129,7 @@
         var targetFrameName;
         predictionsFrameName = prediction.predictions.frame_id.name;
         targetFrameName = `combined-${ predictionsFrameName }`;
-        return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$19.stringify(targetFrameName) }, [ ${ flowPrelude$19.stringify(predictionsFrameName) }, ${ flowPrelude$19.stringify(frame.name) } ]`);
+        return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$20.stringify(targetFrameName) }, [ ${ flowPrelude$20.stringify(predictionsFrameName) }, ${ flowPrelude$20.stringify(frame.name) } ]`);
       };
       render(function (error, vis) {
         if (error) {
@@ -4141,9 +4140,9 @@
           $a = $(e.target);
           switch ($a.attr('data-type')) {
             case 'frame':
-              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$19.stringify($a.attr('data-key')) }`);
+              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$20.stringify($a.attr('data-key')) }`);
             case 'model':
-              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$19.stringify($a.attr('data-key')) }`);
+              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$20.stringify($a.attr('data-key')) }`);
           }
         });
         return container(vis.element);
@@ -4181,7 +4180,7 @@
       }
     }
     inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$19.stringify(model.name) }, frame: ${ flowPrelude$19.stringify(frame.name) }`);
+      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$20.stringify(model.name) }, frame: ${ flowPrelude$20.stringify(frame.name) }`);
     };
     lodash.defer(_go);
     return {
@@ -4209,7 +4208,7 @@
     };
   };
 
-  const flowPrelude$20 = flowPreludeFunction();
+  const flowPrelude$21 = flowPreludeFunction();
 
   function h2oFrameOutput(_, _go, _frame) {
     var lodash = window._;
@@ -4269,36 +4268,36 @@
           $a = $(e.target);
           switch ($a.attr('data-type')) {
             case 'summary-link':
-              return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$20.stringify(_frame.frame_id.name) }, ${ flowPrelude$20.stringify($a.attr('data-key')) }`);
+              return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$21.stringify(_frame.frame_id.name) }, ${ flowPrelude$21.stringify($a.attr('data-key')) }`);
             case 'as-factor-link':
-              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$20.stringify($a.attr('data-key')) }, type: \'enum\'`);
+              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$21.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$21.stringify($a.attr('data-key')) }, type: \'enum\'`);
             case 'as-numeric-link':
-              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$20.stringify($a.attr('data-key')) }, type: \'int\'`);
+              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$21.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$21.stringify($a.attr('data-key')) }, type: \'int\'`);
           }
         });
         return _grid(vis.element);
       });
     };
     createModel = function () {
-      return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+      return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
     };
     inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+      return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
     };
     inspectData = function () {
-      return _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+      return _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
     };
     splitFrame = function () {
-      return _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+      return _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
     };
     predict = function () {
-      return _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+      return _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
     };
     download = function () {
       return window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
     };
     exportFrame = function () {
-      return _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+      return _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
     };
     deleteFrame = function () {
       return _.confirm('Are you sure you want to delete this frame?', {
@@ -4306,7 +4305,7 @@
         declineCaption: 'Cancel'
       }, function (accept) {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+          return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
         }
       });
     };
@@ -4384,7 +4383,7 @@
     };
   };
 
-  const flowPrelude$21 = flowPreludeFunction();
+  const flowPrelude$22 = flowPreludeFunction();
 
   function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
     var lodash = window._;
@@ -4432,10 +4431,10 @@
       }));
     }
     impute = function () {
-      return _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$21.stringify(frameKey) }, column: ${ flowPrelude$21.stringify(columnName) }`);
+      return _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$22.stringify(frameKey) }, column: ${ flowPrelude$22.stringify(columnName) }`);
     };
     inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$21.stringify(frameKey) }, ${ flowPrelude$21.stringify(columnName) }`);
+      return _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$22.stringify(frameKey) }, ${ flowPrelude$22.stringify(columnName) }`);
     };
     lodash.defer(_go);
     return {
@@ -4456,14 +4455,14 @@
     return { template: 'flow-export-frame-output' };
   };
 
-  const flowPrelude$22 = flowPreludeFunction();
+  const flowPrelude$23 = flowPreludeFunction();
 
   function h2oBindFramesOutput(_, _go, key, result) {
     var lodash = window._;
     var Flow = window.Flow;
     var viewFrame;
     viewFrame = function () {
-      return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$22.stringify(key) }`);
+      return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$23.stringify(key) }`);
     };
     lodash.defer(_go);
     return {
@@ -4478,7 +4477,7 @@
     return { template: 'flow-export-model-output' };
   };
 
-  const flowPrelude$23 = flowPreludeFunction();
+  const flowPrelude$24 = flowPreludeFunction();
 
   function h2oImportFilesOutput(_, _go, _importResults) {
     var lodash = window._;
@@ -4503,7 +4502,7 @@
     _importViews = lodash.map(_importResults, createImportView);
     parse = function () {
       var paths;
-      paths = lodash.map(_allFrames, flowPrelude$23.stringify);
+      paths = lodash.map(_allFrames, flowPrelude$24.stringify);
       return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ paths.join(',') } ]`);
     };
     lodash.defer(_go);
@@ -4645,7 +4644,7 @@
     };
   };
 
-  const flowPrelude$24 = flowPreludeFunction();
+  const flowPrelude$25 = flowPreludeFunction();
 
   function h2oImportFilesInput(_, _go) {
     var lodash = window._;
@@ -4730,7 +4729,7 @@
     importFiles = function (files) {
       var paths;
       paths = lodash.map(files, function (file) {
-        return flowPrelude$24.stringify(file.path);
+        return flowPrelude$25.stringify(file.path);
       });
       return _.insertAndExecuteCell('cs', `importFiles [ ${ paths.join(',') } ]`);
     };
@@ -4960,7 +4959,7 @@
     };
   };
 
-  const flowPrelude$25 = flowPreludeFunction();
+  const flowPrelude$26 = flowPreludeFunction();
 
   function h2oPredictInput(_, _go, opt) {
     var lodash = window._;
@@ -5126,9 +5125,9 @@
         frameArg = _selectedFrame();
       }
       destinationKey = _destinationKey();
-      cs = `predict model: ${ flowPrelude$25.stringify(modelArg) }, frame: ${ flowPrelude$25.stringify(frameArg) }`;
+      cs = `predict model: ${ flowPrelude$26.stringify(modelArg) }, frame: ${ flowPrelude$26.stringify(frameArg) }`;
       if (destinationKey) {
-        cs += `, predictions_frame: ${ flowPrelude$25.stringify(destinationKey) }`;
+        cs += `, predictions_frame: ${ flowPrelude$26.stringify(destinationKey) }`;
       }
       if (_hasReconError()) {
         if (_computeReconstructionError()) {
@@ -5175,7 +5174,7 @@
     };
   };
 
-  const flowPrelude$26 = flowPreludeFunction();
+  const flowPrelude$27 = flowPreludeFunction();
 
   function h2oCreateFrameInput(_, _go) {
     var lodash = window._;
@@ -5242,7 +5241,7 @@
         response_factors: _responseFactors(),
         has_response: _hasResponse()
       };
-      return _.insertAndExecuteCell('cs', `createFrame ${ flowPrelude$26.stringify(opts) }`);
+      return _.insertAndExecuteCell('cs', `createFrame ${ flowPrelude$27.stringify(opts) }`);
     };
     lodash.defer(_go);
     return {
@@ -5270,7 +5269,7 @@
     };
   };
 
-  const flowPrelude$27 = flowPreludeFunction();
+  const flowPrelude$28 = flowPreludeFunction();
 
   function h2oSplitFrameInput(_, _go, _frameKey) {
     var lodash = window._;
@@ -5429,14 +5428,14 @@
         return parseFloat(text);
       });
       Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
-      flowPrelude$27.remove = function () {
+      flowPrelude$28.remove = function () {
         return _splits.remove(self);
       };
       return self = {
         key: _key,
         ratioText: _ratioText,
         ratio: _ratio,
-        remove: flowPrelude$27.remove
+        remove: flowPrelude$28.remove
       };
     };
     addSplitRatio = function (ratio) {
@@ -5451,7 +5450,7 @@
           return _validationMessage(error);
         }
         _validationMessage('');
-        return _.insertAndExecuteCell('cs', `splitFrame ${ flowPrelude$27.stringify(_frame()) }, ${ flowPrelude$27.stringify(splitRatios) }, ${ flowPrelude$27.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
+        return _.insertAndExecuteCell('cs', `splitFrame ${ flowPrelude$28.stringify(_frame()) }, ${ flowPrelude$28.stringify(splitRatios) }, ${ flowPrelude$28.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
       });
     };
     initialize = function () {
@@ -5496,7 +5495,7 @@
     };
   };
 
-  const flowPrelude$28 = flowPreludeFunction();
+  const flowPrelude$29 = flowPreludeFunction();
 
   function h2oMergeFramesInput(_, _go) {
     var lodash = window._;
@@ -5561,7 +5560,7 @@
       if (!_canMerge()) {
         return;
       }
-      cs = `mergeFrames ${ flowPrelude$28.stringify(_destinationKey()) }, ${ flowPrelude$28.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ flowPrelude$28.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
+      cs = `mergeFrames ${ flowPrelude$29.stringify(_destinationKey()) }, ${ flowPrelude$29.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ flowPrelude$29.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames(function (error, frames) {
@@ -5601,7 +5600,7 @@
     };
   };
 
-  const flowPrelude$29 = flowPreludeFunction();
+  const flowPrelude$30 = flowPreludeFunction();
 
   function h2oPartialDependenceInput(_, _go) {
     var lodash = window._;
@@ -5637,7 +5636,7 @@
         frame_id: _selectedFrame(),
         nbins: _nbins()
       };
-      cs = `buildPartialDependence ${ flowPrelude$29.stringify(opts) }`;
+      cs = `buildPartialDependence ${ flowPrelude$30.stringify(opts) }`;
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames(function (error, frames) {
@@ -5690,7 +5689,7 @@
     };
   };
 
-  const flowPrelude$30 = flowPreludeFunction();
+  const flowPrelude$31 = flowPreludeFunction();
 
   function h2oExportFrameInput(_, _go, frameKey, path, opt) {
     var lodash = window._;
@@ -5709,7 +5708,7 @@
       return frame && path;
     });
     exportFrame = function () {
-      return _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$30.stringify(_selectedFrame()) }, ${ flowPrelude$30.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+      return _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$31.stringify(_selectedFrame()) }, ${ flowPrelude$31.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     };
     _.requestFrames(function (error, frames) {
       var frame;
@@ -5742,7 +5741,7 @@
     };
   };
 
-  const flowPrelude$31 = flowPreludeFunction();
+  const flowPrelude$32 = flowPreludeFunction();
 
   function h2oImportModelInput(_, _go, path, opt) {
     var lodash = window._;
@@ -5760,7 +5759,7 @@
       return path && path.length;
     });
     importModel = function () {
-      return _.insertAndExecuteCell('cs', `importModel ${ flowPrelude$31.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+      return _.insertAndExecuteCell('cs', `importModel ${ flowPrelude$32.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     };
     lodash.defer(_go);
     return {
@@ -5772,7 +5771,7 @@
     };
   };
 
-  const flowPrelude$32 = flowPreludeFunction();
+  const flowPrelude$33 = flowPreludeFunction();
 
   function h2oExportModelInput(_, _go, modelKey, path, opt) {
     var lodash = window._;
@@ -5794,7 +5793,7 @@
       return modelKey && path;
     });
     exportModel = function () {
-      return _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$32.stringify(_selectedModelKey()) }, ${ flowPrelude$32.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+      return _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$33.stringify(_selectedModelKey()) }, ${ flowPrelude$33.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     };
     _.requestModels(function (error, models) {
       var model;
@@ -5838,10 +5837,10 @@
     };
   };
 
-  const flowPrelude$5=flowPreludeFunction();function routines(){var lodash=window._;var Flow=window.Flow;var combineTables;var computeFalsePositiveRate;var computeTruePositiveRate;var concatArrays;var convertColumnToVector;var convertTableToFrame;var createArrays;var createDataframe;var createFactor;var createList;var createTempKey;var createVector;var format4f;var format6fi;var formatConfusionMatrix;var formulateGetPredictionsOrigin;var getTwoDimData;var lightning;var parseAndFormatArray;var parseAndFormatObjectArray;var parseNaNs;var parseNulls;var parseNumbers;var repeatValues;var _assistance;var __slice=[].slice;lightning=(typeof window!=='undefined'&&window!==null?window.plot:void 0)!=null?window.plot:{};if(lightning.settings){lightning.settings.axisLabelFont='11px "Source Code Pro", monospace';lightning.settings.axisTitleFont='bold 11px "Source Code Pro", monospace';}createTempKey=function(){return`flow_${Flow.Util.uuid().replace(/\-/g,'')}`;};createVector=lightning.createVector;createFactor=lightning.createFactor;createList=lightning.createList;createDataframe=lightning.createFrame;_assistance={importFiles:{description:'Import file(s) into H<sub>2</sub>O',icon:'files-o'},getFrames:{description:'Get a list of frames in H<sub>2</sub>O',icon:'table'},splitFrame:{description:'Split a frame into two or more frames',icon:'scissors'},mergeFrames:{description:'Merge two frames into one',icon:'link'},getModels:{description:'Get a list of models in H<sub>2</sub>O',icon:'cubes'},getGrids:{description:'Get a list of grid search results in H<sub>2</sub>O',icon:'th'},getPredictions:{description:'Get a list of predictions in H<sub>2</sub>O',icon:'bolt'},getJobs:{description:'Get a list of jobs running in H<sub>2</sub>O',icon:'tasks'},buildModel:{description:'Build a model',icon:'cube'},importModel:{description:'Import a saved model',icon:'cube'},predict:{description:'Make a prediction',icon:'bolt'}};parseNumbers=function(source){var i;var target;var value;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){value=source[i];target[i]=value==='NaN'?void 0:value==='Infinity'?Number.POSITIVE_INFINITY:value==='-Infinity'?Number.NEGATIVE_INFINITY:value;}return target;};convertColumnToVector=function(column,data){switch(column.type){case'byte':case'short':case'int':case'integer':case'long':return createVector(column.name,'Number',parseNumbers(data));case'float':case'double':return createVector(column.name,'Number',parseNumbers(data),format4f);case'string':return createFactor(column.name,'String',data);case'matrix':return createList(column.name,data,formatConfusionMatrix);default:return createList(column.name,data);}};convertTableToFrame=function(table,tableName,metadata){var column;var i;var vectors;vectors=function(){var _i;var _len;var _ref;var _results;_ref=table.columns;_results=[];for(i=_i=0,_len=_ref.length;_i<_len;i=++_i){column=_ref[i];_results.push(convertColumnToVector(column,table.data[i]));}return _results;}();return createDataframe(tableName,vectors,lodash.range(table.rowcount),null,metadata);};getTwoDimData=function(table,columnName){var columnIndex;columnIndex=lodash.findIndex(table.columns,function(column){return column.name===columnName;});if(columnIndex>=0){return table.data[columnIndex];}return void 0;};format4f=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(4).replace(/\.0+$/,'.0');}return number;};format6fi=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(6).replace(/\.0+$/,'');}return number;};combineTables=function(tables){var columnCount;var columnData;var data;var element;var i;var index;var leader;var rowCount;var table;var _i;var _j;var _k;var _l;var _len;var _len1;var _len2;var _ref;leader=lodash.head(tables);rowCount=0;columnCount=leader.data.length;data=new Array(columnCount);for(_i=0,_len=tables.length;_i<_len;_i++){table=tables[_i];rowCount+=table.rowcount;}for(i=_j=0;columnCount>=0?_j<columnCount:_j>columnCount;i=columnCount>=0?++_j:--_j){data[i]=columnData=new Array(rowCount);index=0;for(_k=0,_len1=tables.length;_k<_len1;_k++){table=tables[_k];_ref=table.data[i];for(_l=0,_len2=_ref.length;_l<_len2;_l++){element=_ref[_l];columnData[index++]=element;}}}return{name:leader.name,columns:leader.columns,data,rowcount:rowCount};};createArrays=function(count,length){var i;var _i;var _results;_results=[];for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){_results.push(new Array(length));}return _results;};parseNaNs=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element==='NaN'?void 0:element;}return target;};parseNulls=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?element:void 0;}return target;};parseAndFormatArray=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?lodash.isNumber(element)?format6fi(element):element:void 0;}return target;};parseAndFormatObjectArray=function(source){var element;var i;var target;var _i;var _len;var _ref;var _ref1;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?((_ref=element.__meta)!=null?_ref.schema_type:void 0)==='Key<Model>'?`<a href=\'#\' data-type=\'model\' data-key=${flowPrelude$5.stringify(element.name)}>${lodash.escape(element.name)}</a>`:((_ref1=element.__meta)!=null?_ref1.schema_type:void 0)==='Key<Frame>'?`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$5.stringify(element.name)}>${lodash.escape(element.name)}</a>`:element:void 0;}return target;};repeatValues=function(count,value){var i;var target;var _i;target=new Array(count);for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){target[i]=value;}return target;};concatArrays=function(arrays){var a;switch(arrays.length){case 0:return[];case 1:return lodash.head(arrays);default:a=lodash.head(arrays);return a.concat(...lodash.tail(arrays));}};computeTruePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return tp/(tp+fn);};computeFalsePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return fp/(fp+tn);};formatConfusionMatrix=function(cm){var domain;var fn;var fnr;var fp;var fpr;var normal;var strong;var table;var tbody;var tn;var tp;var tr;var yellow;var _ref;var _ref1;var _ref2;var _ref3;_ref=cm.matrix,(_ref1=_ref[0],tn=_ref1[0],fp=_ref1[1]),(_ref2=_ref[1],fn=_ref2[0],tp=_ref2[1]);fnr=fn/(tp+fn);fpr=fp/(fp+tn);domain=cm.domain;_ref3=Flow.HTML.template('table.flow-matrix','tbody','tr','td.strong.flow-center','td','td.bg-yellow'),table=_ref3[0],tbody=_ref3[1],tr=_ref3[2],strong=_ref3[3],normal=_ref3[4],yellow=_ref3[5];return table([tbody([tr([strong('Actual/Predicted'),strong(domain[0]),strong(domain[1]),strong('Error'),strong('Rate')]),tr([strong(domain[0]),yellow(tn),normal(fp),normal(format4f(fpr)),normal(`${fp} / ${fp+tn}`)]),tr([strong(domain[1]),normal(fn),yellow(tp),normal(format4f(fnr)),normal(`${fn} / ${tp+fn}`)]),tr([strong('Total'),strong(tn+fn),strong(tp+fp),strong(format4f((fn+fp)/(fp+tn+tp+fn))),strong(`${fn}${fp} / ${fp+tn+tp+fn}`)])])]);};formulateGetPredictionsOrigin=function(opts){var frameKey;var modelKey;var opt;var sanitizedOpt;var sanitizedOpts;if(lodash.isArray(opts)){sanitizedOpts=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=opts.length;_i<_len;_i++){opt=opts[_i];sanitizedOpt={};if(opt.model){sanitizedOpt.model=opt.model;}if(opt.frame){sanitizedOpt.frame=opt.frame;}_results.push(sanitizedOpt);}return _results;}();return`getPredictions ${flowPrelude$5.stringify(sanitizedOpts)}`;}modelKey=opts.model,frameKey=opts.frame;if(modelKey&&frameKey){return`getPredictions model: ${flowPrelude$5.stringify(modelKey)}, frame: ${flowPrelude$5.stringify(frameKey)}`;}else if(modelKey){return`getPredictions model: ${flowPrelude$5.stringify(modelKey)}`;}else if(frameKey){return`getPredictions frame: ${flowPrelude$5.stringify(frameKey)}`;}return'getPredictions()';};H2O.Routines=function(_){var asDataFrame;var asH2OFrameFromDF;var asH2OFrameFromRDD;var assist;var attrname;var bindFrames;var blacklistedAttributesBySchema;var buildAutoModel;var buildModel;var buildPartialDependence;var cancelJob;var changeColumnType;var computeSplits;var createFrame;var createGui;var createPlot;var deleteAll;var deleteFrame;var deleteFrames;var deleteModel;var deleteModels;var dump;var dumpFuture;var exportFrame;var exportModel;var extendAsDataFrame;var extendAsH2OFrame;var extendBindFrames;var extendCancelJob;var extendCloud;var extendColumnSummary;var extendDataFrames;var extendDeletedKeys;var extendExportFrame;var extendExportModel;var extendFrame;var extendFrameData;var extendFrameSummary;var extendFrames;var extendGrid;var extendGrids;var extendGuiForm;var extendImportModel;var extendImportResults;var extendJob;var extendJobs;var extendLogFile;var extendMergeFramesResult;var extendModel;var extendModels;var extendNetworkTest;var extendParseResult;var extendParseSetupResults;var extendPartialDependence;var extendPlot;var extendPrediction;var extendPredictions;var extendProfile;var extendRDDs;var extendScalaCode;var extendScalaIntp;var extendSplitFrameResult;var extendStackTrace;var extendTimeline;var f;var findColumnIndexByColumnLabel;var findColumnIndicesByColumnLabels;var flow_;var getCloud;var getColumnSummary;var getDataFrames;var getFrame;var getFrameData;var getFrameSummary;var getFrames;var getGrid;var getGrids;var getJob;var getJobs;var getLogFile;var getModel;var getModelParameterValue;var getModels;var getPartialDependence;var getPrediction;var getPredictions;var getProfile;var getRDDs;var getScalaIntp;var getStackTrace;var getTimeline;var grid;var gui;var importFiles;var importModel;var imputeColumn;var initAssistanceSparklingWater;var inspect;var inspect$1;var inspect$2;var inspectFrameColumns;var inspectFrameData;var inspectModelParameters;var inspectNetworkTestResult;var inspectObject;var inspectObjectArray_;var inspectParametersAcrossModels;var inspectRawArray_;var inspectRawObject_;var inspectTwoDimTable_;var inspect_;var loadScript;var ls;var mergeFrames;var name;var parseFiles;var plot;var predict;var proceed;var read;var render_;var requestAsDataFrame;var requestAsH2OFrameFromDF;var requestAsH2OFrameFromRDD;var requestAutoModelBuild;var requestBindFrames;var requestCancelJob;var requestChangeColumnType;var requestCloud;var requestColumnSummary;var requestCreateFrame;var requestDataFrames;var requestDeleteFrame;var requestDeleteFrames;var requestDeleteModel;var requestDeleteModels;var requestExportFrame;var requestExportModel;var requestFrame;var requestFrameData;var requestFrameSummary;var requestFrameSummarySlice;var requestFrames;var requestGrid;var requestGrids;var requestImportAndParseFiles;var requestImportAndParseSetup;var requestImportFiles;var requestImportModel;var requestImputeColumn;var requestJob;var requestJobs;var requestLogFile;var requestMergeFrames;var requestModel;var requestModelBuild;var requestModels;var requestModelsByKeys;var requestNetworkTest;var requestParseFiles;var requestParseSetup;var requestPartialDependence;var requestPartialDependenceData;var requestPredict;var requestPrediction;var requestPredictions;var requestPredicts;var requestProfile;var requestRDDs;var requestRemoveAll;var requestScalaCode;var requestScalaIntp;var requestSplitFrame;var requestStackTrace;var requestTimeline;var routines;var routinesOnSw;var runScalaCode;var schemaTransforms;var setupParse;var splitFrame;var testNetwork;var transformBinomialMetrics;var unwrapPrediction;var _apply;var _async;var _call;var _fork;var _get;var _isFuture;var _join;var _plot;var _ref;var _schemaHacks;_fork=function(){var args;var f;f=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.fork(f,args);};_join=function(){var args;var go;var _i;args=arguments.length>=2?__slice.call(arguments,0,_i=arguments.length-1):(_i=0,[]),go=arguments[_i++];return Flow.Async.join(args,Flow.Async.applicate(go));};_call=function(){var args;var go;go=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.join(args,Flow.Async.applicate(go));};_apply=function(go,args){return Flow.Async.join(args,go);};_isFuture=Flow.Async.isFuture;_async=Flow.Async.async;_get=Flow.Async.get;proceed=function(func,args,go){return go(null,render_({},function(){return func(...[_].concat(args||[]));}));};proceed=function(func,args,go){return go(null,render_(...[{},func].concat(args||[])));};extendGuiForm=function(form){return render_(form,flowForm,form);};createGui=function(controls,go){return go(null,extendGuiForm(Flow.Dataflow.signals(controls||[])));};gui=function(controls){return _fork(createGui,controls);};_ref=Flow.Gui;for(name in _ref){if({}.hasOwnProperty.call(_ref,name)){f=_ref[name];gui[name]=f;}}flow_=function(raw){return raw._flow_||(raw._flow_={_cache_:{}});};render_=function(raw,render){flow_(raw).render=render;return raw;};render_=function(){var args;var raw;var render;raw=arguments[0],render=arguments[1],args=arguments.length>=3?__slice.call(arguments,2):[];flow_(raw).render=function(go){return render(...[_,go].concat(args));};return raw;};inspect_=function(raw,inspectors){var attr;var root;root=flow_(raw);if(root.inspect==null){root.inspect={};}for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];root.inspect[attr]=f;}}return raw;};inspect=function(a,b){if(arguments.length===1){return inspect$1(a);}return inspect$2(a,b);};inspect$1=function(obj){var attr;var inspections;var inspectors;var _ref1;if(_isFuture(obj)){return _async(inspect,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){inspections=[];for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];inspections.push(inspect$2(attr,obj));}}render_(inspections,h2oInspectsOutput,inspections);return inspections;}return{};};ls=function(obj){var inspectors;var _ref1;if(_isFuture(obj)){return _async(ls,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){return lodash.keys(inspectors);}return[];};inspect$2=function(attr,obj){var cached;var inspection;var inspectors;var key;var root;if(!attr){return;}if(_isFuture(obj)){return _async(inspect,attr,obj);}if(!obj){return;}if(!(root=obj._flow_)){return;}if(!(inspectors=root.inspect)){return;}if(cached=root._cache_[key=`inspect_${attr}`]){return cached;}if(!(f=inspectors[attr])){return;}if(!lodash.isFunction(f)){return;}root._cache_[key]=inspection=f();render_(inspection,h2oInspectOutput,inspection);return inspection;};_plot=function(render,go){return render(function(error,vis){if(error){return go(new Flow.Error('Error rendering vis.',error));}return go(null,vis);});};extendPlot=function(vis){return render_(vis,h2oPlotOutput,vis.element);};createPlot=function(f,go){return _plot(f(lightning),function(error,vis){if(error){return go(error);}return go(null,extendPlot(vis));});};plot=function(f){if(_isFuture(f)){return _fork(proceed,h2oPlotInput,f);}else if(lodash.isFunction(f)){return _fork(createPlot,f);}return assist(plot);};grid=function(f){return plot(function(g){return g(g.select(),g.from(f));});};transformBinomialMetrics=function(metrics){var cms;var domain;var fns;var fps;var i;var scores;var tns;var tp;var tps;if(scores=metrics.thresholds_and_metric_scores){domain=metrics.domain;tps=getTwoDimData(scores,'tps');tns=getTwoDimData(scores,'tns');fps=getTwoDimData(scores,'fps');fns=getTwoDimData(scores,'fns');cms=function(){var _i;var _len;var _results;_results=[];for(i=_i=0,_len=tps.length;_i<_len;i=++_i){tp=tps[i];_results.push({domain,matrix:[[tns[i],fps[i]],[fns[i],tp]]});}return _results;}();scores.columns.push({name:'CM',description:'CM',format:'matrix',type:'matrix'});scores.data.push(cms);}return metrics;};extendCloud=function(cloud){return render_(cloud,h2oCloudOutput,cloud);};extendTimeline=function(timeline){return render_(timeline,h2oTimelineOutput,timeline);};extendStackTrace=function(stackTrace){return render_(stackTrace,h2oStackTraceOutput,stackTrace);};extendLogFile=function(cloud,nodeIndex,fileType,logFile){return render_(logFile,h2oLogFileOutput,cloud,nodeIndex,fileType,logFile);};inspectNetworkTestResult=function(testResult){return function(){return convertTableToFrame(testResult.table,testResult.table.name,{description:testResult.table.name,origin:'testNetwork'});};};extendNetworkTest=function(testResult){inspect_(testResult,{result:inspectNetworkTestResult(testResult)});return render_(testResult,h2oNetworkTestOutput,testResult);};extendProfile=function(profile){return render_(profile,h2oProfileOutput,profile);};extendFrames=function(frames){render_(frames,h2oFramesOutput,frames);return frames;};extendSplitFrameResult=function(result){render_(result,h2oSplitFrameOutput,result);return result;};extendMergeFramesResult=function(result){render_(result,h2oMergeFramesOutput,result);return result;};extendPartialDependence=function(result){var data;var i;var inspections;var origin;var _i;var _len;var _ref1;inspections={};_ref1=result.partial_dependence_data;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){data=_ref1[i];origin=`getPartialDependence ${flowPrelude$5.stringify(result.destination_key)}`;inspections[`plot${i+1}`]=inspectTwoDimTable_(origin,`plot${i+1}`,data);}inspect_(result,inspections);render_(result,h2oPartialDependenceOutput,result);return result;};getModelParameterValue=function(type,value){switch(type){case'Key<Frame>':case'Key<Model>':if(value!=null){return value.name;}return void 0;// break; // no-unreachable
+  const flowPrelude$6=flowPreludeFunction();function routines(){var lodash=window._;var Flow=window.Flow;var combineTables;var computeFalsePositiveRate;var computeTruePositiveRate;var concatArrays;var convertColumnToVector;var convertTableToFrame;var createArrays;var createDataframe;var createFactor;var createList;var createTempKey;var createVector;var format4f;var format6fi;var formatConfusionMatrix;var formulateGetPredictionsOrigin;var getTwoDimData;var lightning;var parseAndFormatArray;var parseAndFormatObjectArray;var parseNaNs;var parseNulls;var parseNumbers;var repeatValues;var _assistance;var __slice=[].slice;lightning=(typeof window!=='undefined'&&window!==null?window.plot:void 0)!=null?window.plot:{};if(lightning.settings){lightning.settings.axisLabelFont='11px "Source Code Pro", monospace';lightning.settings.axisTitleFont='bold 11px "Source Code Pro", monospace';}createTempKey=function(){return`flow_${Flow.Util.uuid().replace(/\-/g,'')}`;};createVector=lightning.createVector;createFactor=lightning.createFactor;createList=lightning.createList;createDataframe=lightning.createFrame;_assistance={importFiles:{description:'Import file(s) into H<sub>2</sub>O',icon:'files-o'},getFrames:{description:'Get a list of frames in H<sub>2</sub>O',icon:'table'},splitFrame:{description:'Split a frame into two or more frames',icon:'scissors'},mergeFrames:{description:'Merge two frames into one',icon:'link'},getModels:{description:'Get a list of models in H<sub>2</sub>O',icon:'cubes'},getGrids:{description:'Get a list of grid search results in H<sub>2</sub>O',icon:'th'},getPredictions:{description:'Get a list of predictions in H<sub>2</sub>O',icon:'bolt'},getJobs:{description:'Get a list of jobs running in H<sub>2</sub>O',icon:'tasks'},buildModel:{description:'Build a model',icon:'cube'},importModel:{description:'Import a saved model',icon:'cube'},predict:{description:'Make a prediction',icon:'bolt'}};parseNumbers=function(source){var i;var target;var value;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){value=source[i];target[i]=value==='NaN'?void 0:value==='Infinity'?Number.POSITIVE_INFINITY:value==='-Infinity'?Number.NEGATIVE_INFINITY:value;}return target;};convertColumnToVector=function(column,data){switch(column.type){case'byte':case'short':case'int':case'integer':case'long':return createVector(column.name,'Number',parseNumbers(data));case'float':case'double':return createVector(column.name,'Number',parseNumbers(data),format4f);case'string':return createFactor(column.name,'String',data);case'matrix':return createList(column.name,data,formatConfusionMatrix);default:return createList(column.name,data);}};convertTableToFrame=function(table,tableName,metadata){var column;var i;var vectors;vectors=function(){var _i;var _len;var _ref;var _results;_ref=table.columns;_results=[];for(i=_i=0,_len=_ref.length;_i<_len;i=++_i){column=_ref[i];_results.push(convertColumnToVector(column,table.data[i]));}return _results;}();return createDataframe(tableName,vectors,lodash.range(table.rowcount),null,metadata);};getTwoDimData=function(table,columnName){var columnIndex;columnIndex=lodash.findIndex(table.columns,function(column){return column.name===columnName;});if(columnIndex>=0){return table.data[columnIndex];}return void 0;};format4f=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(4).replace(/\.0+$/,'.0');}return number;};format6fi=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(6).replace(/\.0+$/,'');}return number;};combineTables=function(tables){var columnCount;var columnData;var data;var element;var i;var index;var leader;var rowCount;var table;var _i;var _j;var _k;var _l;var _len;var _len1;var _len2;var _ref;leader=lodash.head(tables);rowCount=0;columnCount=leader.data.length;data=new Array(columnCount);for(_i=0,_len=tables.length;_i<_len;_i++){table=tables[_i];rowCount+=table.rowcount;}for(i=_j=0;columnCount>=0?_j<columnCount:_j>columnCount;i=columnCount>=0?++_j:--_j){data[i]=columnData=new Array(rowCount);index=0;for(_k=0,_len1=tables.length;_k<_len1;_k++){table=tables[_k];_ref=table.data[i];for(_l=0,_len2=_ref.length;_l<_len2;_l++){element=_ref[_l];columnData[index++]=element;}}}return{name:leader.name,columns:leader.columns,data,rowcount:rowCount};};createArrays=function(count,length){var i;var _i;var _results;_results=[];for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){_results.push(new Array(length));}return _results;};parseNaNs=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element==='NaN'?void 0:element;}return target;};parseNulls=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?element:void 0;}return target;};parseAndFormatArray=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?lodash.isNumber(element)?format6fi(element):element:void 0;}return target;};parseAndFormatObjectArray=function(source){var element;var i;var target;var _i;var _len;var _ref;var _ref1;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?((_ref=element.__meta)!=null?_ref.schema_type:void 0)==='Key<Model>'?`<a href=\'#\' data-type=\'model\' data-key=${flowPrelude$6.stringify(element.name)}>${lodash.escape(element.name)}</a>`:((_ref1=element.__meta)!=null?_ref1.schema_type:void 0)==='Key<Frame>'?`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$6.stringify(element.name)}>${lodash.escape(element.name)}</a>`:element:void 0;}return target;};repeatValues=function(count,value){var i;var target;var _i;target=new Array(count);for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){target[i]=value;}return target;};concatArrays=function(arrays){var a;switch(arrays.length){case 0:return[];case 1:return lodash.head(arrays);default:a=lodash.head(arrays);return a.concat(...lodash.tail(arrays));}};computeTruePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return tp/(tp+fn);};computeFalsePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return fp/(fp+tn);};formatConfusionMatrix=function(cm){var domain;var fn;var fnr;var fp;var fpr;var normal;var strong;var table;var tbody;var tn;var tp;var tr;var yellow;var _ref;var _ref1;var _ref2;var _ref3;_ref=cm.matrix,(_ref1=_ref[0],tn=_ref1[0],fp=_ref1[1]),(_ref2=_ref[1],fn=_ref2[0],tp=_ref2[1]);fnr=fn/(tp+fn);fpr=fp/(fp+tn);domain=cm.domain;_ref3=Flow.HTML.template('table.flow-matrix','tbody','tr','td.strong.flow-center','td','td.bg-yellow'),table=_ref3[0],tbody=_ref3[1],tr=_ref3[2],strong=_ref3[3],normal=_ref3[4],yellow=_ref3[5];return table([tbody([tr([strong('Actual/Predicted'),strong(domain[0]),strong(domain[1]),strong('Error'),strong('Rate')]),tr([strong(domain[0]),yellow(tn),normal(fp),normal(format4f(fpr)),normal(`${fp} / ${fp+tn}`)]),tr([strong(domain[1]),normal(fn),yellow(tp),normal(format4f(fnr)),normal(`${fn} / ${tp+fn}`)]),tr([strong('Total'),strong(tn+fn),strong(tp+fp),strong(format4f((fn+fp)/(fp+tn+tp+fn))),strong(`${fn}${fp} / ${fp+tn+tp+fn}`)])])]);};formulateGetPredictionsOrigin=function(opts){var frameKey;var modelKey;var opt;var sanitizedOpt;var sanitizedOpts;if(lodash.isArray(opts)){sanitizedOpts=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=opts.length;_i<_len;_i++){opt=opts[_i];sanitizedOpt={};if(opt.model){sanitizedOpt.model=opt.model;}if(opt.frame){sanitizedOpt.frame=opt.frame;}_results.push(sanitizedOpt);}return _results;}();return`getPredictions ${flowPrelude$6.stringify(sanitizedOpts)}`;}modelKey=opts.model,frameKey=opts.frame;if(modelKey&&frameKey){return`getPredictions model: ${flowPrelude$6.stringify(modelKey)}, frame: ${flowPrelude$6.stringify(frameKey)}`;}else if(modelKey){return`getPredictions model: ${flowPrelude$6.stringify(modelKey)}`;}else if(frameKey){return`getPredictions frame: ${flowPrelude$6.stringify(frameKey)}`;}return'getPredictions()';};H2O.Routines=function(_){var asDataFrame;var asH2OFrameFromDF;var asH2OFrameFromRDD;var assist;var attrname;var bindFrames;var blacklistedAttributesBySchema;var buildAutoModel;var buildModel;var buildPartialDependence;var cancelJob;var changeColumnType;var computeSplits;var createFrame;var createGui;var createPlot;var deleteAll;var deleteFrame;var deleteFrames;var deleteModel;var deleteModels;var dump;var dumpFuture;var exportFrame;var exportModel;var extendAsDataFrame;var extendAsH2OFrame;var extendBindFrames;var extendCancelJob;var extendCloud;var extendColumnSummary;var extendDataFrames;var extendDeletedKeys;var extendExportFrame;var extendExportModel;var extendFrame;var extendFrameData;var extendFrameSummary;var extendFrames;var extendGrid;var extendGrids;var extendGuiForm;var extendImportModel;var extendImportResults;var extendJob;var extendJobs;var extendLogFile;var extendMergeFramesResult;var extendModel;var extendModels;var extendNetworkTest;var extendParseResult;var extendParseSetupResults;var extendPartialDependence;var extendPlot;var extendPrediction;var extendPredictions;var extendProfile;var extendRDDs;var extendScalaCode;var extendScalaIntp;var extendSplitFrameResult;var extendStackTrace;var extendTimeline;var f;var findColumnIndexByColumnLabel;var findColumnIndicesByColumnLabels;var flow_;var getCloud;var getColumnSummary;var getDataFrames;var getFrame;var getFrameData;var getFrameSummary;var getFrames;var getGrid;var getGrids;var getJob;var getJobs;var getLogFile;var getModel;var getModelParameterValue;var getModels;var getPartialDependence;var getPrediction;var getPredictions;var getProfile;var getRDDs;var getScalaIntp;var getStackTrace;var getTimeline;var grid;var gui;var importFiles;var importModel;var imputeColumn;var initAssistanceSparklingWater;var inspect;var inspect$1;var inspect$2;var inspectFrameColumns;var inspectFrameData;var inspectModelParameters;var inspectNetworkTestResult;var inspectObject;var inspectObjectArray_;var inspectParametersAcrossModels;var inspectRawArray_;var inspectRawObject_;var inspectTwoDimTable_;var inspect_;var loadScript;var ls;var mergeFrames;var name;var parseFiles;var plot;var predict;var proceed;var read;var render_;var requestAsDataFrame;var requestAsH2OFrameFromDF;var requestAsH2OFrameFromRDD;var requestAutoModelBuild;var requestBindFrames;var requestCancelJob;var requestChangeColumnType;var requestCloud;var requestColumnSummary;var requestCreateFrame;var requestDataFrames;var requestDeleteFrame;var requestDeleteFrames;var requestDeleteModel;var requestDeleteModels;var requestExportFrame;var requestExportModel;var requestFrame;var requestFrameData;var requestFrameSummary;var requestFrameSummarySlice;var requestFrames;var requestGrid;var requestGrids;var requestImportAndParseFiles;var requestImportAndParseSetup;var requestImportFiles;var requestImportModel;var requestImputeColumn;var requestJob;var requestJobs;var requestLogFile;var requestMergeFrames;var requestModel;var requestModelBuild;var requestModels;var requestModelsByKeys;var requestNetworkTest;var requestParseFiles;var requestParseSetup;var requestPartialDependence;var requestPartialDependenceData;var requestPredict;var requestPrediction;var requestPredictions;var requestPredicts;var requestProfile;var requestRDDs;var requestRemoveAll;var requestScalaCode;var requestScalaIntp;var requestSplitFrame;var requestStackTrace;var requestTimeline;var routines;var routinesOnSw;var runScalaCode;var schemaTransforms;var setupParse;var splitFrame;var testNetwork;var transformBinomialMetrics;var unwrapPrediction;var _apply;var _async;var _call;var _fork;var _get;var _isFuture;var _join;var _plot;var _ref;var _schemaHacks;_fork=function(){var args;var f;f=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.fork(f,args);};_join=function(){var args;var go;var _i;args=arguments.length>=2?__slice.call(arguments,0,_i=arguments.length-1):(_i=0,[]),go=arguments[_i++];return Flow.Async.join(args,Flow.Async.applicate(go));};_call=function(){var args;var go;go=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.join(args,Flow.Async.applicate(go));};_apply=function(go,args){return Flow.Async.join(args,go);};_isFuture=Flow.Async.isFuture;_async=Flow.Async.async;_get=Flow.Async.get;proceed=function(func,args,go){return go(null,render_({},function(){return func(...[_].concat(args||[]));}));};proceed=function(func,args,go){return go(null,render_(...[{},func].concat(args||[])));};extendGuiForm=function(form){return render_(form,flowForm,form);};createGui=function(controls,go){return go(null,extendGuiForm(Flow.Dataflow.signals(controls||[])));};gui=function(controls){return _fork(createGui,controls);};_ref=Flow.Gui;for(name in _ref){if({}.hasOwnProperty.call(_ref,name)){f=_ref[name];gui[name]=f;}}flow_=function(raw){return raw._flow_||(raw._flow_={_cache_:{}});};render_=function(raw,render){flow_(raw).render=render;return raw;};render_=function(){var args;var raw;var render;raw=arguments[0],render=arguments[1],args=arguments.length>=3?__slice.call(arguments,2):[];flow_(raw).render=function(go){return render(...[_,go].concat(args));};return raw;};inspect_=function(raw,inspectors){var attr;var root;root=flow_(raw);if(root.inspect==null){root.inspect={};}for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];root.inspect[attr]=f;}}return raw;};inspect=function(a,b){if(arguments.length===1){return inspect$1(a);}return inspect$2(a,b);};inspect$1=function(obj){var attr;var inspections;var inspectors;var _ref1;if(_isFuture(obj)){return _async(inspect,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){inspections=[];for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];inspections.push(inspect$2(attr,obj));}}render_(inspections,h2oInspectsOutput,inspections);return inspections;}return{};};ls=function(obj){var inspectors;var _ref1;if(_isFuture(obj)){return _async(ls,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){return lodash.keys(inspectors);}return[];};inspect$2=function(attr,obj){var cached;var inspection;var inspectors;var key;var root;if(!attr){return;}if(_isFuture(obj)){return _async(inspect,attr,obj);}if(!obj){return;}if(!(root=obj._flow_)){return;}if(!(inspectors=root.inspect)){return;}if(cached=root._cache_[key=`inspect_${attr}`]){return cached;}if(!(f=inspectors[attr])){return;}if(!lodash.isFunction(f)){return;}root._cache_[key]=inspection=f();render_(inspection,h2oInspectOutput,inspection);return inspection;};_plot=function(render,go){return render(function(error,vis){if(error){return go(new Flow.Error('Error rendering vis.',error));}return go(null,vis);});};extendPlot=function(vis){return render_(vis,h2oPlotOutput,vis.element);};createPlot=function(f,go){return _plot(f(lightning),function(error,vis){if(error){return go(error);}return go(null,extendPlot(vis));});};plot=function(f){if(_isFuture(f)){return _fork(proceed,h2oPlotInput,f);}else if(lodash.isFunction(f)){return _fork(createPlot,f);}return assist(plot);};grid=function(f){return plot(function(g){return g(g.select(),g.from(f));});};transformBinomialMetrics=function(metrics){var cms;var domain;var fns;var fps;var i;var scores;var tns;var tp;var tps;if(scores=metrics.thresholds_and_metric_scores){domain=metrics.domain;tps=getTwoDimData(scores,'tps');tns=getTwoDimData(scores,'tns');fps=getTwoDimData(scores,'fps');fns=getTwoDimData(scores,'fns');cms=function(){var _i;var _len;var _results;_results=[];for(i=_i=0,_len=tps.length;_i<_len;i=++_i){tp=tps[i];_results.push({domain,matrix:[[tns[i],fps[i]],[fns[i],tp]]});}return _results;}();scores.columns.push({name:'CM',description:'CM',format:'matrix',type:'matrix'});scores.data.push(cms);}return metrics;};extendCloud=function(cloud){return render_(cloud,h2oCloudOutput,cloud);};extendTimeline=function(timeline){return render_(timeline,h2oTimelineOutput,timeline);};extendStackTrace=function(stackTrace){return render_(stackTrace,h2oStackTraceOutput,stackTrace);};extendLogFile=function(cloud,nodeIndex,fileType,logFile){return render_(logFile,h2oLogFileOutput,cloud,nodeIndex,fileType,logFile);};inspectNetworkTestResult=function(testResult){return function(){return convertTableToFrame(testResult.table,testResult.table.name,{description:testResult.table.name,origin:'testNetwork'});};};extendNetworkTest=function(testResult){inspect_(testResult,{result:inspectNetworkTestResult(testResult)});return render_(testResult,h2oNetworkTestOutput,testResult);};extendProfile=function(profile){return render_(profile,h2oProfileOutput,profile);};extendFrames=function(frames){render_(frames,h2oFramesOutput,frames);return frames;};extendSplitFrameResult=function(result){render_(result,h2oSplitFrameOutput,result);return result;};extendMergeFramesResult=function(result){render_(result,h2oMergeFramesOutput,result);return result;};extendPartialDependence=function(result){var data;var i;var inspections;var origin;var _i;var _len;var _ref1;inspections={};_ref1=result.partial_dependence_data;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){data=_ref1[i];origin=`getPartialDependence ${flowPrelude$6.stringify(result.destination_key)}`;inspections[`plot${i+1}`]=inspectTwoDimTable_(origin,`plot${i+1}`,data);}inspect_(result,inspections);render_(result,h2oPartialDependenceOutput,result);return result;};getModelParameterValue=function(type,value){switch(type){case'Key<Frame>':case'Key<Model>':if(value!=null){return value.name;}return void 0;// break; // no-unreachable
   case'VecSpecifier':if(value!=null){return value.column_name;}return void 0;// break; // no-unreachable
-  default:if(value!=null){return value;}return void 0;}};inspectParametersAcrossModels=function(models){return function(){var data;var i;var leader;var model;var modelKeys;var parameter;var vectors;leader=lodash.head(models);vectors=function(){var _i;var _len;var _ref1;var _results;_ref1=leader.parameters;_results=[];for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){parameter=_ref1[i];data=function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=models.length;_j<_len1;_j++){model=models[_j];_results1.push(getModelParameterValue(parameter.type,model.parameters[i].actual_value));}return _results1;}();switch(parameter.type){case'enum':case'Frame':case'string':_results.push(createFactor(parameter.label,'String',data));break;case'byte':case'short':case'int':case'long':case'float':case'double':_results.push(createVector(parameter.label,'Number',data));break;case'string[]':case'byte[]':case'short[]':case'int[]':case'long[]':case'float[]':case'double[]':_results.push(createList(parameter.label,data,function(a){if(a){return a;}return void 0;}));break;case'boolean':_results.push(createList(parameter.label,data,function(a){if(a){return'true';}return'false';}));break;default:_results.push(createList(parameter.label,data));}}return _results;}();modelKeys=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.model_id.name);}return _results;}();return createDataframe('parameters',vectors,lodash.range(models.length),null,{description:`Parameters for models ${modelKeys.join(', ')}`,origin:`getModels ${flowPrelude$5.stringify(modelKeys)}`});};};inspectModelParameters=function(model){return function(){var attr;var attrs;var data;var i;var parameter;var parameters;var vectors;parameters=model.parameters;attrs=['label','type','level','actual_value','default_value'];vectors=function(){var _i;var _j;var _len;var _len1;var _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];data=new Array(parameters.length);for(i=_j=0,_len1=parameters.length;_j<_len1;i=++_j){parameter=parameters[i];data[i]=attr==='actual_value'?getModelParameterValue(parameter.type,parameter[attr]):parameter[attr];}_results.push(createList(attr,data));}return _results;}();return createDataframe('parameters',vectors,lodash.range(parameters.length),null,{description:`Parameters for model \'${model.model_id.name}\'`,origin:`getModel ${flowPrelude$5.stringify(model.model_id.name)}`});};};extendJob=function(job){return render_(job,H2O.JobOutput,job);};extendJobs=function(jobs){var job;var _i;var _len;for(_i=0,_len=jobs.length;_i<_len;_i++){job=jobs[_i];extendJob(job);}return render_(jobs,h2oJobsOutput,jobs);};extendCancelJob=function(cancellation){return render_(cancellation,h2oCancelJobOutput,cancellation);};extendDeletedKeys=function(keys){return render_(keys,h2oDeleteObjectsOutput,keys);};inspectTwoDimTable_=function(origin,tableName,table){return function(){return convertTableToFrame(table,tableName,{description:table.description||'',origin});};};inspectRawArray_=function(name,origin,description,array){return function(){return createDataframe(name,[createList(name,parseAndFormatArray(array))],lodash.range(array.length),null,{description:'',origin});};};inspectObjectArray_=function(name,origin,description,array){return function(){return createDataframe(name,[createList(name,parseAndFormatObjectArray(array))],lodash.range(array.length),null,{description:'',origin});};};inspectRawObject_=function(name,origin,description,obj){return function(){var k;var v;var vectors;vectors=function(){var _results;_results=[];for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];_results.push(createList(k,[v===null?void 0:lodash.isNumber(v)?format6fi(v):v]));}}return _results;}();return createDataframe(name,vectors,lodash.range(1),null,{description:'',origin});};};_schemaHacks={KMeansOutput:{fields:'names domains help'},GBMOutput:{fields:'names domains help'},GLMOutput:{fields:'names domains help'},DRFOutput:{fields:'names domains help'},DeepLearningModelOutput:{fields:'names domains help'},NaiveBayesOutput:{fields:'names domains help pcond'},PCAOutput:{fields:'names domains help'},ModelMetricsBinomialGLM:{fields:null,transform:transformBinomialMetrics},ModelMetricsBinomial:{fields:null,transform:transformBinomialMetrics},ModelMetricsMultinomialGLM:{fields:null},ModelMetricsMultinomial:{fields:null},ModelMetricsRegressionGLM:{fields:null},ModelMetricsRegression:{fields:null},ModelMetricsClustering:{fields:null},ModelMetricsAutoEncoder:{fields:null},ConfusionMatrix:{fields:null}};blacklistedAttributesBySchema=function(){var attrs;var dict;var dicts;var field;var schema;var _i;var _len;var _ref1;dicts={};console.log('flowPrelude',flowPrelude$5);for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];dicts[schema]=dict={__meta:true};if(attrs.fields){_ref1=flowPrelude$5.words(attrs.fields);for(_i=0,_len=_ref1.length;_i<_len;_i++){field=_ref1[_i];dict[field]=true;}}}}return dicts;}();schemaTransforms=function(){var attrs;var schema;var transform;var transforms;transforms={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];if(transform=attrs.transform){transforms[schema]=transform;}}}return transforms;}();inspectObject=function(inspections,name,origin,obj){var attrs;var blacklistedAttributes;var k;var meta;var record;var schemaType;var transform;var v;var _ref1;var _ref2;schemaType=(_ref1=obj.__meta)!=null?_ref1.schema_type:void 0;blacklistedAttributes=schemaType?(attrs=blacklistedAttributesBySchema[schemaType])?attrs:{}:{};if(transform=schemaTransforms[schemaType]){obj=transform(obj);}record={};inspections[name]=inspectRawObject_(name,origin,name,record);for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];if(!blacklistedAttributes[k]){if(v===null){record[k]=null;}else{if(((_ref2=v.__meta)!=null?_ref2.schema_type:void 0)==='TwoDimTable'){inspections[`${name} - ${v.name}`]=inspectTwoDimTable_(origin,`${name} - ${v.name}`,v);}else{if(lodash.isArray(v)){if(k==='cross_validation_models'||k==='cross_validation_predictions'||name==='output'&&(k==='weights'||k==='biases')){inspections[k]=inspectObjectArray_(k,origin,k,v);}else{inspections[k]=inspectRawArray_(k,origin,k,v);}}else if(lodash.isObject(v)){if(meta=v.__meta){if(meta.schema_type==='Key<Frame>'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$5.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Key<Model>'){record[k]=`<a href=\'#\' data-type=\'model\' data-key=${flowPrelude$5.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Frame'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$5.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;}else{inspectObject(inspections,`${name} - ${k}`,origin,v);}}else{console.log(`WARNING: dropping [${k}] from inspection:`,v);}}else{record[k]=lodash.isNumber(v)?format6fi(v):v;}}}}}}};extendModel=function(model){var refresh;lodash.extend=function(model){var inspections;var origin;var table;var tableName;var _i;var _len;var _ref1;inspections={};inspections.parameters=inspectModelParameters(model);origin=`getModel ${flowPrelude$5.stringify(model.model_id.name)}`;inspectObject(inspections,'output',origin,model.output);if(model.__meta.schema_type==='NaiveBayesModel'){if(lodash.isArray(model.output.pcond)){_ref1=model.output.pcond;for(_i=0,_len=_ref1.length;_i<_len;_i++){table=_ref1[_i];tableName=`output - pcond - ${table.name}`;inspections[tableName]=inspectTwoDimTable_(origin,tableName,table);}}}inspect_(model,inspections);return model;};refresh=function(go){return _.requestModel(model.model_id.name,function(error,model){if(error){return go(error);}return go(null,lodash.extend(model));});};lodash.extend(model);return render_(model,h2oModelOutput,model,refresh);};extendGrid=function(grid,opts){var inspections;var origin;origin=`getGrid ${flowPrelude$5.stringify(grid.grid_id.name)}`;if(opts){origin+=`, ${flowPrelude$5.stringify(opts)}`;}inspections={summary:inspectTwoDimTable_(origin,'summary',grid.summary_table),scoring_history:inspectTwoDimTable_(origin,'scoring_history',grid.scoring_history)};inspect_(grid,inspections);return render_(grid,h2oGridOutput,grid);};extendGrids=function(grids){return render_(grids,h2oGridsOutput,grids);};extendModels=function(models){var algos;var inspections;var model;inspections={};algos=lodash.unique(function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.algo);}return _results;}());if(algos.length===1){inspections.parameters=inspectParametersAcrossModels(models);}inspect_(models,inspections);return render_(models,h2oModelsOutput,models);};read=function(value){if(value==='NaN'){return null;}return value;};extendPredictions=function(opts,predictions){render_(predictions,h2oPredictsOutput,opts,predictions);return predictions;};extendPrediction=function(result){var frameKey;var inspections;var modelKey;var prediction;var predictionFrame;var _ref1;modelKey=result.model.name;frameKey=(_ref1=result.frame)!=null?_ref1.name:void 0;prediction=lodash.head(result.model_metrics);predictionFrame=result.predictions_frame;inspections={};if(prediction){inspectObject(inspections,'Prediction',`getPrediction model: ${flowPrelude$5.stringify(modelKey)}, frame: ${flowPrelude$5.stringify(frameKey)}`,prediction);}else{prediction={};inspectObject(inspections,'Prediction',`getPrediction model: ${flowPrelude$5.stringify(modelKey)}, frame: ${flowPrelude$5.stringify(frameKey)}`,{prediction_frame:predictionFrame});}inspect_(prediction,inspections);return render_(prediction,h2oPredictOutput,prediction);};inspectFrameColumns=function(tableLabel,frameKey,frame,frameColumns){return function(){var actionsData;var attr;var attrs;var column;var i;var labelVector;var title;var toColumnSummaryLink;var toConversionLink;var typeVector;var vectors;attrs=['label','type','missing_count|Missing','zero_count|Zeros','positive_infinity_count|+Inf','negative_infinity_count|-Inf','min','max','mean','sigma','cardinality'];toColumnSummaryLink=function(label){return`<a href=\'#\' data-type=\'summary-link\' data-key=${flowPrelude$5.stringify(label)}>${lodash.escape(label)}</a>`;};toConversionLink=function(value){var label;var type;var _ref1;_ref1=value.split('\0'),type=_ref1[0],label=_ref1[1];switch(type){case'enum':return`<a href=\'#\' data-type=\'as-numeric-link\' data-key=${flowPrelude$5.stringify(label)}>Convert to numeric</a>`;case'int':case'string':return`<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude$5.stringify(label)}>Convert to enum</a>'`;default:return void 0;}};vectors=function(){var _i;var _len;var _ref1;var _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];_ref1=attr.split('|'),name=_ref1[0],title=_ref1[1];title=title!=null?title:name;switch(name){case'min':_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.mins));}return _results1;}(),format4f));break;case'max':_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.maxs));}return _results1;}(),format4f));break;case'cardinality':_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column.type==='enum'?column.domain_cardinality:void 0);}return _results1;}()));break;case'label':_results.push(createFactor(title,'String',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}(),null,toColumnSummaryLink));break;case'type':_results.push(createFactor(title,'String',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}()));break;case'mean':case'sigma':_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}(),format4f));break;default:_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}()));}}return _results;}();labelVector=vectors[0],typeVector=vectors[1];actionsData=function(){var _i;var _ref1;var _results;_results=[];for(i=_i=0,_ref1=frameColumns.length;_ref1>=0?_i<_ref1:_i>_ref1;i=_ref1>=0?++_i:--_i){_results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);}return _results;}();vectors.push(createFactor('Actions','String',actionsData,null,toConversionLink));return createDataframe(tableLabel,vectors,lodash.range(frameColumns.length),null,{description:`A list of ${tableLabel} in the H2O Frame.`,origin:`getFrameSummary ${flowPrelude$5.stringify(frameKey)}`,plot:`plot inspect \'${tableLabel}\', getFrameSummary ${flowPrelude$5.stringify(frameKey)}`});};};inspectFrameData=function(frameKey,frame){return function(){var column;var domain;var frameColumns;var index;var rowIndex;var vectors;frameColumns=frame.columns;vectors=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=frameColumns.length;_i<_len;_i++){column=frameColumns[_i];switch(column.type){case'int':case'real':_results.push(createVector(column.label,'Number',parseNaNs(column.data),format4f));break;case'enum':domain=column.domain;_results.push(createFactor(column.label,'String',function(){var _j;var _len1;var _ref1;var _results1;_ref1=column.data;_results1=[];for(_j=0,_len1=_ref1.length;_j<_len1;_j++){index=_ref1[_j];_results1.push(index!=null?domain[index]:void 0);}return _results1;}()));break;case'time':_results.push(createVector(column.label,'Number',parseNaNs(column.data)));break;case'string':case'uuid':_results.push(createList(column.label,parseNulls(column.string_data)));break;default:_results.push(createList(column.label,parseNulls(column.data)));}}return _results;}();vectors.unshift(createVector('Row','Number',function(){var _i;var _ref1;var _ref2;var _results;_results=[];for(rowIndex=_i=_ref1=frame.row_offset,_ref2=frame.row_count;_ref1<=_ref2?_i<_ref2:_i>_ref2;rowIndex=_ref1<=_ref2?++_i:--_i){_results.push(rowIndex+1);}return _results;}()));return createDataframe('data',vectors,lodash.range(frame.row_count-frame.row_offset),null,{description:'A partial list of rows in the H2O Frame.',origin:`getFrameData ${flowPrelude$5.stringify(frameKey)}`});};};extendFrameData=function(frameKey,frame){var inspections;var origin;inspections={data:inspectFrameData(frameKey,frame)};origin=`getFrameData ${flowPrelude$5.stringify(frameKey)}`;inspect_(frame,inspections);return render_(frame,h2oFrameDataOutput,frame);};extendFrame=function(frameKey,frame){var column;var enumColumns;var inspections;var origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns),data:inspectFrameData(frameKey,frame)};enumColumns=function(){var _i;var _len;var _ref1;var _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;}();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${flowPrelude$5.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendFrameSummary=function(frameKey,frame){var column;var enumColumns;var inspections;var origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns)};enumColumns=function(){var _i;var _len;var _ref1;var _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;}();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${flowPrelude$5.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendColumnSummary=function(frameKey,frame,columnName){var column;var inspectCharacteristics;var inspectDistribution;var inspectDomain;var inspectPercentiles;var inspectSummary;var inspections;var rowCount;column=lodash.head(frame.columns);rowCount=frame.rows;inspectPercentiles=function(){var vectors;vectors=[createVector('percentile','Number',frame.default_percentiles),createVector('value','Number',column.percentiles)];return createDataframe('percentiles',vectors,lodash.range(frame.default_percentiles.length),null,{description:`Percentiles for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspectDistribution=function(){var base;var binCount;var binIndex;var bins;var count;var countData;var i;var interval;var intervalData;var m;var minBinCount;var n;var rows;var stride;var vectors;var width;var widthData;var _i;var _j;var _k;var _l;var _len;var _ref1;minBinCount=32;base=column.histogram_base,stride=column.histogram_stride,bins=column.histogram_bins;width=Math.ceil(bins.length/minBinCount);interval=stride*width;rows=[];if(width>0){binCount=minBinCount+(bins.length%width>0?1:0);intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_i=0;binCount>=0?_i<binCount:_i>binCount;i=binCount>=0?++_i:--_i){m=i*width;n=m+width;count=0;for(binIndex=_j=m;m<=n?_j<n:_j>n;binIndex=m<=n?++_j:--_j){if(binIndex<bins.length){count+=bins[binIndex];}}intervalData[i]=base+i*interval;widthData[i]=interval;countData[i]=count;}}else{binCount=bins.length;intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_k=0,_len=bins.length;_k<_len;i=++_k){count=bins[i];intervalData[i]=base+i*stride;widthData[i]=stride;countData[i]=count;}}for(i=_l=_ref1=binCount-1;_ref1<=0?_l<=0:_l>=0;i=_ref1<=0?++_l:--_l){if(countData[i]!==0){binCount=i+1;intervalData=intervalData.slice(0,binCount);widthData=widthData.slice(0,binCount);countData=countData.slice(0,binCount);break;}}vectors=[createFactor('interval','String',intervalData),createVector('width','Number',widthData),createVector('count','Number',countData)];return createDataframe('distribution',vectors,lodash.range(binCount),null,{description:`Distribution for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`,plot:`plot inspect \'distribution\', getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspectCharacteristics=function(){var characteristicData;var count;var countData;var missing_count;var negative_infinity_count;var other;var percentData;var positive_infinity_count;var vectors;var zero_count;missing_count=column.missing_count,zero_count=column.zero_count,positive_infinity_count=column.positive_infinity_count,negative_infinity_count=column.negative_infinity_count;other=rowCount-missing_count-zero_count-positive_infinity_count-negative_infinity_count;characteristicData=['Missing','-Inf','Zero','+Inf','Other'];countData=[missing_count,negative_infinity_count,zero_count,positive_infinity_count,other];percentData=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=countData.length;_i<_len;_i++){count=countData[_i];_results.push(100*count/rowCount);}return _results;}();vectors=[createFactor('characteristic','String',characteristicData),createVector('count','Number',countData),createVector('percent','Number',percentData)];return createDataframe('characteristics',vectors,lodash.range(characteristicData.length),null,{description:`Characteristics for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`,plot:`plot inspect \'characteristics\', getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspectSummary=function(){var defaultPercentiles;var maximum;var mean;var minimum;var outliers;var percentiles;var q1;var q2;var q3;var vectors;defaultPercentiles=frame.default_percentiles;percentiles=column.percentiles;mean=column.mean;q1=percentiles[defaultPercentiles.indexOf(0.25)];q2=percentiles[defaultPercentiles.indexOf(0.5)];q3=percentiles[defaultPercentiles.indexOf(0.75)];outliers=lodash.unique(column.mins.concat(column.maxs));minimum=lodash.head(column.mins);maximum=lodash.head(column.maxs);vectors=[createFactor('column','String',[columnName]),createVector('mean','Number',[mean]),createVector('q1','Number',[q1]),createVector('q2','Number',[q2]),createVector('q3','Number',[q3]),createVector('min','Number',[minimum]),createVector('max','Number',[maximum])];return createDataframe('summary',vectors,lodash.range(1),null,{description:`Summary for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`,plot:`plot inspect \'summary\', getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspectDomain=function(){var counts;var i;var labels;var level;var levels;var percents;var sortedLevels;var vectors;var _i;var _len;var _ref1;levels=lodash.map(column.histogram_bins,function(count,index){return{count,index};});sortedLevels=lodash.sortBy(levels,function(level){return-level.count;});_ref1=createArrays(3,sortedLevels.length),labels=_ref1[0],counts=_ref1[1],percents=_ref1[2];for(i=_i=0,_len=sortedLevels.length;_i<_len;i=++_i){level=sortedLevels[i];labels[i]=column.domain[level.index];counts[i]=level.count;percents[i]=100*level.count/rowCount;}vectors=[createFactor('label','String',labels),createVector('count','Number',counts),createVector('percent','Number',percents)];return createDataframe('domain',vectors,lodash.range(sortedLevels.length),null,{description:`Domain for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`,plot:`plot inspect \'domain\', getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspections={characteristics:inspectCharacteristics};switch(column.type){case'int':case'real':if(column.histogram_bins.length){inspections.distribution=inspectDistribution;}if(!lodash.some(column.percentiles,function(a){return a==='NaN';})){inspections.summary=inspectSummary;inspections.percentiles=inspectPercentiles;}break;case'enum':inspections.domain=inspectDomain;}inspect_(frame,inspections);return render_(frame,h2oColumnSummaryOutput,frameKey,frame,columnName);};requestFrame=function(frameKey,go){return _.requestFrameSlice(frameKey,void 0,0,20,function(error,frame){if(error){return go(error);}return go(null,extendFrame(frameKey,frame));});};requestFrameData=function(frameKey,searchTerm,offset,count,go){return _.requestFrameSlice(frameKey,searchTerm,offset,count,function(error,frame){if(error){return go(error);}return go(null,extendFrameData(frameKey,frame));});};requestFrameSummarySlice=function(frameKey,searchTerm,offset,length,go){return _.requestFrameSummarySlice(frameKey,searchTerm,offset,length,function(error,frame){if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});};requestFrameSummary=function(frameKey,go){return _.requestFrameSummarySlice(frameKey,void 0,0,20,function(error,frame){if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});};requestColumnSummary=function(frameKey,columnName,go){return _.requestColumnSummary(frameKey,columnName,function(error,frame){if(error){return go(error);}return go(null,extendColumnSummary(frameKey,frame,columnName));});};requestFrames=function(go){return _.requestFrames(function(error,frames){if(error){return go(error);}return go(null,extendFrames(frames));});};requestCreateFrame=function(opts,go){return _.requestCreateFrame(opts,function(error,result){if(error){return go(error);}return _.requestJob(result.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};requestPartialDependence=function(opts,go){return _.requestPartialDependence(opts,function(error,result){if(error){return go(error);}return _.requestJob(result.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};requestPartialDependenceData=function(key,go){return _.requestPartialDependenceData(key,function(error,result){if(error){return go(error);}return go(null,extendPartialDependence(result));});};computeSplits=function(ratios,keys){var i;var key;var part;var parts;var ratio;var splits;var sum;var _i;var _j;var _len;var _len1;var _ref1;parts=[];sum=0;_ref1=keys.slice(0,ratios.length);for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){key=_ref1[i];sum+=ratio=ratios[i];parts.push({key,ratio});}parts.push({key:keys[keys.length-1],ratio:1-sum});splits=[];sum=0;for(_j=0,_len1=parts.length;_j<_len1;_j++){part=parts[_j];splits.push({min:sum,max:sum+part.ratio,key:part.key});sum+=part.ratio;}return splits;};requestBindFrames=function(key,sourceKeys,go){return _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`,function(error,result){if(error){return go(error);}return go(null,extendBindFrames(key,result));});};requestSplitFrame=function(frameKey,splitRatios,splitKeys,seed,go){var g;var i;var l;var part;var randomVecKey;var sliceExpr;var splits;var statements;var _i;var _len;if(splitRatios.length===splitKeys.length-1){splits=computeSplits(splitRatios,splitKeys);randomVecKey=createTempKey();statements=[];statements.push(`(tmp= ${randomVecKey} (h2o.runif ${frameKey} ${seed}))`);for(i=_i=0,_len=splits.length;_i<_len;i=++_i){part=splits[i];g=i!==0?`(> ${randomVecKey} ${part.min})`:null;l=i!==splits.length-1?`(<= ${randomVecKey} ${part.max})`:null;if(g&&l){sliceExpr=`(& ${g} ${l})`;}else{if(l){sliceExpr=l;}else{sliceExpr=g;}}statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);}statements.push(`(rm ${randomVecKey})`);return _.requestExec(`(, ${statements.join(' ')})`,function(error,result){if(error){return go(error);}return go(null,extendSplitFrameResult({keys:splitKeys,ratios:splitRatios}));});}return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));};requestMergeFrames=function(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows,go){var lr;var rr;var statement;lr=includeAllLeftRows?'TRUE':'FALSE';rr=includeAllRightRows?'TRUE':'FALSE';statement=`(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;return _.requestExec(statement,function(error,result){if(error){return go(error);}return go(null,extendMergeFramesResult({key:destinationKey}));});};createFrame=function(opts){if(opts){return _fork(requestCreateFrame,opts);}return assist(createFrame);};splitFrame=function(frameKey,splitRatios,splitKeys,seed){if(seed==null){seed=-1;}if(frameKey&&splitRatios&&splitKeys){return _fork(requestSplitFrame,frameKey,splitRatios,splitKeys,seed);}return assist(splitFrame);};mergeFrames=function(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows){if(destinationKey&&leftFrameKey&&rightFrameKey){return _fork(requestMergeFrames,destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows);}return assist(mergeFrames);};buildPartialDependence=function(opts){if(opts){return _fork(requestPartialDependence,opts);}return assist(buildPartialDependence);};getPartialDependence=function(destinationKey){if(destinationKey){return _fork(requestPartialDependenceData,destinationKey);}return assist(getPartialDependence);};getFrames=function(){return _fork(requestFrames);};getFrame=function(frameKey){switch(flowPrelude$5.typeOf(frameKey)){case'String':return _fork(requestFrame,frameKey);default:return assist(getFrame);}};bindFrames=function(key,sourceKeys){return _fork(requestBindFrames,key,sourceKeys);};getFrameSummary=function(frameKey){switch(flowPrelude$5.typeOf(frameKey)){case'String':return _fork(requestFrameSummary,frameKey);default:return assist(getFrameSummary);}};getFrameData=function(frameKey){switch(flowPrelude$5.typeOf(frameKey)){case'String':return _fork(requestFrameData,frameKey,void 0,0,20);default:return assist(getFrameSummary);}};requestDeleteFrame=function(frameKey,go){return _.requestDeleteFrame(frameKey,function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([frameKey]));});};deleteFrame=function(frameKey){if(frameKey){return _fork(requestDeleteFrame,frameKey);}return assist(deleteFrame);};extendExportFrame=function(result){return render_(result,h2oExportFrameOutput,result);};extendBindFrames=function(key,result){return render_(result,h2oBindFramesOutput,key,result);};requestExportFrame=function(frameKey,path,opts,go){return _.requestExportFrame(frameKey,path,opts.overwrite,function(error,result){if(error){return go(error);}return _.requestJob(result.job.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};exportFrame=function(frameKey,path,opts){if(opts==null){opts={};}if(frameKey&&path){return _fork(requestExportFrame,frameKey,path,opts);}return assist(exportFrame,frameKey,path,opts);};requestDeleteFrames=function(frameKeys,go){var futures;futures=lodash.map(frameKeys,function(frameKey){return _fork(_.requestDeleteFrame,frameKey);});return Flow.Async.join(futures,function(error,results){if(error){return go(error);}return go(null,extendDeletedKeys(frameKeys));});};deleteFrames=function(frameKeys){switch(frameKeys.length){case 0:return assist(deleteFrames);case 1:return deleteFrame(lodash.head(frameKeys));default:return _fork(requestDeleteFrames,frameKeys);}};getColumnSummary=function(frameKey,columnName){return _fork(requestColumnSummary,frameKey,columnName);};requestModels=function(go){return _.requestModels(function(error,models){if(error){return go(error);}return go(null,extendModels(models));});};requestModelsByKeys=function(modelKeys,go){var futures;futures=lodash.map(modelKeys,function(key){return _fork(_.requestModel,key);});return Flow.Async.join(futures,function(error,models){if(error){return go(error);}return go(null,extendModels(models));});};getModels=function(modelKeys){if(lodash.isArray(modelKeys)){if(modelKeys.length){return _fork(requestModelsByKeys,modelKeys);}return _fork(requestModels);}return _fork(requestModels);};requestGrids=function(go){return _.requestGrids(function(error,grids){if(error){return go(error);}return go(null,extendGrids(grids));});};getGrids=function(){return _fork(requestGrids);};requestModel=function(modelKey,go){return _.requestModel(modelKey,function(error,model){if(error){return go(error);}return go(null,extendModel(model));});};getModel=function(modelKey){switch(flowPrelude$5.typeOf(modelKey)){case'String':return _fork(requestModel,modelKey);default:return assist(getModel);}};requestGrid=function(gridKey,opts,go){return _.requestGrid(gridKey,opts,function(error,grid){if(error){return go(error);}return go(null,extendGrid(grid,opts));});};getGrid=function(gridKey,opts){switch(flowPrelude$5.typeOf(gridKey)){case'String':return _fork(requestGrid,gridKey,opts);default:return assist(getGrid);}};findColumnIndexByColumnLabel=function(frame,columnLabel){var column;var i;var _i;var _len;var _ref1;_ref1=frame.columns;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){column=_ref1[i];if(column.label===columnLabel){return i;}}throw new Flow.Error(`Column [${columnLabel}] not found in frame`);};findColumnIndicesByColumnLabels=function(frame,columnLabels){var columnLabel;var _i;var _len;var _results;_results=[];for(_i=0,_len=columnLabels.length;_i<_len;_i++){columnLabel=columnLabels[_i];_results.push(findColumnIndexByColumnLabel(frame,columnLabel));}return _results;};requestImputeColumn=function(opts,go){var column;var combineMethod;var frame;var groupByColumns;var method;frame=opts.frame,column=opts.column,method=opts.method,combineMethod=opts.combineMethod,groupByColumns=opts.groupByColumns;combineMethod=combineMethod!=null?combineMethod:'interpolate';return _.requestFrameSummaryWithoutData(frame,function(error,result){var columnIndex;var columnIndicesError;var columnKeyError;var groupByArg;var groupByColumnIndices;if(error){return go(error);}try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}if(groupByColumns&&groupByColumns.length){try{groupByColumnIndices=findColumnIndicesByColumnLabels(result,groupByColumns);}catch(_error){columnIndicesError=_error;return go(columnIndicesError);}}else{groupByColumnIndices=null;}groupByArg=groupByColumnIndices?`[${groupByColumnIndices.join(' ')}]`:'[]';return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`,function(error,result){if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};requestChangeColumnType=function(opts,go){var column;var frame;var method;var type;frame=opts.frame,column=opts.column,type=opts.type;method=type==='enum'?'as.factor':'as.numeric';return _.requestFrameSummaryWithoutData(frame,function(error,result){var columnIndex;var columnKeyError;try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`,function(error,result){if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};imputeColumn=function(opts){if(opts&&opts.frame&&opts.column&&opts.method){return _fork(requestImputeColumn,opts);}return assist(imputeColumn,opts);};changeColumnType=function(opts){if(opts&&opts.frame&&opts.column&&opts.type){return _fork(requestChangeColumnType,opts);}return assist(changeColumnType,opts);};requestDeleteModel=function(modelKey,go){return _.requestDeleteModel(modelKey,function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([modelKey]));});};deleteModel=function(modelKey){if(modelKey){return _fork(requestDeleteModel,modelKey);}return assist(deleteModel);};extendImportModel=function(result){return render_(result,H2O.ImportModelOutput,result);};requestImportModel=function(path,opts,go){return _.requestImportModel(path,opts.overwrite,function(error,result){if(error){return go(error);}return go(null,extendImportModel(result));});};importModel=function(path,opts){if(path&&path.length){return _fork(requestImportModel,path,opts);}return assist(importModel,path,opts);};extendExportModel=function(result){return render_(result,h2oExportModelOutput,result);};requestExportModel=function(modelKey,path,opts,go){return _.requestExportModel(modelKey,path,opts.overwrite,function(error,result){if(error){return go(error);}return go(null,extendExportModel(result));});};exportModel=function(modelKey,path,opts){if(modelKey&&path){return _fork(requestExportModel,modelKey,path,opts);}return assist(exportModel,modelKey,path,opts);};requestDeleteModels=function(modelKeys,go){var futures;futures=lodash.map(modelKeys,function(modelKey){return _fork(_.requestDeleteModel,modelKey);});return Flow.Async.join(futures,function(error,results){if(error){return go(error);}return go(null,extendDeletedKeys(modelKeys));});};deleteModels=function(modelKeys){switch(modelKeys.length){case 0:return assist(deleteModels);case 1:return deleteModel(lodash.head(modelKeys));default:return _fork(requestDeleteModels,modelKeys);}};requestJob=function(key,go){return _.requestJob(key,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});};requestJobs=function(go){return _.requestJobs(function(error,jobs){if(error){return go(error);}return go(null,extendJobs(jobs));});};getJobs=function(){return _fork(requestJobs);};getJob=function(arg){switch(flowPrelude$5.typeOf(arg)){case'String':return _fork(requestJob,arg);case'Object':if(arg.key!=null){return getJob(arg.key);}return assist(getJob);// break; // no-unreachable
-  default:return assist(getJob);}};requestCancelJob=function(key,go){return _.requestCancelJob(key,function(error){if(error){return go(error);}return go(null,extendCancelJob({}));});};cancelJob=function(arg){switch(flowPrelude$5.typeOf(arg)){case'String':return _fork(requestCancelJob,arg);default:return assist(cancelJob);}};extendImportResults=function(importResults){return render_(importResults,h2oImportFilesOutput,importResults);};requestImportFiles=function(paths,go){return _.requestImportFiles(paths,function(error,importResults){if(error){return go(error);}return go(null,extendImportResults(importResults));});};importFiles=function(paths){switch(flowPrelude$5.typeOf(paths)){case'Array':return _fork(requestImportFiles,paths);default:return assist(importFiles);}};extendParseSetupResults=function(args,parseSetupResults){return render_(parseSetupResults,H2O.SetupParseOutput,args,parseSetupResults);};requestImportAndParseSetup=function(paths,go){return _.requestImportFiles(paths,function(error,importResults){var sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,function(result){return result.destination_frames;})));return _.requestParseSetup(sourceKeys,function(error,parseSetupResults){if(error){return go(error);}return go(null,extendParseSetupResults({paths},parseSetupResults));});});};requestParseSetup=function(sourceKeys,go){return _.requestParseSetup(sourceKeys,function(error,parseSetupResults){if(error){return go(error);}return go(null,extendParseSetupResults({source_frames:sourceKeys},parseSetupResults));});};setupParse=function(args){if(args.paths&&lodash.isArray(args.paths)){return _fork(requestImportAndParseSetup,args.paths);}else if(args.source_frames&&lodash.isArray(args.source_frames)){return _fork(requestParseSetup,args.source_frames);}return assist(setupParse);};extendParseResult=function(parseResult){return render_(parseResult,H2O.JobOutput,parseResult.job);};requestImportAndParseFiles=function(paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){return _.requestImportFiles(paths,function(error,importResults){var sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,function(result){return result.destination_frames;})));return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,function(error,parseResult){if(error){return go(error);}return go(null,extendParseResult(parseResult));});});};requestParseFiles=function(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,function(error,parseResult){if(error){return go(error);}return go(null,extendParseResult(parseResult));});};parseFiles=function(opts){var checkHeader;var chunkSize;var columnCount;var columnNames;var columnTypes;var deleteOnDone;var destinationKey;var parseType;var separator;var useSingleQuotes;destinationKey=opts.destination_frame;parseType=opts.parse_type;separator=opts.separator;columnCount=opts.number_columns;useSingleQuotes=opts.single_quotes;columnNames=opts.column_names;columnTypes=opts.column_types;deleteOnDone=opts.delete_on_done;checkHeader=opts.check_header;chunkSize=opts.chunk_size;if(opts.paths){return _fork(requestImportAndParseFiles,opts.paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);}return _fork(requestParseFiles,opts.source_frames,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);};requestModelBuild=function(algo,opts,go){return _.requestModelBuild(algo,opts,function(error,result){var messages;var validation;if(error){return go(error);}if(result.error_count>0){messages=function(){var _i;var _len;var _ref1;var _results;_ref1=result.messages;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){validation=_ref1[_i];_results.push(validation.message);}return _results;}();return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));}return go(null,extendJob(result.job));});};requestAutoModelBuild=function(opts,go){var params;params={input_spec:{training_frame:opts.frame,response_column:opts.column},build_control:{stopping_criteria:{max_runtime_secs:opts.maxRunTime}}};return _.requestAutoModelBuild(params,function(error,result){if(error){return go(error);}return go(null,extendJob(result.job));});};buildAutoModel=function(opts){if(opts&&lodash.keys(opts).length>1){return _fork(requestAutoModelBuild,opts);}return assist(buildAutoModel,opts);};buildModel=function(algo,opts){if(algo&&opts&&lodash.keys(opts).length>1){return _fork(requestModelBuild,algo,opts);}return assist(buildModel,algo,opts);};unwrapPrediction=function(go){return function(error,result){if(error){return go(error);}return go(null,extendPrediction(result));};};requestPredict=function(destinationKey,modelKey,frameKey,options,go){return _.requestPredict(destinationKey,modelKey,frameKey,options,unwrapPrediction(go));};requestPredicts=function(opts,go){var futures;futures=lodash.map(opts,function(opt){var frameKey;var modelKey;var options;modelKey=opt.model,frameKey=opt.frame,options=opt.options;return _fork(_.requestPredict,null,modelKey,frameKey,options||{});});return Flow.Async.join(futures,function(error,predictions){if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};predict=function(opts){var combos;var deep_features_hidden_layer;var exemplar_index;var frame;var frames;var leaf_node_assignment;var model;var models;var predictions_frame;var reconstruction_error;var _i;var _j;var _len;var _len1;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,models=opts.models,frame=opts.frame,frames=opts.frames,reconstruction_error=opts.reconstruction_error,deep_features_hidden_layer=opts.deep_features_hidden_layer,leaf_node_assignment=opts.leaf_node_assignment,exemplar_index=opts.exemplar_index;if(models||frames){if(!models){if(model){models=[model];}}if(!frames){if(frame){frames=[frame];}}if(frames&&models){combos=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];for(_j=0,_len1=frames.length;_j<_len1;_j++){frame=frames[_j];combos.push({model,frame});}}return _fork(requestPredicts,combos);}return assist(predict,{predictions_frame,models,frames});}if(model&&frame){return _fork(requestPredict,predictions_frame,model,frame,{reconstruction_error,deep_features_hidden_layer,leaf_node_assignment});}else if(model&&exemplar_index!==void 0){return _fork(requestPredict,predictions_frame,model,null,{exemplar_index});}return assist(predict,{predictions_frame,model,frame});};requestPrediction=function(modelKey,frameKey,go){return _.requestPrediction(modelKey,frameKey,unwrapPrediction(go));};requestPredictions=function(opts,go){var frameKey;var futures;var modelKey;if(lodash.isArray(opts)){futures=lodash.map(opts,function(opt){var frameKey;var modelKey;modelKey=opt.model,frameKey=opt.frame;return _fork(_.requestPredictions,modelKey,frameKey);});return Flow.Async.join(futures,function(error,predictions){var uniquePredictions;if(error){return go(error);}uniquePredictions=lodash.values(lodash.indexBy(lodash.flatten(predictions,true),function(prediction){return prediction.model.name+prediction.frame.name;}));return go(null,extendPredictions(opts,uniquePredictions));});}modelKey=opts.model,frameKey=opts.frame;return _.requestPredictions(modelKey,frameKey,function(error,predictions){if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};getPrediction=function(opts){var frame;var model;var predictions_frame;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,frame=opts.frame;if(model&&frame){return _fork(requestPrediction,model,frame);}return assist(getPrediction,{predictions_frame,model,frame});};getPredictions=function(opts){if(opts==null){opts={};}return _fork(requestPredictions,opts);};requestCloud=function(go){return _.requestCloud(function(error,cloud){if(error){return go(error);}return go(null,extendCloud(cloud));});};getCloud=function(){return _fork(requestCloud);};requestTimeline=function(go){return _.requestTimeline(function(error,timeline){if(error){return go(error);}return go(null,extendTimeline(timeline));});};getTimeline=function(){return _fork(requestTimeline);};requestStackTrace=function(go){return _.requestStackTrace(function(error,stackTrace){if(error){return go(error);}return go(null,extendStackTrace(stackTrace));});};getStackTrace=function(){return _fork(requestStackTrace);};requestLogFile=function(nodeIndex,fileType,go){return _.requestCloud(function(error,cloud){var NODE_INDEX_SELF;if(error){return go(error);}if(nodeIndex<0||nodeIndex>=cloud.nodes.length){NODE_INDEX_SELF=-1;nodeIndex=NODE_INDEX_SELF;}return _.requestLogFile(nodeIndex,fileType,function(error,logFile){if(error){return go(error);}return go(null,extendLogFile(cloud,nodeIndex,fileType,logFile));});});};getLogFile=function(nodeIndex,fileType){if(nodeIndex==null){nodeIndex=-1;}if(fileType==null){fileType='info';}return _fork(requestLogFile,nodeIndex,fileType);};requestNetworkTest=function(go){return _.requestNetworkTest(function(error,result){if(error){return go(error);}return go(null,extendNetworkTest(result));});};testNetwork=function(){return _fork(requestNetworkTest);};requestRemoveAll=function(go){return _.requestRemoveAll(function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([]));});};deleteAll=function(){return _fork(requestRemoveAll);};extendRDDs=function(rdds){render_(rdds,h2oRDDsOutput,rdds);return rdds;};requestRDDs=function(go){return _.requestRDDs(function(error,result){if(error){return go(error);}return go(null,extendRDDs(result.rdds));});};getRDDs=function(){return _fork(requestRDDs);};extendDataFrames=function(dataframes){render_(dataframes,h2oDataFramesOutput,dataframes);return dataframes;};requestDataFrames=function(go){return _.requestDataFrames(function(error,result){if(error){return go(error);}return go(null,extendDataFrames(result.dataframes));});};getDataFrames=function(){return _fork(requestDataFrames);};extendAsH2OFrame=function(result){render_(result,h2oH2OFrameOutput,result);return result;};requestAsH2OFrameFromRDD=function(rdd_id,name,go){return _.requestAsH2OFrameFromRDD(rdd_id,name,function(error,h2oframe_id){if(error){return go(error);}return go(null,extendAsH2OFrame(h2oframe_id));});};asH2OFrameFromRDD=function(rdd_id,name){if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromRDD,rdd_id,name);};requestAsH2OFrameFromDF=function(df_id,name,go){return _.requestAsH2OFrameFromDF(df_id,name,function(error,result){if(error){return go(error);}return go(null,extendAsH2OFrame(result));});};asH2OFrameFromDF=function(df_id,name){if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromDF,df_id,name);};extendAsDataFrame=function(result){render_(result,h2oDataFrameOutput,result);return result;};requestAsDataFrame=function(hf_id,name,go){return _.requestAsDataFrame(hf_id,name,function(error,result){if(error){return go(error);}return go(null,extendAsDataFrame(result));});};asDataFrame=function(hf_id,name){if(name==null){name=void 0;}return _fork(requestAsDataFrame,hf_id,name);};requestScalaCode=function(session_id,code,go){return _.requestScalaCode(session_id,code,function(error,result){if(error){return go(error);}return go(null,extendScalaCode(result));});};extendScalaCode=function(result){render_(result,h2oScalaCodeOutput,result);return result;};runScalaCode=function(session_id,code){return _fork(requestScalaCode,session_id,code);};requestScalaIntp=function(go){return _.requestScalaIntp(function(error,result){if(error){return go(error);}return go(null,extendScalaIntp(result));});};extendScalaIntp=function(result){render_(result,h2oScalaIntpOutput,result);return result;};getScalaIntp=function(){return _fork(requestScalaIntp);};requestProfile=function(depth,go){return _.requestProfile(depth,function(error,profile){if(error){return go(error);}return go(null,extendProfile(profile));});};getProfile=function(opts){if(!opts){opts={depth:10};}return _fork(requestProfile,opts.depth);};loadScript=function(path,go){var onDone;var onFail;onDone=function(script,status){return go(null,{script,status});};onFail=function(jqxhr,settings,error){return go(error);};return $.getScript(path).done(onDone).fail(onFail);};dumpFuture=function(result,go){if(result==null){result={};}console.debug(result);return go(null,render_(result,Flow.ObjectBrowser,'dump',result));};dump=function(f){if(f!=null?f.isFuture:void 0){return _fork(dumpFuture,f);}return Flow.Async.async(function(){return f;});};assist=function(){var args;var func;func=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];if(func===void 0){return _fork(proceed,h2oAssist,[_assistance]);}switch(func){case importFiles:return _fork(proceed,h2oImportFilesInput,[]);case buildModel:return _fork(proceed,H2O.ModelInput,args);case buildAutoModel:return _fork(proceed,h2oAutoModelInput,args);case predict:case getPrediction:return _fork(proceed,h2oPredictInput,args);case createFrame:return _fork(proceed,h2oCreateFrameInput,args);case splitFrame:return _fork(proceed,h2oSplitFrameInput,args);case mergeFrames:return _fork(proceed,h2oMergeFramesInput,args);case buildPartialDependence:return _fork(proceed,h2oPartialDependenceInput,args);case exportFrame:return _fork(proceed,h2oExportFrameInput,args);case imputeColumn:return _fork(proceed,H2O.ImputeInput,args);case importModel:return _fork(proceed,h2oImportModelInput,args);case exportModel:return _fork(proceed,h2oExportModelInput,args);default:return _fork(proceed,h2oNoAssist,[]);}};Flow.Dataflow.link(_.ready,function(){Flow.Dataflow.link(_.ls,ls);Flow.Dataflow.link(_.inspect,inspect);Flow.Dataflow.link(_.plot,function(plot){return plot(lightning);});Flow.Dataflow.link(_.grid,function(frame){return lightning(lightning.select(),lightning.from(frame));});Flow.Dataflow.link(_.enumerate,function(frame){return lightning(lightning.select(0),lightning.from(frame));});Flow.Dataflow.link(_.requestFrameDataE,requestFrameData);return Flow.Dataflow.link(_.requestFrameSummarySliceE,requestFrameSummarySlice);});initAssistanceSparklingWater=function(){_assistance.getRDDs={description:'Get a list of Spark\'s RDDs',icon:'table'};return _assistance.getDataFrames={description:'Get a list of Spark\'s data frames',icon:'table'};};Flow.Dataflow.link(_.initialized,function(){if(_.onSparklingWater){return initAssistanceSparklingWater();}});routines={fork:_fork,join:_join,call:_call,apply:_apply,isFuture:_isFuture,signal:Flow.Dataflow.signal,signals:Flow.Dataflow.signals,isSignal:Flow.Dataflow.isSignal,act:Flow.Dataflow.act,react:Flow.Dataflow.react,lift:Flow.Dataflow.lift,merge:Flow.Dataflow.merge,dump,inspect,plot,grid,get:_get,assist,gui,loadScript,getJobs,getJob,cancelJob,importFiles,setupParse,parseFiles,createFrame,splitFrame,mergeFrames,buildPartialDependence,getPartialDependence,getFrames,getFrame,bindFrames,getFrameSummary,getFrameData,deleteFrames,deleteFrame,exportFrame,getColumnSummary,changeColumnType,imputeColumn,buildModel,buildAutoModel,getGrids,getModels,getModel,getGrid,deleteModels,deleteModel,importModel,exportModel,predict,getPrediction,getPredictions,getCloud,getTimeline,getProfile,getStackTrace,getLogFile,testNetwork,deleteAll};if(_.onSparklingWater){routinesOnSw={getDataFrames,getRDDs,getScalaIntp,runScalaCode,asH2OFrameFromRDD,asH2OFrameFromDF,asDataFrame};for(attrname in routinesOnSw){if({}.hasOwnProperty.call(routinesOnSw,attrname)){routines[attrname]=routinesOnSw[attrname];}}}return routines;};}
+  default:if(value!=null){return value;}return void 0;}};inspectParametersAcrossModels=function(models){return function(){var data;var i;var leader;var model;var modelKeys;var parameter;var vectors;leader=lodash.head(models);vectors=function(){var _i;var _len;var _ref1;var _results;_ref1=leader.parameters;_results=[];for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){parameter=_ref1[i];data=function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=models.length;_j<_len1;_j++){model=models[_j];_results1.push(getModelParameterValue(parameter.type,model.parameters[i].actual_value));}return _results1;}();switch(parameter.type){case'enum':case'Frame':case'string':_results.push(createFactor(parameter.label,'String',data));break;case'byte':case'short':case'int':case'long':case'float':case'double':_results.push(createVector(parameter.label,'Number',data));break;case'string[]':case'byte[]':case'short[]':case'int[]':case'long[]':case'float[]':case'double[]':_results.push(createList(parameter.label,data,function(a){if(a){return a;}return void 0;}));break;case'boolean':_results.push(createList(parameter.label,data,function(a){if(a){return'true';}return'false';}));break;default:_results.push(createList(parameter.label,data));}}return _results;}();modelKeys=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.model_id.name);}return _results;}();return createDataframe('parameters',vectors,lodash.range(models.length),null,{description:`Parameters for models ${modelKeys.join(', ')}`,origin:`getModels ${flowPrelude$6.stringify(modelKeys)}`});};};inspectModelParameters=function(model){return function(){var attr;var attrs;var data;var i;var parameter;var parameters;var vectors;parameters=model.parameters;attrs=['label','type','level','actual_value','default_value'];vectors=function(){var _i;var _j;var _len;var _len1;var _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];data=new Array(parameters.length);for(i=_j=0,_len1=parameters.length;_j<_len1;i=++_j){parameter=parameters[i];data[i]=attr==='actual_value'?getModelParameterValue(parameter.type,parameter[attr]):parameter[attr];}_results.push(createList(attr,data));}return _results;}();return createDataframe('parameters',vectors,lodash.range(parameters.length),null,{description:`Parameters for model \'${model.model_id.name}\'`,origin:`getModel ${flowPrelude$6.stringify(model.model_id.name)}`});};};extendJob=function(job){return render_(job,H2O.JobOutput,job);};extendJobs=function(jobs){var job;var _i;var _len;for(_i=0,_len=jobs.length;_i<_len;_i++){job=jobs[_i];extendJob(job);}return render_(jobs,h2oJobsOutput,jobs);};extendCancelJob=function(cancellation){return render_(cancellation,h2oCancelJobOutput,cancellation);};extendDeletedKeys=function(keys){return render_(keys,h2oDeleteObjectsOutput,keys);};inspectTwoDimTable_=function(origin,tableName,table){return function(){return convertTableToFrame(table,tableName,{description:table.description||'',origin});};};inspectRawArray_=function(name,origin,description,array){return function(){return createDataframe(name,[createList(name,parseAndFormatArray(array))],lodash.range(array.length),null,{description:'',origin});};};inspectObjectArray_=function(name,origin,description,array){return function(){return createDataframe(name,[createList(name,parseAndFormatObjectArray(array))],lodash.range(array.length),null,{description:'',origin});};};inspectRawObject_=function(name,origin,description,obj){return function(){var k;var v;var vectors;vectors=function(){var _results;_results=[];for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];_results.push(createList(k,[v===null?void 0:lodash.isNumber(v)?format6fi(v):v]));}}return _results;}();return createDataframe(name,vectors,lodash.range(1),null,{description:'',origin});};};_schemaHacks={KMeansOutput:{fields:'names domains help'},GBMOutput:{fields:'names domains help'},GLMOutput:{fields:'names domains help'},DRFOutput:{fields:'names domains help'},DeepLearningModelOutput:{fields:'names domains help'},NaiveBayesOutput:{fields:'names domains help pcond'},PCAOutput:{fields:'names domains help'},ModelMetricsBinomialGLM:{fields:null,transform:transformBinomialMetrics},ModelMetricsBinomial:{fields:null,transform:transformBinomialMetrics},ModelMetricsMultinomialGLM:{fields:null},ModelMetricsMultinomial:{fields:null},ModelMetricsRegressionGLM:{fields:null},ModelMetricsRegression:{fields:null},ModelMetricsClustering:{fields:null},ModelMetricsAutoEncoder:{fields:null},ConfusionMatrix:{fields:null}};blacklistedAttributesBySchema=function(){var attrs;var dict;var dicts;var field;var schema;var _i;var _len;var _ref1;dicts={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];dicts[schema]=dict={__meta:true};if(attrs.fields){_ref1=flowPrelude$6.words(attrs.fields);for(_i=0,_len=_ref1.length;_i<_len;_i++){field=_ref1[_i];dict[field]=true;}}}}return dicts;}();schemaTransforms=function(){var attrs;var schema;var transform;var transforms;transforms={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];if(transform=attrs.transform){transforms[schema]=transform;}}}return transforms;}();inspectObject=function(inspections,name,origin,obj){var attrs;var blacklistedAttributes;var k;var meta;var record;var schemaType;var transform;var v;var _ref1;var _ref2;schemaType=(_ref1=obj.__meta)!=null?_ref1.schema_type:void 0;blacklistedAttributes=schemaType?(attrs=blacklistedAttributesBySchema[schemaType])?attrs:{}:{};if(transform=schemaTransforms[schemaType]){obj=transform(obj);}record={};inspections[name]=inspectRawObject_(name,origin,name,record);for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];if(!blacklistedAttributes[k]){if(v===null){record[k]=null;}else{if(((_ref2=v.__meta)!=null?_ref2.schema_type:void 0)==='TwoDimTable'){inspections[`${name} - ${v.name}`]=inspectTwoDimTable_(origin,`${name} - ${v.name}`,v);}else{if(lodash.isArray(v)){if(k==='cross_validation_models'||k==='cross_validation_predictions'||name==='output'&&(k==='weights'||k==='biases')){inspections[k]=inspectObjectArray_(k,origin,k,v);}else{inspections[k]=inspectRawArray_(k,origin,k,v);}}else if(lodash.isObject(v)){if(meta=v.__meta){if(meta.schema_type==='Key<Frame>'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$6.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Key<Model>'){record[k]=`<a href=\'#\' data-type=\'model\' data-key=${flowPrelude$6.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Frame'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$6.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;}else{inspectObject(inspections,`${name} - ${k}`,origin,v);}}else{console.log(`WARNING: dropping [${k}] from inspection:`,v);}}else{record[k]=lodash.isNumber(v)?format6fi(v):v;}}}}}}};extendModel=function(model){var refresh;lodash.extend=function(model){var inspections;var origin;var table;var tableName;var _i;var _len;var _ref1;inspections={};inspections.parameters=inspectModelParameters(model);origin=`getModel ${flowPrelude$6.stringify(model.model_id.name)}`;inspectObject(inspections,'output',origin,model.output);if(model.__meta.schema_type==='NaiveBayesModel'){if(lodash.isArray(model.output.pcond)){_ref1=model.output.pcond;for(_i=0,_len=_ref1.length;_i<_len;_i++){table=_ref1[_i];tableName=`output - pcond - ${table.name}`;inspections[tableName]=inspectTwoDimTable_(origin,tableName,table);}}}inspect_(model,inspections);return model;};refresh=function(go){return _.requestModel(model.model_id.name,function(error,model){if(error){return go(error);}return go(null,lodash.extend(model));});};lodash.extend(model);return render_(model,h2oModelOutput,model,refresh);};extendGrid=function(grid,opts){var inspections;var origin;origin=`getGrid ${flowPrelude$6.stringify(grid.grid_id.name)}`;if(opts){origin+=`, ${flowPrelude$6.stringify(opts)}`;}inspections={summary:inspectTwoDimTable_(origin,'summary',grid.summary_table),scoring_history:inspectTwoDimTable_(origin,'scoring_history',grid.scoring_history)};inspect_(grid,inspections);return render_(grid,h2oGridOutput,grid);};extendGrids=function(grids){return render_(grids,h2oGridsOutput,grids);};extendModels=function(models){var algos;var inspections;var model;inspections={};algos=lodash.unique(function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.algo);}return _results;}());if(algos.length===1){inspections.parameters=inspectParametersAcrossModels(models);}inspect_(models,inspections);return render_(models,h2oModelsOutput,models);};read=function(value){if(value==='NaN'){return null;}return value;};extendPredictions=function(opts,predictions){render_(predictions,h2oPredictsOutput,opts,predictions);return predictions;};extendPrediction=function(result){var frameKey;var inspections;var modelKey;var prediction;var predictionFrame;var _ref1;modelKey=result.model.name;frameKey=(_ref1=result.frame)!=null?_ref1.name:void 0;prediction=lodash.head(result.model_metrics);predictionFrame=result.predictions_frame;inspections={};if(prediction){inspectObject(inspections,'Prediction',`getPrediction model: ${flowPrelude$6.stringify(modelKey)}, frame: ${flowPrelude$6.stringify(frameKey)}`,prediction);}else{prediction={};inspectObject(inspections,'Prediction',`getPrediction model: ${flowPrelude$6.stringify(modelKey)}, frame: ${flowPrelude$6.stringify(frameKey)}`,{prediction_frame:predictionFrame});}inspect_(prediction,inspections);return render_(prediction,h2oPredictOutput,prediction);};inspectFrameColumns=function(tableLabel,frameKey,frame,frameColumns){return function(){var actionsData;var attr;var attrs;var column;var i;var labelVector;var title;var toColumnSummaryLink;var toConversionLink;var typeVector;var vectors;attrs=['label','type','missing_count|Missing','zero_count|Zeros','positive_infinity_count|+Inf','negative_infinity_count|-Inf','min','max','mean','sigma','cardinality'];toColumnSummaryLink=function(label){return`<a href=\'#\' data-type=\'summary-link\' data-key=${flowPrelude$6.stringify(label)}>${lodash.escape(label)}</a>`;};toConversionLink=function(value){var label;var type;var _ref1;_ref1=value.split('\0'),type=_ref1[0],label=_ref1[1];switch(type){case'enum':return`<a href=\'#\' data-type=\'as-numeric-link\' data-key=${flowPrelude$6.stringify(label)}>Convert to numeric</a>`;case'int':case'string':return`<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude$6.stringify(label)}>Convert to enum</a>'`;default:return void 0;}};vectors=function(){var _i;var _len;var _ref1;var _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];_ref1=attr.split('|'),name=_ref1[0],title=_ref1[1];title=title!=null?title:name;switch(name){case'min':_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.mins));}return _results1;}(),format4f));break;case'max':_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.maxs));}return _results1;}(),format4f));break;case'cardinality':_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column.type==='enum'?column.domain_cardinality:void 0);}return _results1;}()));break;case'label':_results.push(createFactor(title,'String',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}(),null,toColumnSummaryLink));break;case'type':_results.push(createFactor(title,'String',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}()));break;case'mean':case'sigma':_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}(),format4f));break;default:_results.push(createVector(title,'Number',function(){var _j;var _len1;var _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;}()));}}return _results;}();labelVector=vectors[0],typeVector=vectors[1];actionsData=function(){var _i;var _ref1;var _results;_results=[];for(i=_i=0,_ref1=frameColumns.length;_ref1>=0?_i<_ref1:_i>_ref1;i=_ref1>=0?++_i:--_i){_results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);}return _results;}();vectors.push(createFactor('Actions','String',actionsData,null,toConversionLink));return createDataframe(tableLabel,vectors,lodash.range(frameColumns.length),null,{description:`A list of ${tableLabel} in the H2O Frame.`,origin:`getFrameSummary ${flowPrelude$6.stringify(frameKey)}`,plot:`plot inspect \'${tableLabel}\', getFrameSummary ${flowPrelude$6.stringify(frameKey)}`});};};inspectFrameData=function(frameKey,frame){return function(){var column;var domain;var frameColumns;var index;var rowIndex;var vectors;frameColumns=frame.columns;vectors=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=frameColumns.length;_i<_len;_i++){column=frameColumns[_i];switch(column.type){case'int':case'real':_results.push(createVector(column.label,'Number',parseNaNs(column.data),format4f));break;case'enum':domain=column.domain;_results.push(createFactor(column.label,'String',function(){var _j;var _len1;var _ref1;var _results1;_ref1=column.data;_results1=[];for(_j=0,_len1=_ref1.length;_j<_len1;_j++){index=_ref1[_j];_results1.push(index!=null?domain[index]:void 0);}return _results1;}()));break;case'time':_results.push(createVector(column.label,'Number',parseNaNs(column.data)));break;case'string':case'uuid':_results.push(createList(column.label,parseNulls(column.string_data)));break;default:_results.push(createList(column.label,parseNulls(column.data)));}}return _results;}();vectors.unshift(createVector('Row','Number',function(){var _i;var _ref1;var _ref2;var _results;_results=[];for(rowIndex=_i=_ref1=frame.row_offset,_ref2=frame.row_count;_ref1<=_ref2?_i<_ref2:_i>_ref2;rowIndex=_ref1<=_ref2?++_i:--_i){_results.push(rowIndex+1);}return _results;}()));return createDataframe('data',vectors,lodash.range(frame.row_count-frame.row_offset),null,{description:'A partial list of rows in the H2O Frame.',origin:`getFrameData ${flowPrelude$6.stringify(frameKey)}`});};};extendFrameData=function(frameKey,frame){var inspections;var origin;inspections={data:inspectFrameData(frameKey,frame)};origin=`getFrameData ${flowPrelude$6.stringify(frameKey)}`;inspect_(frame,inspections);return render_(frame,h2oFrameDataOutput,frame);};extendFrame=function(frameKey,frame){var column;var enumColumns;var inspections;var origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns),data:inspectFrameData(frameKey,frame)};enumColumns=function(){var _i;var _len;var _ref1;var _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;}();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${flowPrelude$6.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendFrameSummary=function(frameKey,frame){var column;var enumColumns;var inspections;var origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns)};enumColumns=function(){var _i;var _len;var _ref1;var _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;}();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${flowPrelude$6.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendColumnSummary=function(frameKey,frame,columnName){var column;var inspectCharacteristics;var inspectDistribution;var inspectDomain;var inspectPercentiles;var inspectSummary;var inspections;var rowCount;column=lodash.head(frame.columns);rowCount=frame.rows;inspectPercentiles=function(){var vectors;vectors=[createVector('percentile','Number',frame.default_percentiles),createVector('value','Number',column.percentiles)];return createDataframe('percentiles',vectors,lodash.range(frame.default_percentiles.length),null,{description:`Percentiles for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`});};inspectDistribution=function(){var base;var binCount;var binIndex;var bins;var count;var countData;var i;var interval;var intervalData;var m;var minBinCount;var n;var rows;var stride;var vectors;var width;var widthData;var _i;var _j;var _k;var _l;var _len;var _ref1;minBinCount=32;base=column.histogram_base,stride=column.histogram_stride,bins=column.histogram_bins;width=Math.ceil(bins.length/minBinCount);interval=stride*width;rows=[];if(width>0){binCount=minBinCount+(bins.length%width>0?1:0);intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_i=0;binCount>=0?_i<binCount:_i>binCount;i=binCount>=0?++_i:--_i){m=i*width;n=m+width;count=0;for(binIndex=_j=m;m<=n?_j<n:_j>n;binIndex=m<=n?++_j:--_j){if(binIndex<bins.length){count+=bins[binIndex];}}intervalData[i]=base+i*interval;widthData[i]=interval;countData[i]=count;}}else{binCount=bins.length;intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_k=0,_len=bins.length;_k<_len;i=++_k){count=bins[i];intervalData[i]=base+i*stride;widthData[i]=stride;countData[i]=count;}}for(i=_l=_ref1=binCount-1;_ref1<=0?_l<=0:_l>=0;i=_ref1<=0?++_l:--_l){if(countData[i]!==0){binCount=i+1;intervalData=intervalData.slice(0,binCount);widthData=widthData.slice(0,binCount);countData=countData.slice(0,binCount);break;}}vectors=[createFactor('interval','String',intervalData),createVector('width','Number',widthData),createVector('count','Number',countData)];return createDataframe('distribution',vectors,lodash.range(binCount),null,{description:`Distribution for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`,plot:`plot inspect \'distribution\', getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`});};inspectCharacteristics=function(){var characteristicData;var count;var countData;var missing_count;var negative_infinity_count;var other;var percentData;var positive_infinity_count;var vectors;var zero_count;missing_count=column.missing_count,zero_count=column.zero_count,positive_infinity_count=column.positive_infinity_count,negative_infinity_count=column.negative_infinity_count;other=rowCount-missing_count-zero_count-positive_infinity_count-negative_infinity_count;characteristicData=['Missing','-Inf','Zero','+Inf','Other'];countData=[missing_count,negative_infinity_count,zero_count,positive_infinity_count,other];percentData=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=countData.length;_i<_len;_i++){count=countData[_i];_results.push(100*count/rowCount);}return _results;}();vectors=[createFactor('characteristic','String',characteristicData),createVector('count','Number',countData),createVector('percent','Number',percentData)];return createDataframe('characteristics',vectors,lodash.range(characteristicData.length),null,{description:`Characteristics for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`,plot:`plot inspect \'characteristics\', getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`});};inspectSummary=function(){var defaultPercentiles;var maximum;var mean;var minimum;var outliers;var percentiles;var q1;var q2;var q3;var vectors;defaultPercentiles=frame.default_percentiles;percentiles=column.percentiles;mean=column.mean;q1=percentiles[defaultPercentiles.indexOf(0.25)];q2=percentiles[defaultPercentiles.indexOf(0.5)];q3=percentiles[defaultPercentiles.indexOf(0.75)];outliers=lodash.unique(column.mins.concat(column.maxs));minimum=lodash.head(column.mins);maximum=lodash.head(column.maxs);vectors=[createFactor('column','String',[columnName]),createVector('mean','Number',[mean]),createVector('q1','Number',[q1]),createVector('q2','Number',[q2]),createVector('q3','Number',[q3]),createVector('min','Number',[minimum]),createVector('max','Number',[maximum])];return createDataframe('summary',vectors,lodash.range(1),null,{description:`Summary for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`,plot:`plot inspect \'summary\', getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`});};inspectDomain=function(){var counts;var i;var labels;var level;var levels;var percents;var sortedLevels;var vectors;var _i;var _len;var _ref1;levels=lodash.map(column.histogram_bins,function(count,index){return{count,index};});sortedLevels=lodash.sortBy(levels,function(level){return-level.count;});_ref1=createArrays(3,sortedLevels.length),labels=_ref1[0],counts=_ref1[1],percents=_ref1[2];for(i=_i=0,_len=sortedLevels.length;_i<_len;i=++_i){level=sortedLevels[i];labels[i]=column.domain[level.index];counts[i]=level.count;percents[i]=100*level.count/rowCount;}vectors=[createFactor('label','String',labels),createVector('count','Number',counts),createVector('percent','Number',percents)];return createDataframe('domain',vectors,lodash.range(sortedLevels.length),null,{description:`Domain for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`,plot:`plot inspect \'domain\', getColumnSummary ${flowPrelude$6.stringify(frameKey)}, ${flowPrelude$6.stringify(columnName)}`});};inspections={characteristics:inspectCharacteristics};switch(column.type){case'int':case'real':if(column.histogram_bins.length){inspections.distribution=inspectDistribution;}if(!lodash.some(column.percentiles,function(a){return a==='NaN';})){inspections.summary=inspectSummary;inspections.percentiles=inspectPercentiles;}break;case'enum':inspections.domain=inspectDomain;}inspect_(frame,inspections);return render_(frame,h2oColumnSummaryOutput,frameKey,frame,columnName);};requestFrame=function(frameKey,go){return _.requestFrameSlice(frameKey,void 0,0,20,function(error,frame){if(error){return go(error);}return go(null,extendFrame(frameKey,frame));});};requestFrameData=function(frameKey,searchTerm,offset,count,go){return _.requestFrameSlice(frameKey,searchTerm,offset,count,function(error,frame){if(error){return go(error);}return go(null,extendFrameData(frameKey,frame));});};requestFrameSummarySlice=function(frameKey,searchTerm,offset,length,go){return _.requestFrameSummarySlice(frameKey,searchTerm,offset,length,function(error,frame){if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});};requestFrameSummary=function(frameKey,go){return _.requestFrameSummarySlice(frameKey,void 0,0,20,function(error,frame){if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});};requestColumnSummary=function(frameKey,columnName,go){return _.requestColumnSummary(frameKey,columnName,function(error,frame){if(error){return go(error);}return go(null,extendColumnSummary(frameKey,frame,columnName));});};requestFrames=function(go){return _.requestFrames(function(error,frames){if(error){return go(error);}return go(null,extendFrames(frames));});};requestCreateFrame=function(opts,go){return _.requestCreateFrame(opts,function(error,result){if(error){return go(error);}return _.requestJob(result.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};requestPartialDependence=function(opts,go){return _.requestPartialDependence(opts,function(error,result){if(error){return go(error);}return _.requestJob(result.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};requestPartialDependenceData=function(key,go){return _.requestPartialDependenceData(key,function(error,result){if(error){return go(error);}return go(null,extendPartialDependence(result));});};computeSplits=function(ratios,keys){var i;var key;var part;var parts;var ratio;var splits;var sum;var _i;var _j;var _len;var _len1;var _ref1;parts=[];sum=0;_ref1=keys.slice(0,ratios.length);for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){key=_ref1[i];sum+=ratio=ratios[i];parts.push({key,ratio});}parts.push({key:keys[keys.length-1],ratio:1-sum});splits=[];sum=0;for(_j=0,_len1=parts.length;_j<_len1;_j++){part=parts[_j];splits.push({min:sum,max:sum+part.ratio,key:part.key});sum+=part.ratio;}return splits;};requestBindFrames=function(key,sourceKeys,go){return _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`,function(error,result){if(error){return go(error);}return go(null,extendBindFrames(key,result));});};requestSplitFrame=function(frameKey,splitRatios,splitKeys,seed,go){var g;var i;var l;var part;var randomVecKey;var sliceExpr;var splits;var statements;var _i;var _len;if(splitRatios.length===splitKeys.length-1){splits=computeSplits(splitRatios,splitKeys);randomVecKey=createTempKey();statements=[];statements.push(`(tmp= ${randomVecKey} (h2o.runif ${frameKey} ${seed}))`);for(i=_i=0,_len=splits.length;_i<_len;i=++_i){part=splits[i];g=i!==0?`(> ${randomVecKey} ${part.min})`:null;l=i!==splits.length-1?`(<= ${randomVecKey} ${part.max})`:null;if(g&&l){sliceExpr=`(& ${g} ${l})`;}else{if(l){sliceExpr=l;}else{sliceExpr=g;}}statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);}statements.push(`(rm ${randomVecKey})`);return _.requestExec(`(, ${statements.join(' ')})`,function(error,result){if(error){return go(error);}return go(null,extendSplitFrameResult({keys:splitKeys,ratios:splitRatios}));});}return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));};requestMergeFrames=function(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows,go){var lr;var rr;var statement;lr=includeAllLeftRows?'TRUE':'FALSE';rr=includeAllRightRows?'TRUE':'FALSE';statement=`(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;return _.requestExec(statement,function(error,result){if(error){return go(error);}return go(null,extendMergeFramesResult({key:destinationKey}));});};createFrame=function(opts){if(opts){return _fork(requestCreateFrame,opts);}return assist(createFrame);};splitFrame=function(frameKey,splitRatios,splitKeys,seed){if(seed==null){seed=-1;}if(frameKey&&splitRatios&&splitKeys){return _fork(requestSplitFrame,frameKey,splitRatios,splitKeys,seed);}return assist(splitFrame);};mergeFrames=function(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows){if(destinationKey&&leftFrameKey&&rightFrameKey){return _fork(requestMergeFrames,destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows);}return assist(mergeFrames);};buildPartialDependence=function(opts){if(opts){return _fork(requestPartialDependence,opts);}return assist(buildPartialDependence);};getPartialDependence=function(destinationKey){if(destinationKey){return _fork(requestPartialDependenceData,destinationKey);}return assist(getPartialDependence);};getFrames=function(){return _fork(requestFrames);};getFrame=function(frameKey){switch(flowPrelude$6.typeOf(frameKey)){case'String':return _fork(requestFrame,frameKey);default:return assist(getFrame);}};bindFrames=function(key,sourceKeys){return _fork(requestBindFrames,key,sourceKeys);};getFrameSummary=function(frameKey){switch(flowPrelude$6.typeOf(frameKey)){case'String':return _fork(requestFrameSummary,frameKey);default:return assist(getFrameSummary);}};getFrameData=function(frameKey){switch(flowPrelude$6.typeOf(frameKey)){case'String':return _fork(requestFrameData,frameKey,void 0,0,20);default:return assist(getFrameSummary);}};requestDeleteFrame=function(frameKey,go){return _.requestDeleteFrame(frameKey,function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([frameKey]));});};deleteFrame=function(frameKey){if(frameKey){return _fork(requestDeleteFrame,frameKey);}return assist(deleteFrame);};extendExportFrame=function(result){return render_(result,h2oExportFrameOutput,result);};extendBindFrames=function(key,result){return render_(result,h2oBindFramesOutput,key,result);};requestExportFrame=function(frameKey,path,opts,go){return _.requestExportFrame(frameKey,path,opts.overwrite,function(error,result){if(error){return go(error);}return _.requestJob(result.job.key.name,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});});};exportFrame=function(frameKey,path,opts){if(opts==null){opts={};}if(frameKey&&path){return _fork(requestExportFrame,frameKey,path,opts);}return assist(exportFrame,frameKey,path,opts);};requestDeleteFrames=function(frameKeys,go){var futures;futures=lodash.map(frameKeys,function(frameKey){return _fork(_.requestDeleteFrame,frameKey);});return Flow.Async.join(futures,function(error,results){if(error){return go(error);}return go(null,extendDeletedKeys(frameKeys));});};deleteFrames=function(frameKeys){switch(frameKeys.length){case 0:return assist(deleteFrames);case 1:return deleteFrame(lodash.head(frameKeys));default:return _fork(requestDeleteFrames,frameKeys);}};getColumnSummary=function(frameKey,columnName){return _fork(requestColumnSummary,frameKey,columnName);};requestModels=function(go){return _.requestModels(function(error,models){if(error){return go(error);}return go(null,extendModels(models));});};requestModelsByKeys=function(modelKeys,go){var futures;futures=lodash.map(modelKeys,function(key){return _fork(_.requestModel,key);});return Flow.Async.join(futures,function(error,models){if(error){return go(error);}return go(null,extendModels(models));});};getModels=function(modelKeys){if(lodash.isArray(modelKeys)){if(modelKeys.length){return _fork(requestModelsByKeys,modelKeys);}return _fork(requestModels);}return _fork(requestModels);};requestGrids=function(go){return _.requestGrids(function(error,grids){if(error){return go(error);}return go(null,extendGrids(grids));});};getGrids=function(){return _fork(requestGrids);};requestModel=function(modelKey,go){return _.requestModel(modelKey,function(error,model){if(error){return go(error);}return go(null,extendModel(model));});};getModel=function(modelKey){switch(flowPrelude$6.typeOf(modelKey)){case'String':return _fork(requestModel,modelKey);default:return assist(getModel);}};requestGrid=function(gridKey,opts,go){return _.requestGrid(gridKey,opts,function(error,grid){if(error){return go(error);}return go(null,extendGrid(grid,opts));});};getGrid=function(gridKey,opts){switch(flowPrelude$6.typeOf(gridKey)){case'String':return _fork(requestGrid,gridKey,opts);default:return assist(getGrid);}};findColumnIndexByColumnLabel=function(frame,columnLabel){var column;var i;var _i;var _len;var _ref1;_ref1=frame.columns;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){column=_ref1[i];if(column.label===columnLabel){return i;}}throw new Flow.Error(`Column [${columnLabel}] not found in frame`);};findColumnIndicesByColumnLabels=function(frame,columnLabels){var columnLabel;var _i;var _len;var _results;_results=[];for(_i=0,_len=columnLabels.length;_i<_len;_i++){columnLabel=columnLabels[_i];_results.push(findColumnIndexByColumnLabel(frame,columnLabel));}return _results;};requestImputeColumn=function(opts,go){var column;var combineMethod;var frame;var groupByColumns;var method;frame=opts.frame,column=opts.column,method=opts.method,combineMethod=opts.combineMethod,groupByColumns=opts.groupByColumns;combineMethod=combineMethod!=null?combineMethod:'interpolate';return _.requestFrameSummaryWithoutData(frame,function(error,result){var columnIndex;var columnIndicesError;var columnKeyError;var groupByArg;var groupByColumnIndices;if(error){return go(error);}try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}if(groupByColumns&&groupByColumns.length){try{groupByColumnIndices=findColumnIndicesByColumnLabels(result,groupByColumns);}catch(_error){columnIndicesError=_error;return go(columnIndicesError);}}else{groupByColumnIndices=null;}groupByArg=groupByColumnIndices?`[${groupByColumnIndices.join(' ')}]`:'[]';return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`,function(error,result){if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};requestChangeColumnType=function(opts,go){var column;var frame;var method;var type;frame=opts.frame,column=opts.column,type=opts.type;method=type==='enum'?'as.factor':'as.numeric';return _.requestFrameSummaryWithoutData(frame,function(error,result){var columnIndex;var columnKeyError;try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`,function(error,result){if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};imputeColumn=function(opts){if(opts&&opts.frame&&opts.column&&opts.method){return _fork(requestImputeColumn,opts);}return assist(imputeColumn,opts);};changeColumnType=function(opts){if(opts&&opts.frame&&opts.column&&opts.type){return _fork(requestChangeColumnType,opts);}return assist(changeColumnType,opts);};requestDeleteModel=function(modelKey,go){return _.requestDeleteModel(modelKey,function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([modelKey]));});};deleteModel=function(modelKey){if(modelKey){return _fork(requestDeleteModel,modelKey);}return assist(deleteModel);};extendImportModel=function(result){return render_(result,H2O.ImportModelOutput,result);};requestImportModel=function(path,opts,go){return _.requestImportModel(path,opts.overwrite,function(error,result){if(error){return go(error);}return go(null,extendImportModel(result));});};importModel=function(path,opts){if(path&&path.length){return _fork(requestImportModel,path,opts);}return assist(importModel,path,opts);};extendExportModel=function(result){return render_(result,h2oExportModelOutput,result);};requestExportModel=function(modelKey,path,opts,go){return _.requestExportModel(modelKey,path,opts.overwrite,function(error,result){if(error){return go(error);}return go(null,extendExportModel(result));});};exportModel=function(modelKey,path,opts){if(modelKey&&path){return _fork(requestExportModel,modelKey,path,opts);}return assist(exportModel,modelKey,path,opts);};requestDeleteModels=function(modelKeys,go){var futures;futures=lodash.map(modelKeys,function(modelKey){return _fork(_.requestDeleteModel,modelKey);});return Flow.Async.join(futures,function(error,results){if(error){return go(error);}return go(null,extendDeletedKeys(modelKeys));});};deleteModels=function(modelKeys){switch(modelKeys.length){case 0:return assist(deleteModels);case 1:return deleteModel(lodash.head(modelKeys));default:return _fork(requestDeleteModels,modelKeys);}};requestJob=function(key,go){return _.requestJob(key,function(error,job){if(error){return go(error);}return go(null,extendJob(job));});};requestJobs=function(go){return _.requestJobs(function(error,jobs){if(error){return go(error);}return go(null,extendJobs(jobs));});};getJobs=function(){return _fork(requestJobs);};getJob=function(arg){switch(flowPrelude$6.typeOf(arg)){case'String':return _fork(requestJob,arg);case'Object':if(arg.key!=null){return getJob(arg.key);}return assist(getJob);// break; // no-unreachable
+  default:return assist(getJob);}};requestCancelJob=function(key,go){return _.requestCancelJob(key,function(error){if(error){return go(error);}return go(null,extendCancelJob({}));});};cancelJob=function(arg){switch(flowPrelude$6.typeOf(arg)){case'String':return _fork(requestCancelJob,arg);default:return assist(cancelJob);}};extendImportResults=function(importResults){return render_(importResults,h2oImportFilesOutput,importResults);};requestImportFiles=function(paths,go){return _.requestImportFiles(paths,function(error,importResults){if(error){return go(error);}return go(null,extendImportResults(importResults));});};importFiles=function(paths){switch(flowPrelude$6.typeOf(paths)){case'Array':return _fork(requestImportFiles,paths);default:return assist(importFiles);}};extendParseSetupResults=function(args,parseSetupResults){return render_(parseSetupResults,H2O.SetupParseOutput,args,parseSetupResults);};requestImportAndParseSetup=function(paths,go){return _.requestImportFiles(paths,function(error,importResults){var sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,function(result){return result.destination_frames;})));return _.requestParseSetup(sourceKeys,function(error,parseSetupResults){if(error){return go(error);}return go(null,extendParseSetupResults({paths},parseSetupResults));});});};requestParseSetup=function(sourceKeys,go){return _.requestParseSetup(sourceKeys,function(error,parseSetupResults){if(error){return go(error);}return go(null,extendParseSetupResults({source_frames:sourceKeys},parseSetupResults));});};setupParse=function(args){if(args.paths&&lodash.isArray(args.paths)){return _fork(requestImportAndParseSetup,args.paths);}else if(args.source_frames&&lodash.isArray(args.source_frames)){return _fork(requestParseSetup,args.source_frames);}return assist(setupParse);};extendParseResult=function(parseResult){return render_(parseResult,H2O.JobOutput,parseResult.job);};requestImportAndParseFiles=function(paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){return _.requestImportFiles(paths,function(error,importResults){var sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,function(result){return result.destination_frames;})));return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,function(error,parseResult){if(error){return go(error);}return go(null,extendParseResult(parseResult));});});};requestParseFiles=function(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go){return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,function(error,parseResult){if(error){return go(error);}return go(null,extendParseResult(parseResult));});};parseFiles=function(opts){var checkHeader;var chunkSize;var columnCount;var columnNames;var columnTypes;var deleteOnDone;var destinationKey;var parseType;var separator;var useSingleQuotes;destinationKey=opts.destination_frame;parseType=opts.parse_type;separator=opts.separator;columnCount=opts.number_columns;useSingleQuotes=opts.single_quotes;columnNames=opts.column_names;columnTypes=opts.column_types;deleteOnDone=opts.delete_on_done;checkHeader=opts.check_header;chunkSize=opts.chunk_size;if(opts.paths){return _fork(requestImportAndParseFiles,opts.paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);}return _fork(requestParseFiles,opts.source_frames,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);};requestModelBuild=function(algo,opts,go){return _.requestModelBuild(algo,opts,function(error,result){var messages;var validation;if(error){return go(error);}if(result.error_count>0){messages=function(){var _i;var _len;var _ref1;var _results;_ref1=result.messages;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){validation=_ref1[_i];_results.push(validation.message);}return _results;}();return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));}return go(null,extendJob(result.job));});};requestAutoModelBuild=function(opts,go){var params;params={input_spec:{training_frame:opts.frame,response_column:opts.column},build_control:{stopping_criteria:{max_runtime_secs:opts.maxRunTime}}};return _.requestAutoModelBuild(params,function(error,result){if(error){return go(error);}return go(null,extendJob(result.job));});};buildAutoModel=function(opts){if(opts&&lodash.keys(opts).length>1){return _fork(requestAutoModelBuild,opts);}return assist(buildAutoModel,opts);};buildModel=function(algo,opts){if(algo&&opts&&lodash.keys(opts).length>1){return _fork(requestModelBuild,algo,opts);}return assist(buildModel,algo,opts);};unwrapPrediction=function(go){return function(error,result){if(error){return go(error);}return go(null,extendPrediction(result));};};requestPredict=function(destinationKey,modelKey,frameKey,options,go){return _.requestPredict(destinationKey,modelKey,frameKey,options,unwrapPrediction(go));};requestPredicts=function(opts,go){var futures;futures=lodash.map(opts,function(opt){var frameKey;var modelKey;var options;modelKey=opt.model,frameKey=opt.frame,options=opt.options;return _fork(_.requestPredict,null,modelKey,frameKey,options||{});});return Flow.Async.join(futures,function(error,predictions){if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};predict=function(opts){var combos;var deep_features_hidden_layer;var exemplar_index;var frame;var frames;var leaf_node_assignment;var model;var models;var predictions_frame;var reconstruction_error;var _i;var _j;var _len;var _len1;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,models=opts.models,frame=opts.frame,frames=opts.frames,reconstruction_error=opts.reconstruction_error,deep_features_hidden_layer=opts.deep_features_hidden_layer,leaf_node_assignment=opts.leaf_node_assignment,exemplar_index=opts.exemplar_index;if(models||frames){if(!models){if(model){models=[model];}}if(!frames){if(frame){frames=[frame];}}if(frames&&models){combos=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];for(_j=0,_len1=frames.length;_j<_len1;_j++){frame=frames[_j];combos.push({model,frame});}}return _fork(requestPredicts,combos);}return assist(predict,{predictions_frame,models,frames});}if(model&&frame){return _fork(requestPredict,predictions_frame,model,frame,{reconstruction_error,deep_features_hidden_layer,leaf_node_assignment});}else if(model&&exemplar_index!==void 0){return _fork(requestPredict,predictions_frame,model,null,{exemplar_index});}return assist(predict,{predictions_frame,model,frame});};requestPrediction=function(modelKey,frameKey,go){return _.requestPrediction(modelKey,frameKey,unwrapPrediction(go));};requestPredictions=function(opts,go){var frameKey;var futures;var modelKey;if(lodash.isArray(opts)){futures=lodash.map(opts,function(opt){var frameKey;var modelKey;modelKey=opt.model,frameKey=opt.frame;return _fork(_.requestPredictions,modelKey,frameKey);});return Flow.Async.join(futures,function(error,predictions){var uniquePredictions;if(error){return go(error);}uniquePredictions=lodash.values(lodash.indexBy(lodash.flatten(predictions,true),function(prediction){return prediction.model.name+prediction.frame.name;}));return go(null,extendPredictions(opts,uniquePredictions));});}modelKey=opts.model,frameKey=opts.frame;return _.requestPredictions(modelKey,frameKey,function(error,predictions){if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};getPrediction=function(opts){var frame;var model;var predictions_frame;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,frame=opts.frame;if(model&&frame){return _fork(requestPrediction,model,frame);}return assist(getPrediction,{predictions_frame,model,frame});};getPredictions=function(opts){if(opts==null){opts={};}return _fork(requestPredictions,opts);};requestCloud=function(go){return _.requestCloud(function(error,cloud){if(error){return go(error);}return go(null,extendCloud(cloud));});};getCloud=function(){return _fork(requestCloud);};requestTimeline=function(go){return _.requestTimeline(function(error,timeline){if(error){return go(error);}return go(null,extendTimeline(timeline));});};getTimeline=function(){return _fork(requestTimeline);};requestStackTrace=function(go){return _.requestStackTrace(function(error,stackTrace){if(error){return go(error);}return go(null,extendStackTrace(stackTrace));});};getStackTrace=function(){return _fork(requestStackTrace);};requestLogFile=function(nodeIndex,fileType,go){return _.requestCloud(function(error,cloud){var NODE_INDEX_SELF;if(error){return go(error);}if(nodeIndex<0||nodeIndex>=cloud.nodes.length){NODE_INDEX_SELF=-1;nodeIndex=NODE_INDEX_SELF;}return _.requestLogFile(nodeIndex,fileType,function(error,logFile){if(error){return go(error);}return go(null,extendLogFile(cloud,nodeIndex,fileType,logFile));});});};getLogFile=function(nodeIndex,fileType){if(nodeIndex==null){nodeIndex=-1;}if(fileType==null){fileType='info';}return _fork(requestLogFile,nodeIndex,fileType);};requestNetworkTest=function(go){return _.requestNetworkTest(function(error,result){if(error){return go(error);}return go(null,extendNetworkTest(result));});};testNetwork=function(){return _fork(requestNetworkTest);};requestRemoveAll=function(go){return _.requestRemoveAll(function(error,result){if(error){return go(error);}return go(null,extendDeletedKeys([]));});};deleteAll=function(){return _fork(requestRemoveAll);};extendRDDs=function(rdds){render_(rdds,h2oRDDsOutput,rdds);return rdds;};requestRDDs=function(go){return _.requestRDDs(function(error,result){if(error){return go(error);}return go(null,extendRDDs(result.rdds));});};getRDDs=function(){return _fork(requestRDDs);};extendDataFrames=function(dataframes){render_(dataframes,h2oDataFramesOutput,dataframes);return dataframes;};requestDataFrames=function(go){return _.requestDataFrames(function(error,result){if(error){return go(error);}return go(null,extendDataFrames(result.dataframes));});};getDataFrames=function(){return _fork(requestDataFrames);};extendAsH2OFrame=function(result){render_(result,h2oH2OFrameOutput,result);return result;};requestAsH2OFrameFromRDD=function(rdd_id,name,go){return _.requestAsH2OFrameFromRDD(rdd_id,name,function(error,h2oframe_id){if(error){return go(error);}return go(null,extendAsH2OFrame(h2oframe_id));});};asH2OFrameFromRDD=function(rdd_id,name){if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromRDD,rdd_id,name);};requestAsH2OFrameFromDF=function(df_id,name,go){return _.requestAsH2OFrameFromDF(df_id,name,function(error,result){if(error){return go(error);}return go(null,extendAsH2OFrame(result));});};asH2OFrameFromDF=function(df_id,name){if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromDF,df_id,name);};extendAsDataFrame=function(result){render_(result,h2oDataFrameOutput,result);return result;};requestAsDataFrame=function(hf_id,name,go){return _.requestAsDataFrame(hf_id,name,function(error,result){if(error){return go(error);}return go(null,extendAsDataFrame(result));});};asDataFrame=function(hf_id,name){if(name==null){name=void 0;}return _fork(requestAsDataFrame,hf_id,name);};requestScalaCode=function(session_id,code,go){return _.requestScalaCode(session_id,code,function(error,result){if(error){return go(error);}return go(null,extendScalaCode(result));});};extendScalaCode=function(result){render_(result,h2oScalaCodeOutput,result);return result;};runScalaCode=function(session_id,code){return _fork(requestScalaCode,session_id,code);};requestScalaIntp=function(go){return _.requestScalaIntp(function(error,result){if(error){return go(error);}return go(null,extendScalaIntp(result));});};extendScalaIntp=function(result){render_(result,h2oScalaIntpOutput,result);return result;};getScalaIntp=function(){return _fork(requestScalaIntp);};requestProfile=function(depth,go){return _.requestProfile(depth,function(error,profile){if(error){return go(error);}return go(null,extendProfile(profile));});};getProfile=function(opts){if(!opts){opts={depth:10};}return _fork(requestProfile,opts.depth);};loadScript=function(path,go){var onDone;var onFail;onDone=function(script,status){return go(null,{script,status});};onFail=function(jqxhr,settings,error){return go(error);};return $.getScript(path).done(onDone).fail(onFail);};dumpFuture=function(result,go){if(result==null){result={};}console.debug(result);return go(null,render_(result,Flow.ObjectBrowser,'dump',result));};dump=function(f){if(f!=null?f.isFuture:void 0){return _fork(dumpFuture,f);}return Flow.Async.async(function(){return f;});};assist=function(){var args;var func;func=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];if(func===void 0){return _fork(proceed,h2oAssist,[_assistance]);}switch(func){case importFiles:return _fork(proceed,h2oImportFilesInput,[]);case buildModel:return _fork(proceed,H2O.ModelInput,args);case buildAutoModel:return _fork(proceed,h2oAutoModelInput,args);case predict:case getPrediction:return _fork(proceed,h2oPredictInput,args);case createFrame:return _fork(proceed,h2oCreateFrameInput,args);case splitFrame:return _fork(proceed,h2oSplitFrameInput,args);case mergeFrames:return _fork(proceed,h2oMergeFramesInput,args);case buildPartialDependence:return _fork(proceed,h2oPartialDependenceInput,args);case exportFrame:return _fork(proceed,h2oExportFrameInput,args);case imputeColumn:return _fork(proceed,H2O.ImputeInput,args);case importModel:return _fork(proceed,h2oImportModelInput,args);case exportModel:return _fork(proceed,h2oExportModelInput,args);default:return _fork(proceed,h2oNoAssist,[]);}};Flow.Dataflow.link(_.ready,function(){Flow.Dataflow.link(_.ls,ls);Flow.Dataflow.link(_.inspect,inspect);Flow.Dataflow.link(_.plot,function(plot){return plot(lightning);});Flow.Dataflow.link(_.grid,function(frame){return lightning(lightning.select(),lightning.from(frame));});Flow.Dataflow.link(_.enumerate,function(frame){return lightning(lightning.select(0),lightning.from(frame));});Flow.Dataflow.link(_.requestFrameDataE,requestFrameData);return Flow.Dataflow.link(_.requestFrameSummarySliceE,requestFrameSummarySlice);});initAssistanceSparklingWater=function(){_assistance.getRDDs={description:'Get a list of Spark\'s RDDs',icon:'table'};return _assistance.getDataFrames={description:'Get a list of Spark\'s data frames',icon:'table'};};Flow.Dataflow.link(_.initialized,function(){if(_.onSparklingWater){return initAssistanceSparklingWater();}});routines={fork:_fork,join:_join,call:_call,apply:_apply,isFuture:_isFuture,signal:Flow.Dataflow.signal,signals:Flow.Dataflow.signals,isSignal:Flow.Dataflow.isSignal,act:Flow.Dataflow.act,react:Flow.Dataflow.react,lift:Flow.Dataflow.lift,merge:Flow.Dataflow.merge,dump,inspect,plot,grid,get:_get,assist,gui,loadScript,getJobs,getJob,cancelJob,importFiles,setupParse,parseFiles,createFrame,splitFrame,mergeFrames,buildPartialDependence,getPartialDependence,getFrames,getFrame,bindFrames,getFrameSummary,getFrameData,deleteFrames,deleteFrame,exportFrame,getColumnSummary,changeColumnType,imputeColumn,buildModel,buildAutoModel,getGrids,getModels,getModel,getGrid,deleteModels,deleteModel,importModel,exportModel,predict,getPrediction,getPredictions,getCloud,getTimeline,getProfile,getStackTrace,getLogFile,testNetwork,deleteAll};if(_.onSparklingWater){routinesOnSw={getDataFrames,getRDDs,getScalaIntp,runScalaCode,asH2OFrameFromRDD,asH2OFrameFromDF,asDataFrame};for(attrname in routinesOnSw){if({}.hasOwnProperty.call(routinesOnSw,attrname)){routines[attrname]=routinesOnSw[attrname];}}}return routines;};}
 
   function coreUtils() {
     var lodash = window._;
@@ -6508,7 +6507,7 @@
     };
   }
 
-  const flowPrelude$33 = flowPreludeFunction();
+  const flowPrelude$34 = flowPreludeFunction();
 
   function dataflow() {
     var lodash = window._;
@@ -6579,13 +6578,13 @@
           arrows.push(arrow = {
             func,
             dispose() {
-              return flowPrelude$33.remove(arrows, arrow);
+              return flowPrelude$34.remove(arrows, arrow);
             }
           });
           return arrow;
         };
         self.dispose = function () {
-          return lodash.forEach(flowPrelude$33.copy(arrows), function (arrow) {
+          return lodash.forEach(flowPrelude$34.copy(arrows), function (arrow) {
             return arrow.dispose();
           });
         };
@@ -6629,7 +6628,7 @@
             arrows.push(arrow = {
               func,
               dispose() {
-                return flowPrelude$33.remove(arrows, arrow);
+                return flowPrelude$34.remove(arrows, arrow);
               }
             });
             return arrow;
@@ -6648,7 +6647,7 @@
       createSignal = function (value, equalityComparer) {
         var observable;
         if (arguments.length === 0) {
-          return createSignal(void 0, flowPrelude$33.never);
+          return createSignal(void 0, flowPrelude$34.never);
         }
         observable = createObservable(value);
         if (lodash.isFunction(equalityComparer)) {
@@ -7079,7 +7078,7 @@
     };
   }
 
-  const flowPrelude$34 = flowPreludeFunction();
+  const flowPrelude$35 = flowPreludeFunction();
 
   function async() {
     var lodash = window._;
@@ -7358,9 +7357,9 @@
       switch (args.length) {
         case 3:
           a = args[0], b = args[1], c = args[2];
-          ta = flowPrelude$34.typeOf(a);
-          tb = flowPrelude$34.typeOf(b);
-          tc = flowPrelude$34.typeOf(c);
+          ta = flowPrelude$35.typeOf(a);
+          tb = flowPrelude$35.typeOf(b);
+          tc = flowPrelude$35.typeOf(c);
           if (ta === 'Array' && tb === 'String') {
             return _find$3(b, c, a);
           } else if (ta === 'String' && (tc = 'Array')) {
@@ -7407,7 +7406,7 @@
     };
   }
 
-  const flowPrelude$35 = flowPreludeFunction();
+  const flowPrelude$36 = flowPreludeFunction();
 
   function objectBrowser() {
     var lodash = window._;
@@ -7481,7 +7480,7 @@
       if (recurse == null) {
         recurse = false;
       }
-      type = flowPrelude$35.typeOf(element);
+      type = flowPrelude$36.typeOf(element);
       switch (type) {
         case 'Boolean':
         case 'String':
@@ -7515,7 +7514,7 @@
       var _type;
       _expansions = Flow.Dataflow.signal(null);
       _isExpanded = Flow.Dataflow.signal(false);
-      _type = flowPrelude$35.typeOf(object);
+      _type = flowPrelude$36.typeOf(object);
       _canExpand = isExpandable(_type);
       toggle = function () {
         var expansions;
@@ -8889,7 +8888,7 @@
     return render;
   };
 
-  const flowPrelude$36 = flowPreludeFunction();
+  const flowPrelude$37 = flowPreludeFunction();
 
   function notebook() {
     var lodash = window._;
@@ -9461,7 +9460,7 @@
               return _.growl((_ref = error.message) != null ? _ref : error);
             }
             _.growl('File uploaded successfully!');
-            return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$36.stringify(result.result.destination_frame) }]`);
+            return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$37.stringify(result.result.destination_frame) }]`);
           }
         });
       };
@@ -9746,7 +9745,7 @@
       initializeMenus = function (builder) {
         var modelMenuItems;
         modelMenuItems = lodash.map(builder, function (builder) {
-          return createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$36.stringify(builder.algo) }`));
+          return createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$37.stringify(builder.algo) }`));
         }).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
         return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')), createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')), createMenuItem('Shut Down', shutdown)]), createMenu('Help', [createMenuItem('Assist Me', executeCommand('assist')), menuDivider, createMenuItem('Contents', showHelp), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider, createMenuItem('About', displayAbout)])];
       };
@@ -9897,7 +9896,7 @@
     };
   }
 
-  const flowPrelude$37 = flowPreludeFunction();
+  const flowPrelude$38 = flowPreludeFunction();
 
   function clipboard() {
     var lodash = window._;
@@ -9953,7 +9952,7 @@
         insert = function () {
           return _.insertCell(_type, _input);
         };
-        flowPrelude$37.remove = function () {
+        flowPrelude$38.remove = function () {
           if (_canRemove) {
             return removeClip(_list, self);
           }
@@ -9963,7 +9962,7 @@
           input: _input,
           execute,
           insert,
-          remove: flowPrelude$37.remove,
+          remove: flowPrelude$38.remove,
           canRemove: _canRemove
         };
       };
@@ -10298,9 +10297,958 @@
     return _.requestAsDataFrame = Flow.Dataflow.slot();
   };
 
+  function h2oProxy(_) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    var cacheModelBuilders;
+    var composePath;
+    var doDelete;
+    var doGet;
+    var doPost;
+    var doPostJSON;
+    var doPut;
+    var doUpload;
+    var download;
+    var encodeArrayForPost;
+    var encodeObject;
+    var encodeObjectForPost;
+    var getGridModelBuilderEndpoint;
+    var getLines;
+    var getModelBuilderEndpoint;
+    var getModelBuilders;
+    var http;
+    var mapWithKey;
+    var optsToString;
+    var requestAbout;
+    var requestAsDataFrame;
+    var requestAsH2OFrameFromDF;
+    var requestAsH2OFrameFromRDD;
+    var requestAutoModelBuild;
+    var requestCancelJob;
+    var requestCloud;
+    var requestColumnSummary;
+    var requestCreateFrame;
+    var requestDataFrames;
+    var requestDeleteFrame;
+    var requestDeleteModel;
+    var requestDeleteObject;
+    var requestEcho;
+    var requestEndpoint;
+    var requestEndpoints;
+    var requestExec;
+    var requestExportFrame;
+    var requestExportModel;
+    var requestFileGlob;
+    var requestFlow;
+    var requestFrame;
+    var requestFrameSlice;
+    var requestFrameSummary;
+    var requestFrameSummarySlice;
+    var requestFrameSummaryWithoutData;
+    var requestFrames;
+    var requestGrid;
+    var requestGrids;
+    var requestHelpContent;
+    var requestHelpIndex;
+    var requestImportFile;
+    var requestImportFiles;
+    var requestImportModel;
+    var requestInspect;
+    var requestIsStorageConfigured;
+    var requestJob;
+    var requestJobs;
+    var requestLogFile;
+    var requestModel;
+    var requestModelBuild;
+    var requestModelBuilder;
+    var requestModelBuilders;
+    var requestModelBuildersVisibility;
+    var requestModelInputValidation;
+    var requestModels;
+    var requestNetworkTest;
+    var requestObject;
+    var requestObjectExists;
+    var requestObjects;
+    var requestPack;
+    var requestPacks;
+    var requestParseFiles;
+    var requestParseSetup;
+    var requestParseSetupPreview;
+    var requestPartialDependence;
+    var requestPartialDependenceData;
+    var requestPojoPreview;
+    var requestPredict;
+    var requestPrediction;
+    var requestPredictions;
+    var requestProfile;
+    var requestPutObject;
+    var requestRDDs;
+    var requestRemoveAll;
+    var requestScalaCode;
+    var requestScalaIntp;
+    var requestSchema;
+    var requestSchemas;
+    var requestShutdown;
+    var requestSplitFrame;
+    var requestStackTrace;
+    var requestTimeline;
+    var requestUploadFile;
+    var requestUploadObject;
+    var requestWithOpts;
+    var trackPath;
+    var unwrap;
+    var __gridModelBuilderEndpoints;
+    var __modelBuilderEndpoints;
+    var __modelBuilders;
+    var _storageConfiguration;
+    download = function (type, url, go) {
+      if (url.substring(0, 1) === '/') {
+        url = window.Flow.ContextPath + url.substring(1);
+      }
+      return $.ajax({
+        dataType: type,
+        url,
+        success(data, status, xhr) {
+          return go(null, data);
+        },
+        error(xhr, status, error) {
+          return go(new Flow.Error(error));
+        }
+      });
+    };
+    optsToString = function (opts) {
+      var str;
+      if (opts != null) {
+        str = ` with opts ${ JSON.stringify(opts) }`;
+        if (str.length > 50) {
+          return `${ str.substr(0, 50) }...`;
+        }
+        return str;
+      }
+      return '';
+    };
+    http = function (method, path, opts, go) {
+      var req;
+      if (path.substring(0, 1) === '/') {
+        path = window.Flow.ContextPath + path.substring(1);
+      }
+      _.status('server', 'request', path);
+      trackPath(path);
+      req = function () {
+        switch (method) {
+          case 'GET':
+            return $.getJSON(path);
+          case 'POST':
+            return $.post(path, opts);
+          case 'POSTJSON':
+            return $.ajax({
+              url: path,
+              type: 'POST',
+              contentType: 'application/json',
+              cache: false,
+              data: JSON.stringify(opts)
+            });
+          case 'PUT':
+            return $.ajax({
+              url: path,
+              type: method,
+              data: opts
+            });
+          case 'DELETE':
+            return $.ajax({
+              url: path,
+              type: method
+            });
+          case 'UPLOAD':
+            return $.ajax({
+              url: path,
+              type: 'POST',
+              data: opts,
+              cache: false,
+              contentType: false,
+              processData: false
+            });
+        }
+      }();
+      req.done(function (data, status, xhr) {
+        var error;
+        _.status('server', 'response', path);
+        try {
+          return go(null, data);
+        } catch (_error) {
+          error = _error;
+          return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
+        }
+      });
+      return req.fail(function (xhr, status, error) {
+        var cause;
+        var meta;
+        var response;
+        var serverError;
+        _.status('server', 'error', path);
+        response = xhr.responseJSON;
+        cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+        return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
+      });
+    };
+    doGet = function (path, go) {
+      return http('GET', path, null, go);
+    };
+    doPost = function (path, opts, go) {
+      return http('POST', path, opts, go);
+    };
+    doPostJSON = function (path, opts, go) {
+      return http('POSTJSON', path, opts, go);
+    };
+    doPut = function (path, opts, go) {
+      return http('PUT', path, opts, go);
+    };
+    doUpload = function (path, formData, go) {
+      return http('UPLOAD', path, formData, go);
+    };
+    doDelete = function (path, go) {
+      return http('DELETE', path, null, go);
+    };
+    trackPath = function (path) {
+      var base;
+      var e;
+      var name;
+      var other;
+      var root;
+      var version;
+      var _ref;
+      var _ref1;
+      try {
+        _ref = path.split('/'), root = _ref[0], version = _ref[1], name = _ref[2];
+        _ref1 = name.split('?'), base = _ref1[0], other = _ref1[1];
+        if (base !== 'Typeahead' && base !== 'Jobs') {
+          _.trackEvent('api', base, version);
+        }
+      } catch (_error) {
+        e = _error;
+      }
+    };
+    mapWithKey = function (obj, f) {
+      var key;
+      var result;
+      var value;
+      result = [];
+      for (key in obj) {
+        if ({}.hasOwnProperty.call(obj, key)) {
+          value = obj[key];
+          result.push(f(value, key));
+        }
+      }
+      return result;
+    };
+    composePath = function (path, opts) {
+      var params;
+      if (opts) {
+        params = mapWithKey(opts, function (v, k) {
+          return `${ k }=${ v }`;
+        });
+        return `${ path }?${ params.join('&') }`;
+      }
+      return path;
+    };
+    requestWithOpts = function (path, opts, go) {
+      return doGet(composePath(path, opts), go);
+    };
+    encodeArrayForPost = function (array) {
+      if (array) {
+        if (array.length === 0) {
+          return null;
+        }
+        return `[${ lodash.map(array, element => {
+          if (lodash.isNumber(element)) {
+            return element;
+          }return `"${ element }"`;
+        }).join(',') } ]`;
+      }
+      return null;
+    };
+    encodeObject = function (source) {
+      var k;
+      var target;
+      var v;
+      target = {};
+      for (k in source) {
+        if ({}.hasOwnProperty.call(source, k)) {
+          v = source[k];
+          target[k] = encodeURIComponent(v);
+        }
+      }
+      return target;
+    };
+    encodeObjectForPost = function (source) {
+      var k;
+      var target;
+      var v;
+      target = {};
+      for (k in source) {
+        if ({}.hasOwnProperty.call(source, k)) {
+          v = source[k];
+          target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
+        }
+      }
+      return target;
+    };
+    unwrap = function (go, transform) {
+      return function (error, result) {
+        if (error) {
+          return go(error);
+        }
+        return go(null, transform(result));
+      };
+    };
+    requestExec = function (ast, go) {
+      return doPost('/99/Rapids', { ast }, function (error, result) {
+        if (error) {
+          return go(error);
+        }
+        if (result.error) {
+          return go(new Flow.Error(result.error));
+        }
+        return go(null, result);
+      });
+    };
+    requestInspect = function (key, go) {
+      var opts;
+      opts = { key: encodeURIComponent(key) };
+      return requestWithOpts('/3/Inspect', opts, go);
+    };
+    requestCreateFrame = function (opts, go) {
+      return doPost('/3/CreateFrame', opts, go);
+    };
+    requestSplitFrame = function (frameKey, splitRatios, splitKeys, go) {
+      var opts;
+      opts = {
+        dataset: frameKey,
+        ratios: encodeArrayForPost(splitRatios),
+        dest_keys: encodeArrayForPost(splitKeys)
+      };
+      return doPost('/3/SplitFrame', opts, go);
+    };
+    requestFrames = function (go) {
+      return doGet('/3/Frames', function (error, result) {
+        if (error) {
+          return go(error);
+        }
+        return go(null, result.frames);
+      });
+    };
+    requestFrame = function (key, go) {
+      return doGet(`/3/Frames/${ encodeURIComponent(key) }`, unwrap(go, function (result) {
+        return lodash.head(result.frames);
+      }));
+    };
+    requestFrameSlice = function (key, searchTerm, offset, count, go) {
+      return doGet(`/3/Frames/${ encodeURIComponent(key) }?column_offset=${ offset }&column_count=${ count }`, unwrap(go, function (result) {
+        return lodash.head(result.frames);
+      }));
+    };
+    requestFrameSummary = function (key, go) {
+      return doGet(`/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, function (result) {
+        return lodash.head(result.frames);
+      }));
+    };
+    requestFrameSummarySlice = function (key, searchTerm, offset, count, go) {
+      return doGet(`/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, function (result) {
+        return lodash.head(result.frames);
+      }));
+    };
+    requestFrameSummaryWithoutData = function (key, go) {
+      return doGet(`/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, function (error, result) {
+        if (error) {
+          return go(error);
+        }
+        return go(null, lodash.head(result.frames));
+      });
+    };
+    requestDeleteFrame = function (key, go) {
+      return doDelete(`/3/Frames/${ encodeURIComponent(key) }`, go);
+    };
+    requestExportFrame = function (key, path, overwrite, go) {
+      var params;
+      params = {
+        path,
+        force: overwrite ? 'true' : 'false'
+      };
+      return doPost(`/3/Frames/${ encodeURIComponent(key) }/export`, params, go);
+    };
+    requestColumnSummary = function (frameKey, column, go) {
+      return doGet(`/3/Frames/${ encodeURIComponent(frameKey) }/columns/${ encodeURIComponent(column) }/summary`, unwrap(go, function (result) {
+        return lodash.head(result.frames);
+      }));
+    };
+    requestJobs = function (go) {
+      return doGet('/3/Jobs', function (error, result) {
+        if (error) {
+          return go(new Flow.Error('Error fetching jobs', error));
+        }
+        return go(null, result.jobs);
+      });
+    };
+    requestJob = function (key, go) {
+      return doGet(`/3/Jobs/${ encodeURIComponent(key) }`, function (error, result) {
+        if (error) {
+          return go(new Flow.Error(`Error fetching job \'${ key }\'`, error));
+        }
+        return go(null, lodash.head(result.jobs));
+      });
+    };
+    requestCancelJob = function (key, go) {
+      return doPost(`/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, function (error, result) {
+        if (error) {
+          return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
+        }
+        return go(null);
+      });
+    };
+    requestFileGlob = function (path, limit, go) {
+      var opts;
+      opts = {
+        src: encodeURIComponent(path),
+        limit
+      };
+      return requestWithOpts('/3/Typeahead/files', opts, go);
+    };
+    requestImportFiles = function (paths, go) {
+      var tasks;
+      tasks = lodash.map(paths, function (path) {
+        return function (go) {
+          return requestImportFile(path, go);
+        };
+      });
+      return Flow.Async.iterate(tasks)(go);
+    };
+    requestImportFile = function (path, go) {
+      var opts;
+      opts = { path: encodeURIComponent(path) };
+      return requestWithOpts('/3/ImportFiles', opts, go);
+    };
+    requestParseSetup = function (sourceKeys, go) {
+      var opts;
+      opts = { source_frames: encodeArrayForPost(sourceKeys) };
+      return doPost('/3/ParseSetup', opts, go);
+    };
+    requestParseSetupPreview = function (sourceKeys, parseType, separator, useSingleQuotes, checkHeader, columnTypes, go) {
+      var opts;
+      opts = {
+        source_frames: encodeArrayForPost(sourceKeys),
+        parse_type: parseType,
+        separator,
+        single_quotes: useSingleQuotes,
+        check_header: checkHeader,
+        column_types: encodeArrayForPost(columnTypes)
+      };
+      return doPost('/3/ParseSetup', opts, go);
+    };
+    requestParseFiles = function (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
+      var opts;
+      opts = {
+        destination_frame: destinationKey,
+        source_frames: encodeArrayForPost(sourceKeys),
+        parse_type: parseType,
+        separator,
+        number_columns: columnCount,
+        single_quotes: useSingleQuotes,
+        column_names: encodeArrayForPost(columnNames),
+        column_types: encodeArrayForPost(columnTypes),
+        check_header: checkHeader,
+        delete_on_done: deleteOnDone,
+        chunk_size: chunkSize
+      };
+      return doPost('/3/Parse', opts, go);
+    };
+    requestPartialDependence = function (opts, go) {
+      return doPost('/3/PartialDependence/', opts, go);
+    };
+    requestPartialDependenceData = function (key, go) {
+      return doGet(`/3/PartialDependence/${ encodeURIComponent(key) }`, function (error, result) {
+        if (error) {
+          return go(error, result);
+        }
+        return go(error, result);
+      });
+    };
+    requestGrids = function (go, opts) {
+      return doGet('/99/Grids', function (error, result) {
+        if (error) {
+          return go(error, result);
+        }
+        return go(error, result.grids);
+      });
+    };
+    requestModels = function (go, opts) {
+      return requestWithOpts('/3/Models', opts, function (error, result) {
+        if (error) {
+          return go(error, result);
+        }
+        return go(error, result.models);
+      });
+    };
+    requestGrid = function (key, opts, go) {
+      var params;
+      params = void 0;
+      if (opts) {
+        params = {};
+        if (opts.sort_by) {
+          params.sort_by = encodeURIComponent(opts.sort_by);
+        }
+        if (opts.decreasing === true || opts.decreasing === false) {
+          params.decreasing = opts.decreasing;
+        }
+      }
+      return doGet(composePath(`/99/Grids/' + ${ encodeURIComponent(key) }`, params), go);
+    };
+    requestModel = function (key, go) {
+      return doGet(`/3/Models/${ encodeURIComponent(key) }`, function (error, result) {
+        if (error) {
+          return go(error, result);
+        }
+        return go(error, lodash.head(result.models));
+      });
+    };
+    requestPojoPreview = function (key, go) {
+      return download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
+    };
+    requestDeleteModel = function (key, go) {
+      return doDelete(`/3/Models/${ encodeURIComponent(key) }`, go);
+    };
+    requestImportModel = function (path, overwrite, go) {
+      var opts;
+      opts = {
+        dir: path,
+        force: overwrite
+      };
+      return doPost('/99/Models.bin/not_in_use', opts, go);
+    };
+    requestExportModel = function (key, path, overwrite, go) {
+      return doGet(`/99/Models.bin/${ encodeURIComponent(key) }?dir=${ encodeURIComponent(path) }&force=${ overwrite }`, go);
+    };
+    requestModelBuildersVisibility = function (go) {
+      return doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, function (result) {
+        return result.value;
+      }));
+    };
+    __modelBuilders = null;
+    __modelBuilderEndpoints = null;
+    __gridModelBuilderEndpoints = null;
+    cacheModelBuilders = function (modelBuilders) {
+      var gridModelBuilderEndpoints;
+      var modelBuilder;
+      var modelBuilderEndpoints;
+      var _i;
+      var _len;
+      modelBuilderEndpoints = {};
+      gridModelBuilderEndpoints = {};
+      for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
+        modelBuilder = modelBuilders[_i];
+        modelBuilderEndpoints[modelBuilder.algo] = `/${ modelBuilder.__meta.schema_version }/ModelBuilders/${ modelBuilder.algo }`;
+        gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${ modelBuilder.algo }`;
+      }
+      __modelBuilderEndpoints = modelBuilderEndpoints;
+      __gridModelBuilderEndpoints = gridModelBuilderEndpoints;
+      return __modelBuilders = modelBuilders;
+    };
+    getModelBuilders = function () {
+      return __modelBuilders;
+    };
+    getModelBuilderEndpoint = function (algo) {
+      return __modelBuilderEndpoints[algo];
+    };
+    getGridModelBuilderEndpoint = function (algo) {
+      return __gridModelBuilderEndpoints[algo];
+    };
+    requestModelBuilders = function (go) {
+      var modelBuilders;
+      var visibility;
+      if (modelBuilders = getModelBuilders()) {
+        return go(null, modelBuilders);
+      }
+      visibility = 'Stable';
+      return doGet('/3/ModelBuilders', unwrap(go, function (result) {
+        var algo;
+        var availableBuilders;
+        var builder;
+        var builders;
+        builders = function () {
+          var _ref;
+          var _results;
+          _ref = result.model_builders;
+          _results = [];
+          for (algo in _ref) {
+            if ({}.hasOwnProperty.call(_ref, algo)) {
+              builder = _ref[algo];
+              _results.push(builder);
+            }
+          }
+          return _results;
+        }();
+        availableBuilders = function () {
+          var _i;
+          var _j;
+          var _len;
+          var _len1;
+          var _results;
+          var _results1;
+          switch (visibility) {
+            case 'Stable':
+              _results = [];
+              for (_i = 0, _len = builders.length; _i < _len; _i++) {
+                builder = builders[_i];
+                if (builder.visibility === visibility) {
+                  _results.push(builder);
+                }
+              }
+              return _results;
+            // break; // no-unreachable
+            case 'Beta':
+              _results1 = [];
+              for (_j = 0, _len1 = builders.length; _j < _len1; _j++) {
+                builder = builders[_j];
+                if (builder.visibility === visibility || builder.visibility === 'Stable') {
+                  _results1.push(builder);
+                }
+              }
+              return _results1;
+            // break; // no-unreachable
+            default:
+              return builders;
+          }
+        }();
+        return cacheModelBuilders(availableBuilders);
+      }));
+    };
+    requestModelBuilder = function (algo, go) {
+      return doGet(getModelBuilderEndpoint(algo), go);
+    };
+    requestModelInputValidation = function (algo, parameters, go) {
+      return doPost(`${ getModelBuilderEndpoint(algo) }/parameters`, encodeObjectForPost(parameters), go);
+    };
+    requestModelBuild = function (algo, parameters, go) {
+      _.trackEvent('model', algo);
+      if (parameters.hyper_parameters) {
+        parameters.hyper_parameters = flowPrelude.stringify(parameters.hyper_parameters);
+        if (parameters.search_criteria) {
+          parameters.search_criteria = flowPrelude.stringify(parameters.search_criteria);
+        }
+        return doPost(getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
+      }
+      return doPost(getModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
+    };
+    requestAutoModelBuild = function (parameters, go) {
+      return doPostJSON('/3/AutoMLBuilder', parameters, go);
+    };
+    requestPredict = function (destinationKey, modelKey, frameKey, options, go) {
+      var opt;
+      var opts;
+      opts = {};
+      if (destinationKey) {
+        opts.predictions_frame = destinationKey;
+      }
+      if (void 0 !== (opt = options.reconstruction_error)) {
+        opts.reconstruction_error = opt;
+      }
+      if (void 0 !== (opt = options.deep_features_hidden_layer)) {
+        opts.deep_features_hidden_layer = opt;
+      }
+      if (void 0 !== (opt = options.leaf_node_assignment)) {
+        opts.leaf_node_assignment = opt;
+      }
+      if (void 0 !== (opt = options.exemplar_index)) {
+        opts.exemplar_index = opt;
+      }
+      return doPost(`/3/Predictions/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, opts, function (error, result) {
+        if (error) {
+          return go(error);
+        }
+        return go(null, result);
+      });
+    };
+    requestPrediction = function (modelKey, frameKey, go) {
+      return doGet(`/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, function (error, result) {
+        if (error) {
+          return go(error);
+        }
+        return go(null, result);
+      });
+    };
+    requestPredictions = function (modelKey, frameKey, _go) {
+      var go;
+      go = function (error, result) {
+        var prediction;
+        var predictions;
+        if (error) {
+          return _go(error);
+        }
+        predictions = function () {
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = result.model_metrics;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            prediction = _ref[_i];
+            if (modelKey && prediction.model.name !== modelKey) {
+              _results.push(null);
+            } else if (frameKey && prediction.frame.name !== frameKey) {
+              _results.push(null);
+            } else {
+              _results.push(prediction);
+            }
+          }
+          return _results;
+        }();
+        return _go(null, function () {
+          var _i;
+          var _len;
+          var _results;
+          _results = [];
+          for (_i = 0, _len = predictions.length; _i < _len; _i++) {
+            prediction = predictions[_i];
+            if (prediction) {
+              _results.push(prediction);
+            }
+          }
+          return _results;
+        }());
+      };
+      if (modelKey && frameKey) {
+        return doGet(`/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/'${ encodeURIComponent(frameKey) }`, go);
+      } else if (modelKey) {
+        return doGet(`/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }`, go);
+      } else if (frameKey) {
+        return doGet(`/3/ModelMetrics/frames/${ encodeURIComponent(frameKey) }`, go);
+      }
+      return doGet('/3/ModelMetrics', go);
+    };
+    _storageConfiguration = null;
+    requestIsStorageConfigured = function (go) {
+      if (_storageConfiguration) {
+        return go(null, _storageConfiguration.isConfigured);
+      }
+      return doGet('/3/NodePersistentStorage/configured', function (error, result) {
+        _storageConfiguration = { isConfigured: error ? false : result.configured };
+        return go(null, _storageConfiguration.isConfigured);
+      });
+    };
+    requestObjects = function (type, go) {
+      return doGet(`/3/NodePersistentStorage/${ encodeURIComponent(type) }`, unwrap(go, function (result) {
+        return result.entries;
+      }));
+    };
+    requestObjectExists = function (type, name, go) {
+      return doGet(`/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`, function (error, result) {
+        return go(null, error ? false : result.exists);
+      });
+    };
+    requestObject = function (type, name, go) {
+      return doGet(`/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, unwrap(go, function (result) {
+        return JSON.parse(result.value);
+      }));
+    };
+    requestDeleteObject = function (type, name, go) {
+      return doDelete(`/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
+    };
+    requestPutObject = function (type, name, value, go) {
+      var uri;
+      uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
+      if (name) {
+        uri += `/${ encodeURIComponent(name) }`;
+      }
+      return doPost(uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, function (result) {
+        return result.name;
+      }));
+    };
+    requestUploadObject = function (type, name, formData, go) {
+      var uri;
+      uri = `/3/NodePersistentStorage.bin/${ encodeURIComponent(type) }`;
+      if (name) {
+        uri += `/${ encodeURIComponent(name) }`;
+      }
+      return doUpload(uri, formData, unwrap(go, function (result) {
+        return result.name;
+      }));
+    };
+    requestUploadFile = function (key, formData, go) {
+      return doUpload(`/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
+    };
+    requestCloud = function (go) {
+      return doGet('/3/Cloud', go);
+    };
+    requestTimeline = function (go) {
+      return doGet('/3/Timeline', go);
+    };
+    requestProfile = function (depth, go) {
+      return doGet(`/3/Profiler?depth=${ depth }`, go);
+    };
+    requestStackTrace = function (go) {
+      return doGet('/3/JStack', go);
+    };
+    requestRemoveAll = function (go) {
+      return doDelete('/3/DKV', go);
+    };
+    requestEcho = function (message, go) {
+      return doPost('/3/LogAndEcho', { message }, go);
+    };
+    requestLogFile = function (nodeIndex, fileType, go) {
+      return doGet(`/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
+    };
+    requestNetworkTest = function (go) {
+      return doGet('/3/NetworkTest', go);
+    };
+    requestAbout = function (go) {
+      return doGet('/3/About', go);
+    };
+    requestShutdown = function (go) {
+      return doPost('/3/Shutdown', {}, go);
+    };
+    requestEndpoints = function (go) {
+      return doGet('/3/Metadata/endpoints', go);
+    };
+    requestEndpoint = function (index, go) {
+      return doGet(`/3/Metadata/endpoints/${ index }`, go);
+    };
+    requestSchemas = function (go) {
+      return doGet('/3/Metadata/schemas', go);
+    };
+    requestSchema = function (name, go) {
+      return doGet(`/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
+    };
+    getLines = function (data) {
+      return lodash.filter(data.split('\n'), function (line) {
+        if (line.trim()) {
+          return true;
+        }
+        return false;
+      });
+    };
+    requestPacks = function (go) {
+      return download('text', '/flow/packs/index.list', unwrap(go, getLines));
+    };
+    requestPack = function (packName, go) {
+      return download('text', `/flow/packs/${ encodeURIComponent(packName) }/index.list`, unwrap(go, getLines));
+    };
+    requestFlow = function (packName, flowName, go) {
+      return download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
+    };
+    requestHelpIndex = function (go) {
+      return download('json', '/flow/help/catalog.json', go);
+    };
+    requestHelpContent = function (name, go) {
+      return download('text', `/flow/help/${ name }.html`, go);
+    };
+    requestRDDs = function (go) {
+      return doGet('/3/RDDs', go);
+    };
+    requestDataFrames = function (go) {
+      return doGet('/3/dataframes', go);
+    };
+    requestScalaIntp = function (go) {
+      return doPost('/3/scalaint', {}, go);
+    };
+    requestScalaCode = function (session_id, code, go) {
+      return doPost(`/3/scalaint/${ session_id }`, { code }, go);
+    };
+    requestAsH2OFrameFromRDD = function (rdd_id, name, go) {
+      if (name === void 0) {
+        return doPost(`/3/RDDs/${ rdd_id }/h2oframe`, {}, go);
+      }
+      return doPost(`/3/RDDs/${ rdd_id }/h2oframe`, { h2oframe_id: name }, go);
+    };
+    requestAsH2OFrameFromDF = function (df_id, name, go) {
+      if (name === void 0) {
+        return doPost(`/3/dataframes/${ df_id }/h2oframe`, {}, go);
+      }
+      return doPost(`/3/dataframes/${ df_id }/h2oframe`, { h2oframe_id: name }, go);
+    };
+    requestAsDataFrame = function (hf_id, name, go) {
+      if (name === void 0) {
+        return doPost(`/3/h2oframes/${ hf_id }/dataframe`, {}, go);
+      }
+      return doPost(`/3/h2oframes/${ hf_id }/dataframe`, { dataframe_id: name }, go);
+    };
+    Flow.Dataflow.link(_.requestInspect, requestInspect);
+    Flow.Dataflow.link(_.requestCreateFrame, requestCreateFrame);
+    Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame);
+    Flow.Dataflow.link(_.requestFrames, requestFrames);
+    Flow.Dataflow.link(_.requestFrame, requestFrame);
+    Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
+    Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary);
+    Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
+    Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
+    Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame);
+    Flow.Dataflow.link(_.requestExportFrame, requestExportFrame);
+    Flow.Dataflow.link(_.requestColumnSummary, requestColumnSummary);
+    Flow.Dataflow.link(_.requestJobs, requestJobs);
+    Flow.Dataflow.link(_.requestJob, requestJob);
+    Flow.Dataflow.link(_.requestCancelJob, requestCancelJob);
+    Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
+    Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
+    Flow.Dataflow.link(_.requestImportFile, requestImportFile);
+    Flow.Dataflow.link(_.requestParseSetup, requestParseSetup);
+    Flow.Dataflow.link(_.requestParseSetupPreview, requestParseSetupPreview);
+    Flow.Dataflow.link(_.requestParseFiles, requestParseFiles);
+    Flow.Dataflow.link(_.requestPartialDependence, requestPartialDependence);
+    Flow.Dataflow.link(_.requestPartialDependenceData, requestPartialDependenceData);
+    Flow.Dataflow.link(_.requestGrids, requestGrids);
+    Flow.Dataflow.link(_.requestModels, requestModels);
+    Flow.Dataflow.link(_.requestGrid, requestGrid);
+    Flow.Dataflow.link(_.requestModel, requestModel);
+    Flow.Dataflow.link(_.requestPojoPreview, requestPojoPreview);
+    Flow.Dataflow.link(_.requestDeleteModel, requestDeleteModel);
+    Flow.Dataflow.link(_.requestImportModel, requestImportModel);
+    Flow.Dataflow.link(_.requestExportModel, requestExportModel);
+    Flow.Dataflow.link(_.requestModelBuilder, requestModelBuilder);
+    Flow.Dataflow.link(_.requestModelBuilders, requestModelBuilders);
+    Flow.Dataflow.link(_.requestModelBuild, requestModelBuild);
+    Flow.Dataflow.link(_.requestModelInputValidation, requestModelInputValidation);
+    Flow.Dataflow.link(_.requestAutoModelBuild, requestAutoModelBuild);
+    Flow.Dataflow.link(_.requestPredict, requestPredict);
+    Flow.Dataflow.link(_.requestPrediction, requestPrediction);
+    Flow.Dataflow.link(_.requestPredictions, requestPredictions);
+    Flow.Dataflow.link(_.requestObjects, requestObjects);
+    Flow.Dataflow.link(_.requestObject, requestObject);
+    Flow.Dataflow.link(_.requestObjectExists, requestObjectExists);
+    Flow.Dataflow.link(_.requestDeleteObject, requestDeleteObject);
+    Flow.Dataflow.link(_.requestPutObject, requestPutObject);
+    Flow.Dataflow.link(_.requestUploadObject, requestUploadObject);
+    Flow.Dataflow.link(_.requestUploadFile, requestUploadFile);
+    Flow.Dataflow.link(_.requestCloud, requestCloud);
+    Flow.Dataflow.link(_.requestTimeline, requestTimeline);
+    Flow.Dataflow.link(_.requestProfile, requestProfile);
+    Flow.Dataflow.link(_.requestStackTrace, requestStackTrace);
+    Flow.Dataflow.link(_.requestRemoveAll, requestRemoveAll);
+    Flow.Dataflow.link(_.requestEcho, requestEcho);
+    Flow.Dataflow.link(_.requestLogFile, requestLogFile);
+    Flow.Dataflow.link(_.requestNetworkTest, requestNetworkTest);
+    Flow.Dataflow.link(_.requestAbout, requestAbout);
+    Flow.Dataflow.link(_.requestShutdown, requestShutdown);
+    Flow.Dataflow.link(_.requestEndpoints, requestEndpoints);
+    Flow.Dataflow.link(_.requestEndpoint, requestEndpoint);
+    Flow.Dataflow.link(_.requestSchemas, requestSchemas);
+    Flow.Dataflow.link(_.requestSchema, requestSchema);
+    Flow.Dataflow.link(_.requestPacks, requestPacks);
+    Flow.Dataflow.link(_.requestPack, requestPack);
+    Flow.Dataflow.link(_.requestFlow, requestFlow);
+    Flow.Dataflow.link(_.requestHelpIndex, requestHelpIndex);
+    Flow.Dataflow.link(_.requestHelpContent, requestHelpContent);
+    Flow.Dataflow.link(_.requestExec, requestExec);
+    Flow.Dataflow.link(_.requestRDDs, requestRDDs);
+    Flow.Dataflow.link(_.requestDataFrames, requestDataFrames);
+    Flow.Dataflow.link(_.requestScalaIntp, requestScalaIntp);
+    Flow.Dataflow.link(_.requestScalaCode, requestScalaCode);
+    Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);
+    Flow.Dataflow.link(_.requestAsH2OFrameFromRDD, requestAsH2OFrameFromRDD);
+    return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
+  };
+
   function h2oApplication(_) {
     h2oApplicationContext(_);
-    return H2O.Proxy(_);
+    return h2oProxy(_);
   };
 
   function flowApplicationContext(_) {
@@ -10473,7 +11421,7 @@
     }
   }
 
-  const flowPrelude = flowPreludeFunction();
+  const flowPrelude$1 = flowPreludeFunction();
 
   // flow.coffee
   // parent IIFE for the rest of this file
@@ -11151,9 +12099,9 @@
         requestModelBuild = function (algo, parameters, go) {
           _.trackEvent('model', algo);
           if (parameters.hyper_parameters) {
-            parameters.hyper_parameters = flowPrelude.stringify(parameters.hyper_parameters);
+            parameters.hyper_parameters = flowPrelude$1.stringify(parameters.hyper_parameters);
             if (parameters.search_criteria) {
-              parameters.search_criteria = flowPrelude.stringify(parameters.search_criteria);
+              parameters.search_criteria = flowPrelude$1.stringify(parameters.search_criteria);
             }
             return doPost(getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
           }

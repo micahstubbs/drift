@@ -1,5 +1,4 @@
 export function flowPreludeFunction () {
-  console.log('window.Flow', window.Flow);
   var Flow = window.Flow;
   var _always;
   var _copy;

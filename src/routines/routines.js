@@ -1200,7 +1200,6 @@ export function routines() {
       var _len;
       var _ref1;
       dicts = {};
-      console.log('flowPrelude', flowPrelude);
       for (schema in _schemaHacks) {
         if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
           attrs = _schemaHacks[schema];
