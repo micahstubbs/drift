@@ -6,5 +6,5 @@ export function h2oDeleteObjectsOutput(_, _go, _keys) {
     keys: _keys,
     template: 'flow-delete-objects-output'
   };
-};
-  
+}
+

@@ -21,4 +21,4 @@ export function h2oInspectOutput(_, _go, _frame) {
     plot,
     template: 'flow-inspect-output'
   };
-};
+}

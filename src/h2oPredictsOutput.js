@@ -163,5 +163,5 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
     rocCurve: _rocCurve,
     template: 'flow-predicts-output'
   };
-};
-  
+}
+

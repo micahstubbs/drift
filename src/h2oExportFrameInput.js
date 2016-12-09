@@ -49,5 +49,5 @@ export function h2oExportFrameInput(_, _go, frameKey, path, opt) {
     exportFrame,
     template: 'flow-export-frame-input'
   };
-};
-  
+}
+

@@ -30,5 +30,5 @@ export function h2oScalaCodeOutput(_, _go, _result) {
     scalaCodeView: _scalaCodeView,
     template: 'flow-scala-code-output'
   };
-};
-  
+}
+

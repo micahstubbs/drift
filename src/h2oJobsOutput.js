@@ -88,5 +88,5 @@ export function h2oJobsOutput(_, _go, jobs) {
     exception: _exception,
     template: 'flow-jobs-output'
   };
-};
-  
+}
+

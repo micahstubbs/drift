@@ -196,5 +196,5 @@ export function flowCell(_, _renderers, type, input) {
     },
     template: 'flow-cell'
   };
-};
-  
+}
+

@@ -39,5 +39,5 @@ export function flowStatus(_) {
     connections: _connections,
     isBusy: _isBusy
   };
-};
-  
+}
+

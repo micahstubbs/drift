@@ -9,4 +9,4 @@ export function flowHeading(_, level) {
   };
   render.isCode = false;
   return render;
-};
+}

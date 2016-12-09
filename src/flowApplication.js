@@ -21,5 +21,5 @@ export function flowApplication(_, routines) {
     sandbox: _sandbox,
     view: _notebook
   };
-};
-  
+}
+

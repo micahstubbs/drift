@@ -13,5 +13,5 @@ export function h2oDataFrameOutput(_, _go, _result) {
     dataFrameView: _dataFrameView,
     template: 'flow-dataframe-output'
   };
-};
-  
+}
+

@@ -38,5 +38,5 @@ export function h2oImportFilesOutput(_, _go, _importResults) {
       return view.template;
     }
   };
-};
-  
+}
+

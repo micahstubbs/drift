@@ -92,5 +92,5 @@ export function h2oCreateFrameInput(_, _go) {
     createFrame,
     template: 'flow-create-frame-input'
   };
-};
-  
+}
+

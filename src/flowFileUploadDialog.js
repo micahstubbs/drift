@@ -31,5 +31,5 @@ export function flowFileUploadDialog(_, _go) {
     decline,
     template: 'file-upload-dialog'
   };
-};
-  
+}
+

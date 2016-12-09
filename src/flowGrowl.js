@@ -6,5 +6,5 @@ export function flowGrowl(_) {
     }
     return $.bootstrapGrowl(message);
   });
-};
-  
+}
+

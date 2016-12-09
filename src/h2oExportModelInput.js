@@ -52,5 +52,5 @@ export function h2oExportModelInput(_, _go, modelKey, path, opt) {
     exportModel,
     template: 'flow-export-model-input'
   };
-};
-  
+}
+

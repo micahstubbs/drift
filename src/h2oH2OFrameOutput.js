@@ -13,5 +13,5 @@ export function h2oH2OFrameOutput(_, _go, _result) {
     h2oframeView: _h2oframeView,
     template: 'flow-h2oframe-output'
   };
-};
-  
+}
+

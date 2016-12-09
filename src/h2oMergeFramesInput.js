@@ -102,5 +102,5 @@ export function h2oMergeFramesInput(_, _go) {
     canMerge: _canMerge,
     template: 'flow-merge-frames-input'
   };
-};
-  
+}
+

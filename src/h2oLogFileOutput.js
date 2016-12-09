@@ -86,5 +86,5 @@ export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile
     refresh,
     template: 'flow-log-file-output'
   };
-};
-  
+}
+

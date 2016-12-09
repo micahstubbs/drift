@@ -86,5 +86,5 @@ export function h2oPartialDependenceInput(_, _go) {
     canCompute: _canCompute,
     template: 'flow-partial-dependence-input'
   };
-};
-  
+}
+

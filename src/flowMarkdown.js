@@ -16,5 +16,5 @@ export function flowMarkdown(_) {
   };
   render.isCode = false;
   return render;
-};
-  
+}
+

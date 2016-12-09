@@ -60,5 +60,5 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
     viewFrame: _viewFrame,
     template: 'flow-partial-dependence-output'
   };
-};
-  
+}
+

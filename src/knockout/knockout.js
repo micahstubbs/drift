@@ -1,8 +1,8 @@
 export function knockout() {
+  var lodash = window._;
   if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
     return;
   }
-  var lodash = window._;
   ko.bindingHandlers.raw = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
       var $element;

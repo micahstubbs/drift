@@ -24,5 +24,5 @@ export function flowApplicationContext(_) {
   _.confirm = Flow.Dataflow.slot();
   _.alert = Flow.Dataflow.slot();
   return _.dialog = Flow.Dataflow.slot();
-};
-  
+}
+

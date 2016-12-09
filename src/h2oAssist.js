@@ -28,5 +28,5 @@ export function h2oAssist(_, _go, _items) {
     }(),
     template: 'flow-assist'
   };
-};
-  
+}
+

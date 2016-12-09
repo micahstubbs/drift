@@ -35,5 +35,5 @@ export function about() {
       });
     });
     return { properties: _properties };
-  }; 
+  };
 }

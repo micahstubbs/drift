@@ -8,5 +8,5 @@ export function flowForm(_, _form, _go) {
       return control.template;
     }
   };
-};
-  
+}
+

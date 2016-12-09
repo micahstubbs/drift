@@ -58,5 +58,5 @@ export function flowFileOpenDialog(_, _go) {
     decline,
     template: 'file-open-dialog'
   };
-};
-  
+}
+

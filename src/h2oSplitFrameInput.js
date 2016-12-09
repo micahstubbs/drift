@@ -227,5 +227,5 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     validationMessage: _validationMessage,
     template: 'flow-split-frame-input'
   };
-};
-  
+}
+

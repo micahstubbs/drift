@@ -373,5 +373,5 @@ export function h2oCloudOutput(_, _go, _cloud) {
     toggleExpansion,
     template: 'flow-cloud-output'
   };
-};
-  
+}
+

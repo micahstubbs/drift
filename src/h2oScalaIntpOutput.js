@@ -13,5 +13,5 @@ export function h2oScalaIntpOutput(_, _go, _result) {
     scalaIntpView: _scalaIntpView,
     template: 'flow-scala-intp-output'
   };
-};
-  
+}
+

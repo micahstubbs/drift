@@ -56,5 +56,5 @@ export function h2oPlotInput(_, _go, _frame) {
     canPlot: _canPlot,
     template: 'flow-plot-input'
   };
-};
-  
+}
+

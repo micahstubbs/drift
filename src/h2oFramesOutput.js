@@ -137,5 +137,5 @@ export function h2oFramesOutput(_, _go, _frames) {
     checkAllFrames: _checkAllFrames,
     template: 'flow-frames-output'
   };
-};
-  
+}
+

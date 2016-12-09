@@ -21,5 +21,5 @@ export function flowAutosave(_) {
     Flow.Dataflow.link(_.setDirty, setDirty);
     return Flow.Dataflow.link(_.setPristine, setPristine);
   });
-};
-  
+}
+

@@ -18,5 +18,5 @@ export function h2oRDDsOutput(_, _go, _rDDs) {
     hasRDDs: _rDDs.length > 0,
     template: 'flow-rdds-output'
   };
-};
-  
+}
+

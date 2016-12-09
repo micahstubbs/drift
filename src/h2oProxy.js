@@ -941,4 +941,4 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);
   Flow.Dataflow.link(_.requestAsH2OFrameFromRDD, requestAsH2OFrameFromRDD);
   return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
-};
+}

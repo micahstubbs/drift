@@ -206,5 +206,5 @@ export function h2oGridOutput(_, _go, _grid) {
     inspectAll,
     template: 'flow-grid-output'
   };
-};
-  
+}
+

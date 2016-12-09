@@ -26,5 +26,5 @@ export function flowConfirmDialog(_, _message, _opts, _go) {
     decline,
     template: 'confirm-dialog'
   };
-};
-  
+}
+

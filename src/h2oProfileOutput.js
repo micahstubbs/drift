@@ -58,5 +58,5 @@ export function h2oProfileOutput(_, _go, _profile) {
     activeNode: _activeNode,
     template: 'flow-profile-output'
   };
-};
-  
+}
+

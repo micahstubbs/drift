@@ -18,5 +18,5 @@ export function h2oNetworkTestOutput(_, _go, _testResult) {
     result: _result,
     template: 'flow-network-test-output'
   };
-};
-  
+}
+

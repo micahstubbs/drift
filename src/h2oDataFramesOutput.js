@@ -17,5 +17,5 @@ export function h2oDataFramesOutput(_, _go, _dataFrames) {
     hasDataFrames: _dataFrames.length > 0,
     template: 'flow-dataframes-output'
   };
-};
-  
+}
+

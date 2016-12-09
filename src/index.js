@@ -35,8 +35,8 @@ import { flow } from './flow/flow';
 // parent IIFE for the rest of this file
 // defer for now
 (function () {
-  var lodash = window._; 
-  window.Flow = {}; 
+  var lodash = window._;
+  window.Flow = {};
   window.H2O = {};
   flow();
   about();
@@ -44,7 +44,7 @@ import { flow } from './flow/flow';
   failure();
   help();
   notebook();
-  objectBrowser(); 
+  objectBrowser();
   async();
   data();
   dataflow();

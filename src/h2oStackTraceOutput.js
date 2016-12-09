@@ -1,4 +1,4 @@
-export function h2oStackTraceOutput (_, _go, _stackTrace) {
+export function h2oStackTraceOutput(_, _go, _stackTrace) {
   var lodash = window._;
   var Flow = window.Flow;
   var createNode;
@@ -61,5 +61,5 @@ export function h2oStackTraceOutput (_, _go, _stackTrace) {
     activeNode: _activeNode,
     template: 'flow-stacktrace-output'
   };
-};
-  
+}
+

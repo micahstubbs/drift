@@ -63,5 +63,5 @@ export function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
     inspect,
     template: 'flow-column-summary-output'
   };
-};
-  
+}
+

@@ -107,5 +107,5 @@ export function h2oAutoModelInput(_, _go, opts) {
     buildModel,
     template: 'flow-automodel-input'
   };
-};
-   
+}
+

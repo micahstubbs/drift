@@ -686,5 +686,5 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     isLive: _isLive,
     template: 'flow-model-output'
   };
-};
-  
+}
+

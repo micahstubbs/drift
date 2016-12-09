@@ -60,5 +60,5 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     frames: _frames,
     template: 'flow-split-frame-output'
   };
-};
-  
+}
+

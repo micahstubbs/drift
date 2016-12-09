@@ -9,5 +9,5 @@ export function flowRaw(_) {
   };
   render.isCode = false;
   return render;
-};
-  
+}
+

@@ -201,5 +201,5 @@ export function h2oImportFilesInput(_, _go) {
     importSelectedFiles,
     template: 'flow-import-files'
   };
-};
-  
+}
+

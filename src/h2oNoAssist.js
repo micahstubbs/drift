@@ -7,5 +7,5 @@ export function h2oNoAssist(_, _go) {
     },
     template: 'flow-no-assist'
   };
-};
-  
+}
+

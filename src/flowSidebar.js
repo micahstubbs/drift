@@ -73,5 +73,5 @@ export function flowSidebar(_, cells) {
     isHelpMode: _isHelpMode,
     switchToHelp
   };
-};
-  
+}
+

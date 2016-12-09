@@ -86,5 +86,5 @@ export function h2oFrameDataOutput(_, _go, _frame) {
     goToNextPage,
     template: 'flow-frame-data-output'
   };
-};
-  
+}
+

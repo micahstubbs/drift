@@ -172,5 +172,5 @@ export function h2oFrameOutput(_, _go, _frame) {
     deleteFrame,
     template: 'flow-frame-output'
   };
-};
-  
+}
+

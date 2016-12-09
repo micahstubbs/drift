@@ -19,5 +19,5 @@ export function flowAlertDialog(_, _message, _opts, _go) {
     accept,
     template: 'alert-dialog'
   };
-};
-  
+}
+

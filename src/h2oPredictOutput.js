@@ -90,5 +90,5 @@ export function h2oPredictOutput(_, _go, prediction) {
     canInspect: _canInspect,
     template: 'flow-predict-output'
   };
-};
-  
+}
+

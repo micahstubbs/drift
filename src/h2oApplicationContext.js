@@ -81,5 +81,5 @@ export function h2oApplicationContext(_) {
   _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
   _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
   return _.requestAsDataFrame = Flow.Dataflow.slot();
-};
-  
+}
+

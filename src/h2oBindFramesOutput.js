@@ -13,5 +13,5 @@ export function h2oBindFramesOutput(_, _go, key, result) {
     viewFrame,
     template: 'flow-bind-frames-output'
   };
-};
-  
+}
+

@@ -212,5 +212,5 @@ export function h2oPredictInput(_, _go, opt) {
     exemplarIndex: _exemplarIndex,
     template: 'flow-predict-input'
   };
-};
-  
+}
+

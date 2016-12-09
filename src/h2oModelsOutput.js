@@ -167,5 +167,5 @@ export function h2oModelsOutput(_, _go, _models) {
     inspect: inspectAll,
     template: 'flow-models-output'
   };
-};
-  
+}
+

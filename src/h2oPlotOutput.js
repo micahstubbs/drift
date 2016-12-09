@@ -5,5 +5,5 @@ export function h2oPlotOutput(_, _go, _plot) {
     plot: _plot,
     template: 'flow-plot-output'
   };
-};
-  
+}
+

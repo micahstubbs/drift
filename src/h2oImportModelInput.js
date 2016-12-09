@@ -27,4 +27,4 @@ export function h2oImportModelInput(_, _go, path, opt) {
     importModel,
     template: 'flow-import-model-input'
   };
-};
+}

@@ -84,5 +84,5 @@ export function flowBrowser(_) {
     hasDocs: _hasDocs,
     loadNotebooks
   };
-};
-  
+}
+

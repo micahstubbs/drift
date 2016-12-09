@@ -1,4 +1,4 @@
-import { h2oApplication } from '../h2oApplication'; 
+import { h2oApplication } from '../h2oApplication';
 import { flowApplication } from '../flowApplication';
 
 export function flow() {
@@ -57,5 +57,5 @@ export function flow() {
       context.ready();
       return context.initialized();
     });
-  } 
+  }
 }

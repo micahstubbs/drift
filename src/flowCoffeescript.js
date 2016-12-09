@@ -91,5 +91,5 @@ export function flowCoffeescript(_, guid, sandbox) {
   };
   render.isCode = true;
   return render;
-};
-  
+}
+

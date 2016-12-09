@@ -13,5 +13,5 @@ export function h2oImportModelOutput(_, _go, result) {
     viewModel,
     template: 'flow-import-model-output'
   };
-};
-  
+}
+

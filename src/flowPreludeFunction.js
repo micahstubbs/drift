@@ -1,4 +1,4 @@
-export function flowPreludeFunction () {
+export function flowPreludeFunction() {
   var Flow = window.Flow;
   var _always;
   var _copy;
@@ -71,7 +71,7 @@ export function flowPreludeFunction () {
     }
     switch (type) {
       case '[object String]':
-        return 'String'
+        return 'String';
       case '[object Number]':
         return 'Number';
       case '[object Function]':
@@ -110,5 +110,5 @@ export function flowPreludeFunction () {
     deepClone: _deepClone,
     stringify: JSON.stringify
   };
-};
-  
+}
+

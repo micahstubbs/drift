@@ -33,5 +33,5 @@ export function h2oInspectsOutput(_, _go, _tables) {
     tables: lodash.map(_tables, createTableView),
     template: 'flow-inspects-output'
   };
-};
-  
+}
+

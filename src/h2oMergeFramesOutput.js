@@ -16,5 +16,5 @@ export function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
     viewFrame: _viewFrame,
     template: 'flow-merge-frames-output'
   };
-};
-  
+}
+

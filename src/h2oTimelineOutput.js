@@ -149,5 +149,5 @@ export function h2oTimelineOutput(_, _go, _timeline) {
     refresh,
     template: 'flow-timeline-output'
   };
-};
-  
+}
+

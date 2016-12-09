@@ -34,5 +34,5 @@ export function h2oGridsOutput(_, _go, _grids) {
     buildModel,
     template: 'flow-grids-output'
   };
-};
-  
+}
+
