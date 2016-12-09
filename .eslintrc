@@ -16,7 +16,6 @@
     "new-cap": "off",
     "no-underscore-dangle": "off",
     "no-var": "off",
-    "prefer-arrow-callback": "off",
     "no-loop-func": "off",
     "no-shadow": "off",
     "no-unused-vars": "off",
