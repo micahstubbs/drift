@@ -985,94 +985,55 @@
   function parseInput() {
     const lodash = window._;
     const Flow = window.Flow;
-    let MaxItemsPerPage;
-    let dataTypes;
-    let parseDelimiters;
-    let parseTypes;
-    MaxItemsPerPage = 15;
-    parseTypes = lodash.map(['AUTO', 'ARFF', 'XLS', 'XLSX', 'CSV', 'SVMLight', 'ORC', 'AVRO', 'PARQUET'], type => ({
+    const MaxItemsPerPage = 15;
+    const parseTypes = lodash.map(['AUTO', 'ARFF', 'XLS', 'XLSX', 'CSV', 'SVMLight', 'ORC', 'AVRO', 'PARQUET'], type => ({
       type,
       caption: type
     }));
-    parseDelimiters = (() => {
-      let characterDelimiters;
-      let createDelimiter;
-      let otherDelimiters;
-      let whitespaceDelimiters;
-      let whitespaceSeparators;
-      whitespaceSeparators = ['NULL', 'SOH (start of heading)', 'STX (start of text)', 'ETX (end of text)', 'EOT (end of transmission)', 'ENQ (enquiry)', 'ACK (acknowledge)', 'BEL \'\\a\' (bell)', 'BS  \'\\b\' (backspace)', 'HT  \'\\t\' (horizontal tab)', 'LF  \'\\n\' (new line)', 'VT  \'\\v\' (vertical tab)', 'FF  \'\\f\' (form feed)', 'CR  \'\\r\' (carriage ret)', 'SO  (shift out)', 'SI  (shift in)', 'DLE (data link escape)', 'DC1 (device control 1) ', 'DC2 (device control 2)', 'DC3 (device control 3)', 'DC4 (device control 4)', 'NAK (negative ack.)', 'SYN (synchronous idle)', 'ETB (end of trans. blk)', 'CAN (cancel)', 'EM  (end of medium)', 'SUB (substitute)', 'ESC (escape)', 'FS  (file separator)', 'GS  (group separator)', 'RS  (record separator)', 'US  (unit separator)', '\' \' SPACE'];
-      createDelimiter = (caption, charCode) => ({
+    const parseDelimiters = (() => {
+      const whitespaceSeparators = ['NULL', 'SOH (start of heading)', 'STX (start of text)', 'ETX (end of text)', 'EOT (end of transmission)', 'ENQ (enquiry)', 'ACK (acknowledge)', 'BEL \'\\a\' (bell)', 'BS  \'\\b\' (backspace)', 'HT  \'\\t\' (horizontal tab)', 'LF  \'\\n\' (new line)', 'VT  \'\\v\' (vertical tab)', 'FF  \'\\f\' (form feed)', 'CR  \'\\r\' (carriage ret)', 'SO  (shift out)', 'SI  (shift in)', 'DLE (data link escape)', 'DC1 (device control 1) ', 'DC2 (device control 2)', 'DC3 (device control 3)', 'DC4 (device control 4)', 'NAK (negative ack.)', 'SYN (synchronous idle)', 'ETB (end of trans. blk)', 'CAN (cancel)', 'EM  (end of medium)', 'SUB (substitute)', 'ESC (escape)', 'FS  (file separator)', 'GS  (group separator)', 'RS  (record separator)', 'US  (unit separator)', '\' \' SPACE'];
+      const createDelimiter = (caption, charCode) => ({
         charCode,
         caption: `${ caption }: \'${ `00${ charCode }`.slice(-2) }\'`
       });
-      whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
-      characterDelimiters = lodash.times(126 - whitespaceSeparators.length, i => {
-        let charCode;
-        charCode = i + whitespaceSeparators.length;
+      const whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
+      const characterDelimiters = lodash.times(126 - whitespaceSeparators.length, i => {
+        const charCode = i + whitespaceSeparators.length;
         return createDelimiter(String.fromCharCode(charCode), charCode);
       });
-      otherDelimiters = [{
+      const otherDelimiters = [{
         charCode: -1,
         caption: 'AUTO'
       }];
       return whitespaceDelimiters.concat(characterDelimiters, otherDelimiters);
     })();
-    dataTypes = ['Unknown', 'Numeric', 'Enum', 'Time', 'UUID', 'String', 'Invalid'];
+    const dataTypes = ['Unknown', 'Numeric', 'Enum', 'Time', 'UUID', 'String', 'Invalid'];
     H2O.SetupParseOutput = (_, _go, _inputs, _result) => {
-      let filterColumns;
-      let goToNextPage;
-      let goToPreviousPage;
-      let makePage;
-      let parseFiles;
-      let refreshPreview;
-      let _activePage;
-      let _canGoToNextPage;
-      let _canGoToPreviousPage;
-      let _canReconfigure;
-      let _chunkSize;
-      let _columnCount;
-      let _columnNameSearchTerm;
-      let _columns;
       let _currentPage;
-      let _deleteOnDone;
-      let _delimiter;
-      let _destinationKey;
-      let _filteredColumns;
-      let _headerOption;
-      let _headerOptions;
-      let _inputKey;
-      let _parseType;
-      let _preview;
-      let _sourceKeys;
-      let _useSingleQuotes;
-      let _visibleColumns;
-      _inputKey = _inputs.paths ? 'paths' : 'source_frames';
-      _sourceKeys = lodash.map(_result.source_frames, src => src.name);
-      _parseType = Flow.Dataflow.signal(lodash.find(parseTypes, parseType => parseType.type === _result.parse_type));
-      _canReconfigure = Flow.Dataflow.lift(_parseType, parseType => parseType.type !== 'SVMLight');
-      _delimiter = Flow.Dataflow.signal(lodash.find(parseDelimiters, delimiter => delimiter.charCode === _result.separator));
-      _useSingleQuotes = Flow.Dataflow.signal(_result.single_quotes);
-      _destinationKey = Flow.Dataflow.signal(_result.destination_frame);
-      _headerOptions = {
+      const _inputKey = _inputs.paths ? 'paths' : 'source_frames';
+      const _sourceKeys = lodash.map(_result.source_frames, src => src.name);
+      const _parseType = Flow.Dataflow.signal(lodash.find(parseTypes, parseType => parseType.type === _result.parse_type));
+      const _canReconfigure = Flow.Dataflow.lift(_parseType, parseType => parseType.type !== 'SVMLight');
+      const _delimiter = Flow.Dataflow.signal(lodash.find(parseDelimiters, delimiter => delimiter.charCode === _result.separator));
+      const _useSingleQuotes = Flow.Dataflow.signal(_result.single_quotes);
+      const _destinationKey = Flow.Dataflow.signal(_result.destination_frame);
+      const _headerOptions = {
         auto: 0,
         header: 1,
         data: -1
       };
-      _headerOption = Flow.Dataflow.signal(_result.check_header === 0 ? 'auto' : _result.check_header === -1 ? 'data' : 'header');
-      _deleteOnDone = Flow.Dataflow.signal(true);
-      _columnNameSearchTerm = Flow.Dataflow.signal('');
-      _preview = Flow.Dataflow.signal(_result);
-      _chunkSize = Flow.Dataflow.lift(_preview, preview => preview.chunk_size);
-      refreshPreview = () => {
+      const _headerOption = Flow.Dataflow.signal(_result.check_header === 0 ? 'auto' : _result.check_header === -1 ? 'data' : 'header');
+      const _deleteOnDone = Flow.Dataflow.signal(true);
+      const _columnNameSearchTerm = Flow.Dataflow.signal('');
+      const _preview = Flow.Dataflow.signal(_result);
+      const _chunkSize = Flow.Dataflow.lift(_preview, preview => preview.chunk_size);
+      const refreshPreview = () => {
         let column;
-        let columnTypes;
-        columnTypes = (() => {
+        const columnTypes = (() => {
           let _i;
           let _len;
-          let _ref;
-          let _results;
-          _ref = _columns();
-          _results = [];
+          const _ref = _columns();
+          const _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             column = _ref[_i];
             _results.push(column.type());
@@ -1085,25 +1046,19 @@
           }
         });
       };
-      _columns = Flow.Dataflow.lift(_preview, preview => {
-        let columnCount;
-        let columnNames;
-        let columnTypes;
+      const _columns = Flow.Dataflow.lift(_preview, preview => {
         let data;
         let i;
         let j;
-        let previewData;
         let row;
-        let rowCount;
-        let rows;
         let _i;
         let _j;
-        columnTypes = preview.column_types;
-        columnCount = columnTypes.length;
-        previewData = preview.data;
-        rowCount = previewData.length;
-        columnNames = preview.column_names;
-        rows = new Array(columnCount);
+        const columnTypes = preview.column_types;
+        const columnCount = columnTypes.length;
+        const previewData = preview.data;
+        const rowCount = previewData.length;
+        const columnNames = preview.column_names;
+        const rows = new Array(columnCount);
         for (j = _i = 0; columnCount >= 0 ? _i < columnCount : _i > columnCount; j = columnCount >= 0 ? ++_i : --_i) {
           data = new Array(rowCount);
           for (i = _j = 0; rowCount >= 0 ? _j < rowCount : _j > rowCount; i = rowCount >= 0 ? ++_j : --_j) {
@@ -1118,7 +1073,7 @@
         }
         return rows;
       });
-      _columnCount = Flow.Dataflow.lift(_columns, columns => (columns != null ? columns.length : void 0) || 0);
+      const _columnCount = Flow.Dataflow.lift(_columns, columns => (columns != null ? columns.length : void 0) || 0);
       _currentPage = 0;
       Flow.Dataflow.act(_columns, columns => lodash.forEach(columns, column => Flow.Dataflow.react(column.type, () => {
         _currentPage = _activePage().index;
@@ -1128,31 +1083,27 @@
         _currentPage = 0;
         return refreshPreview();
       });
-      _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
-      makePage = (index, columns) => ({
+      const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
+      const makePage = (index, columns) => ({
         index,
         columns
       });
-      _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
-      filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
+      const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
+      const filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
       Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));
-      _visibleColumns = Flow.Dataflow.lift(_activePage, currentPage => {
-        let start;
-        start = currentPage.index * MaxItemsPerPage;
+      const _visibleColumns = Flow.Dataflow.lift(_activePage, currentPage => {
+        const start = currentPage.index * MaxItemsPerPage;
         return currentPage.columns.slice(start, start + MaxItemsPerPage);
       });
-      parseFiles = () => {
+      const parseFiles = () => {
         let column;
         let columnNames;
-        let columnTypes;
         let headerOption;
         columnNames = (() => {
           let _i;
           let _len;
-          let _ref;
-          let _results;
-          _ref = _columns();
-          _results = [];
+          const _ref = _columns();
+          const _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             column = _ref[_i];
             _results.push(column.name());
@@ -1164,13 +1115,11 @@
           columnNames = null;
           headerOption = -1;
         }
-        columnTypes = (() => {
+        const columnTypes = (() => {
           let _i;
           let _len;
-          let _ref;
-          let _results;
-          _ref = _columns();
-          _results = [];
+          const _ref = _columns();
+          const _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             column = _ref[_i];
             _results.push(column.type());
@@ -1179,16 +1128,14 @@
         })();
         return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude$4.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude$4.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude$4.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude$4.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude$4.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
       };
-      _canGoToNextPage = Flow.Dataflow.lift(_activePage, currentPage => (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length);
-      _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, currentPage => currentPage.index > 0);
-      goToNextPage = () => {
-        let currentPage;
-        currentPage = _activePage();
+      const _canGoToNextPage = Flow.Dataflow.lift(_activePage, currentPage => (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length);
+      const _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, currentPage => currentPage.index > 0);
+      const goToNextPage = () => {
+        const currentPage = _activePage();
         return _activePage(makePage(currentPage.index + 1, currentPage.columns));
       };
-      goToPreviousPage = () => {
-        let currentPage;
-        currentPage = _activePage();
+      const goToPreviousPage = () => {
+        const currentPage = _activePage();
         if (currentPage.index > 0) {
           return _activePage(makePage(currentPage.index - 1, currentPage.columns));
         }
@@ -1597,10 +1544,8 @@
 
   function util() {
     const Flow = window.Flow;
-    let getFileBaseName;
-    let validateFileExtension;
-    validateFileExtension = (filename, extension) => filename.indexOf(extension, filename.length - extension.length) !== -1;
-    getFileBaseName = (filename, extension) => Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
+    const validateFileExtension = (filename, extension) => filename.indexOf(extension, filename.length - extension.length) !== -1;
+    const getFileBaseName = (filename, extension) => Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
     H2O.Util = {
       validateFileExtension,
       getFileBaseName
