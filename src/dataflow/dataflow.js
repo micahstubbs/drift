@@ -5,7 +5,7 @@ export function dataflow() {
   var lodash = window._;
   var Flow = window.Flow;
   var __slice = [].slice;
-  Flow.Dataflow = function () {
+  Flow.Dataflow = (() => {
     var createObservable;
     var createObservableArray;
     var createSignal;
@@ -21,7 +21,7 @@ export function dataflow() {
     var _merge;
     var _react;
     var _unlink;
-    createSlot = function () {
+    createSlot = () => {
       var arrow;
       var self;
       arrow = null;
@@ -33,7 +33,7 @@ export function dataflow() {
         }
         return void 0;
       };
-      self.subscribe = function (func) {
+      self.subscribe = func => {
         console.assert(lodash.isFunction(func));
         if (arrow) {
           throw new Error('Cannot re-attach slot');
@@ -46,25 +46,23 @@ export function dataflow() {
           };
         }
       };
-      self.dispose = function () {
+      self.dispose = () => {
         if (arrow) {
           return arrow.dispose();
         }
       };
       return self;
     };
-    createSlots = function () {
+    createSlots = () => {
       var arrows;
       var self;
       arrows = [];
       self = function () {
         var args;
         args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
-        return lodash.map(arrows, function (arrow) {
-          return arrow.func.apply(null, args);
-        });
+        return lodash.map(arrows, arrow => arrow.func.apply(null, args));
       };
-      self.subscribe = function (func) {
+      self.subscribe = func => {
         var arrow;
         console.assert(lodash.isFunction(func));
         arrows.push(arrow = {
@@ -75,11 +73,7 @@ export function dataflow() {
         });
         return arrow;
       };
-      self.dispose = function () {
-        return lodash.forEach(flowPrelude.copy(arrows), function (arrow) {
-          return arrow.dispose();
-        });
-      };
+      self.dispose = () => lodash.forEach(flowPrelude.copy(arrows), arrow => arrow.dispose());
       return self;
     };
     if (typeof ko !== 'undefined' && ko !== null) {
@@ -87,14 +81,14 @@ export function dataflow() {
       createObservableArray = ko.observableArray;
       isObservable = ko.isObservable;
     } else {
-      createObservable = function (initialValue) {
+      createObservable = initialValue => {
         var arrows;
         var currentValue;
         var notifySubscribers;
         var self;
         arrows = [];
         currentValue = initialValue;
-        notifySubscribers = function (arrows, newValue) {
+        notifySubscribers = (arrows, newValue) => {
           var arrow;
           var _i;
           var _len;
@@ -114,7 +108,7 @@ export function dataflow() {
             return notifySubscribers(arrows, newValue);
           }
         };
-        self.subscribe = function (func) {
+        self.subscribe = func => {
           var arrow;
           console.assert(lodash.isFunction(func));
           arrows.push(arrow = {
@@ -129,7 +123,7 @@ export function dataflow() {
         return self;
       };
       createObservableArray = createObservable;
-      isObservable = function (obj) {
+      isObservable = obj => {
         if (obj.__observable__) {
           return true;
         }
@@ -148,16 +142,14 @@ export function dataflow() {
       return observable;
     };
     _isSignal = isObservable;
-    createSignals = function (array) {
-      return createObservableArray(array || []);
-    };
-    _link = function (source, func) {
+    createSignals = array => createObservableArray(array || []);
+    _link = (source, func) => {
       console.assert(lodash.isFunction(source, '[signal] is not a function'));
       console.assert(lodash.isFunction(source.subscribe, '[signal] does not have a [dispose] method'));
       console.assert(lodash.isFunction(func, '[func] is not a function'));
       return source.subscribe(func);
     };
-    _unlink = function (arrows) {
+    _unlink = arrows => {
       var arrow;
       var _i;
       var _len;
@@ -174,68 +166,44 @@ export function dataflow() {
       console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
       return arrows.dispose();
     };
-    _apply = function (sources, func) {
-      return func(...lodash.map(sources, function (source) {
-        return source();
-      }));
-    };
-    _act = function (...args) {
+    _apply = (sources, func) => func(...lodash.map(sources, source => source()));
+    _act = (...args) => {
       var func;
       var sources;
       var _i;
       sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
       _apply(sources, func);
-      return lodash.map(sources, function (source) {
-        return _link(source, function () {
-          return _apply(sources, func);
-        });
-      });
+      return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
     };
-    _react = function (...args) {
+    _react = (...args) => {
       var func;
       var sources;
       var _i;
       sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
-      return lodash.map(sources, function (source) {
-        return _link(source, function () {
-          return _apply(sources, func);
-        });
-      });
+      return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
     };
-    _lift = function (...args) {
+    _lift = (...args) => {
       var evaluate;
       var func;
       var sources;
       var target;
       var _i;
       sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
-      evaluate = function () {
-        return _apply(sources, func);
-      };
+      evaluate = () => _apply(sources, func);
       target = createSignal(evaluate());
-      lodash.map(sources, function (source) {
-        return _link(source, function () {
-          return target(evaluate());
-        });
-      });
+      lodash.map(sources, source => _link(source, () => target(evaluate())));
       return target;
     };
-    _merge = function (...args) {
+    _merge = (...args) => {
       var evaluate;
       var func;
       var sources;
       var target;
       var _i;
       sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []), target = args[_i++], func = args[_i++];
-      evaluate = function () {
-        return _apply(sources, func);
-      };
+      evaluate = () => _apply(sources, func);
       target(evaluate());
-      return lodash.map(sources, function (source) {
-        return _link(source, function () {
-          return target(evaluate());
-        });
-      });
+      return lodash.map(sources, source => _link(source, () => target(evaluate())));
     };
     return {
       slot: createSlot,
@@ -250,5 +218,5 @@ export function dataflow() {
       lift: _lift,
       merge: _merge
     };
-  }();
+  })();
 }

@@ -11,7 +11,7 @@ export function modelInput() {
   var createGridableValues;
   var createListControl;
   var createTextboxControl;
-  createControl = function (kind, parameter) {
+  createControl = (kind, parameter) => {
     var _hasError;
     var _hasInfo;
     var _hasMessage;
@@ -24,7 +24,7 @@ export function modelInput() {
     _hasWarning = Flow.Dataflow.signal(false);
     _hasInfo = Flow.Dataflow.signal(false);
     _message = Flow.Dataflow.signal('');
-    _hasMessage = Flow.Dataflow.lift(_message, function (message) {
+    _hasMessage = Flow.Dataflow.lift(_message, message => {
       if (message) {
         return true;
       }
@@ -32,9 +32,7 @@ export function modelInput() {
     });
     _isVisible = Flow.Dataflow.signal(true);
     _isGrided = Flow.Dataflow.signal(false);
-    _isNotGrided = Flow.Dataflow.lift(_isGrided, function (value) {
-      return !value;
-    });
+    _isNotGrided = Flow.Dataflow.lift(_isGrided, value => !value);
     return {
       kind,
       name: parameter.name,
@@ -52,7 +50,7 @@ export function modelInput() {
       isNotGrided: _isNotGrided
     };
   };
-  createTextboxControl = function (parameter, type) {
+  createTextboxControl = (parameter, type) => {
     var control;
     var isArrayValued;
     var isInt;
@@ -90,7 +88,7 @@ export function modelInput() {
     }
     _text = Flow.Dataflow.signal(isArrayValued ? ((_ref = parameter.actual_value) != null ? _ref : []).join(', ') : (_ref1 = parameter.actual_value) != null ? _ref1 : '');
     _textGrided = Flow.Dataflow.signal(`${_text()};`);
-    textToValues = function (text) {
+    textToValues = text => {
       var parsed;
       var vals;
       var value;
@@ -119,7 +117,7 @@ export function modelInput() {
       return text;
     };
     _value = Flow.Dataflow.lift(_text, textToValues);
-    _valueGrided = Flow.Dataflow.lift(_textGrided, function (text) {
+    _valueGrided = Flow.Dataflow.lift(_textGrided, text => {
       var part;
       var token;
       var _i;
@@ -143,27 +141,21 @@ export function modelInput() {
     control.isArrayValued = isArrayValued;
     return control;
   };
-  createGridableValues = function (values, defaultValue) {
-    return lodash.map(values, function (value) {
-      return {
-        label: value,
-        value: Flow.Dataflow.signal(true)
-      };
-    });
-  };
-  createDropdownControl = function (parameter) {
+  createGridableValues = (values, defaultValue) => lodash.map(values, value => ({
+    label: value,
+    value: Flow.Dataflow.signal(true)
+  }));
+  createDropdownControl = parameter => {
     var control;
     var _value;
     _value = Flow.Dataflow.signal(parameter.actual_value);
     control = createControl('dropdown', parameter);
     control.values = Flow.Dataflow.signals(parameter.values);
     control.value = _value;
-    control.gridedValues = Flow.Dataflow.lift(control.values, function (values) {
-      return createGridableValues(values);
-    });
+    control.gridedValues = Flow.Dataflow.lift(control.values, values => createGridableValues(values));
     return control;
   };
-  createListControl = function (parameter) {
+  createListControl = parameter => {
     var MaxItemsPerPage;
     var blockSelectionUpdates;
     var changeSelection;
@@ -197,18 +189,16 @@ export function modelInput() {
     _values = Flow.Dataflow.signal([]);
     _selectionCount = Flow.Dataflow.signal(0);
     _isUpdatingSelectionCount = false;
-    blockSelectionUpdates = function (f) {
+    blockSelectionUpdates = f => {
       _isUpdatingSelectionCount = true;
       f();
       return _isUpdatingSelectionCount = false;
     };
-    incrementSelectionCount = function (amount) {
-      return _selectionCount(_selectionCount() + amount);
-    };
-    createEntry = function (value) {
+    incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
+    createEntry = value => {
       var isSelected;
       isSelected = Flow.Dataflow.signal(false);
-      Flow.Dataflow.react(isSelected, function (isSelected) {
+      Flow.Dataflow.react(isSelected, isSelected => {
         if (!_isUpdatingSelectionCount) {
           if (isSelected) {
             incrementSelectionCount(1);
@@ -225,25 +215,15 @@ export function modelInput() {
         missingPercent: value.missingPercent
       };
     };
-    _entries = Flow.Dataflow.lift(_values, function (values) {
-      return lodash.map(values, createEntry);
-    });
+    _entries = Flow.Dataflow.lift(_values, values => lodash.map(values, createEntry));
     _filteredItems = Flow.Dataflow.signal([]);
     _visibleItems = Flow.Dataflow.signal([]);
-    _hasFilteredItems = Flow.Dataflow.lift(_filteredItems, function (entries) {
-      return entries.length > 0;
-    });
+    _hasFilteredItems = Flow.Dataflow.lift(_filteredItems, entries => entries.length > 0);
     _currentPage = Flow.Dataflow.signal(0);
-    _maxPages = Flow.Dataflow.lift(_filteredItems, function (entries) {
-      return Math.ceil(entries.length / MaxItemsPerPage);
-    });
-    _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, function (index) {
-      return index > 0;
-    });
-    _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, function (maxPages, index) {
-      return index < maxPages - 1;
-    });
-    _searchCaption = Flow.Dataflow.lift(_entries, _filteredItems, _selectionCount, _currentPage, _maxPages, function (entries, filteredItems, selectionCount, currentPage, maxPages) {
+    _maxPages = Flow.Dataflow.lift(_filteredItems, entries => Math.ceil(entries.length / MaxItemsPerPage));
+    _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
+    _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
+    _searchCaption = Flow.Dataflow.lift(_entries, _filteredItems, _selectionCount, _currentPage, _maxPages, (entries, filteredItems, selectionCount, currentPage, maxPages) => {
       var caption;
       caption = maxPages === 0 ? '' : `Showing page ${(currentPage + 1)} of ${maxPages}.`;
       if (filteredItems.length !== entries.length) {
@@ -254,12 +234,10 @@ export function modelInput() {
       }
       return caption;
     });
-    Flow.Dataflow.react(_entries, function () {
-      return filterItems(true);
-    });
+    Flow.Dataflow.react(_entries, () => filterItems(true));
     _lastUsedSearchTerm = null;
     _lastUsedIgnoreNaTerm = null;
-    filterItems = function (force) {
+    filterItems = force => {
       var entry;
       var filteredItems;
       var hide;
@@ -300,7 +278,7 @@ export function modelInput() {
       start = _currentPage() * MaxItemsPerPage;
       _visibleItems(_filteredItems().slice(start, start + MaxItemsPerPage));
     };
-    changeSelection = function (source, value) {
+    changeSelection = (source, value) => {
       var entry;
       var _i;
       var _len;
@@ -309,27 +287,23 @@ export function modelInput() {
         entry.isSelected(value);
       }
     };
-    selectFiltered = function () {
+    selectFiltered = () => {
       var entries;
       entries = _filteredItems();
-      blockSelectionUpdates(function () {
-        return changeSelection(entries, true);
-      });
+      blockSelectionUpdates(() => changeSelection(entries, true));
       return _selectionCount(entries.length);
     };
-    deselectFiltered = function () {
-      blockSelectionUpdates(function () {
-        return changeSelection(_filteredItems(), false);
-      });
+    deselectFiltered = () => {
+      blockSelectionUpdates(() => changeSelection(_filteredItems(), false));
       return _selectionCount(0);
     };
-    goToPreviousPage = function () {
+    goToPreviousPage = () => {
       if (_canGoToPreviousPage()) {
         _currentPage(_currentPage() - 1);
         filterItems();
       }
     };
-    goToNextPage = function () {
+    goToNextPage = () => {
       if (_canGoToNextPage()) {
         _currentPage(_currentPage() + 1);
         filterItems();
@@ -353,7 +327,7 @@ export function modelInput() {
     control.canGoToNextPage = _canGoToNextPage;
     return control;
   };
-  createCheckboxControl = function (parameter) {
+  createCheckboxControl = parameter => {
     var control;
     var _value;
     _value = Flow.Dataflow.signal(parameter.actual_value);
@@ -362,7 +336,7 @@ export function modelInput() {
     control.value = _value;
     return control;
   };
-  createControlFromParameter = function (parameter) {
+  createControlFromParameter = parameter => {
     switch (parameter.type) {
       case 'enum':
       case 'Key<Frame>':
@@ -394,7 +368,7 @@ export function modelInput() {
         return null;
     }
   };
-  H2O.ModelBuilderForm = function (_, _algorithm, _parameters) {
+  H2O.ModelBuilderForm = (_, _algorithm, _parameters) => {
     var collectParameters;
     var control;
     var createModel;
@@ -440,9 +414,7 @@ export function modelInput() {
     _isGrided = Flow.Dataflow.signal(false);
     _gridId = Flow.Dataflow.signal(`grid-${Flow.Util.uuid()}`);
     _gridStrategy = Flow.Dataflow.signal('Cartesian');
-    _isGridRandomDiscrete = Flow.Dataflow.lift(_gridStrategy, function (strategy) {
-      return strategy !== _gridStrategies[0];
-    });
+    _isGridRandomDiscrete = Flow.Dataflow.lift(_gridStrategy, strategy => strategy !== _gridStrategies[0]);
     _gridMaxModels = Flow.Dataflow.signal(1000);
     _gridMaxRuntime = Flow.Dataflow.signal(28800);
     _gridStoppingRounds = Flow.Dataflow.signal(0);
@@ -458,39 +430,35 @@ export function modelInput() {
     ];
     _gridStoppingMetric = Flow.Dataflow.signal(_gridStoppingMetrics[0]);
     _gridStoppingTolerance = Flow.Dataflow.signal(0.001);
-    _parametersByLevel = lodash.groupBy(_parameters, function (parameter) {
-      return parameter.level;
-    });
+    _parametersByLevel = lodash.groupBy(_parameters, parameter => parameter.level);
     _controlGroups = lodash.map([
       'critical',
       'secondary',
       'expert'
-    ], function (type) {
+    ], type => {
       var controls;
-      controls = lodash.filter(lodash.map(_parametersByLevel[type], createControlFromParameter), function (a) {
+      controls = lodash.filter(lodash.map(_parametersByLevel[type], createControlFromParameter), a => {
         if (a) {
           return true;
         }
         return false;
       });
-      lodash.forEach(controls, function (control) {
-        return Flow.Dataflow.react(control.isGrided, function () {
-          var isGrided;
-          var _i;
-          var _len;
-          isGrided = false;
-          for (_i = 0, _len = controls.length; _i < _len; _i++) {
-            control = controls[_i];
-            if (control.isGrided()) {
-              _isGrided(isGrided = true);
-              break;
-            }
+      lodash.forEach(controls, control => Flow.Dataflow.react(control.isGrided, () => {
+        var isGrided;
+        var _i;
+        var _len;
+        isGrided = false;
+        for (_i = 0, _len = controls.length; _i < _len; _i++) {
+          control = controls[_i];
+          if (control.isGrided()) {
+            _isGrided(isGrided = true);
+            break;
           }
-          if (!isGrided) {
-            return _isGrided(false);
-          }
-        });
-      });
+        }
+        if (!isGrided) {
+          return _isGrided(false);
+        }
+      }));
       return controls;
     });
     criticalControls = _controlGroups[0], secondaryControls = _controlGroups[1], expertControls = _controlGroups[2];
@@ -525,7 +493,7 @@ export function modelInput() {
         _form.push(control);
       }
     }
-    findControl = function (name) {
+    findControl = name => {
       var controls;
       var _l;
       var _len3;
@@ -541,15 +509,9 @@ export function modelInput() {
         }
       }
     };
-    parameterTemplateOf = function (control) {
-      return `flow-${control.kind}-model-parameter`;
-    };
-    findFormField = function (name) {
-      return lodash.find(_form, function (field) {
-        return field.name === name;
-      });
-    };
-    (function () {
+    parameterTemplateOf = control => `flow-${control.kind}-model-parameter`;
+    findFormField = name => lodash.find(_form, field => field.name === name);
+    ((() => {
       var foldColumnParameter;
       var ignoredColumnsParameter;
       var offsetColumnsParameter;
@@ -569,16 +531,14 @@ export function modelInput() {
       ], findFormField), trainingFrameParameter = _ref[0], validationFrameParameter = _ref[1], responseColumnParameter = _ref[2], ignoredColumnsParameter = _ref[3], offsetColumnsParameter = _ref[4], weightsColumnParameter = _ref[5], foldColumnParameter = _ref[6];
       if (trainingFrameParameter) {
         if (responseColumnParameter || ignoredColumnsParameter) {
-          return Flow.Dataflow.act(trainingFrameParameter.value, function (frameKey) {
+          return Flow.Dataflow.act(trainingFrameParameter.value, frameKey => {
             if (frameKey) {
-              _.requestFrameSummaryWithoutData(frameKey, function (error, frame) {
+              _.requestFrameSummaryWithoutData(frameKey, (error, frame) => {
                 var columnLabels;
                 var columnValues;
                 if (!error) {
-                  columnValues = lodash.map(frame.columns, function (column) {
-                    return column.label;
-                  });
-                  columnLabels = lodash.map(frame.columns, function (column) {
+                  columnValues = lodash.map(frame.columns, column => column.label);
+                  columnLabels = lodash.map(frame.columns, column => {
                     var missingPercent;
                     missingPercent = 100 * column.missing_count / frame.rows;
                     return {
@@ -604,7 +564,7 @@ export function modelInput() {
                     offsetColumnsParameter.values(columnValues);
                   }
                   if (responseColumnParameter && ignoredColumnsParameter) {
-                    return Flow.Dataflow.lift(responseColumnParameter.value, function (responseVariableName) {
+                    return Flow.Dataflow.lift(responseColumnParameter.value, responseVariableName => {
                     });
                   }
                 }
@@ -613,8 +573,8 @@ export function modelInput() {
           });
         }
       }
-    }());
-    collectParameters = function (includeUnchangedParameters) {
+    })());
+    collectParameters = includeUnchangedParameters => {
       var controls;
       var entry;
       var gridStoppingRounds;
@@ -678,7 +638,7 @@ export function modelInput() {
                   break;
                 case 'list':
                   if (value.length) {
-                    selectedValues = function () {
+                    selectedValues = (() => {
                       var _len6;
                       var _o;
                       var _results;
@@ -690,7 +650,7 @@ export function modelInput() {
                         }
                       }
                       return _results;
-                    }();
+                    })();
                     parameters[control.name] = selectedValues;
                   }
                   break;
@@ -725,7 +685,7 @@ export function modelInput() {
       }
       return parameters;
     };
-    performValidations = function (checkForErrors, go) {
+    performValidations = (checkForErrors, go) => {
       var parameters;
       _exception(null);
       parameters = collectParameters(true);
@@ -733,7 +693,7 @@ export function modelInput() {
         return go();
       }
       _validationFailureMessage('');
-      return _.requestModelInputValidation(_algorithm, parameters, function (error, modelBuilder) {
+      return _.requestModelInputValidation(_algorithm, parameters, (error, modelBuilder) => {
         var controls;
         var hasErrors;
         var validation;
@@ -750,9 +710,7 @@ export function modelInput() {
         }
         hasErrors = false;
         if (modelBuilder.messages.length) {
-          validationsByControlName = lodash.groupBy(modelBuilder.messages, function (validation) {
-            return validation.field_name;
-          });
+          validationsByControlName = lodash.groupBy(modelBuilder.messages, validation => validation.field_name);
           for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
             controls = _controlGroups[_l];
             for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
@@ -799,22 +757,22 @@ export function modelInput() {
         return go();
       });
     };
-    createModel = function () {
+    createModel = () => {
       _exception(null);
-      return performValidations(true, function () {
+      return performValidations(true, () => {
         var parameters;
         parameters = collectParameters(false);
         return _.insertAndExecuteCell('cs', `buildModel \'${_algorithm}\', ${flowPrelude.stringify(parameters)}`);
       });
     };
-    _revalidate = function (value) {
+    _revalidate = value => {
       if (value !== void 0) {
-        return performValidations(false, function () {
+        return performValidations(false, () => {
         });
       }
     };
     revalidate = lodash.throttle(_revalidate, 100, { leading: false });
-    performValidations(false, function () {
+    performValidations(false, () => {
       var controls;
       var _l;
       var _len3;
@@ -848,7 +806,7 @@ export function modelInput() {
       validationFailureMessage: _validationFailureMessage
     };
   };
-  H2O.ModelInput = function (_, _go, _algo, _opts) {
+  H2O.ModelInput = (_, _go, _algo, _opts) => {
     var createModel;
     var populateFramesAndColumns;
     var _algorithm;
@@ -859,29 +817,25 @@ export function modelInput() {
     _exception = Flow.Dataflow.signal(null);
     _algorithms = Flow.Dataflow.signal([]);
     _algorithm = Flow.Dataflow.signal(null);
-    _canCreateModel = Flow.Dataflow.lift(_algorithm, function (algorithm) {
+    _canCreateModel = Flow.Dataflow.lift(_algorithm, algorithm => {
       if (algorithm) {
         return true;
       }
       return false;
     });
     _modelForm = Flow.Dataflow.signal(null);
-    populateFramesAndColumns = function (frameKey, algorithm, parameters, go) {
+    populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
       var classificationParameter;
       var destinationKeyParameter;
-      destinationKeyParameter = lodash.find(parameters, function (parameter) {
-        return parameter.name === 'model_id';
-      });
+      destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
       if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
         destinationKeyParameter.actual_value = `${algorithm}-${Flow.Util.uuid()}`;
       }
-      classificationParameter = lodash.find(parameters, function (parameter) {
-        return parameter.name === 'do_classification';
-      });
+      classificationParameter = lodash.find(parameters, parameter => parameter.name === 'do_classification');
       if (classificationParameter) {
         classificationParameter.actual_value = true;
       }
-      return _.requestFrames(function (error, frames) {
+      return _.requestFrames((error, frames) => {
         var frame;
         var frameKeys;
         var frameParameters;
@@ -891,7 +845,7 @@ export function modelInput() {
         if (error) {
           // empty
         } else {
-          frameKeys = function () {
+          frameKeys = (() => {
             var _i;
             var _len;
             var _results;
@@ -901,10 +855,8 @@ export function modelInput() {
               _results.push(frame.frame_id.name);
             }
             return _results;
-          }();
-          frameParameters = lodash.filter(parameters, function (parameter) {
-            return parameter.type === 'Key<Frame>';
-          });
+          })();
+          frameParameters = lodash.filter(parameters, parameter => parameter.type === 'Key<Frame>');
           for (_i = 0, _len = frameParameters.length; _i < _len; _i++) {
             parameter = frameParameters[_i];
             parameter.values = frameKeys;
@@ -920,31 +872,23 @@ export function modelInput() {
         }
       });
     };
-    (function () {
-      return _.requestModelBuilders(function (error, modelBuilders) {
-        var frameKey;
-        _algorithms(modelBuilders);
-        _algorithm(_algo ? lodash.find(modelBuilders, function (builder) {
-          return builder.algo === _algo;
-        }) : void 0);
-        frameKey = _opts != null ? _opts.training_frame : void 0;
-        return Flow.Dataflow.act(_algorithm, function (builder) {
-          var algorithm;
-          var parameters;
-          if (builder) {
-            algorithm = builder.algo;
-            parameters = flowPrelude.deepClone(builder.parameters);
-            return populateFramesAndColumns(frameKey, algorithm, parameters, function () {
-              return _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters));
-            });
-          }
-          return _modelForm(null);
-        });
+    ((() => _.requestModelBuilders((error, modelBuilders) => {
+      var frameKey;
+      _algorithms(modelBuilders);
+      _algorithm(_algo ? lodash.find(modelBuilders, builder => builder.algo === _algo) : void 0);
+      frameKey = _opts != null ? _opts.training_frame : void 0;
+      return Flow.Dataflow.act(_algorithm, builder => {
+        var algorithm;
+        var parameters;
+        if (builder) {
+          algorithm = builder.algo;
+          parameters = flowPrelude.deepClone(builder.parameters);
+          return populateFramesAndColumns(frameKey, algorithm, parameters, () => _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters)));
+        }
+        return _modelForm(null);
       });
-    }());
-    createModel = function () {
-      return _modelForm().createModel();
-    };
+    }))());
+    createModel = () => _modelForm().createModel();
     lodash.defer(_go);
     return {
       parentException: _exception,

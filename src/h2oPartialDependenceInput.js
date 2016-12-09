@@ -20,10 +20,8 @@ export function h2oPartialDependenceInput(_, _go) {
   _selectedModel = Flow.Dataflow.signals(null);
   _selectedFrame = Flow.Dataflow.signal(null);
   _nbins = Flow.Dataflow.signal(20);
-  _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, function (dk, sf, sm, nb) {
-    return dk && sf && sm && nb;
-  });
-  _compute = function () {
+  _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
+  _compute = () => {
     var cs;
     var opts;
     if (!_canCompute()) {
@@ -38,12 +36,12 @@ export function h2oPartialDependenceInput(_, _go) {
     cs = `buildPartialDependence ${flowPrelude.stringify(opts)}`;
     return _.insertAndExecuteCell('cs', cs);
   };
-  _.requestFrames(function (error, frames) {
+  _.requestFrames((error, frames) => {
     var frame;
     if (error) {
       return _exception(new Flow.Error('Error fetching frame list.', error));
     }
-    return _frames(function () {
+    return _frames((() => {
       var _i;
       var _len;
       var _results;
@@ -55,14 +53,14 @@ export function h2oPartialDependenceInput(_, _go) {
         }
       }
       return _results;
-    }());
+    })());
   });
-  _.requestModels(function (error, models) {
+  _.requestModels((error, models) => {
     var model;
     if (error) {
       return _exception(new Flow.Error('Error fetching model list.', error));
     }
-    return _models(function () {
+    return _models((() => {
       var _i;
       var _len;
       var _results;
@@ -72,7 +70,7 @@ export function h2oPartialDependenceInput(_, _go) {
         _results.push(model.model_id.name);
       }
       return _results;
-    }());
+    })());
   });
   lodash.defer(_go);
   return {

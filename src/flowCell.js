@@ -37,32 +37,24 @@ export function flowCell(_, _renderers, type, input) {
   }
   _guid = lodash.uniqueId();
   _type = Flow.Dataflow.signal(type);
-  _render = Flow.Dataflow.lift(_type, function (type) {
-    return _renderers[type](_guid);
-  });
-  _isCode = Flow.Dataflow.lift(_render, function (render) {
-    return render.isCode;
-  });
+  _render = Flow.Dataflow.lift(_type, type => _renderers[type](_guid));
+  _isCode = Flow.Dataflow.lift(_render, render => render.isCode);
   _isSelected = Flow.Dataflow.signal(false);
   _isActive = Flow.Dataflow.signal(false);
   _hasError = Flow.Dataflow.signal(false);
   _isBusy = Flow.Dataflow.signal(false);
-  _isReady = Flow.Dataflow.lift(_isBusy, function (isBusy) {
-    return !isBusy;
-  });
+  _isReady = Flow.Dataflow.lift(_isBusy, isBusy => !isBusy);
   _time = Flow.Dataflow.signal('');
   _hasInput = Flow.Dataflow.signal(true);
   _input = Flow.Dataflow.signal(input);
   _outputs = Flow.Dataflow.signals([]);
   _errors = [];
   _result = Flow.Dataflow.signal(null);
-  _hasOutput = Flow.Dataflow.lift(_outputs, function (outputs) {
-    return outputs.length > 0;
-  });
+  _hasOutput = Flow.Dataflow.lift(_outputs, outputs => outputs.length > 0);
   _isInputVisible = Flow.Dataflow.signal(true);
   _isOutputHidden = Flow.Dataflow.signal(false);
   _actions = {};
-  Flow.Dataflow.act(_isActive, function (isActive) {
+  Flow.Dataflow.act(_isActive, isActive => {
     if (isActive) {
       _.selectCell(self);
       _hasInput(true);
@@ -71,32 +63,24 @@ export function flowCell(_, _renderers, type, input) {
       }
     }
   });
-  Flow.Dataflow.act(_isSelected, function (isSelected) {
+  Flow.Dataflow.act(_isSelected, isSelected => {
     if (!isSelected) {
       return _isActive(false);
     }
   });
-  select = function () {
+  select = () => {
     _.selectCell(self, false);
     return true;
   };
-  navigate = function () {
+  navigate = () => {
     _.selectCell(self);
     return true;
   };
-  activate = function () {
-    return _isActive(true);
-  };
-  clip = function () {
-    return _.saveClip('user', _type(), _input());
-  };
-  toggleInput = function () {
-    return _isInputVisible(!_isInputVisible());
-  };
-  toggleOutput = function () {
-    return _isOutputHidden(!_isOutputHidden());
-  };
-  clear = function () {
+  activate = () => _isActive(true);
+  clip = () => _.saveClip('user', _type(), _input());
+  toggleInput = () => _isInputVisible(!_isInputVisible());
+  toggleOutput = () => _isOutputHidden(!_isOutputHidden());
+  clear = () => {
     _result(null);
     _outputs([]);
     _errors.length = 0;
@@ -105,7 +89,7 @@ export function flowCell(_, _renderers, type, input) {
       return _hasInput(true);
     }
   };
-  execute = function (go) {
+  execute = go => {
     var render;
     var startTime;
     startTime = Date.now();

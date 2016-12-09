@@ -9,21 +9,17 @@ export function h2oGridsOutput(_, _go, _grids) {
   var initialize;
   var _gridViews;
   _gridViews = Flow.Dataflow.signal([]);
-  createGridView = function (grid) {
+  createGridView = grid => {
     var view;
-    view = function () {
-      return _.insertAndExecuteCell('cs', `getGrid ${flowPrelude.stringify(grid.grid_id.name)}`);
-    };
+    view = () => _.insertAndExecuteCell('cs', `getGrid ${flowPrelude.stringify(grid.grid_id.name)}`);
     return {
       key: grid.grid_id.name,
       size: grid.model_ids.length,
       view
     };
   };
-  buildModel = function () {
-    return _.insertAndExecuteCell('cs', 'buildModel');
-  };
-  initialize = function (grids) {
+  buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
+  initialize = grids => {
     _gridViews(lodash.map(grids, createGridView));
     return lodash.defer(_go);
   };

@@ -42,9 +42,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
   _isLocked = Flow.Dataflow.signal();
   _isHealthy = Flow.Dataflow.signal();
   _nodes = Flow.Dataflow.signals();
-  formatMilliseconds = function (ms) {
-    return Flow.Util.fromNow(new Date(new Date().getTime() - ms));
-  };
+  formatMilliseconds = ms => Flow.Util.fromNow(new Date(new Date().getTime() - ms));
   format3f = d3.format('.3f');
   _sizes = [
     'B',
@@ -57,7 +55,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     'ZB',
     'YB'
   ];
-  prettyPrintBytes = function (bytes) {
+  prettyPrintBytes = bytes => {
     var i;
     if (bytes === 0) {
       return '-';
@@ -65,7 +63,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     i = Math.floor(Math.log(bytes) / Math.log(1024));
     return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${_sizes[i]}`;
   };
-  formatThreads = function (fjs) {
+  formatThreads = fjs => {
     var i;
     var max_lo;
     var s;
@@ -92,7 +90,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     s += ']';
     return s;
   };
-  sum = function (nodes, attrOf) {
+  sum = (nodes, attrOf) => {
     var node;
     var total;
     var _i;
@@ -104,9 +102,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     }
     return total;
   };
-  avg = function (nodes, attrOf) {
-    return sum(nodes, attrOf) / nodes.length;
-  };
+  avg = (nodes, attrOf) => sum(nodes, attrOf) / nodes.length;
   _headers = [
     [
       '&nbsp;',
@@ -193,32 +189,30 @@ export function h2oCloudOutput(_, _go, _cloud) {
       false
     ]
   ];
-  createNodeRow = function (node) {
-    return [
-      node.healthy,
-      node.ip_port,
-      moment(new Date(node.last_ping)).fromNow(),
-      node.num_cpus,
-      format3f(node.sys_load),
-      node.my_cpu_pct,
-      node.sys_cpu_pct,
-      format3f(node.gflops),
-      `${prettyPrintBytes(node.mem_bw)} / s`,
-      `${prettyPrintBytes(node.mem_value_size)} / ${prettyPrintBytes(node.total_value_size)}`,
-      `${Math.floor(node.mem_value_size * 100 / node.total_value_size)}%`,
-      `${prettyPrintBytes(node.free_mem)} / ${prettyPrintBytes(node.tot_mem)} / ${prettyPrintBytes(node.max_mem)}`,
-      `${prettyPrintBytes(node.free_disk)} / ${prettyPrintBytes(node.max_disk)}`,
-      `${Math.floor(node.free_disk * 100 / node.max_disk)}%`,
-      node.pid,
-      node.num_keys,
-      node.tcps_active,
-      node.open_fds,
-      node.rpcs_active,
-      formatThreads(node.fjthrds),
-      formatThreads(node.fjqueue)
-    ];
-  };
-  createTotalRow = function (cloud) {
+  createNodeRow = node => [
+    node.healthy,
+    node.ip_port,
+    moment(new Date(node.last_ping)).fromNow(),
+    node.num_cpus,
+    format3f(node.sys_load),
+    node.my_cpu_pct,
+    node.sys_cpu_pct,
+    format3f(node.gflops),
+    `${prettyPrintBytes(node.mem_bw)} / s`,
+    `${prettyPrintBytes(node.mem_value_size)} / ${prettyPrintBytes(node.total_value_size)}`,
+    `${Math.floor(node.mem_value_size * 100 / node.total_value_size)}%`,
+    `${prettyPrintBytes(node.free_mem)} / ${prettyPrintBytes(node.tot_mem)} / ${prettyPrintBytes(node.max_mem)}`,
+    `${prettyPrintBytes(node.free_disk)} / ${prettyPrintBytes(node.max_disk)}`,
+    `${Math.floor(node.free_disk * 100 / node.max_disk)}%`,
+    node.pid,
+    node.num_keys,
+    node.tcps_active,
+    node.open_fds,
+    node.rpcs_active,
+    formatThreads(node.fjthrds),
+    formatThreads(node.fjqueue)
+  ];
+  createTotalRow = cloud => {
     var nodes;
     nodes = cloud.nodes;
     return [
@@ -245,7 +239,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
       '-'
     ];
   };
-  createGrid = function (cloud, isExpanded) {
+  createGrid = (cloud, isExpanded) => {
     var caption;
     var cell;
     var danger;
@@ -268,7 +262,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'i.fa.fa-check-circle.text-success', 'i.fa.fa-exclamation-circle.text-danger'), grid = _ref[0], table = _ref[1], thead = _ref[2], tbody = _ref[3], tr = _ref[4], th = _ref[5], td = _ref[6], success = _ref[7], danger = _ref[8];
     nodeRows = lodash.map(cloud.nodes, createNodeRow);
     nodeRows.push(createTotalRow(cloud));
-    ths = function () {
+    ths = (() => {
       var _i;
       var _len;
       var _ref1;
@@ -281,15 +275,15 @@ export function h2oCloudOutput(_, _go, _cloud) {
         }
       }
       return _results;
-    }();
-    trs = function () {
+    })();
+    trs = (() => {
       var _i;
       var _len;
       var _results;
       _results = [];
       for (_i = 0, _len = nodeRows.length; _i < _len; _i++) {
         row = nodeRows[_i];
-        tds = function () {
+        tds = (() => {
           var _j;
           var _len1;
           var _results1;
@@ -305,17 +299,17 @@ export function h2oCloudOutput(_, _go, _cloud) {
             }
           }
           return _results1;
-        }();
+        })();
         _results.push(tr(tds));
       }
       return _results;
-    }();
+    })();
     return Flow.HTML.render('div', grid([table([
       thead(tr(ths)),
       tbody(trs)
     ])]));
   };
-  updateCloud = function (cloud, isExpanded) {
+  updateCloud = (cloud, isExpanded) => {
     _name(cloud.cloud_name);
     _version(cloud.version);
     _hasConsensus(cloud.consensus);
@@ -325,12 +319,10 @@ export function h2oCloudOutput(_, _go, _cloud) {
     _isHealthy(cloud.cloud_healthy);
     return _nodes(createGrid(cloud, isExpanded));
   };
-  toggleRefresh = function () {
-    return _isLive(!_isLive());
-  };
-  refresh = function () {
+  toggleRefresh = () => _isLive(!_isLive());
+  refresh = () => {
     _isBusy(true);
-    return _.requestCloud(function (error, cloud) {
+    return _.requestCloud((error, cloud) => {
       _isBusy(false);
       if (error) {
         _exception(Flow.Failure(_, new Flow.Error('Error fetching cloud status', error)));
@@ -342,17 +334,13 @@ export function h2oCloudOutput(_, _go, _cloud) {
       }
     });
   };
-  Flow.Dataflow.act(_isLive, function (isLive) {
+  Flow.Dataflow.act(_isLive, isLive => {
     if (isLive) {
       return refresh();
     }
   });
-  toggleExpansion = function () {
-    return _isExpanded(!_isExpanded());
-  };
-  Flow.Dataflow.act(_isExpanded, function (isExpanded) {
-    return updateCloud(_cloud, isExpanded);
-  });
+  toggleExpansion = () => _isExpanded(!_isExpanded());
+  Flow.Dataflow.act(_isExpanded, isExpanded => updateCloud(_cloud, isExpanded));
   updateCloud(_cloud, _isExpanded());
   lodash.defer(_go);
   return {

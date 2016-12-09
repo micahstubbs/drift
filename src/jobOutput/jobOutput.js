@@ -12,7 +12,7 @@ export function jobOutput() {
     done: '#ccc',
     running: '#f0ad4e'
   };
-  getJobOutputStatusColor = function (status) {
+  getJobOutputStatusColor = status => {
     switch (status) {
       case 'DONE':
         return jobOutputStatusColors.done;
@@ -23,10 +23,8 @@ export function jobOutput() {
         return jobOutputStatusColors.failed;
     }
   };
-  getJobProgressPercent = function (progress) {
-    return `${Math.ceil(100 * progress)}%`;
-  };
-  H2O.JobOutput = function (_, _go, _job) {
+  getJobProgressPercent = progress => `${Math.ceil(100 * progress)}%`;
+  H2O.JobOutput = (_, _go, _job) => {
     var canView;
     var cancel;
     var initialize;
@@ -56,7 +54,7 @@ export function jobOutput() {
     _key = _job.key.name;
     _description = _job.description;
     _destinationKey = _job.dest.name;
-    _destinationType = function () {
+    _destinationType = (() => {
       switch (_job.dest.type) {
         case 'Key<Frame>':
           return 'Frame';
@@ -73,7 +71,7 @@ export function jobOutput() {
         default:
           return 'Unknown';
       }
-    }();
+    })();
     _runTime = Flow.Dataflow.signal(null);
     _remainingTime = Flow.Dataflow.signal(null);
     _progress = Flow.Dataflow.signal(null);
@@ -84,15 +82,13 @@ export function jobOutput() {
     _messages = Flow.Dataflow.signal(null);
     _canView = Flow.Dataflow.signal(false);
     _canCancel = Flow.Dataflow.signal(false);
-    isJobRunning = function (job) {
-      return job.status === 'CREATED' || job.status === 'RUNNING';
-    };
+    isJobRunning = job => job.status === 'CREATED' || job.status === 'RUNNING';
     messageIcons = {
       ERROR: 'fa-times-circle red',
       WARN: 'fa-warning orange',
       INFO: 'fa-info-circle'
     };
-    canView = function (job) {
+    canView = job => {
       switch (_destinationType) {
         case 'Model':
         case 'Grid':
@@ -101,7 +97,7 @@ export function jobOutput() {
           return !isJobRunning(job);
       }
     };
-    updateJob = function (job) {
+    updateJob = job => {
       var cause;
       var message;
       var messages;
@@ -112,7 +108,7 @@ export function jobOutput() {
       _status(job.status);
       _statusColor(getJobOutputStatusColor(job.status));
       if (job.error_count) {
-        messages = function () {
+        messages = (() => {
           var _i;
           var _len;
           var _ref;
@@ -129,7 +125,7 @@ export function jobOutput() {
             }
           }
           return _results;
-        }();
+        })();
         _messages(messages);
       } else if (job.exception) {
         cause = new Error(job.exception);
@@ -141,9 +137,9 @@ export function jobOutput() {
       _canView(canView(job));
       return _canCancel(isJobRunning(job));
     };
-    refresh = function () {
+    refresh = () => {
       _isBusy(true);
-      return _.requestJob(_key, function (error, job) {
+      return _.requestJob(_key, (error, job) => {
         _isBusy(false);
         if (error) {
           _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
@@ -162,12 +158,12 @@ export function jobOutput() {
         }
       });
     };
-    Flow.Dataflow.act(_isLive, function (isLive) {
+    Flow.Dataflow.act(_isLive, isLive => {
       if (isLive) {
         return refresh();
       }
     });
-    view = function () {
+    view = () => {
       if (!_canView()) {
         return;
       }
@@ -186,15 +182,13 @@ export function jobOutput() {
           return alert(`This frame was exported to\n${_job.dest.name}`);
       }
     };
-    cancel = function () {
-      return _.requestCancelJob(_key, function (error, result) {
-        if (error) {
-          return console.debug(error);
-        }
-        return updateJob(_job);
-      });
-    };
-    initialize = function (job) {
+    cancel = () => _.requestCancelJob(_key, (error, result) => {
+      if (error) {
+        return console.debug(error);
+      }
+      return updateJob(_job);
+    });
+    initialize = job => {
       updateJob(job);
       if (isJobRunning(job)) {
         return _isLive(true);

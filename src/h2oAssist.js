@@ -3,19 +3,18 @@ export function h2oAssist(_, _go, _items) {
   var createAssistItem;
   var item;
   var name;
-  createAssistItem = function (name, item) {
-    return {
-      name,
-      description: item.description,
-      icon: `fa fa-${item.icon} flow-icon`,
-      execute() {
-        return _.insertAndExecuteCell('cs', name);
-      }
-    };
-  };
+  createAssistItem = (name, item) => ({
+    name,
+    description: item.description,
+    icon: `fa fa-${item.icon} flow-icon`,
+
+    execute() {
+      return _.insertAndExecuteCell('cs', name);
+    }
+  });
   lodash.defer(_go);
   return {
-    routines: function () {
+    routines: (() => {
       var _results;
       _results = [];
       for (name in _items) {
@@ -25,7 +24,7 @@ export function h2oAssist(_, _go, _items) {
         }
       }
       return _results;
-    }(),
+    })(),
     template: 'flow-assist'
   };
 }

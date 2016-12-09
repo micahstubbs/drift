@@ -4,12 +4,10 @@ export function h2oDataFramesOutput(_, _go, _dataFrames) {
   var createDataFrameView;
   var _dataFramesViews;
   _dataFramesViews = Flow.Dataflow.signal([]);
-  createDataFrameView = function (dataFrame) {
-    return {
-      dataframe_id: dataFrame.dataframe_id,
-      partitions: dataFrame.partitions
-    };
-  };
+  createDataFrameView = dataFrame => ({
+    dataframe_id: dataFrame.dataframe_id,
+    partitions: dataFrame.partitions
+  });
   _dataFramesViews(lodash.map(_dataFrames, createDataFrameView));
   lodash.defer(_go);
   return {

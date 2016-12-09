@@ -15,7 +15,7 @@ export function clipboard() {
     'buildModel',
     'predict'
   ];
-  Flow.Clipboard = function (_) {
+  Flow.Clipboard = _ => {
     var addClip;
     var createClip;
     var emptyTrash;
@@ -33,7 +33,7 @@ export function clipboard() {
     var _trashClips;
     var _userClipCount;
     var _userClips;
-    lengthOf = function (array) {
+    lengthOf = array => {
       if (array.length) {
         return `(${array.length})`;
       }
@@ -43,28 +43,20 @@ export function clipboard() {
     _systemClipCount = Flow.Dataflow.lift(_systemClips, lengthOf);
     _userClips = Flow.Dataflow.signals([]);
     _userClipCount = Flow.Dataflow.lift(_userClips, lengthOf);
-    _hasUserClips = Flow.Dataflow.lift(_userClips, function (clips) {
-      return clips.length > 0;
-    });
+    _hasUserClips = Flow.Dataflow.lift(_userClips, clips => clips.length > 0);
     _trashClips = Flow.Dataflow.signals([]);
     _trashClipCount = Flow.Dataflow.lift(_trashClips, lengthOf);
-    _hasTrashClips = Flow.Dataflow.lift(_trashClips, function (clips) {
-      return clips.length > 0;
-    });
-    createClip = function (_list, _type, _input, _canRemove) {
+    _hasTrashClips = Flow.Dataflow.lift(_trashClips, clips => clips.length > 0);
+    createClip = (_list, _type, _input, _canRemove) => {
       var execute;
       var insert;
       var self;
       if (_canRemove == null) {
         _canRemove = true;
       }
-      execute = function () {
-        return _.insertAndExecuteCell(_type, _input);
-      };
-      insert = function () {
-        return _.insertCell(_type, _input);
-      };
-      flowPrelude.remove = function () {
+      execute = () => _.insertAndExecuteCell(_type, _input);
+      insert = () => _.insertCell(_type, _input);
+      flowPrelude.remove = () => {
         if (_canRemove) {
           return removeClip(_list, self);
         }
@@ -78,10 +70,8 @@ export function clipboard() {
         canRemove: _canRemove
       };
     };
-    addClip = function (list, type, input) {
-      return list.push(createClip(list, type, input));
-    };
-    removeClip = function (list, clip) {
+    addClip = (list, type, input) => list.push(createClip(list, type, input));
+    removeClip = (list, clip) => {
       if (list === _userClips) {
         _userClips.remove(clip);
         saveUserClips();
@@ -89,47 +79,34 @@ export function clipboard() {
       }
       return _trashClips.remove(clip);
     };
-    emptyTrash = function () {
-      return _trashClips.removeAll();
-    };
-    loadUserClips = function () {
-      return _.requestObjectExists('environment', 'clips', function (error, exists) {
-        if (exists) {
-          return _.requestObject('environment', 'clips', function (error, doc) {
-            if (!error) {
-              return _userClips(lodash.map(doc.clips, function (clip) {
-                return createClip(_userClips, clip.type, clip.input);
-              }));
-            }
-          });
-        }
-      });
-    };
-    serializeUserClips = function () {
-      return {
-        version: '1.0.0',
-        clips: lodash.map(_userClips(), function (clip) {
-          return {
-            type: clip.type,
-            input: clip.input
-          };
-        })
-      };
-    };
-    saveUserClips = function () {
-      return _.requestPutObject('environment', 'clips', serializeUserClips(), function (error) {
-        if (error) {
-          _.alert(`Error saving clips: ${error.message}`);
-        }
-      });
-    };
-    initialize = function () {
-      _systemClips(lodash.map(SystemClips, function (input) {
-        return createClip(_systemClips, 'cs', input, false);
-      }));
-      return Flow.Dataflow.link(_.ready, function () {
+    emptyTrash = () => _trashClips.removeAll();
+    loadUserClips = () => _.requestObjectExists('environment', 'clips', (error, exists) => {
+      if (exists) {
+        return _.requestObject('environment', 'clips', (error, doc) => {
+          if (!error) {
+            return _userClips(lodash.map(doc.clips, clip => createClip(_userClips, clip.type, clip.input)));
+          }
+        });
+      }
+    });
+    serializeUserClips = () => ({
+      version: '1.0.0',
+
+      clips: lodash.map(_userClips(), clip => ({
+        type: clip.type,
+        input: clip.input
+      }))
+    });
+    saveUserClips = () => _.requestPutObject('environment', 'clips', serializeUserClips(), error => {
+      if (error) {
+        _.alert(`Error saving clips: ${error.message}`);
+      }
+    });
+    initialize = () => {
+      _systemClips(lodash.map(SystemClips, input => createClip(_systemClips, 'cs', input, false)));
+      return Flow.Dataflow.link(_.ready, () => {
         loadUserClips();
-        return Flow.Dataflow.link(_.saveClip, function (category, type, input) {
+        return Flow.Dataflow.link(_.saveClip, (category, type, input) => {
           input = input.trim();
           if (input) {
             if (category === 'user') {

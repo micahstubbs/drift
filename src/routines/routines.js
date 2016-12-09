@@ -83,9 +83,7 @@ export function routines() {
     lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
     lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
   }
-  createTempKey = function () {
-    return `flow_${Flow.Util.uuid().replace(/\-/g, '')}`;
-  };
+  createTempKey = () => `flow_${Flow.Util.uuid().replace(/\-/g, '')}`;
   createVector = lightning.createVector;
   createFactor = lightning.createFactor;
   createList = lightning.createList;
@@ -136,7 +134,7 @@ export function routines() {
       icon: 'bolt'
     }
   };
-  parseNumbers = function (source) {
+  parseNumbers = source => {
     var i;
     var target;
     var value;
@@ -149,7 +147,7 @@ export function routines() {
     }
     return target;
   };
-  convertColumnToVector = function (column, data) {
+  convertColumnToVector = (column, data) => {
     switch (column.type) {
       case 'byte':
       case 'short':
@@ -168,11 +166,11 @@ export function routines() {
         return createList(column.name, data);
     }
   };
-  convertTableToFrame = function (table, tableName, metadata) {
+  convertTableToFrame = (table, tableName, metadata) => {
     var column;
     var i;
     var vectors;
-    vectors = function () {
+    vectors = (() => {
       var _i;
       var _len;
       var _ref;
@@ -184,20 +182,18 @@ export function routines() {
         _results.push(convertColumnToVector(column, table.data[i]));
       }
       return _results;
-    }();
+    })();
     return createDataframe(tableName, vectors, lodash.range(table.rowcount), null, metadata);
   };
-  getTwoDimData = function (table, columnName) {
+  getTwoDimData = (table, columnName) => {
     var columnIndex;
-    columnIndex = lodash.findIndex(table.columns, function (column) {
-      return column.name === columnName;
-    });
+    columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
     if (columnIndex >= 0) {
       return table.data[columnIndex];
     }
     return void 0;
   };
-  format4f = function (number) {
+  format4f = number => {
     if (number) {
       if (number === 'NaN') {
         return void 0;
@@ -206,7 +202,7 @@ export function routines() {
     }
     return number;
   };
-  format6fi = function (number) {
+  format6fi = number => {
     if (number) {
       if (number === 'NaN') {
         return void 0;
@@ -215,7 +211,7 @@ export function routines() {
     }
     return number;
   };
-  combineTables = function (tables) {
+  combineTables = tables => {
     var columnCount;
     var columnData;
     var data;
@@ -260,7 +256,7 @@ export function routines() {
       rowcount: rowCount
     };
   };
-  createArrays = function (count, length) {
+  createArrays = (count, length) => {
     var i;
     var _i;
     var _results;
@@ -270,7 +266,7 @@ export function routines() {
     }
     return _results;
   };
-  parseNaNs = function (source) {
+  parseNaNs = source => {
     var element;
     var i;
     var target;
@@ -283,7 +279,7 @@ export function routines() {
     }
     return target;
   };
-  parseNulls = function (source) {
+  parseNulls = source => {
     var element;
     var i;
     var target;
@@ -296,7 +292,7 @@ export function routines() {
     }
     return target;
   };
-  parseAndFormatArray = function (source) {
+  parseAndFormatArray = source => {
     var element;
     var i;
     var target;
@@ -309,7 +305,7 @@ export function routines() {
     }
     return target;
   };
-  parseAndFormatObjectArray = function (source) {
+  parseAndFormatObjectArray = source => {
     var element;
     var i;
     var target;
@@ -324,7 +320,7 @@ export function routines() {
     }
     return target;
   };
-  repeatValues = function (count, value) {
+  repeatValues = (count, value) => {
     var i;
     var target;
     var _i;
@@ -334,7 +330,7 @@ export function routines() {
     }
     return target;
   };
-  concatArrays = function (arrays) {
+  concatArrays = arrays => {
     var a;
     switch (arrays.length) {
       case 0:
@@ -346,7 +342,7 @@ export function routines() {
         return a.concat(...lodash.tail(arrays));
     }
   };
-  computeTruePositiveRate = function (cm) {
+  computeTruePositiveRate = cm => {
     var fn;
     var fp;
     var tn;
@@ -356,7 +352,7 @@ export function routines() {
     (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
     return tp / (tp + fn);
   };
-  computeFalsePositiveRate = function (cm) {
+  computeFalsePositiveRate = cm => {
     var fn;
     var fp;
     var tn;
@@ -366,7 +362,7 @@ export function routines() {
     (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
     return fp / (fp + tn);
   };
-  formatConfusionMatrix = function (cm) {
+  formatConfusionMatrix = cm => {
     var domain;
     var fn;
     var fnr;
@@ -420,14 +416,14 @@ export function routines() {
       ])
     ])]);
   };
-  formulateGetPredictionsOrigin = function (opts) {
+  formulateGetPredictionsOrigin = opts => {
     var frameKey;
     var modelKey;
     var opt;
     var sanitizedOpt;
     var sanitizedOpts;
     if (lodash.isArray(opts)) {
-      sanitizedOpts = function () {
+      sanitizedOpts = (() => {
         var _i;
         var _len;
         var _results;
@@ -444,7 +440,7 @@ export function routines() {
           _results.push(sanitizedOpt);
         }
         return _results;
-      }();
+      })();
       return `getPredictions ${flowPrelude.stringify(sanitizedOpts)}`;
     }
     modelKey = opts.model, frameKey = opts.frame;
@@ -457,7 +453,7 @@ export function routines() {
     }
     return 'getPredictions()';
   };
-  H2O.Routines = function (_) {
+  H2O.Routines = _ => {
     var asDataFrame;
     var asH2OFrameFromDF;
     var asH2OFrameFromRDD;
@@ -671,32 +667,18 @@ export function routines() {
       go = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
       return Flow.Async.join(args, Flow.Async.applicate(go));
     };
-    _apply = function (go, args) {
-      return Flow.Async.join(args, go);
-    };
+    _apply = (go, args) => Flow.Async.join(args, go);
     _isFuture = Flow.Async.isFuture;
     _async = Flow.Async.async;
     _get = Flow.Async.get;
-    proceed = function (func, args, go) {
-      return go(null, render_({}, function () {
-        return func(...[_].concat(args || []));
-      }));
-    };
-    proceed = function (func, args, go) {
-      return go(null, render_(...[
-              {},
-        func
-      ].concat(args || [])));
-    };
-    extendGuiForm = function (form) {
-      return render_(form, flowForm, form);
-    };
-    createGui = function (controls, go) {
-      return go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
-    };
-    gui = function (controls) {
-      return _fork(createGui, controls);
-    };
+    proceed = (func, args, go) => go(null, render_({}, () => func(...[_].concat(args || []))));
+    proceed = (func, args, go) => go(null, render_(...[
+            {},
+      func
+    ].concat(args || [])));
+    extendGuiForm = form => render_(form, flowForm, form);
+    createGui = (controls, go) => go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
+    gui = controls => _fork(createGui, controls);
     _ref = Flow.Gui;
     for (name in _ref) {
       if ({}.hasOwnProperty.call(_ref, name)) {
@@ -704,10 +686,8 @@ export function routines() {
         gui[name] = f;
       }
     }
-    flow_ = function (raw) {
-      return raw._flow_ || (raw._flow_ = { _cache_: {} });
-    };
-    render_ = function (raw, render) {
+    flow_ = raw => raw._flow_ || (raw._flow_ = { _cache_: {} });
+    render_ = (raw, render) => {
       flow_(raw).render = render;
       return raw;
     };
@@ -716,15 +696,13 @@ export function routines() {
       var raw;
       var render;
       raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
-      flow_(raw).render = function (go) {
-        return render(...[
-          _,
-          go
-        ].concat(args));
-      };
+      flow_(raw).render = go => render(...[
+        _,
+        go
+      ].concat(args));
       return raw;
     };
-    inspect_ = function (raw, inspectors) {
+    inspect_ = (raw, inspectors) => {
       var attr;
       var root;
       root = flow_(raw);
@@ -745,7 +723,7 @@ export function routines() {
       }
       return inspect$2(a, b);
     };
-    inspect$1 = function (obj) {
+    inspect$1 = obj => {
       var attr;
       var inspections;
       var inspectors;
@@ -766,7 +744,7 @@ export function routines() {
       }
       return {};
     };
-    ls = function (obj) {
+    ls = obj => {
       var inspectors;
       var _ref1;
       if (_isFuture(obj)) {
@@ -777,7 +755,7 @@ export function routines() {
       }
       return [];
     };
-    inspect$2 = function (attr, obj) {
+    inspect$2 = (attr, obj) => {
       var cached;
       var inspection;
       var inspectors;
@@ -811,26 +789,20 @@ export function routines() {
       render_(inspection, h2oInspectOutput, inspection);
       return inspection;
     };
-    _plot = function (render, go) {
-      return render(function (error, vis) {
-        if (error) {
-          return go(new Flow.Error('Error rendering vis.', error));
-        }
-        return go(null, vis);
-      });
-    };
-    extendPlot = function (vis) {
-      return render_(vis, h2oPlotOutput, vis.element);
-    };
-    createPlot = function (f, go) {
-      return _plot(f(lightning), function (error, vis) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendPlot(vis));
-      });
-    };
-    plot = function (f) {
+    _plot = (render, go) => render((error, vis) => {
+      if (error) {
+        return go(new Flow.Error('Error rendering vis.', error));
+      }
+      return go(null, vis);
+    });
+    extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
+    createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendPlot(vis));
+    });
+    plot = f => {
       if (_isFuture(f)) {
         return _fork(proceed, h2oPlotInput, f);
       } else if (lodash.isFunction(f)) {
@@ -838,12 +810,8 @@ export function routines() {
       }
       return assist(plot);
     };
-    grid = function (f) {
-      return plot(function (g) {
-        return g(g.select(), g.from(f));
-      });
-    };
-    transformBinomialMetrics = function (metrics) {
+    grid = f => plot(g => g(g.select(), g.from(f)));
+    transformBinomialMetrics = metrics => {
       var cms;
       var domain;
       var fns;
@@ -859,7 +827,7 @@ export function routines() {
         tns = getTwoDimData(scores, 'tns');
         fps = getTwoDimData(scores, 'fps');
         fns = getTwoDimData(scores, 'fns');
-        cms = function () {
+        cms = (() => {
           var _i;
           var _len;
           var _results;
@@ -881,7 +849,7 @@ export function routines() {
             });
           }
           return _results;
-        }();
+        })();
         scores.columns.push({
           name: 'CM',
           description: 'CM',
@@ -892,46 +860,32 @@ export function routines() {
       }
       return metrics;
     };
-    extendCloud = function (cloud) {
-      return render_(cloud, h2oCloudOutput, cloud);
-    };
-    extendTimeline = function (timeline) {
-      return render_(timeline, h2oTimelineOutput, timeline);
-    };
-    extendStackTrace = function (stackTrace) {
-      return render_(stackTrace, h2oStackTraceOutput, stackTrace);
-    };
-    extendLogFile = function (cloud, nodeIndex, fileType, logFile) {
-      return render_(logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
-    };
-    inspectNetworkTestResult = function (testResult) {
-      return function () {
-        return convertTableToFrame(testResult.table, testResult.table.name, {
-          description: testResult.table.name,
-          origin: 'testNetwork'
-        });
-      };
-    };
-    extendNetworkTest = function (testResult) {
+    extendCloud = cloud => render_(cloud, h2oCloudOutput, cloud);
+    extendTimeline = timeline => render_(timeline, h2oTimelineOutput, timeline);
+    extendStackTrace = stackTrace => render_(stackTrace, h2oStackTraceOutput, stackTrace);
+    extendLogFile = (cloud, nodeIndex, fileType, logFile) => render_(logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
+    inspectNetworkTestResult = testResult => () => convertTableToFrame(testResult.table, testResult.table.name, {
+      description: testResult.table.name,
+      origin: 'testNetwork'
+    });
+    extendNetworkTest = testResult => {
       inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
       return render_(testResult, h2oNetworkTestOutput, testResult);
     };
-    extendProfile = function (profile) {
-      return render_(profile, h2oProfileOutput, profile);
-    };
-    extendFrames = function (frames) {
+    extendProfile = profile => render_(profile, h2oProfileOutput, profile);
+    extendFrames = frames => {
       render_(frames, h2oFramesOutput, frames);
       return frames;
     };
-    extendSplitFrameResult = function (result) {
+    extendSplitFrameResult = result => {
       render_(result, h2oSplitFrameOutput, result);
       return result;
     };
-    extendMergeFramesResult = function (result) {
+    extendMergeFramesResult = result => {
       render_(result, h2oMergeFramesOutput, result);
       return result;
     };
-    extendPartialDependence = function (result) {
+    extendPartialDependence = result => {
       var data;
       var i;
       var inspections;
@@ -950,7 +904,7 @@ export function routines() {
       render_(result, h2oPartialDependenceOutput, result);
       return result;
     };
-    getModelParameterValue = function (type, value) {
+    getModelParameterValue = (type, value) => {
       switch (type) {
         case 'Key<Frame>':
         case 'Key<Model>':
@@ -972,140 +926,134 @@ export function routines() {
           return void 0;
       }
     };
-    inspectParametersAcrossModels = function (models) {
-      return function () {
-        var data;
-        var i;
-        var leader;
-        var model;
-        var modelKeys;
-        var parameter;
-        var vectors;
-        leader = lodash.head(models);
-        vectors = function () {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
-          _ref1 = leader.parameters;
-          _results = [];
-          for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-            parameter = _ref1[i];
-            data = function () {
-              var _j;
-              var _len1;
-              var _results1;
-              _results1 = [];
-              for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
-                model = models[_j];
-                _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actual_value));
-              }
-              return _results1;
-            }();
-            switch (parameter.type) {
-              case 'enum':
-              case 'Frame':
-              case 'string':
-                _results.push(createFactor(parameter.label, 'String', data));
-                break;
-              case 'byte':
-              case 'short':
-              case 'int':
-              case 'long':
-              case 'float':
-              case 'double':
-                _results.push(createVector(parameter.label, 'Number', data));
-                break;
-              case 'string[]':
-              case 'byte[]':
-              case 'short[]':
-              case 'int[]':
-              case 'long[]':
-              case 'float[]':
-              case 'double[]':
-                _results.push(createList(parameter.label, data, function (a) {
-                  if (a) {
-                    return a;
-                  }
-                  return void 0;
-                }));
-                break;
-              case 'boolean':
-                _results.push(createList(parameter.label, data, function (a) {
-                  if (a) {
-                    return 'true';
-                  }
-                  return 'false';
-                }));
-                break;
-              default:
-                _results.push(createList(parameter.label, data));
+    inspectParametersAcrossModels = models => () => {
+      var data;
+      var i;
+      var leader;
+      var model;
+      var modelKeys;
+      var parameter;
+      var vectors;
+      leader = lodash.head(models);
+      vectors = (() => {
+        var _i;
+        var _len;
+        var _ref1;
+        var _results;
+        _ref1 = leader.parameters;
+        _results = [];
+        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+          parameter = _ref1[i];
+          data = (() => {
+            var _j;
+            var _len1;
+            var _results1;
+            _results1 = [];
+            for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
+              model = models[_j];
+              _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actual_value));
             }
+            return _results1;
+          })();
+          switch (parameter.type) {
+            case 'enum':
+            case 'Frame':
+            case 'string':
+              _results.push(createFactor(parameter.label, 'String', data));
+              break;
+            case 'byte':
+            case 'short':
+            case 'int':
+            case 'long':
+            case 'float':
+            case 'double':
+              _results.push(createVector(parameter.label, 'Number', data));
+              break;
+            case 'string[]':
+            case 'byte[]':
+            case 'short[]':
+            case 'int[]':
+            case 'long[]':
+            case 'float[]':
+            case 'double[]':
+              _results.push(createList(parameter.label, data, a => {
+                if (a) {
+                  return a;
+                }
+                return void 0;
+              }));
+              break;
+            case 'boolean':
+              _results.push(createList(parameter.label, data, a => {
+                if (a) {
+                  return 'true';
+                }
+                return 'false';
+              }));
+              break;
+            default:
+              _results.push(createList(parameter.label, data));
           }
-          return _results;
-        }();
-        modelKeys = function () {
-          var _i;
-          var _len;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = models.length; _i < _len; _i++) {
-            model = models[_i];
-            _results.push(model.model_id.name);
+        }
+        return _results;
+      })();
+      modelKeys = (() => {
+        var _i;
+        var _len;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = models.length; _i < _len; _i++) {
+          model = models[_i];
+          _results.push(model.model_id.name);
+        }
+        return _results;
+      })();
+      return createDataframe('parameters', vectors, lodash.range(models.length), null, {
+        description: `Parameters for models ${modelKeys.join(', ')}`,
+        origin: `getModels ${flowPrelude.stringify(modelKeys)}`
+      });
+    };
+    inspectModelParameters = model => () => {
+      var attr;
+      var attrs;
+      var data;
+      var i;
+      var parameter;
+      var parameters;
+      var vectors;
+      parameters = model.parameters;
+      attrs = [
+        'label',
+        'type',
+        'level',
+        'actual_value',
+        'default_value'
+      ];
+      vectors = (() => {
+        var _i;
+        var _j;
+        var _len;
+        var _len1;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = attrs.length; _i < _len; _i++) {
+          attr = attrs[_i];
+          data = new Array(parameters.length);
+          for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
+            parameter = parameters[i];
+            data[i] = attr === 'actual_value' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
           }
-          return _results;
-        }();
-        return createDataframe('parameters', vectors, lodash.range(models.length), null, {
-          description: `Parameters for models ${modelKeys.join(', ')}`,
-          origin: `getModels ${flowPrelude.stringify(modelKeys)}`
-        });
-      };
+          _results.push(createList(attr, data));
+        }
+        return _results;
+      })();
+      return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
+        description: `Parameters for model \'${model.model_id.name}\'`,
+        origin: `getModel ${flowPrelude.stringify(model.model_id.name)}`
+      });
     };
-    inspectModelParameters = function (model) {
-      return function () {
-        var attr;
-        var attrs;
-        var data;
-        var i;
-        var parameter;
-        var parameters;
-        var vectors;
-        parameters = model.parameters;
-        attrs = [
-          'label',
-          'type',
-          'level',
-          'actual_value',
-          'default_value'
-        ];
-        vectors = function () {
-          var _i;
-          var _j;
-          var _len;
-          var _len1;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = attrs.length; _i < _len; _i++) {
-            attr = attrs[_i];
-            data = new Array(parameters.length);
-            for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
-              parameter = parameters[i];
-              data[i] = attr === 'actual_value' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
-            }
-            _results.push(createList(attr, data));
-          }
-          return _results;
-        }();
-        return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-          description: `Parameters for model \'${model.model_id.name}\'`,
-          origin: `getModel ${flowPrelude.stringify(model.model_id.name)}`
-        });
-      };
-    };
-    extendJob = function (job) {
-      return render_(job, H2O.JobOutput, job);
-    };
-    extendJobs = function (jobs) {
+    extendJob = job => render_(job, H2O.JobOutput, job);
+    extendJobs = jobs => {
       var job;
       var _i;
       var _len;
@@ -1115,57 +1063,39 @@ export function routines() {
       }
       return render_(jobs, h2oJobsOutput, jobs);
     };
-    extendCancelJob = function (cancellation) {
-      return render_(cancellation, h2oCancelJobOutput, cancellation);
-    };
-    extendDeletedKeys = function (keys) {
-      return render_(keys, h2oDeleteObjectsOutput, keys);
-    };
-    inspectTwoDimTable_ = function (origin, tableName, table) {
-      return function () {
-        return convertTableToFrame(table, tableName, {
-          description: table.description || '',
-          origin
-        });
-      };
-    };
-    inspectRawArray_ = function (name, origin, description, array) {
-      return function () {
-        return createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
-          description: '',
-          origin
-        });
-      };
-    };
-    inspectObjectArray_ = function (name, origin, description, array) {
-      return function () {
-        return createDataframe(name, [createList(name, parseAndFormatObjectArray(array))], lodash.range(array.length), null, {
-          description: '',
-          origin
-        });
-      };
-    };
-    inspectRawObject_ = function (name, origin, description, obj) {
-      return function () {
-        var k;
-        var v;
-        var vectors;
-        vectors = function () {
-          var _results;
-          _results = [];
-          for (k in obj) {
-            if ({}.hasOwnProperty.call(obj, k)) {
-              v = obj[k];
-              _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
-            }
+    extendCancelJob = cancellation => render_(cancellation, h2oCancelJobOutput, cancellation);
+    extendDeletedKeys = keys => render_(keys, h2oDeleteObjectsOutput, keys);
+    inspectTwoDimTable_ = (origin, tableName, table) => () => convertTableToFrame(table, tableName, {
+      description: table.description || '',
+      origin
+    });
+    inspectRawArray_ = (name, origin, description, array) => () => createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
+      description: '',
+      origin
+    });
+    inspectObjectArray_ = (name, origin, description, array) => () => createDataframe(name, [createList(name, parseAndFormatObjectArray(array))], lodash.range(array.length), null, {
+      description: '',
+      origin
+    });
+    inspectRawObject_ = (name, origin, description, obj) => () => {
+      var k;
+      var v;
+      var vectors;
+      vectors = (() => {
+        var _results;
+        _results = [];
+        for (k in obj) {
+          if ({}.hasOwnProperty.call(obj, k)) {
+            v = obj[k];
+            _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
           }
-          return _results;
-        }();
-        return createDataframe(name, vectors, lodash.range(1), null, {
-          description: '',
-          origin
-        });
-      };
+        }
+        return _results;
+      })();
+      return createDataframe(name, vectors, lodash.range(1), null, {
+        description: '',
+        origin
+      });
     };
     _schemaHacks = {
       KMeansOutput: { fields: 'names domains help' },
@@ -1191,7 +1121,7 @@ export function routines() {
       ModelMetricsAutoEncoder: { fields: null },
       ConfusionMatrix: { fields: null }
     };
-    blacklistedAttributesBySchema = function () {
+    blacklistedAttributesBySchema = (() => {
       var attrs;
       var dict;
       var dicts;
@@ -1215,8 +1145,8 @@ export function routines() {
         }
       }
       return dicts;
-    }();
-    schemaTransforms = function () {
+    })();
+    schemaTransforms = (() => {
       var attrs;
       var schema;
       var transform;
@@ -1231,8 +1161,8 @@ export function routines() {
         }
       }
       return transforms;
-    }();
-    inspectObject = function (inspections, name, origin, obj) {
+    })();
+    inspectObject = (inspections, name, origin, obj) => {
       var attrs;
       var blacklistedAttributes;
       var k;
@@ -1289,9 +1219,9 @@ export function routines() {
         }
       }
     };
-    extendModel = function (model) {
+    extendModel = model => {
       var refresh;
-      lodash.extend = function (model) {
+      lodash.extend = model => {
         var inspections;
         var origin;
         var table;
@@ -1316,18 +1246,16 @@ export function routines() {
         inspect_(model, inspections);
         return model;
       };
-      refresh = function (go) {
-        return _.requestModel(model.model_id.name, function (error, model) {
-          if (error) {
-            return go(error);
-          }
-          return go(null, lodash.extend(model));
-        });
-      };
+      refresh = go => _.requestModel(model.model_id.name, (error, model) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, lodash.extend(model));
+      });
       lodash.extend(model);
       return render_(model, h2oModelOutput, model, refresh);
     };
-    extendGrid = function (grid, opts) {
+    extendGrid = (grid, opts) => {
       var inspections;
       var origin;
       origin = `getGrid ${flowPrelude.stringify(grid.grid_id.name)}`;
@@ -1341,15 +1269,13 @@ export function routines() {
       inspect_(grid, inspections);
       return render_(grid, h2oGridOutput, grid);
     };
-    extendGrids = function (grids) {
-      return render_(grids, h2oGridsOutput, grids);
-    };
-    extendModels = function (models) {
+    extendGrids = grids => render_(grids, h2oGridsOutput, grids);
+    extendModels = models => {
       var algos;
       var inspections;
       var model;
       inspections = {};
-      algos = lodash.unique(function () {
+      algos = lodash.unique((() => {
         var _i;
         var _len;
         var _results;
@@ -1359,24 +1285,24 @@ export function routines() {
           _results.push(model.algo);
         }
         return _results;
-      }());
+      })());
       if (algos.length === 1) {
         inspections.parameters = inspectParametersAcrossModels(models);
       }
       inspect_(models, inspections);
       return render_(models, h2oModelsOutput, models);
     };
-    read = function (value) {
+    read = value => {
       if (value === 'NaN') {
         return null;
       }
       return value;
     };
-    extendPredictions = function (opts, predictions) {
+    extendPredictions = (opts, predictions) => {
       render_(predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
-    extendPrediction = function (result) {
+    extendPrediction = result => {
       var frameKey;
       var inspections;
       var modelKey;
@@ -1397,243 +1323,237 @@ export function routines() {
       inspect_(prediction, inspections);
       return render_(prediction, h2oPredictOutput, prediction);
     };
-    inspectFrameColumns = function (tableLabel, frameKey, frame, frameColumns) {
-      return function () {
-        var actionsData;
-        var attr;
-        var attrs;
-        var column;
-        var i;
-        var labelVector;
-        var title;
-        var toColumnSummaryLink;
-        var toConversionLink;
-        var typeVector;
-        var vectors;
-        attrs = [
-          'label',
-          'type',
-          'missing_count|Missing',
-          'zero_count|Zeros',
-          'positive_infinity_count|+Inf',
-          'negative_infinity_count|-Inf',
-          'min',
-          'max',
-          'mean',
-          'sigma',
-          'cardinality'
-        ];
-        toColumnSummaryLink = function (label) {
-          return `<a href=\'#\' data-type=\'summary-link\' data-key=${flowPrelude.stringify(label)}>${lodash.escape(label)}</a>`;
-        };
-        toConversionLink = function (value) {
-          var label;
-          var type;
-          var _ref1;
-          _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
-          switch (type) {
-            case 'enum':
-              return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${flowPrelude.stringify(label)}>Convert to numeric</a>`;
-            case 'int':
-            case 'string':
-              return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude.stringify(label)}>Convert to enum</a>'`;
+    inspectFrameColumns = (tableLabel, frameKey, frame, frameColumns) => () => {
+      var actionsData;
+      var attr;
+      var attrs;
+      var column;
+      var i;
+      var labelVector;
+      var title;
+      var toColumnSummaryLink;
+      var toConversionLink;
+      var typeVector;
+      var vectors;
+      attrs = [
+        'label',
+        'type',
+        'missing_count|Missing',
+        'zero_count|Zeros',
+        'positive_infinity_count|+Inf',
+        'negative_infinity_count|-Inf',
+        'min',
+        'max',
+        'mean',
+        'sigma',
+        'cardinality'
+      ];
+      toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${flowPrelude.stringify(label)}>${lodash.escape(label)}</a>`;
+      toConversionLink = value => {
+        var label;
+        var type;
+        var _ref1;
+        _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
+        switch (type) {
+          case 'enum':
+            return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${flowPrelude.stringify(label)}>Convert to numeric</a>`;
+          case 'int':
+          case 'string':
+            return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude.stringify(label)}>Convert to enum</a>'`;
+          default:
+            return void 0;
+        }
+      };
+      vectors = (() => {
+        var _i;
+        var _len;
+        var _ref1;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = attrs.length; _i < _len; _i++) {
+          attr = attrs[_i];
+          _ref1 = attr.split('|'), name = _ref1[0], title = _ref1[1];
+          title = title != null ? title : name;
+          switch (name) {
+            case 'min':
+              _results.push(createVector(title, 'Number', (() => {
+                var _j;
+                var _len1;
+                var _results1;
+                _results1 = [];
+                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
+                  column = frameColumns[_j];
+                  _results1.push(lodash.head(column.mins));
+                }
+                return _results1;
+              })(), format4f));
+              break;
+            case 'max':
+              _results.push(createVector(title, 'Number', (() => {
+                var _j;
+                var _len1;
+                var _results1;
+                _results1 = [];
+                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
+                  column = frameColumns[_j];
+                  _results1.push(lodash.head(column.maxs));
+                }
+                return _results1;
+              })(), format4f));
+              break;
+            case 'cardinality':
+              _results.push(createVector(title, 'Number', (() => {
+                var _j;
+                var _len1;
+                var _results1;
+                _results1 = [];
+                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
+                  column = frameColumns[_j];
+                  _results1.push(column.type === 'enum' ? column.domain_cardinality : void 0);
+                }
+                return _results1;
+              })()));
+              break;
+            case 'label':
+              _results.push(createFactor(title, 'String', (() => {
+                var _j;
+                var _len1;
+                var _results1;
+                _results1 = [];
+                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
+                  column = frameColumns[_j];
+                  _results1.push(column[name]);
+                }
+                return _results1;
+              })(), null, toColumnSummaryLink));
+              break;
+            case 'type':
+              _results.push(createFactor(title, 'String', (() => {
+                var _j;
+                var _len1;
+                var _results1;
+                _results1 = [];
+                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
+                  column = frameColumns[_j];
+                  _results1.push(column[name]);
+                }
+                return _results1;
+              })()));
+              break;
+            case 'mean':
+            case 'sigma':
+              _results.push(createVector(title, 'Number', (() => {
+                var _j;
+                var _len1;
+                var _results1;
+                _results1 = [];
+                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
+                  column = frameColumns[_j];
+                  _results1.push(column[name]);
+                }
+                return _results1;
+              })(), format4f));
+              break;
             default:
-              return void 0;
+              _results.push(createVector(title, 'Number', (() => {
+                var _j;
+                var _len1;
+                var _results1;
+                _results1 = [];
+                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
+                  column = frameColumns[_j];
+                  _results1.push(column[name]);
+                }
+                return _results1;
+              })()));
           }
-        };
-        vectors = function () {
-          var _i;
-          var _len;
-          var _ref1;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = attrs.length; _i < _len; _i++) {
-            attr = attrs[_i];
-            _ref1 = attr.split('|'), name = _ref1[0], title = _ref1[1];
-            title = title != null ? title : name;
-            switch (name) {
-              case 'min':
-                _results.push(createVector(title, 'Number', function () {
-                  var _j;
-                  var _len1;
-                  var _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(lodash.head(column.mins));
-                  }
-                  return _results1;
-                }(), format4f));
-                break;
-              case 'max':
-                _results.push(createVector(title, 'Number', function () {
-                  var _j;
-                  var _len1;
-                  var _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(lodash.head(column.maxs));
-                  }
-                  return _results1;
-                }(), format4f));
-                break;
-              case 'cardinality':
-                _results.push(createVector(title, 'Number', function () {
-                  var _j;
-                  var _len1;
-                  var _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column.type === 'enum' ? column.domain_cardinality : void 0);
-                  }
-                  return _results1;
-                }()));
-                break;
-              case 'label':
-                _results.push(createFactor(title, 'String', function () {
-                  var _j;
-                  var _len1;
-                  var _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column[name]);
-                  }
-                  return _results1;
-                }(), null, toColumnSummaryLink));
-                break;
-              case 'type':
-                _results.push(createFactor(title, 'String', function () {
-                  var _j;
-                  var _len1;
-                  var _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column[name]);
-                  }
-                  return _results1;
-                }()));
-                break;
-              case 'mean':
-              case 'sigma':
-                _results.push(createVector(title, 'Number', function () {
-                  var _j;
-                  var _len1;
-                  var _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column[name]);
-                  }
-                  return _results1;
-                }(), format4f));
-                break;
-              default:
-                _results.push(createVector(title, 'Number', function () {
-                  var _j;
-                  var _len1;
-                  var _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column[name]);
-                  }
-                  return _results1;
-                }()));
-            }
-          }
-          return _results;
-        }();
-        labelVector = vectors[0], typeVector = vectors[1];
-        actionsData = function () {
-          var _i;
-          var _ref1;
-          var _results;
-          _results = [];
-          for (i = _i = 0, _ref1 = frameColumns.length; _ref1 >= 0 ? _i < _ref1 : _i > _ref1; i = _ref1 >= 0 ? ++_i : --_i) {
-            _results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);
-          }
-          return _results;
-        }();
-        vectors.push(createFactor('Actions', 'String', actionsData, null, toConversionLink));
-        return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
-          description: `A list of ${tableLabel} in the H2O Frame.`,
-          origin: `getFrameSummary ${flowPrelude.stringify(frameKey)}`,
-          plot: `plot inspect \'${tableLabel}\', getFrameSummary ${flowPrelude.stringify(frameKey)}`
-        });
-      };
+        }
+        return _results;
+      })();
+      labelVector = vectors[0], typeVector = vectors[1];
+      actionsData = (() => {
+        var _i;
+        var _ref1;
+        var _results;
+        _results = [];
+        for (i = _i = 0, _ref1 = frameColumns.length; _ref1 >= 0 ? _i < _ref1 : _i > _ref1; i = _ref1 >= 0 ? ++_i : --_i) {
+          _results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);
+        }
+        return _results;
+      })();
+      vectors.push(createFactor('Actions', 'String', actionsData, null, toConversionLink));
+      return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
+        description: `A list of ${tableLabel} in the H2O Frame.`,
+        origin: `getFrameSummary ${flowPrelude.stringify(frameKey)}`,
+        plot: `plot inspect \'${tableLabel}\', getFrameSummary ${flowPrelude.stringify(frameKey)}`
+      });
     };
-    inspectFrameData = function (frameKey, frame) {
-      return function () {
-        var column;
-        var domain;
-        var frameColumns;
-        var index;
-        var rowIndex;
-        var vectors;
-        frameColumns = frame.columns;
-        vectors = function () {
-          var _i;
-          var _len;
-          var _results;
-          _results = [];
-          for (_i = 0, _len = frameColumns.length; _i < _len; _i++) {
-            column = frameColumns[_i];
-            switch (column.type) {
-              case 'int':
-              case 'real':
-                _results.push(createVector(column.label, 'Number', parseNaNs(column.data), format4f));
-                break;
-              case 'enum':
-                domain = column.domain;
-                _results.push(createFactor(column.label, 'String', function () {
-                  var _j;
-                  var _len1;
-                  var _ref1;
-                  var _results1;
-                  _ref1 = column.data;
-                  _results1 = [];
-                  for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-                    index = _ref1[_j];
-                    _results1.push(index != null ? domain[index] : void 0);
-                  }
-                  return _results1;
-                }()));
-                break;
-              case 'time':
-                _results.push(createVector(column.label, 'Number', parseNaNs(column.data)));
-                break;
-              case 'string':
-              case 'uuid':
-                _results.push(createList(column.label, parseNulls(column.string_data)));
-                break;
-              default:
-                _results.push(createList(column.label, parseNulls(column.data)));
-            }
+    inspectFrameData = (frameKey, frame) => () => {
+      var column;
+      var domain;
+      var frameColumns;
+      var index;
+      var rowIndex;
+      var vectors;
+      frameColumns = frame.columns;
+      vectors = (() => {
+        var _i;
+        var _len;
+        var _results;
+        _results = [];
+        for (_i = 0, _len = frameColumns.length; _i < _len; _i++) {
+          column = frameColumns[_i];
+          switch (column.type) {
+            case 'int':
+            case 'real':
+              _results.push(createVector(column.label, 'Number', parseNaNs(column.data), format4f));
+              break;
+            case 'enum':
+              domain = column.domain;
+              _results.push(createFactor(column.label, 'String', (() => {
+                var _j;
+                var _len1;
+                var _ref1;
+                var _results1;
+                _ref1 = column.data;
+                _results1 = [];
+                for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                  index = _ref1[_j];
+                  _results1.push(index != null ? domain[index] : void 0);
+                }
+                return _results1;
+              })()));
+              break;
+            case 'time':
+              _results.push(createVector(column.label, 'Number', parseNaNs(column.data)));
+              break;
+            case 'string':
+            case 'uuid':
+              _results.push(createList(column.label, parseNulls(column.string_data)));
+              break;
+            default:
+              _results.push(createList(column.label, parseNulls(column.data)));
           }
-          return _results;
-        }();
-        vectors.unshift(createVector('Row', 'Number', function () {
-          var _i;
-          var _ref1;
-          var _ref2;
-          var _results;
-          _results = [];
-          for (rowIndex = _i = _ref1 = frame.row_offset, _ref2 = frame.row_count; _ref1 <= _ref2 ? _i < _ref2 : _i > _ref2; rowIndex = _ref1 <= _ref2 ? ++_i : --_i) {
-            _results.push(rowIndex + 1);
-          }
-          return _results;
-        }()));
-        return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
-          description: 'A partial list of rows in the H2O Frame.',
-          origin: `getFrameData ${flowPrelude.stringify(frameKey)}`
-        });
-      };
+        }
+        return _results;
+      })();
+      vectors.unshift(createVector('Row', 'Number', (() => {
+        var _i;
+        var _ref1;
+        var _ref2;
+        var _results;
+        _results = [];
+        for (rowIndex = _i = _ref1 = frame.row_offset, _ref2 = frame.row_count; _ref1 <= _ref2 ? _i < _ref2 : _i > _ref2; rowIndex = _ref1 <= _ref2 ? ++_i : --_i) {
+          _results.push(rowIndex + 1);
+        }
+        return _results;
+      })()));
+      return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
+        description: 'A partial list of rows in the H2O Frame.',
+        origin: `getFrameData ${flowPrelude.stringify(frameKey)}`
+      });
     };
-    extendFrameData = function (frameKey, frame) {
+    extendFrameData = (frameKey, frame) => {
       var inspections;
       var origin;
       inspections = { data: inspectFrameData(frameKey, frame) };
@@ -1641,7 +1561,7 @@ export function routines() {
       inspect_(frame, inspections);
       return render_(frame, h2oFrameDataOutput, frame);
     };
-    extendFrame = function (frameKey, frame) {
+    extendFrame = (frameKey, frame) => {
       var column;
       var enumColumns;
       var inspections;
@@ -1650,7 +1570,7 @@ export function routines() {
         columns: inspectFrameColumns('columns', frameKey, frame, frame.columns),
         data: inspectFrameData(frameKey, frame)
       };
-      enumColumns = function () {
+      enumColumns = (() => {
         var _i;
         var _len;
         var _ref1;
@@ -1664,7 +1584,7 @@ export function routines() {
           }
         }
         return _results;
-      }();
+      })();
       if (enumColumns.length > 0) {
         inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
       }
@@ -1674,13 +1594,13 @@ export function routines() {
       inspect_(frame, inspections);
       return render_(frame, h2oFrameOutput, frame);
     };
-    extendFrameSummary = function (frameKey, frame) {
+    extendFrameSummary = (frameKey, frame) => {
       var column;
       var enumColumns;
       var inspections;
       var origin;
       inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
-      enumColumns = function () {
+      enumColumns = (() => {
         var _i;
         var _len;
         var _ref1;
@@ -1694,7 +1614,7 @@ export function routines() {
           }
         }
         return _results;
-      }();
+      })();
       if (enumColumns.length > 0) {
         inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
       }
@@ -1704,7 +1624,7 @@ export function routines() {
       inspect_(frame, inspections);
       return render_(frame, h2oFrameOutput, frame);
     };
-    extendColumnSummary = function (frameKey, frame, columnName) {
+    extendColumnSummary = (frameKey, frame, columnName) => {
       var column;
       var inspectCharacteristics;
       var inspectDistribution;
@@ -1715,7 +1635,7 @@ export function routines() {
       var rowCount;
       column = lodash.head(frame.columns);
       rowCount = frame.rows;
-      inspectPercentiles = function () {
+      inspectPercentiles = () => {
         var vectors;
         vectors = [
           createVector('percentile', 'Number', frame.default_percentiles),
@@ -1726,7 +1646,7 @@ export function routines() {
           origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
-      inspectDistribution = function () {
+      inspectDistribution = () => {
         var base;
         var binCount;
         var binIndex;
@@ -1805,7 +1725,7 @@ export function routines() {
           plot: `plot inspect \'distribution\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
-      inspectCharacteristics = function () {
+      inspectCharacteristics = () => {
         var characteristicData;
         var count;
         var countData;
@@ -1832,7 +1752,7 @@ export function routines() {
           positive_infinity_count,
           other
         ];
-        percentData = function () {
+        percentData = (() => {
           var _i;
           var _len;
           var _results;
@@ -1842,7 +1762,7 @@ export function routines() {
             _results.push(100 * count / rowCount);
           }
           return _results;
-        }();
+        })();
         vectors = [
           createFactor('characteristic', 'String', characteristicData),
           createVector('count', 'Number', countData),
@@ -1854,7 +1774,7 @@ export function routines() {
           plot: `plot inspect \'characteristics\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
-      inspectSummary = function () {
+      inspectSummary = () => {
         var defaultPercentiles;
         var maximum;
         var mean;
@@ -1889,7 +1809,7 @@ export function routines() {
           plot: `plot inspect \'summary\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
         });
       };
-      inspectDomain = function () {
+      inspectDomain = () => {
         var counts;
         var i;
         var labels;
@@ -1901,15 +1821,11 @@ export function routines() {
         var _i;
         var _len;
         var _ref1;
-        levels = lodash.map(column.histogram_bins, function (count, index) {
-          return {
-            count,
-            index
-          };
-        });
-        sortedLevels = lodash.sortBy(levels, function (level) {
-          return -level.count;
-        });
+        levels = lodash.map(column.histogram_bins, (count, index) => ({
+          count,
+          index
+        }));
+        sortedLevels = lodash.sortBy(levels, level => -level.count);
         _ref1 = createArrays(3, sortedLevels.length), labels = _ref1[0], counts = _ref1[1], percents = _ref1[2];
         for (i = _i = 0, _len = sortedLevels.length; _i < _len; i = ++_i) {
           level = sortedLevels[i];
@@ -1935,9 +1851,7 @@ export function routines() {
           if (column.histogram_bins.length) {
             inspections.distribution = inspectDistribution;
           }
-          if (!lodash.some(column.percentiles, function (a) {
-            return a === 'NaN';
-          })) {
+          if (!lodash.some(column.percentiles, a => a === 'NaN')) {
             inspections.summary = inspectSummary;
             inspections.percentiles = inspectPercentiles;
           }
@@ -1948,89 +1862,71 @@ export function routines() {
       inspect_(frame, inspections);
       return render_(frame, h2oColumnSummaryOutput, frameKey, frame, columnName);
     };
-    requestFrame = function (frameKey, go) {
-      return _.requestFrameSlice(frameKey, void 0, 0, 20, function (error, frame) {
+    requestFrame = (frameKey, go) => _.requestFrameSlice(frameKey, void 0, 0, 20, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrame(frameKey, frame));
+    });
+    requestFrameData = (frameKey, searchTerm, offset, count, go) => _.requestFrameSlice(frameKey, searchTerm, offset, count, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrameData(frameKey, frame));
+    });
+    requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrameSummary(frameKey, frame));
+    });
+    requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(frameKey, void 0, 0, 20, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrameSummary(frameKey, frame));
+    });
+    requestColumnSummary = (frameKey, columnName, go) => _.requestColumnSummary(frameKey, columnName, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendColumnSummary(frameKey, frame, columnName));
+    });
+    requestFrames = go => _.requestFrames((error, frames) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrames(frames));
+    });
+    requestCreateFrame = (opts, go) => _.requestCreateFrame(opts, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return _.requestJob(result.key.name, (error, job) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendFrame(frameKey, frame));
+        return go(null, extendJob(job));
       });
-    };
-    requestFrameData = function (frameKey, searchTerm, offset, count, go) {
-      return _.requestFrameSlice(frameKey, searchTerm, offset, count, function (error, frame) {
+    });
+    requestPartialDependence = (opts, go) => _.requestPartialDependence(opts, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return _.requestJob(result.key.name, (error, job) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendFrameData(frameKey, frame));
+        return go(null, extendJob(job));
       });
-    };
-    requestFrameSummarySlice = function (frameKey, searchTerm, offset, length, go) {
-      return _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, function (error, frame) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrameSummary(frameKey, frame));
-      });
-    };
-    requestFrameSummary = function (frameKey, go) {
-      return _.requestFrameSummarySlice(frameKey, void 0, 0, 20, function (error, frame) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrameSummary(frameKey, frame));
-      });
-    };
-    requestColumnSummary = function (frameKey, columnName, go) {
-      return _.requestColumnSummary(frameKey, columnName, function (error, frame) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendColumnSummary(frameKey, frame, columnName));
-      });
-    };
-    requestFrames = function (go) {
-      return _.requestFrames(function (error, frames) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrames(frames));
-      });
-    };
-    requestCreateFrame = function (opts, go) {
-      return _.requestCreateFrame(opts, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return _.requestJob(result.key.name, function (error, job) {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(job));
-        });
-      });
-    };
-    requestPartialDependence = function (opts, go) {
-      return _.requestPartialDependence(opts, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return _.requestJob(result.key.name, function (error, job) {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(job));
-        });
-      });
-    };
-    requestPartialDependenceData = function (key, go) {
-      return _.requestPartialDependenceData(key, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendPartialDependence(result));
-      });
-    };
-    computeSplits = function (ratios, keys) {
+    });
+    requestPartialDependenceData = (key, go) => _.requestPartialDependenceData(key, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendPartialDependence(result));
+    });
+    computeSplits = (ratios, keys) => {
       var i;
       var key;
       var part;
@@ -2071,15 +1967,13 @@ export function routines() {
       }
       return splits;
     };
-    requestBindFrames = function (key, sourceKeys, go) {
-      return _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendBindFrames(key, result));
-      });
-    };
-    requestSplitFrame = function (frameKey, splitRatios, splitKeys, seed, go) {
+    requestBindFrames = (key, sourceKeys, go) => _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendBindFrames(key, result));
+    });
+    requestSplitFrame = (frameKey, splitRatios, splitKeys, seed, go) => {
       var g;
       var i;
       var l;
@@ -2111,7 +2005,7 @@ export function routines() {
           statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);
         }
         statements.push(`(rm ${randomVecKey})`);
-        return _.requestExec(`(, ${statements.join(' ')})`, function (error, result) {
+        return _.requestExec(`(, ${statements.join(' ')})`, (error, result) => {
           if (error) {
             return go(error);
           }
@@ -2123,27 +2017,36 @@ export function routines() {
       }
       return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));
     };
-    requestMergeFrames = function (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows, go) {
+    requestMergeFrames = (
+      destinationKey,
+      leftFrameKey,
+      leftColumnIndex,
+      includeAllLeftRows,
+      rightFrameKey,
+      rightColumnIndex,
+      includeAllRightRows,
+      go
+    ) => {
       var lr;
       var rr;
       var statement;
       lr = includeAllLeftRows ? 'TRUE' : 'FALSE';
       rr = includeAllRightRows ? 'TRUE' : 'FALSE';
       statement = `(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;
-      return _.requestExec(statement, function (error, result) {
+      return _.requestExec(statement, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendMergeFramesResult({ key: destinationKey }));
       });
     };
-    createFrame = function (opts) {
+    createFrame = opts => {
       if (opts) {
         return _fork(requestCreateFrame, opts);
       }
       return assist(createFrame);
     };
-    splitFrame = function (frameKey, splitRatios, splitKeys, seed) {
+    splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
       if (seed == null) {
         seed = -1;
       }
@@ -2152,28 +2055,34 @@ export function routines() {
       }
       return assist(splitFrame);
     };
-    mergeFrames = function (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows) {
+    mergeFrames = (
+      destinationKey,
+      leftFrameKey,
+      leftColumnIndex,
+      includeAllLeftRows,
+      rightFrameKey,
+      rightColumnIndex,
+      includeAllRightRows
+    ) => {
       if (destinationKey && leftFrameKey && rightFrameKey) {
         return _fork(requestMergeFrames, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
       }
       return assist(mergeFrames);
     };
-    buildPartialDependence = function (opts) {
+    buildPartialDependence = opts => {
       if (opts) {
         return _fork(requestPartialDependence, opts);
       }
       return assist(buildPartialDependence);
     };
-    getPartialDependence = function (destinationKey) {
+    getPartialDependence = destinationKey => {
       if (destinationKey) {
         return _fork(requestPartialDependenceData, destinationKey);
       }
       return assist(getPartialDependence);
     };
-    getFrames = function () {
-      return _fork(requestFrames);
-    };
-    getFrame = function (frameKey) {
+    getFrames = () => _fork(requestFrames);
+    getFrame = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
           return _fork(requestFrame, frameKey);
@@ -2181,10 +2090,8 @@ export function routines() {
           return assist(getFrame);
       }
     };
-    bindFrames = function (key, sourceKeys) {
-      return _fork(requestBindFrames, key, sourceKeys);
-    };
-    getFrameSummary = function (frameKey) {
+    bindFrames = (key, sourceKeys) => _fork(requestBindFrames, key, sourceKeys);
+    getFrameSummary = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
           return _fork(requestFrameSummary, frameKey);
@@ -2192,7 +2099,7 @@ export function routines() {
           return assist(getFrameSummary);
       }
     };
-    getFrameData = function (frameKey) {
+    getFrameData = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
           return _fork(requestFrameData, frameKey, void 0, 0, 20);
@@ -2200,40 +2107,32 @@ export function routines() {
           return assist(getFrameSummary);
       }
     };
-    requestDeleteFrame = function (frameKey, go) {
-      return _.requestDeleteFrame(frameKey, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys([frameKey]));
-      });
-    };
-    deleteFrame = function (frameKey) {
+    requestDeleteFrame = (frameKey, go) => _.requestDeleteFrame(frameKey, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDeletedKeys([frameKey]));
+    });
+    deleteFrame = frameKey => {
       if (frameKey) {
         return _fork(requestDeleteFrame, frameKey);
       }
       return assist(deleteFrame);
     };
-    extendExportFrame = function (result) {
-      return render_(result, h2oExportFrameOutput, result);
-    };
-    extendBindFrames = function (key, result) {
-      return render_(result, h2oBindFramesOutput, key, result);
-    };
-    requestExportFrame = function (frameKey, path, opts, go) {
-      return _.requestExportFrame(frameKey, path, opts.overwrite, function (error, result) {
+    extendExportFrame = result => render_(result, h2oExportFrameOutput, result);
+    extendBindFrames = (key, result) => render_(result, h2oBindFramesOutput, key, result);
+    requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return _.requestJob(result.job.key.name, (error, job) => {
         if (error) {
           return go(error);
         }
-        return _.requestJob(result.job.key.name, function (error, job) {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(job));
-        });
+        return go(null, extendJob(job));
       });
-    };
-    exportFrame = function (frameKey, path, opts) {
+    });
+    exportFrame = (frameKey, path, opts) => {
       if (opts == null) {
         opts = {};
       }
@@ -2242,19 +2141,17 @@ export function routines() {
       }
       return assist(exportFrame, frameKey, path, opts);
     };
-    requestDeleteFrames = function (frameKeys, go) {
+    requestDeleteFrames = (frameKeys, go) => {
       var futures;
-      futures = lodash.map(frameKeys, function (frameKey) {
-        return _fork(_.requestDeleteFrame, frameKey);
-      });
-      return Flow.Async.join(futures, function (error, results) {
+      futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, frameKey));
+      return Flow.Async.join(futures, (error, results) => {
         if (error) {
           return go(error);
         }
         return go(null, extendDeletedKeys(frameKeys));
       });
     };
-    deleteFrames = function (frameKeys) {
+    deleteFrames = frameKeys => {
       switch (frameKeys.length) {
         case 0:
           return assist(deleteFrames);
@@ -2264,30 +2161,24 @@ export function routines() {
           return _fork(requestDeleteFrames, frameKeys);
       }
     };
-    getColumnSummary = function (frameKey, columnName) {
-      return _fork(requestColumnSummary, frameKey, columnName);
-    };
-    requestModels = function (go) {
-      return _.requestModels(function (error, models) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendModels(models));
-      });
-    };
-    requestModelsByKeys = function (modelKeys, go) {
+    getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, frameKey, columnName);
+    requestModels = go => _.requestModels((error, models) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendModels(models));
+    });
+    requestModelsByKeys = (modelKeys, go) => {
       var futures;
-      futures = lodash.map(modelKeys, function (key) {
-        return _fork(_.requestModel, key);
-      });
-      return Flow.Async.join(futures, function (error, models) {
+      futures = lodash.map(modelKeys, key => _fork(_.requestModel, key));
+      return Flow.Async.join(futures, (error, models) => {
         if (error) {
           return go(error);
         }
         return go(null, extendModels(models));
       });
     };
-    getModels = function (modelKeys) {
+    getModels = modelKeys => {
       if (lodash.isArray(modelKeys)) {
         if (modelKeys.length) {
           return _fork(requestModelsByKeys, modelKeys);
@@ -2296,26 +2187,20 @@ export function routines() {
       }
       return _fork(requestModels);
     };
-    requestGrids = function (go) {
-      return _.requestGrids(function (error, grids) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendGrids(grids));
-      });
-    };
-    getGrids = function () {
-      return _fork(requestGrids);
-    };
-    requestModel = function (modelKey, go) {
-      return _.requestModel(modelKey, function (error, model) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendModel(model));
-      });
-    };
-    getModel = function (modelKey) {
+    requestGrids = go => _.requestGrids((error, grids) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendGrids(grids));
+    });
+    getGrids = () => _fork(requestGrids);
+    requestModel = (modelKey, go) => _.requestModel(modelKey, (error, model) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendModel(model));
+    });
+    getModel = modelKey => {
       switch (flowPrelude.typeOf(modelKey)) {
         case 'String':
           return _fork(requestModel, modelKey);
@@ -2323,15 +2208,13 @@ export function routines() {
           return assist(getModel);
       }
     };
-    requestGrid = function (gridKey, opts, go) {
-      return _.requestGrid(gridKey, opts, function (error, grid) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendGrid(grid, opts));
-      });
-    };
-    getGrid = function (gridKey, opts) {
+    requestGrid = (gridKey, opts, go) => _.requestGrid(gridKey, opts, (error, grid) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendGrid(grid, opts));
+    });
+    getGrid = (gridKey, opts) => {
       switch (flowPrelude.typeOf(gridKey)) {
         case 'String':
           return _fork(requestGrid, gridKey, opts);
@@ -2339,7 +2222,7 @@ export function routines() {
           return assist(getGrid);
       }
     };
-    findColumnIndexByColumnLabel = function (frame, columnLabel) {
+    findColumnIndexByColumnLabel = (frame, columnLabel) => {
       var column;
       var i;
       var _i;
@@ -2354,7 +2237,7 @@ export function routines() {
       }
       throw new Flow.Error(`Column [${columnLabel}] not found in frame`);
     };
-    findColumnIndicesByColumnLabels = function (frame, columnLabels) {
+    findColumnIndicesByColumnLabels = (frame, columnLabels) => {
       var columnLabel;
       var _i;
       var _len;
@@ -2366,7 +2249,7 @@ export function routines() {
       }
       return _results;
     };
-    requestImputeColumn = function (opts, go) {
+    requestImputeColumn = (opts, go) => {
       var column;
       var combineMethod;
       var frame;
@@ -2374,7 +2257,7 @@ export function routines() {
       var method;
       frame = opts.frame, column = opts.column, method = opts.method, combineMethod = opts.combineMethod, groupByColumns = opts.groupByColumns;
       combineMethod = combineMethod != null ? combineMethod : 'interpolate';
-      return _.requestFrameSummaryWithoutData(frame, function (error, result) {
+      return _.requestFrameSummaryWithoutData(frame, (error, result) => {
         var columnIndex;
         var columnIndicesError;
         var columnKeyError;
@@ -2400,7 +2283,7 @@ export function routines() {
           groupByColumnIndices = null;
         }
         groupByArg = groupByColumnIndices ? `[${groupByColumnIndices.join(' ')}]` : '[]';
-        return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`, function (error, result) {
+        return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`, (error, result) => {
           if (error) {
             return go(error);
           }
@@ -2408,14 +2291,14 @@ export function routines() {
         });
       });
     };
-    requestChangeColumnType = function (opts, go) {
+    requestChangeColumnType = (opts, go) => {
       var column;
       var frame;
       var method;
       var type;
       frame = opts.frame, column = opts.column, type = opts.type;
       method = type === 'enum' ? 'as.factor' : 'as.numeric';
-      return _.requestFrameSummaryWithoutData(frame, function (error, result) {
+      return _.requestFrameSummaryWithoutData(frame, (error, result) => {
         var columnIndex;
         var columnKeyError;
         try {
@@ -2424,7 +2307,7 @@ export function routines() {
           columnKeyError = _error;
           return go(columnKeyError);
         }
-        return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`, function (error, result) {
+        return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`, (error, result) => {
           if (error) {
             return go(error);
           }
@@ -2432,79 +2315,67 @@ export function routines() {
         });
       });
     };
-    imputeColumn = function (opts) {
+    imputeColumn = opts => {
       if (opts && opts.frame && opts.column && opts.method) {
         return _fork(requestImputeColumn, opts);
       }
       return assist(imputeColumn, opts);
     };
-    changeColumnType = function (opts) {
+    changeColumnType = opts => {
       if (opts && opts.frame && opts.column && opts.type) {
         return _fork(requestChangeColumnType, opts);
       }
       return assist(changeColumnType, opts);
     };
-    requestDeleteModel = function (modelKey, go) {
-      return _.requestDeleteModel(modelKey, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys([modelKey]));
-      });
-    };
-    deleteModel = function (modelKey) {
+    requestDeleteModel = (modelKey, go) => _.requestDeleteModel(modelKey, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDeletedKeys([modelKey]));
+    });
+    deleteModel = modelKey => {
       if (modelKey) {
         return _fork(requestDeleteModel, modelKey);
       }
       return assist(deleteModel);
     };
-    extendImportModel = function (result) {
-      return render_(result, H2O.ImportModelOutput, result);
-    };
-    requestImportModel = function (path, opts, go) {
-      return _.requestImportModel(path, opts.overwrite, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendImportModel(result));
-      });
-    };
-    importModel = function (path, opts) {
+    extendImportModel = result => render_(result, H2O.ImportModelOutput, result);
+    requestImportModel = (path, opts, go) => _.requestImportModel(path, opts.overwrite, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendImportModel(result));
+    });
+    importModel = (path, opts) => {
       if (path && path.length) {
         return _fork(requestImportModel, path, opts);
       }
       return assist(importModel, path, opts);
     };
-    extendExportModel = function (result) {
-      return render_(result, h2oExportModelOutput, result);
-    };
-    requestExportModel = function (modelKey, path, opts, go) {
-      return _.requestExportModel(modelKey, path, opts.overwrite, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendExportModel(result));
-      });
-    };
-    exportModel = function (modelKey, path, opts) {
+    extendExportModel = result => render_(result, h2oExportModelOutput, result);
+    requestExportModel = (modelKey, path, opts, go) => _.requestExportModel(modelKey, path, opts.overwrite, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendExportModel(result));
+    });
+    exportModel = (modelKey, path, opts) => {
       if (modelKey && path) {
         return _fork(requestExportModel, modelKey, path, opts);
       }
       return assist(exportModel, modelKey, path, opts);
     };
-    requestDeleteModels = function (modelKeys, go) {
+    requestDeleteModels = (modelKeys, go) => {
       var futures;
-      futures = lodash.map(modelKeys, function (modelKey) {
-        return _fork(_.requestDeleteModel, modelKey);
-      });
-      return Flow.Async.join(futures, function (error, results) {
+      futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, modelKey));
+      return Flow.Async.join(futures, (error, results) => {
         if (error) {
           return go(error);
         }
         return go(null, extendDeletedKeys(modelKeys));
       });
     };
-    deleteModels = function (modelKeys) {
+    deleteModels = modelKeys => {
       switch (modelKeys.length) {
         case 0:
           return assist(deleteModels);
@@ -2514,26 +2385,20 @@ export function routines() {
           return _fork(requestDeleteModels, modelKeys);
       }
     };
-    requestJob = function (key, go) {
-      return _.requestJob(key, function (error, job) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendJob(job));
-      });
-    };
-    requestJobs = function (go) {
-      return _.requestJobs(function (error, jobs) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendJobs(jobs));
-      });
-    };
-    getJobs = function () {
-      return _fork(requestJobs);
-    };
-    getJob = function (arg) {
+    requestJob = (key, go) => _.requestJob(key, (error, job) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendJob(job));
+    });
+    requestJobs = go => _.requestJobs((error, jobs) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendJobs(jobs));
+    });
+    getJobs = () => _fork(requestJobs);
+    getJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
         case 'String':
           return _fork(requestJob, arg);
@@ -2547,15 +2412,13 @@ export function routines() {
           return assist(getJob);
       }
     };
-    requestCancelJob = function (key, go) {
-      return _.requestCancelJob(key, function (error) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendCancelJob({}));
-      });
-    };
-    cancelJob = function (arg) {
+    requestCancelJob = (key, go) => _.requestCancelJob(key, error => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendCancelJob({}));
+    });
+    cancelJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
         case 'String':
           return _fork(requestCancelJob, arg);
@@ -2563,18 +2426,14 @@ export function routines() {
           return assist(cancelJob);
       }
     };
-    extendImportResults = function (importResults) {
-      return render_(importResults, h2oImportFilesOutput, importResults);
-    };
-    requestImportFiles = function (paths, go) {
-      return _.requestImportFiles(paths, function (error, importResults) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendImportResults(importResults));
-      });
-    };
-    importFiles = function (paths) {
+    extendImportResults = importResults => render_(importResults, h2oImportFilesOutput, importResults);
+    requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendImportResults(importResults));
+    });
+    importFiles = paths => {
       switch (flowPrelude.typeOf(paths)) {
         case 'Array':
           return _fork(requestImportFiles, paths);
@@ -2582,35 +2441,27 @@ export function routines() {
           return assist(importFiles);
       }
     };
-    extendParseSetupResults = function (args, parseSetupResults) {
-      return render_(parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
-    };
-    requestImportAndParseSetup = function (paths, go) {
-      return _.requestImportFiles(paths, function (error, importResults) {
-        var sourceKeys;
+    extendParseSetupResults = (args, parseSetupResults) => render_(parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
+    requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
+      var sourceKeys;
+      if (error) {
+        return go(error);
+      }
+      sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
+      return _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
         if (error) {
           return go(error);
         }
-        sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, function (result) {
-          return result.destination_frames;
-        })));
-        return _.requestParseSetup(sourceKeys, function (error, parseSetupResults) {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendParseSetupResults({ paths }, parseSetupResults));
-        });
+        return go(null, extendParseSetupResults({ paths }, parseSetupResults));
       });
-    };
-    requestParseSetup = function (sourceKeys, go) {
-      return _.requestParseSetup(sourceKeys, function (error, parseSetupResults) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
-      });
-    };
-    setupParse = function (args) {
+    });
+    requestParseSetup = (sourceKeys, go) => _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
+    });
+    setupParse = args => {
       if (args.paths && lodash.isArray(args.paths)) {
         return _fork(requestImportAndParseSetup, args.paths);
       } else if (args.source_frames && lodash.isArray(args.source_frames)) {
@@ -2618,35 +2469,53 @@ export function routines() {
       }
       return assist(setupParse);
     };
-    extendParseResult = function (parseResult) {
-      return render_(parseResult, H2O.JobOutput, parseResult.job);
-    };
-    requestImportAndParseFiles = function (paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
-      return _.requestImportFiles(paths, function (error, importResults) {
-        var sourceKeys;
-        if (error) {
-          return go(error);
-        }
-        sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, function (result) {
-          return result.destination_frames;
-        })));
-        return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, function (error, parseResult) {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendParseResult(parseResult));
-        });
-      });
-    };
-    requestParseFiles = function (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
-      return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, function (error, parseResult) {
+    extendParseResult = parseResult => render_(parseResult, H2O.JobOutput, parseResult.job);
+    requestImportAndParseFiles = (
+      paths,
+      destinationKey,
+      parseType,
+      separator,
+      columnCount,
+      useSingleQuotes,
+      columnNames,
+      columnTypes,
+      deleteOnDone,
+      checkHeader,
+      chunkSize,
+      go
+    ) => _.requestImportFiles(paths, (error, importResults) => {
+      var sourceKeys;
+      if (error) {
+        return go(error);
+      }
+      sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
+      return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
         if (error) {
           return go(error);
         }
         return go(null, extendParseResult(parseResult));
       });
-    };
-    parseFiles = function (opts) {
+    });
+    requestParseFiles = (
+      sourceKeys,
+      destinationKey,
+      parseType,
+      separator,
+      columnCount,
+      useSingleQuotes,
+      columnNames,
+      columnTypes,
+      deleteOnDone,
+      checkHeader,
+      chunkSize,
+      go
+    ) => _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendParseResult(parseResult));
+    });
+    parseFiles = opts => {
       var checkHeader;
       var chunkSize;
       var columnCount;
@@ -2672,33 +2541,31 @@ export function routines() {
       }
       return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
     };
-    requestModelBuild = function (algo, opts, go) {
-      return _.requestModelBuild(algo, opts, function (error, result) {
-        var messages;
-        var validation;
-        if (error) {
-          return go(error);
-        }
-        if (result.error_count > 0) {
-          messages = function () {
-            var _i;
-            var _len;
-            var _ref1;
-            var _results;
-            _ref1 = result.messages;
-            _results = [];
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              validation = _ref1[_i];
-              _results.push(validation.message);
-            }
-            return _results;
-          }();
-          return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));
-        }
-        return go(null, extendJob(result.job));
-      });
-    };
-    requestAutoModelBuild = function (opts, go) {
+    requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
+      var messages;
+      var validation;
+      if (error) {
+        return go(error);
+      }
+      if (result.error_count > 0) {
+        messages = (() => {
+          var _i;
+          var _len;
+          var _ref1;
+          var _results;
+          _ref1 = result.messages;
+          _results = [];
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            validation = _ref1[_i];
+            _results.push(validation.message);
+          }
+          return _results;
+        })();
+        return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));
+      }
+      return go(null, extendJob(result.job));
+    });
+    requestAutoModelBuild = (opts, go) => {
       var params;
       params = {
         input_spec: {
@@ -2707,53 +2574,49 @@ export function routines() {
         },
         build_control: { stopping_criteria: { max_runtime_secs: opts.maxRunTime } }
       };
-      return _.requestAutoModelBuild(params, function (error, result) {
+      return _.requestAutoModelBuild(params, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendJob(result.job));
       });
     };
-    buildAutoModel = function (opts) {
+    buildAutoModel = opts => {
       if (opts && lodash.keys(opts).length > 1) {
         return _fork(requestAutoModelBuild, opts);
       }
       return assist(buildAutoModel, opts);
     };
-    buildModel = function (algo, opts) {
+    buildModel = (algo, opts) => {
       if (algo && opts && lodash.keys(opts).length > 1) {
         return _fork(requestModelBuild, algo, opts);
       }
       return assist(buildModel, algo, opts);
     };
-    unwrapPrediction = function (go) {
-      return function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendPrediction(result));
-      };
+    unwrapPrediction = go => (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendPrediction(result));
     };
-    requestPredict = function (destinationKey, modelKey, frameKey, options, go) {
-      return _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(go));
-    };
-    requestPredicts = function (opts, go) {
+    requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(go));
+    requestPredicts = (opts, go) => {
       var futures;
-      futures = lodash.map(opts, function (opt) {
+      futures = lodash.map(opts, opt => {
         var frameKey;
         var modelKey;
         var options;
         modelKey = opt.model, frameKey = opt.frame, options = opt.options;
         return _fork(_.requestPredict, null, modelKey, frameKey, options || {});
       });
-      return Flow.Async.join(futures, function (error, predictions) {
+      return Flow.Async.join(futures, (error, predictions) => {
         if (error) {
           return go(error);
         }
         return go(null, extendPredictions(opts, predictions));
       });
     };
-    predict = function (opts) {
+    predict = opts => {
       var combos;
       var deep_features_hidden_layer;
       var exemplar_index;
@@ -2818,40 +2681,36 @@ export function routines() {
         frame
       });
     };
-    requestPrediction = function (modelKey, frameKey, go) {
-      return _.requestPrediction(modelKey, frameKey, unwrapPrediction(go));
-    };
-    requestPredictions = function (opts, go) {
+    requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(go));
+    requestPredictions = (opts, go) => {
       var frameKey;
       var futures;
       var modelKey;
       if (lodash.isArray(opts)) {
-        futures = lodash.map(opts, function (opt) {
+        futures = lodash.map(opts, opt => {
           var frameKey;
           var modelKey;
           modelKey = opt.model, frameKey = opt.frame;
           return _fork(_.requestPredictions, modelKey, frameKey);
         });
-        return Flow.Async.join(futures, function (error, predictions) {
+        return Flow.Async.join(futures, (error, predictions) => {
           var uniquePredictions;
           if (error) {
             return go(error);
           }
-          uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), function (prediction) {
-            return prediction.model.name + prediction.frame.name;
-          }));
+          uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), prediction => prediction.model.name + prediction.frame.name));
           return go(null, extendPredictions(opts, uniquePredictions));
         });
       }
       modelKey = opts.model, frameKey = opts.frame;
-      return _.requestPredictions(modelKey, frameKey, function (error, predictions) {
+      return _.requestPredictions(modelKey, frameKey, (error, predictions) => {
         if (error) {
           return go(error);
         }
         return go(null, extendPredictions(opts, predictions));
       });
     };
-    getPrediction = function (opts) {
+    getPrediction = opts => {
       var frame;
       var model;
       var predictions_frame;
@@ -2868,64 +2727,50 @@ export function routines() {
         frame
       });
     };
-    getPredictions = function (opts) {
+    getPredictions = opts => {
       if (opts == null) {
         opts = {};
       }
       return _fork(requestPredictions, opts);
     };
-    requestCloud = function (go) {
-      return _.requestCloud(function (error, cloud) {
+    requestCloud = go => _.requestCloud((error, cloud) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendCloud(cloud));
+    });
+    getCloud = () => _fork(requestCloud);
+    requestTimeline = go => _.requestTimeline((error, timeline) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendTimeline(timeline));
+    });
+    getTimeline = () => _fork(requestTimeline);
+    requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendStackTrace(stackTrace));
+    });
+    getStackTrace = () => _fork(requestStackTrace);
+    requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
+      var NODE_INDEX_SELF;
+      if (error) {
+        return go(error);
+      }
+      if (nodeIndex < 0 || nodeIndex >= cloud.nodes.length) {
+        NODE_INDEX_SELF = -1;
+        nodeIndex = NODE_INDEX_SELF;
+      }
+      return _.requestLogFile(nodeIndex, fileType, (error, logFile) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendCloud(cloud));
+        return go(null, extendLogFile(cloud, nodeIndex, fileType, logFile));
       });
-    };
-    getCloud = function () {
-      return _fork(requestCloud);
-    };
-    requestTimeline = function (go) {
-      return _.requestTimeline(function (error, timeline) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendTimeline(timeline));
-      });
-    };
-    getTimeline = function () {
-      return _fork(requestTimeline);
-    };
-    requestStackTrace = function (go) {
-      return _.requestStackTrace(function (error, stackTrace) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendStackTrace(stackTrace));
-      });
-    };
-    getStackTrace = function () {
-      return _fork(requestStackTrace);
-    };
-    requestLogFile = function (nodeIndex, fileType, go) {
-      return _.requestCloud(function (error, cloud) {
-        var NODE_INDEX_SELF;
-        if (error) {
-          return go(error);
-        }
-        if (nodeIndex < 0 || nodeIndex >= cloud.nodes.length) {
-          NODE_INDEX_SELF = -1;
-          nodeIndex = NODE_INDEX_SELF;
-        }
-        return _.requestLogFile(nodeIndex, fileType, function (error, logFile) {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendLogFile(cloud, nodeIndex, fileType, logFile));
-        });
-      });
-    };
-    getLogFile = function (nodeIndex, fileType) {
+    });
+    getLogFile = (nodeIndex, fileType) => {
       if (nodeIndex == null) {
         nodeIndex = -1;
       }
@@ -2934,180 +2779,142 @@ export function routines() {
       }
       return _fork(requestLogFile, nodeIndex, fileType);
     };
-    requestNetworkTest = function (go) {
-      return _.requestNetworkTest(function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendNetworkTest(result));
-      });
-    };
-    testNetwork = function () {
-      return _fork(requestNetworkTest);
-    };
-    requestRemoveAll = function (go) {
-      return _.requestRemoveAll(function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys([]));
-      });
-    };
-    deleteAll = function () {
-      return _fork(requestRemoveAll);
-    };
-    extendRDDs = function (rdds) {
+    requestNetworkTest = go => _.requestNetworkTest((error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendNetworkTest(result));
+    });
+    testNetwork = () => _fork(requestNetworkTest);
+    requestRemoveAll = go => _.requestRemoveAll((error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDeletedKeys([]));
+    });
+    deleteAll = () => _fork(requestRemoveAll);
+    extendRDDs = rdds => {
       render_(rdds, h2oRDDsOutput, rdds);
       return rdds;
     };
-    requestRDDs = function (go) {
-      return _.requestRDDs(function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendRDDs(result.rdds));
-      });
-    };
-    getRDDs = function () {
-      return _fork(requestRDDs);
-    };
-    extendDataFrames = function (dataframes) {
+    requestRDDs = go => _.requestRDDs((error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendRDDs(result.rdds));
+    });
+    getRDDs = () => _fork(requestRDDs);
+    extendDataFrames = dataframes => {
       render_(dataframes, h2oDataFramesOutput, dataframes);
       return dataframes;
     };
-    requestDataFrames = function (go) {
-      return _.requestDataFrames(function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDataFrames(result.dataframes));
-      });
-    };
-    getDataFrames = function () {
-      return _fork(requestDataFrames);
-    };
-    extendAsH2OFrame = function (result) {
+    requestDataFrames = go => _.requestDataFrames((error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDataFrames(result.dataframes));
+    });
+    getDataFrames = () => _fork(requestDataFrames);
+    extendAsH2OFrame = result => {
       render_(result, h2oH2OFrameOutput, result);
       return result;
     };
-    requestAsH2OFrameFromRDD = function (rdd_id, name, go) {
-      return _.requestAsH2OFrameFromRDD(rdd_id, name, function (error, h2oframe_id) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsH2OFrame(h2oframe_id));
-      });
-    };
-    asH2OFrameFromRDD = function (rdd_id, name) {
+    requestAsH2OFrameFromRDD = (rdd_id, name, go) => _.requestAsH2OFrameFromRDD(rdd_id, name, (error, h2oframe_id) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendAsH2OFrame(h2oframe_id));
+    });
+    asH2OFrameFromRDD = (rdd_id, name) => {
       if (name == null) {
         name = void 0;
       }
       return _fork(requestAsH2OFrameFromRDD, rdd_id, name);
     };
-    requestAsH2OFrameFromDF = function (df_id, name, go) {
-      return _.requestAsH2OFrameFromDF(df_id, name, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsH2OFrame(result));
-      });
-    };
-    asH2OFrameFromDF = function (df_id, name) {
+    requestAsH2OFrameFromDF = (df_id, name, go) => _.requestAsH2OFrameFromDF(df_id, name, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendAsH2OFrame(result));
+    });
+    asH2OFrameFromDF = (df_id, name) => {
       if (name == null) {
         name = void 0;
       }
       return _fork(requestAsH2OFrameFromDF, df_id, name);
     };
-    extendAsDataFrame = function (result) {
+    extendAsDataFrame = result => {
       render_(result, h2oDataFrameOutput, result);
       return result;
     };
-    requestAsDataFrame = function (hf_id, name, go) {
-      return _.requestAsDataFrame(hf_id, name, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsDataFrame(result));
-      });
-    };
-    asDataFrame = function (hf_id, name) {
+    requestAsDataFrame = (hf_id, name, go) => _.requestAsDataFrame(hf_id, name, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendAsDataFrame(result));
+    });
+    asDataFrame = (hf_id, name) => {
       if (name == null) {
         name = void 0;
       }
       return _fork(requestAsDataFrame, hf_id, name);
     };
-    requestScalaCode = function (session_id, code, go) {
-      return _.requestScalaCode(session_id, code, function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendScalaCode(result));
-      });
-    };
-    extendScalaCode = function (result) {
+    requestScalaCode = (session_id, code, go) => _.requestScalaCode(session_id, code, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendScalaCode(result));
+    });
+    extendScalaCode = result => {
       render_(result, h2oScalaCodeOutput, result);
       return result;
     };
-    runScalaCode = function (session_id, code) {
-      return _fork(requestScalaCode, session_id, code);
-    };
-    requestScalaIntp = function (go) {
-      return _.requestScalaIntp(function (error, result) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendScalaIntp(result));
-      });
-    };
-    extendScalaIntp = function (result) {
+    runScalaCode = (session_id, code) => _fork(requestScalaCode, session_id, code);
+    requestScalaIntp = go => _.requestScalaIntp((error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendScalaIntp(result));
+    });
+    extendScalaIntp = result => {
       render_(result, h2oScalaIntpOutput, result);
       return result;
     };
-    getScalaIntp = function () {
-      return _fork(requestScalaIntp);
-    };
-    requestProfile = function (depth, go) {
-      return _.requestProfile(depth, function (error, profile) {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendProfile(profile));
-      });
-    };
-    getProfile = function (opts) {
+    getScalaIntp = () => _fork(requestScalaIntp);
+    requestProfile = (depth, go) => _.requestProfile(depth, (error, profile) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendProfile(profile));
+    });
+    getProfile = opts => {
       if (!opts) {
         opts = { depth: 10 };
       }
       return _fork(requestProfile, opts.depth);
     };
-    loadScript = function (path, go) {
+    loadScript = (path, go) => {
       var onDone;
       var onFail;
-      onDone = function (script, status) {
-        return go(null, {
-          script,
-          status
-        });
-      };
-      onFail = function (jqxhr, settings, error) {
-        return go(error);
-      };
+      onDone = (script, status) => go(null, {
+        script,
+        status
+      });
+      onFail = (jqxhr, settings, error) => go(error);
       return $.getScript(path).done(onDone).fail(onFail);
     };
-    dumpFuture = function (result, go) {
+    dumpFuture = (result, go) => {
       if (result == null) {
         result = {};
       }
       console.debug(result);
       return go(null, render_(result, Flow.ObjectBrowser, 'dump', result));
     };
-    dump = function (f) {
+    dump = f => {
       if (f != null ? f.isFuture : void 0) {
         return _fork(dumpFuture, f);
       }
-      return Flow.Async.async(function () {
-        return f;
-      });
+      return Flow.Async.async(() => f);
     };
     assist = function () {
       var args;
@@ -3146,22 +2953,16 @@ export function routines() {
           return _fork(proceed, h2oNoAssist, []);
       }
     };
-    Flow.Dataflow.link(_.ready, function () {
+    Flow.Dataflow.link(_.ready, () => {
       Flow.Dataflow.link(_.ls, ls);
       Flow.Dataflow.link(_.inspect, inspect);
-      Flow.Dataflow.link(_.plot, function (plot) {
-        return plot(lightning);
-      });
-      Flow.Dataflow.link(_.grid, function (frame) {
-        return lightning(lightning.select(), lightning.from(frame));
-      });
-      Flow.Dataflow.link(_.enumerate, function (frame) {
-        return lightning(lightning.select(0), lightning.from(frame));
-      });
+      Flow.Dataflow.link(_.plot, plot => plot(lightning));
+      Flow.Dataflow.link(_.grid, frame => lightning(lightning.select(), lightning.from(frame)));
+      Flow.Dataflow.link(_.enumerate, frame => lightning(lightning.select(0), lightning.from(frame)));
       Flow.Dataflow.link(_.requestFrameDataE, requestFrameData);
       return Flow.Dataflow.link(_.requestFrameSummarySliceE, requestFrameSummarySlice);
     });
-    initAssistanceSparklingWater = function () {
+    initAssistanceSparklingWater = () => {
       _assistance.getRDDs = {
         description: 'Get a list of Spark\'s RDDs',
         icon: 'table'
@@ -3171,7 +2972,7 @@ export function routines() {
         icon: 'table'
       };
     };
-    Flow.Dataflow.link(_.initialized, function () {
+    Flow.Dataflow.link(_.initialized, () => {
       if (_.onSparklingWater) {
         return initAssistanceSparklingWater();
       }

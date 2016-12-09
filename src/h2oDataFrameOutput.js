@@ -4,9 +4,9 @@ export function h2oDataFrameOutput(_, _go, _result) {
   var createDataFrameView;
   var _dataFrameView;
   _dataFrameView = Flow.Dataflow.signal(null);
-  createDataFrameView = function (result) {
-    return { dataframe_id: result.dataframe_id };
-  };
+  createDataFrameView = result => ({
+    dataframe_id: result.dataframe_id
+  });
   _dataFrameView(createDataFrameView(_result));
   lodash.defer(_go);
   return {

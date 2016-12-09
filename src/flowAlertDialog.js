@@ -9,9 +9,7 @@ export function flowAlertDialog(_, _message, _opts, _go) {
     title: 'Alert',
     acceptCaption: 'OK'
   });
-  accept = function () {
-    return _go(true);
-  };
+  accept = () => _go(true);
   return {
     title: _opts.title,
     acceptCaption: _opts.acceptCaption,

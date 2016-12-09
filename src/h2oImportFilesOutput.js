@@ -10,19 +10,15 @@ export function h2oImportFilesOutput(_, _go, _importResults) {
   var _canParse;
   var _importViews;
   var _title;
-  _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, function (result) {
-    return result.destination_frames;
-  })));
+  _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, result => result.destination_frames)));
   _canParse = _allFrames.length > 0;
   _title = `${_allFrames.length} / ${_importResults.length} files imported.`;
-  createImportView = function (result) {
-    return {
-      files: result.files,
-      template: 'flow-import-file-output'
-    };
-  };
+  createImportView = result => ({
+    files: result.files,
+    template: 'flow-import-file-output'
+  });
   _importViews = lodash.map(_importResults, createImportView);
-  parse = function () {
+  parse = () => {
     var paths;
     paths = lodash.map(_allFrames, flowPrelude.stringify);
     return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${paths.join(',')} ]`);

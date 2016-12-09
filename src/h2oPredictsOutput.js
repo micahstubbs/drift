@@ -25,16 +25,14 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
   _checkAllPredictions = Flow.Dataflow.signal(false);
   _canComparePredictions = Flow.Dataflow.signal(false);
   _rocCurve = Flow.Dataflow.signal(null);
-  arePredictionsComparable = function (views) {
+  arePredictionsComparable = views => {
     if (views.length === 0) {
       return false;
     }
-    return lodash.every(views, function (view) {
-      return view.modelCategory === 'Binomial';
-    });
+    return lodash.every(views, view => view.modelCategory === 'Binomial');
   };
   _isCheckingAll = false;
-  Flow.Dataflow.react(_checkAllPredictions, function (checkAll) {
+  Flow.Dataflow.react(_checkAllPredictions, checkAll => {
     var view;
     var _i;
     var _len;
@@ -48,7 +46,7 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
     _canComparePredictions(checkAll && arePredictionsComparable(_predictionViews()));
     _isCheckingAll = false;
   });
-  createPredictionView = function (prediction) {
+  createPredictionView = prediction => {
     var inspect;
     var view;
     var _frameKey;
@@ -60,13 +58,13 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
     _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
     _hasFrame = _frameKey;
     _isChecked = Flow.Dataflow.signal(false);
-    Flow.Dataflow.react(_isChecked, function () {
+    Flow.Dataflow.react(_isChecked, () => {
       var checkedViews;
       var view;
       if (_isCheckingAll) {
         return;
       }
-      checkedViews = function () {
+      checkedViews = (() => {
         var _i;
         var _len;
         var _ref1;
@@ -80,15 +78,15 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
           }
         }
         return _results;
-      }();
+      })();
       return _canComparePredictions(arePredictionsComparable(checkedViews));
     });
-    view = function () {
+    view = () => {
       if (_hasFrame) {
         return _.insertAndExecuteCell('cs', `getPrediction model: ${flowPrelude.stringify(_modelKey)}, frame: ${flowPrelude.stringify(_frameKey)}`);
       }
     };
-    inspect = function () {
+    inspect = () => {
       if (_hasFrame) {
         return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(_modelKey)}, frame: ${flowPrelude.stringify(_frameKey)}`);
       }
@@ -106,10 +104,10 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
   _predictionsTable = _.inspect('predictions', _predictions);
   _metricsTable = _.inspect('metrics', _predictions);
   _scoresTable = _.inspect('scores', _predictions);
-  comparePredictions = function () {
+  comparePredictions = () => {
     var selectedKeys;
     var view;
-    selectedKeys = function () {
+    selectedKeys = (() => {
       var _i;
       var _len;
       var _ref;
@@ -126,25 +124,15 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
         }
       }
       return _results;
-    }();
+    })();
     return _.insertAndExecuteCell('cs', `getPredictions ${flowPrelude.stringify(selectedKeys)}`);
   };
-  plotPredictions = function () {
-    return _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
-  };
-  plotScores = function () {
-    return _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
-  };
-  plotMetrics = function () {
-    return _.insertAndExecuteCell('cs', _metricsTable.metadata.plot);
-  };
-  inspectAll = function () {
-    return _.insertAndExecuteCell('cs', `inspect ${_predictionsTable.metadata.origin}`);
-  };
-  predict = function () {
-    return _.insertAndExecuteCell('cs', 'predict');
-  };
-  initialize = function (predictions) {
+  plotPredictions = () => _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
+  plotScores = () => _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
+  plotMetrics = () => _.insertAndExecuteCell('cs', _metricsTable.metadata.plot);
+  inspectAll = () => _.insertAndExecuteCell('cs', `inspect ${_predictionsTable.metadata.origin}`);
+  predict = () => _.insertAndExecuteCell('cs', 'predict');
+  initialize = predictions => {
     _predictionViews(lodash.map(predictions, createPredictionView));
     return lodash.defer(_go);
   };

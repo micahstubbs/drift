@@ -44,7 +44,7 @@ export function knockout() {
       if (action = ko.unwrap(valueAccessor())) {
         if (lodash.isFunction(action)) {
           $element = $(element);
-          $element.keydown(function (e) {
+          $element.keydown(e => {
             if (e.which === 13) {
               action(viewModel);
             }
@@ -76,9 +76,7 @@ export function knockout() {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
       var arg;
       if (arg = ko.unwrap(valueAccessor())) {
-        arg.getCursorPosition = function () {
-          return $(element).textrange('get', 'position');
-        };
+        arg.getCursorPosition = () => $(element).textrange('get', 'position');
       }
     }
   };
@@ -88,11 +86,7 @@ export function knockout() {
       var arg;
       var resize;
       if (arg = ko.unwrap(valueAccessor())) {
-        arg.autoResize = resize = function () {
-          return lodash.defer(function () {
-            return $el.css('height', 'auto').height(element.scrollHeight);
-          });
-        };
+        arg.autoResize = resize = () => lodash.defer(() => $el.css('height', 'auto').height(element.scrollHeight));
         $el = $(element).on('input', resize);
         resize();
       }
@@ -106,7 +100,7 @@ export function knockout() {
       if (arg = ko.unwrap(valueAccessor())) {
         $el = $(element);
         $viewport = $el.closest('.flow-box-notebook');
-        arg.scrollIntoView = function (immediate) {
+        arg.scrollIntoView = immediate => {
           var height;
           var position;
           var top;
@@ -149,7 +143,7 @@ export function knockout() {
         throw new Error('No collapsible sibling found');
       }
       $caretEl = $(caretEl);
-      toggle = function () {
+      toggle = () => {
         if (isCollapsed) {
           $caretEl.removeClass(caretDown).addClass(caretRight);
           $nextEl.hide();
@@ -163,9 +157,7 @@ export function knockout() {
       $el.attr('title', 'Click to expand/collapse');
       $el.on('click', toggle);
       toggle();
-      ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-        return $el.off('click');
-      });
+      ko.utils.domNodeDisposal.addDisposeCallback(element, () => $el.off('click'));
     }
   };
   ko.bindingHandlers.dom = {
@@ -211,9 +203,7 @@ export function knockout() {
       var options;
       options = ko.unwrap(valueAccessor());
       editor = CodeMirror.fromTextArea(element, options);
-      editor.on('change', function (cm) {
-        return allBindings().value(cm.getValue());
-      });
+      editor.on('change', cm => allBindings().value(cm.getValue()));
       element.editor = editor;
       if (allBindings().value()) {
         editor.setValue(allBindings().value());

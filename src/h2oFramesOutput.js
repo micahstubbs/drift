@@ -17,7 +17,7 @@ export function h2oFramesOutput(_, _go, _frames) {
   _checkAllFrames = Flow.Dataflow.signal(false);
   _hasSelectedFrames = Flow.Dataflow.signal(false);
   _isCheckingAll = false;
-  Flow.Dataflow.react(_checkAllFrames, function (checkAll) {
+  Flow.Dataflow.react(_checkAllFrames, checkAll => {
     var view;
     var _i;
     var _len;
@@ -31,7 +31,7 @@ export function h2oFramesOutput(_, _go, _frames) {
     _hasSelectedFrames(checkAll);
     _isCheckingAll = false;
   });
-  createFrameView = function (frame) {
+  createFrameView = frame => {
     var columnLabels;
     var createModel;
     var inspect;
@@ -39,13 +39,13 @@ export function h2oFramesOutput(_, _go, _frames) {
     var view;
     var _isChecked;
     _isChecked = Flow.Dataflow.signal(false);
-    Flow.Dataflow.react(_isChecked, function () {
+    Flow.Dataflow.react(_isChecked, () => {
       var checkedViews;
       var view;
       if (_isCheckingAll) {
         return;
       }
-      checkedViews = function () {
+      checkedViews = (() => {
         var _i;
         var _len;
         var _ref;
@@ -59,27 +59,19 @@ export function h2oFramesOutput(_, _go, _frames) {
           }
         }
         return _results;
-      }();
+      })();
       return _hasSelectedFrames(checkedViews.length > 0);
     });
-    columnLabels = lodash.head(lodash.map(frame.columns, function (column) {
-      return column.label;
-    }), 15);
-    view = function () {
+    columnLabels = lodash.head(lodash.map(frame.columns, column => column.label), 15);
+    view = () => {
       if (frame.is_text) {
         return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${flowPrelude.stringify(frame.frame_id.name)} ]`);
       }
       return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(frame.frame_id.name)}`);
     };
-    predict = function () {
-      return _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
-    };
-    inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(frame.frame_id.name)}`);
-    };
-    createModel = function () {
-      return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
-    };
+    predict = () => _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
+    inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(frame.frame_id.name)}`);
+    createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
     return {
       key: frame.frame_id.name,
       isChecked: _isChecked,
@@ -93,10 +85,8 @@ export function h2oFramesOutput(_, _go, _frames) {
       createModel
     };
   };
-  importFiles = function () {
-    return _.insertAndExecuteCell('cs', 'importFiles');
-  };
-  collectSelectedKeys = function () {
+  importFiles = () => _.insertAndExecuteCell('cs', 'importFiles');
+  collectSelectedKeys = () => {
     var view;
     var _i;
     var _len;
@@ -112,19 +102,15 @@ export function h2oFramesOutput(_, _go, _frames) {
     }
     return _results;
   };
-  predictOnFrames = function () {
-    return _.insertAndExecuteCell('cs', `predict frames: ${flowPrelude.stringify(collectSelectedKeys())}`);
-  };
-  deleteFrames = function () {
-    return _.confirm('Are you sure you want to delete these frames?', {
-      acceptCaption: 'Delete Frames',
-      declineCaption: 'Cancel'
-    }, function (accept) {
-      if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrames ${flowPrelude.stringify(collectSelectedKeys())}`);
-      }
-    });
-  };
+  predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${flowPrelude.stringify(collectSelectedKeys())}`);
+  deleteFrames = () => _.confirm('Are you sure you want to delete these frames?', {
+    acceptCaption: 'Delete Frames',
+    declineCaption: 'Cancel'
+  }, accept => {
+    if (accept) {
+      return _.insertAndExecuteCell('cs', `deleteFrames ${flowPrelude.stringify(collectSelectedKeys())}`);
+    }
+  });
   _frameViews(lodash.map(_frames, createFrameView));
   lodash.defer(_go);
   return {

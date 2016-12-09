@@ -4,7 +4,7 @@ export function imputeInput() {
   var createOptions;
   var _allCombineMethods;
   var _allMethods;
-  createOptions = function (options) {
+  createOptions = options => {
     var option;
     var _i;
     var _len;
@@ -30,7 +30,7 @@ export function imputeInput() {
     'Low',
     'High'
   ]);
-  H2O.ImputeInput = function (_, _go, opts) {
+  H2O.ImputeInput = (_, _go, opts) => {
     var impute;
     var _canGroupByColumns;
     var _canImpute;
@@ -50,7 +50,7 @@ export function imputeInput() {
     }
     _frames = Flow.Dataflow.signal([]);
     _frame = Flow.Dataflow.signal(null);
-    _hasFrame = Flow.Dataflow.lift(_frame, function (frame) {
+    _hasFrame = Flow.Dataflow.lift(_frame, frame => {
       if (frame) {
         return true;
       }
@@ -60,19 +60,13 @@ export function imputeInput() {
     _column = Flow.Dataflow.signal(null);
     _methods = _allMethods;
     _method = Flow.Dataflow.signal(_allMethods[0]);
-    _canUseCombineMethod = Flow.Dataflow.lift(_method, function (method) {
-      return method.value === 'median';
-    });
+    _canUseCombineMethod = Flow.Dataflow.lift(_method, method => method.value === 'median');
     _combineMethods = _allCombineMethods;
     _combineMethod = Flow.Dataflow.signal(_allCombineMethods[0]);
-    _canGroupByColumns = Flow.Dataflow.lift(_method, function (method) {
-      return method.value !== 'median';
-    });
+    _canGroupByColumns = Flow.Dataflow.lift(_method, method => method.value !== 'median');
     _groupByColumns = Flow.Dataflow.signals([]);
-    _canImpute = Flow.Dataflow.lift(_frame, _column, function (frame, column) {
-      return frame && column;
-    });
-    impute = function () {
+    _canImpute = Flow.Dataflow.lift(_frame, _column, (frame, column) => frame && column);
+    impute = () => {
       var arg;
       var combineMethod;
       var groupByColumns;
@@ -95,12 +89,12 @@ export function imputeInput() {
       }
       return _.insertAndExecuteCell('cs', `imputeColumn ${JSON.stringify(arg)}`);
     };
-    _.requestFrames(function (error, frames) {
+    _.requestFrames((error, frames) => {
       var frame;
       if (error) {
         // empty
       } else {
-        _frames(function () {
+        _frames((() => {
           var _i;
           var _len;
           var _results;
@@ -112,20 +106,20 @@ export function imputeInput() {
             }
           }
           return _results;
-        }());
+        })());
         if (opts.frame) {
           _frame(opts.frame);
         }
       }
     });
-    Flow.Dataflow.react(_frame, function (frame) {
+    Flow.Dataflow.react(_frame, frame => {
       if (frame) {
-        return _.requestFrameSummaryWithoutData(frame, function (error, frame) {
+        return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
           var column;
           if (error) {
             // empty
           } else {
-            _columns(function () {
+            _columns((() => {
               var _i;
               var _len;
               var _ref;
@@ -137,7 +131,7 @@ export function imputeInput() {
                 _results.push(column.label);
               }
               return _results;
-            }());
+            })());
             if (opts.column) {
               _column(opts.column);
               return delete opts.column;

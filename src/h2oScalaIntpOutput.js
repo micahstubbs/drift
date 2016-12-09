@@ -4,9 +4,9 @@ export function h2oScalaIntpOutput(_, _go, _result) {
   var createScalaIntpView;
   var _scalaIntpView;
   _scalaIntpView = Flow.Dataflow.signal(null);
-  createScalaIntpView = function (result) {
-    return { session_id: result.session_id };
-  };
+  createScalaIntpView = result => ({
+    session_id: result.session_id
+  });
   _scalaIntpView(createScalaIntpView(_result));
   lodash.defer(_go);
   return {

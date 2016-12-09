@@ -26,10 +26,8 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
   _frames = Flow.Dataflow.signal([]);
   _frame = Flow.Dataflow.signal(null);
   _lastSplitRatio = Flow.Dataflow.signal(1);
-  format4f = function (value) {
-    return value.toPrecision(4).replace(/0+$/, '0');
-  };
-  _lastSplitRatioText = Flow.Dataflow.lift(_lastSplitRatio, function (ratio) {
+  format4f = value => value.toPrecision(4).replace(/0+$/, '0');
+  _lastSplitRatioText = Flow.Dataflow.lift(_lastSplitRatio, ratio => {
     if (lodash.isNaN(ratio)) {
       return ratio;
     }
@@ -38,11 +36,9 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
   _lastSplitKey = Flow.Dataflow.signal('');
   _splits = Flow.Dataflow.signals([]);
   _seed = Flow.Dataflow.signal(Math.random() * 1000000 | 0);
-  Flow.Dataflow.react(_splits, function () {
-    return updateSplitRatiosAndNames();
-  });
+  Flow.Dataflow.react(_splits, () => updateSplitRatiosAndNames());
   _validationMessage = Flow.Dataflow.signal('');
-  collectRatios = function () {
+  collectRatios = () => {
     var entry;
     var _i;
     var _len;
@@ -56,10 +52,10 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     }
     return _results;
   };
-  collectKeys = function () {
+  collectKeys = () => {
     var entry;
     var splitKeys;
-    splitKeys = (function () {
+    splitKeys = ((() => {
       var _i;
       var _len;
       var _ref;
@@ -71,14 +67,12 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
         _results.push(entry.key().trim());
       }
       return _results;
-    }());
+    })());
     splitKeys.push(_lastSplitKey().trim());
     return splitKeys;
   };
-  createSplitName = function (key, ratio) {
-    return `${key}_${format4f(ratio)}`;
-  };
-  updateSplitRatiosAndNames = function () {
+  createSplitName = (key, ratio) => `${key}_${format4f(ratio)}`;
+  updateSplitRatiosAndNames = () => {
     var entry;
     var frame;
     var frameKey;
@@ -106,7 +100,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     }
     _lastSplitKey(createSplitName(frameKey, _lastSplitRatio()));
   };
-  computeSplits = function (go) {
+  computeSplits = go => {
     var key;
     var ratio;
     var splitKeys;
@@ -150,20 +144,16 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     }
     return go(null, splitRatios, splitKeys);
   };
-  createSplit = function (ratio) {
+  createSplit = ratio => {
     var self;
     var _key;
     var _ratio;
     var _ratioText;
     _ratioText = Flow.Dataflow.signal(`${ratio}`);
     _key = Flow.Dataflow.signal('');
-    _ratio = Flow.Dataflow.lift(_ratioText, function (text) {
-      return parseFloat(text);
-    });
+    _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
     Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
-    flowPrelude.remove = function () {
-      return _splits.remove(self);
-    };
+    flowPrelude.remove = () => _splits.remove(self);
     return self = {
       key: _key,
       ratioText: _ratioText,
@@ -171,28 +161,22 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
       remove: flowPrelude.remove
     };
   };
-  addSplitRatio = function (ratio) {
-    return _splits.push(createSplit(ratio));
-  };
-  addSplit = function () {
-    return addSplitRatio(0);
-  };
-  splitFrame = function () {
-    return computeSplits(function (error, splitRatios, splitKeys) {
-      if (error) {
-        return _validationMessage(error);
-      }
-      _validationMessage('');
-      return _.insertAndExecuteCell('cs',
-        `splitFrame ${flowPrelude.stringify(_frame())}, ${flowPrelude.stringify(splitRatios)}, ${flowPrelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
-    });
-  };
-  initialize = function () {
-    _.requestFrames(function (error, frames) {
+  addSplitRatio = ratio => _splits.push(createSplit(ratio));
+  addSplit = () => addSplitRatio(0);
+  splitFrame = () => computeSplits((error, splitRatios, splitKeys) => {
+    if (error) {
+      return _validationMessage(error);
+    }
+    _validationMessage('');
+    return _.insertAndExecuteCell('cs',
+      `splitFrame ${flowPrelude.stringify(_frame())}, ${flowPrelude.stringify(splitRatios)}, ${flowPrelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
+  });
+  initialize = () => {
+    _.requestFrames((error, frames) => {
       var frame;
       var frameKeys;
       if (!error) {
-        frameKeys = (function () {
+        frameKeys = ((() => {
           var _i;
           var _len;
           var _results;
@@ -204,7 +188,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
             }
           }
           return _results;
-        }());
+        })());
         frameKeys.sort();
         _frames(frameKeys);
         return _frame(_frameKey);

@@ -7,7 +7,7 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
   var _activeNode;
   var _nodes;
   _activeNode = Flow.Dataflow.signal(null);
-  createThread = function (thread) {
+  createThread = thread => {
     var lines;
     lines = thread.split('\n');
     return {
@@ -15,17 +15,15 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
       stackTrace: lodash.tail(lines).join('\n')
     };
   };
-  createNode = function (node) {
+  createNode = node => {
     var display;
     var self;
     var thread;
-    display = function () {
-      return _activeNode(self);
-    };
+    display = () => _activeNode(self);
     return self = {
       name: node.node,
       timestamp: new Date(node.time),
-      threads: (function () {
+      threads: ((() => {
         var _i;
         var _len;
         var _ref;
@@ -37,11 +35,11 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
           _results.push(createThread(thread));
         }
         return _results;
-      }()),
+      })()),
       display
     };
   };
-  _nodes = (function () {
+  _nodes = ((() => {
     var _i;
     var _len;
     var _ref;
@@ -53,7 +51,7 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
       _results.push(createNode(node));
     }
     return _results;
-  }());
+  })());
   _activeNode(lodash.head(_nodes));
   lodash.defer(_go);
   return {

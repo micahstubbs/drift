@@ -18,19 +18,15 @@ export function flowCoffeescriptKernel() {
   var safetyWrapCoffeescript;
   var traverseJavascript;
   var traverseJavascriptScoped;
-  safetyWrapCoffeescript = function (guid) {
-    return function (cs, go) {
-      var block;
-      var lines;
-      lines = cs.replace(/[\n\r]/g, '\n').split('\n');
-      block = lodash.map(lines, function (line) {
-        return `  ${line}`;
-      });
-      block.unshift(`_h2o_results_[\'${guid}\'].result do ->`);
-      return go(null, block.join('\n'));
-    };
+  safetyWrapCoffeescript = guid => (cs, go) => {
+    var block;
+    var lines;
+    lines = cs.replace(/[\n\r]/g, '\n').split('\n');
+    block = lodash.map(lines, line => `  ${line}`);
+    block.unshift(`_h2o_results_[\'${guid}\'].result do ->`);
+    return go(null, block.join('\n'));
   };
-  compileCoffeescript = function (cs, go) {
+  compileCoffeescript = (cs, go) => {
     var error;
     try {
       return go(null, CoffeeScript.compile(cs, { bare: true }));
@@ -39,7 +35,7 @@ export function flowCoffeescriptKernel() {
       return go(new Flow.Error('Error compiling coffee-script', error));
     }
   };
-  parseJavascript = function (js, go) {
+  parseJavascript = (js, go) => {
     var error;
     try {
       return go(null, esprima.parse(js));
@@ -48,14 +44,14 @@ export function flowCoffeescriptKernel() {
       return go(new Flow.Error('Error parsing javascript expression', error));
     }
   };
-  identifyDeclarations = function (node) {
+  identifyDeclarations = node => {
     var declaration;
     if (!node) {
       return null;
     }
     switch (node.type) {
       case 'VariableDeclaration':
-        return function () {
+        return (() => {
           var _i;
           var _len;
           var _ref;
@@ -72,7 +68,7 @@ export function flowCoffeescriptKernel() {
             }
           }
           return _results;
-        }();
+        })();
       case 'FunctionDeclaration':
         if (node.id.type === 'Identifier') {
           return [{
@@ -89,7 +85,7 @@ export function flowCoffeescriptKernel() {
     }
     return null;
   };
-  parseDeclarations = function (block) {
+  parseDeclarations = block => {
     var declaration;
     var declarations;
     var identifiers;
@@ -110,11 +106,9 @@ export function flowCoffeescriptKernel() {
         }
       }
     }
-    return lodash.indexBy(identifiers, function (identifier) {
-      return identifier.name;
-    });
+    return lodash.indexBy(identifiers, identifier => identifier.name);
   };
-  traverseJavascript = function (parent, key, node, f) {
+  traverseJavascript = (parent, key, node, f) => {
     var child;
     var i;
     if (lodash.isArray(node)) {
@@ -138,14 +132,14 @@ export function flowCoffeescriptKernel() {
       }
     }
   };
-  deleteAstNode = function (parent, i) {
+  deleteAstNode = (parent, i) => {
     if (_.isArray(parent)) {
       return parent.splice(i, 1);
     } else if (lodash.isObject(parent)) {
       return delete parent[i];
     }
   };
-  createLocalScope = function (node) {
+  createLocalScope = node => {
     var localScope;
     var param;
     var _i;
@@ -164,7 +158,7 @@ export function flowCoffeescriptKernel() {
     }
     return localScope;
   };
-  coalesceScopes = function (scopes) {
+  coalesceScopes = scopes => {
     var currentScope;
     var i;
     var identifier;
@@ -193,7 +187,7 @@ export function flowCoffeescriptKernel() {
     }
     return currentScope;
   };
-  traverseJavascriptScoped = function (scopes, parentScope, parent, key, node, f) {
+  traverseJavascriptScoped = (scopes, parentScope, parent, key, node, f) => {
     var child;
     var currentScope;
     var isNewScope;
@@ -217,37 +211,33 @@ export function flowCoffeescriptKernel() {
       scopes.pop();
     }
   };
-  createRootScope = function (sandbox) {
-    return function (program, go) {
-      var error;
-      var name;
-      var rootScope;
-      try {
-        rootScope = parseDeclarations(program.body[0].expression.arguments[0].callee.body);
-        for (name in sandbox.context) {
-          if ({}.hasOwnProperty.call(sandbox.context, name)) {
-            rootScope[name] = {
-              name,
-              object: '_h2o_context_'
-            };
-          }
+  createRootScope = sandbox => function (program, go) {
+    var error;
+    var name;
+    var rootScope;
+    try {
+      rootScope = parseDeclarations(program.body[0].expression.arguments[0].callee.body);
+      for (name in sandbox.context) {
+        if ({}.hasOwnProperty.call(sandbox.context, name)) {
+          rootScope[name] = {
+            name,
+            object: '_h2o_context_'
+          };
         }
-        return go(null, rootScope, program);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error parsing root scope', error));
       }
-    };
+      return go(null, rootScope, program);
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error parsing root scope', error));
+    }
   };
-  removeHoistedDeclarations = function (rootScope, program, go) {
+  removeHoistedDeclarations = (rootScope, program, go) => {
     var error;
     try {
-      traverseJavascript(null, null, program, function (parent, key, node) {
+      traverseJavascript(null, null, program, (parent, key, node) => {
         var declarations;
         if (node.type === 'VariableDeclaration') {
-          declarations = node.declarations.filter(function (declaration) {
-            return declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name];
-          });
+          declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
           if (declarations.length === 0) {
             return deleteAstNode(parent, key);
           }
@@ -260,7 +250,7 @@ export function flowCoffeescriptKernel() {
       return go(new Flow.Error('Error rewriting javascript', error));
     }
   };
-  createGlobalScope = function (rootScope, routines) {
+  createGlobalScope = (rootScope, routines) => {
     var globalScope;
     var identifier;
     var name;
@@ -281,46 +271,44 @@ export function flowCoffeescriptKernel() {
     }
     return globalScope;
   };
-  rewriteJavascript = function (sandbox) {
-    return function (rootScope, program, go) {
-      var error;
-      var globalScope;
-      globalScope = createGlobalScope(rootScope, sandbox.routines);
-      try {
-        traverseJavascriptScoped([globalScope], globalScope, null, null, program, function (globalScope, parent, key, node) {
-          var identifier;
-          if (node.type === 'Identifier') {
-            if (parent.type === 'VariableDeclarator' && key === 'id') {
-              return;
-            }
-            if (key === 'property') {
-              return;
-            }
-            if (!(identifier = globalScope[node.name])) {
-              return;
-            }
-            return parent[key] = {
-              type: 'MemberExpression',
-              computed: false,
-              object: {
-                type: 'Identifier',
-                name: identifier.object
-              },
-              property: {
-                type: 'Identifier',
-                name: identifier.name
-              }
-            };
+  rewriteJavascript = sandbox => (rootScope, program, go) => {
+    var error;
+    var globalScope;
+    globalScope = createGlobalScope(rootScope, sandbox.routines);
+    try {
+      traverseJavascriptScoped([globalScope], globalScope, null, null, program, (globalScope, parent, key, node) => {
+        var identifier;
+        if (node.type === 'Identifier') {
+          if (parent.type === 'VariableDeclarator' && key === 'id') {
+            return;
           }
-        });
-        return go(null, program);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error rewriting javascript', error));
-      }
-    };
+          if (key === 'property') {
+            return;
+          }
+          if (!(identifier = globalScope[node.name])) {
+            return;
+          }
+          return parent[key] = {
+            type: 'MemberExpression',
+            computed: false,
+            object: {
+              type: 'Identifier',
+              name: identifier.object
+            },
+            property: {
+              type: 'Identifier',
+              name: identifier.name
+            }
+          };
+        }
+      });
+      return go(null, program);
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error rewriting javascript', error));
+    }
   };
-  generateJavascript = function (program, go) {
+  generateJavascript = (program, go) => {
     var error;
     try {
       return go(null, escodegen.generate(program));
@@ -329,7 +317,7 @@ export function flowCoffeescriptKernel() {
       return go(new Flow.Error('Error generating javascript', error));
     }
   };
-  compileJavascript = function (js, go) {
+  compileJavascript = (js, go) => {
     var closure;
     var error;
     try {
@@ -340,16 +328,14 @@ export function flowCoffeescriptKernel() {
       return go(new Flow.Error('Error compiling javascript', error));
     }
   };
-  executeJavascript = function (sandbox, print) {
-    return function (closure, go) {
-      var error;
-      try {
-        return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error executing javascript', error));
-      }
-    };
+  executeJavascript = (sandbox, print) => (closure, go) => {
+    var error;
+    try {
+      return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error executing javascript', error));
+    }
   };
   return {
     safetyWrapCoffeescript,

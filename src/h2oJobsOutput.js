@@ -14,19 +14,15 @@ export function h2oJobsOutput(_, _go, jobs) {
   var _isLive;
   var _jobViews;
   _jobViews = Flow.Dataflow.signals([]);
-  _hasJobViews = Flow.Dataflow.lift(_jobViews, function (jobViews) {
-    return jobViews.length > 0;
-  });
+  _hasJobViews = Flow.Dataflow.lift(_jobViews, jobViews => jobViews.length > 0);
   _isLive = Flow.Dataflow.signal(false);
   _isBusy = Flow.Dataflow.signal(false);
   _exception = Flow.Dataflow.signal(null);
-  createJobView = function (job) {
+  createJobView = job => {
     var type;
     var view;
-    view = function () {
-      return _.insertAndExecuteCell('cs', `getJob ${flowPrelude.stringify(job.key.name)}`);
-    };
-    type = function () {
+    view = () => _.insertAndExecuteCell('cs', `getJob ${flowPrelude.stringify(job.key.name)}`);
+    type = (() => {
       switch (job.dest.type) {
         case 'Key<Frame>':
           return 'Frame';
@@ -39,7 +35,7 @@ export function h2oJobsOutput(_, _go, jobs) {
         default:
           return 'Unknown';
       }
-    }();
+    })();
     return {
       destination: job.dest.name,
       type,
@@ -51,12 +47,10 @@ export function h2oJobsOutput(_, _go, jobs) {
       view
     };
   };
-  toggleRefresh = function () {
-    return _isLive(!_isLive());
-  };
-  refresh = function () {
+  toggleRefresh = () => _isLive(!_isLive());
+  refresh = () => {
     _isBusy(true);
-    return _.requestJobs(function (error, jobs) {
+    return _.requestJobs((error, jobs) => {
       _isBusy(false);
       if (error) {
         _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
@@ -68,12 +62,12 @@ export function h2oJobsOutput(_, _go, jobs) {
       }
     });
   };
-  Flow.Dataflow.act(_isLive, function (isLive) {
+  Flow.Dataflow.act(_isLive, isLive => {
     if (isLive) {
       return refresh();
     }
   });
-  initialize = function () {
+  initialize = () => {
     _jobViews(lodash.map(jobs, createJobView));
     return lodash.defer(_go);
   };

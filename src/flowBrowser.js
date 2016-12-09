@@ -7,15 +7,9 @@ export function flowBrowser(_) {
   var _hasDocs;
   var _sortedDocs;
   _docs = Flow.Dataflow.signals([]);
-  _sortedDocs = Flow.Dataflow.lift(_docs, function (docs) {
-    return lodash.sortBy(docs, function (doc) {
-      return -doc.date().getTime();
-    });
-  });
-  _hasDocs = Flow.Dataflow.lift(_docs, function (docs) {
-    return docs.length > 0;
-  });
-  createNotebookView = function (notebook) {
+  _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
+  _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
+  createNotebookView = notebook => {
     var load;
     var purge;
     var self;
@@ -25,33 +19,29 @@ export function flowBrowser(_) {
     _name = notebook.name;
     _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
     _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
-    load = function () {
-      return _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
-        acceptCaption: 'Load Notebook',
-        declineCaption: 'Cancel'
-      }, function (accept) {
-        if (accept) {
-          return _.load(_name);
-        }
-      });
-    };
-    purge = function () {
-      return _.confirm(`Are you sure you want to delete this notebook?\n"${_name}"`, {
-        acceptCaption: 'Delete',
-        declineCaption: 'Keep'
-      }, function (accept) {
-        if (accept) {
-          return _.requestDeleteObject('notebook', _name, function (error) {
-            var _ref;
-            if (error) {
-              return _alert((_ref = error.message) != null ? _ref : error);
-            }
-            _docs.remove(self);
-            return _.growl('Notebook deleted.');
-          });
-        }
-      });
-    };
+    load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
+      acceptCaption: 'Load Notebook',
+      declineCaption: 'Cancel'
+    }, accept => {
+      if (accept) {
+        return _.load(_name);
+      }
+    });
+    purge = () => _.confirm(`Are you sure you want to delete this notebook?\n"${_name}"`, {
+      acceptCaption: 'Delete',
+      declineCaption: 'Keep'
+    }, accept => {
+      if (accept) {
+        return _.requestDeleteObject('notebook', _name, error => {
+          var _ref;
+          if (error) {
+            return _alert((_ref = error.message) != null ? _ref : error);
+          }
+          _docs.remove(self);
+          return _.growl('Notebook deleted.');
+        });
+      }
+    });
     return self = {
       name: _name,
       date: _date,
@@ -60,24 +50,16 @@ export function flowBrowser(_) {
       purge
     };
   };
-  loadNotebooks = function () {
-    return _.requestObjects('notebook', function (error, notebooks) {
-      if (error) {
-        return console.debug(error);
-      }
-      return _docs(lodash.map(notebooks, function (notebook) {
-        return createNotebookView(notebook);
-      }));
-    });
-  };
-  Flow.Dataflow.link(_.ready, function () {
+  loadNotebooks = () => _.requestObjects('notebook', (error, notebooks) => {
+    if (error) {
+      return console.debug(error);
+    }
+    return _docs(lodash.map(notebooks, notebook => createNotebookView(notebook)));
+  });
+  Flow.Dataflow.link(_.ready, () => {
     loadNotebooks();
-    Flow.Dataflow.link(_.saved, function () {
-      return loadNotebooks();
-    });
-    return Flow.Dataflow.link(_.loaded, function () {
-      return loadNotebooks();
-    });
+    Flow.Dataflow.link(_.saved, () => loadNotebooks());
+    return Flow.Dataflow.link(_.loaded, () => loadNotebooks());
   });
   return {
     docs: _sortedDocs,

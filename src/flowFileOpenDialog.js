@@ -11,26 +11,18 @@ export function flowFileOpenDialog(_, _go) {
   _overwrite = Flow.Dataflow.signal(false);
   _form = Flow.Dataflow.signal(null);
   _file = Flow.Dataflow.signal(null);
-  _canAccept = Flow.Dataflow.lift(_file, function (file) {
+  _canAccept = Flow.Dataflow.lift(_file, file => {
     if (file != null ? file.name : void 0) {
       return H2O.Util.validateFileExtension(file.name, '.flow');
     }
     return false;
   });
-  checkIfNameIsInUse = function (name, go) {
-    return _.requestObjectExists('notebook', name, function (error, exists) {
-      return go(exists);
-    });
-  };
-  uploadFile = function (basename) {
-    return _.requestUploadObject('notebook', basename, new FormData(_form()), function (error, filename) {
-      return _go({
-        error,
-        filename
-      });
-    });
-  };
-  accept = function () {
+  checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
+  uploadFile = basename => _.requestUploadObject('notebook', basename, new FormData(_form()), (error, filename) => _go({
+    error,
+    filename
+  }));
+  accept = () => {
     var basename;
     var file;
     if (file = _file()) {
@@ -38,7 +30,7 @@ export function flowFileOpenDialog(_, _go) {
       if (_overwrite()) {
         return uploadFile(basename);
       }
-      return checkIfNameIsInUse(basename, function (isNameInUse) {
+      return checkIfNameIsInUse(basename, isNameInUse => {
         if (isNameInUse) {
           return _overwrite(true);
         }
@@ -46,9 +38,7 @@ export function flowFileOpenDialog(_, _go) {
       });
     }
   };
-  decline = function () {
-    return _go(null);
-  };
+  decline = () => _go(null);
   return {
     form: _form,
     file: _file,

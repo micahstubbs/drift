@@ -3,7 +3,7 @@ export function flowAutosave(_) {
   var setDirty;
   var setPristine;
   var warnOnExit;
-  warnOnExit = function (e) {
+  warnOnExit = e => {
     var message;
     message = 'Warning: you are about to exit Flow.';
     if (e = e != null ? e : window.event) {
@@ -11,13 +11,9 @@ export function flowAutosave(_) {
     }
     return message;
   };
-  setDirty = function () {
-    return window.onbeforeunload = warnOnExit;
-  };
-  setPristine = function () {
-    return window.onbeforeunload = null;
-  };
-  return Flow.Dataflow.link(_.ready, function () {
+  setDirty = () => window.onbeforeunload = warnOnExit;
+  setPristine = () => window.onbeforeunload = null;
+  return Flow.Dataflow.link(_.ready, () => {
     Flow.Dataflow.link(_.setDirty, setDirty);
     return Flow.Dataflow.link(_.setPristine, setPristine);
   });

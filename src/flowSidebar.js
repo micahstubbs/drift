@@ -18,46 +18,22 @@ export function flowSidebar(_, cells) {
   var _outline;
   _mode = Flow.Dataflow.signal('help');
   _outline = flowOutline(_, cells);
-  _isOutlineMode = Flow.Dataflow.lift(_mode, function (mode) {
-    return mode === 'outline';
-  });
-  switchToOutline = function () {
-    return _mode('outline');
-  };
+  _isOutlineMode = Flow.Dataflow.lift(_mode, mode => mode === 'outline');
+  switchToOutline = () => _mode('outline');
   _browser = flowBrowser(_);
-  _isBrowserMode = Flow.Dataflow.lift(_mode, function (mode) {
-    return mode === 'browser';
-  });
-  switchToBrowser = function () {
-    return _mode('browser');
-  };
+  _isBrowserMode = Flow.Dataflow.lift(_mode, mode => mode === 'browser');
+  switchToBrowser = () => _mode('browser');
   _clipboard = Flow.Clipboard(_);
-  _isClipboardMode = Flow.Dataflow.lift(_mode, function (mode) {
-    return mode === 'clipboard';
-  });
-  switchToClipboard = function () {
-    return _mode('clipboard');
-  };
+  _isClipboardMode = Flow.Dataflow.lift(_mode, mode => mode === 'clipboard');
+  switchToClipboard = () => _mode('clipboard');
   _help = Flow.Help(_);
-  _isHelpMode = Flow.Dataflow.lift(_mode, function (mode) {
-    return mode === 'help';
-  });
-  switchToHelp = function () {
-    return _mode('help');
-  };
-  Flow.Dataflow.link(_.ready, function () {
-    Flow.Dataflow.link(_.showHelp, function () {
-      return switchToHelp();
-    });
-    Flow.Dataflow.link(_.showClipboard, function () {
-      return switchToClipboard();
-    });
-    Flow.Dataflow.link(_.showBrowser, function () {
-      return switchToBrowser();
-    });
-    return Flow.Dataflow.link(_.showOutline, function () {
-      return switchToOutline();
-    });
+  _isHelpMode = Flow.Dataflow.lift(_mode, mode => mode === 'help');
+  switchToHelp = () => _mode('help');
+  Flow.Dataflow.link(_.ready, () => {
+    Flow.Dataflow.link(_.showHelp, () => switchToHelp());
+    Flow.Dataflow.link(_.showClipboard, () => switchToClipboard());
+    Flow.Dataflow.link(_.showBrowser, () => switchToBrowser());
+    return Flow.Dataflow.link(_.showOutline, () => switchToOutline());
   });
   return {
     outline: _outline,

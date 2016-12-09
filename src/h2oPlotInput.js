@@ -16,7 +16,7 @@ export function h2oPlotInput(_, _go, _frame) {
     'path',
     'rect'
   ];
-  _vectors = function () {
+  _vectors = (() => {
     var _i;
     var _len;
     var _ref;
@@ -30,15 +30,13 @@ export function h2oPlotInput(_, _go, _frame) {
       }
     }
     return _results;
-  }();
+  })();
   _type = Flow.Dataflow.signal(null);
   _x = Flow.Dataflow.signal(null);
   _y = Flow.Dataflow.signal(null);
   _color = Flow.Dataflow.signal(null);
-  _canPlot = Flow.Dataflow.lift(_type, _x, _y, function (type, x, y) {
-    return type && x && y;
-  });
-  plot = function () {
+  _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
+  plot = () => {
     var color;
     var command;
     command = (color = _color()) ? `plot (g) -> g(\n  g.${_type()}(\n    g.position ${flowPrelude.stringify(_x())}, ${flowPrelude.stringify(_y())}\n    g.color ${flowPrelude.stringify(color)}\n  )\n  g.from inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)` : `plot (g) -> g(\n  g.${_type()}(\n    g.position ${flowPrelude.stringify(_x())}, ${flowPrelude.stringify(_y())}\n  )\n  g.from inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)`;

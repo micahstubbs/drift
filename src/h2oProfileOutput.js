@@ -7,15 +7,13 @@ export function h2oProfileOutput(_, _go, _profile) {
   var _activeNode;
   var _nodes;
   _activeNode = Flow.Dataflow.signal(null);
-  createNode = function (node) {
+  createNode = node => {
     var display;
     var entries;
     var entry;
     var self;
-    display = function () {
-      return _activeNode(self);
-    };
-    entries = function () {
+    display = () => _activeNode(self);
+    entries = (() => {
       var _i;
       var _len;
       var _ref;
@@ -30,7 +28,7 @@ export function h2oProfileOutput(_, _go, _profile) {
         });
       }
       return _results;
-    }();
+    })();
     return self = {
       name: node.node_name,
       caption: `${node.node_name} at ${new Date(node.timestamp)}`,
@@ -38,7 +36,7 @@ export function h2oProfileOutput(_, _go, _profile) {
       display
     };
   };
-  _nodes = (function () {
+  _nodes = ((() => {
     var _i;
     var _len;
     var _ref;
@@ -50,7 +48,7 @@ export function h2oProfileOutput(_, _go, _profile) {
       _results.push(createNode(node));
     }
     return _results;
-  }());
+  })());
   _activeNode(lodash.head(_nodes));
   lodash.defer(_go);
   return {

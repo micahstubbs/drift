@@ -12,10 +12,8 @@ export function localStorage() {
     return;
   }
   _ls = window.localStorage;
-  keyOf = function (type, id) {
-    return `${type}:${id}`;
-  };
-  list = function (type) {
+  keyOf = (type, id) => `${type}:${id}`;
+  list = type => {
     var i;
     var id;
     var key;
@@ -38,29 +36,27 @@ export function localStorage() {
     }
     return objs;
   };
-  read = function (type, id) {
+  read = (type, id) => {
     var raw;
     if (raw = _ls.getobj(keyOf(type, id))) {
       return JSON.parse(raw);
     }
     return null;
   };
-  write = function (type, id, obj) {
-    return _ls.setItem(keyOf(type, id), JSON.stringify(obj));
-  };
-  purge = function (type, id) {
+  write = (type, id, obj) => _ls.setItem(keyOf(type, id), JSON.stringify(obj));
+  purge = (type, id) => {
     if (id) {
       return _ls.removeItem(keyOf(type, id));
     }
     return purgeAll(type);
   };
-  purgeAll = function (type) {
+  purgeAll = type => {
     var allKeys;
     var i;
     var key;
     var _i;
     var _len;
-    allKeys = function () {
+    allKeys = (() => {
       var _i;
       var _ref;
       var _results;
@@ -69,7 +65,7 @@ export function localStorage() {
         _results.push(_ls.key(i));
       }
       return _results;
-    }();
+    })();
     for (_i = 0, _len = allKeys.length; _i < _len; _i++) {
       key = allKeys[_i];
       if (type === lodash.head(key.split(':'))) {

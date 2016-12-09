@@ -21,22 +21,22 @@ export function h2oPredictOutput(_, _go, prediction) {
   }
   _plots = Flow.Dataflow.signals([]);
   _canInspect = prediction.__meta;
-  renderPlot = function (title, prediction, render) {
+  renderPlot = (title, prediction, render) => {
     var combineWithFrame;
     var container;
     container = Flow.Dataflow.signal(null);
-    combineWithFrame = function () {
+    combineWithFrame = () => {
       var predictionsFrameName;
       var targetFrameName;
       predictionsFrameName = prediction.predictions.frame_id.name;
       targetFrameName = `combined-${predictionsFrameName}`;
       return _.insertAndExecuteCell('cs', `bindFrames ${flowPrelude.stringify(targetFrameName)}, [ ${flowPrelude.stringify(predictionsFrameName)}, ${flowPrelude.stringify(frame.name)} ]`);
     };
-    render(function (error, vis) {
+    render((error, vis) => {
       if (error) {
         return console.debug(error);
       }
-      $('a', vis.element).on('click', function (e) {
+      $('a', vis.element).on('click', e => {
         var $a;
         $a = $(e.target);
         switch ($a.attr('data-type')) {
@@ -59,9 +59,7 @@ export function h2oPredictOutput(_, _go, prediction) {
     switch ((_ref = prediction.__meta) != null ? _ref.schema_type : void 0) {
       case 'ModelMetricsBinomial':
         if (table = _.inspect('Prediction - Metrics for Thresholds', prediction)) {
-          renderPlot('ROC Curve', prediction, _.plot(function (g) {
-            return g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
-          }));
+          renderPlot('ROC Curve', prediction, _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1))));
         }
     }
     _ref1 = _.ls(prediction);
@@ -69,20 +67,14 @@ export function h2oPredictOutput(_, _go, prediction) {
       tableName = _ref1[_i];
       if (table = _.inspect(tableName, prediction)) {
         if (table.indices.length > 1) {
-          renderPlot(tableName, prediction, _.plot(function (g) {
-            return g(g.select(), g.from(table));
-          }));
+          renderPlot(tableName, prediction, _.plot(g => g(g.select(), g.from(table))));
         } else {
-          renderPlot(tableName, prediction, _.plot(function (g) {
-            return g(g.select(0), g.from(table));
-          }));
+          renderPlot(tableName, prediction, _.plot(g => g(g.select(0), g.from(table))));
         }
       }
     }
   }
-  inspect = function () {
-    return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(model.name)}, frame: ${flowPrelude.stringify(frame.name)}`);
-  };
+  inspect = () => _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(model.name)}, frame: ${flowPrelude.stringify(frame.name)}`);
   lodash.defer(_go);
   return {
     plots: _plots,

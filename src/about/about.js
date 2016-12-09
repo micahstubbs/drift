@@ -1,14 +1,14 @@
 export function about() {
   var Flow = window.Flow;
   Flow.Version = '0.4.54';
-  Flow.About = function (_) {
+  Flow.About = _ => {
     var _properties;
     _properties = Flow.Dataflow.signals([]);
-    Flow.Dataflow.link(_.ready, function () {
+    Flow.Dataflow.link(_.ready, () => {
       if (Flow.BuildProperties) {
         return _properties(Flow.BuildProperties);
       }
-      return _.requestAbout(function (error, response) {
+      return _.requestAbout((error, response) => {
         var name;
         var properties;
         var value;

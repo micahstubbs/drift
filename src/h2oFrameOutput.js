@@ -35,84 +35,54 @@ export function h2oFrameOutput(_, _go, _frame) {
   _columnNameSearchTerm = Flow.Dataflow.signal(null);
   _currentPage = Flow.Dataflow.signal(0);
   _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
-  _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, function (index) {
-    return index > 0;
+  _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
+  _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
+  renderPlot = (container, render) => render((error, vis) => {
+    if (error) {
+      return console.debug(error);
+    }
+    return container(vis.element);
   });
-  _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, function (maxPages, index) {
-    return index < maxPages - 1;
+  renderGrid = render => render((error, vis) => {
+    if (error) {
+      return console.debug(error);
+    }
+    $('a', vis.element).on('click', e => {
+      var $a;
+      $a = $(e.target);
+      switch ($a.attr('data-type')) {
+        case 'summary-link':
+          return _.insertAndExecuteCell('cs', `getColumnSummary ${flowPrelude.stringify(_frame.frame_id.name)}, ${flowPrelude.stringify($a.attr('data-key'))}`);
+        case 'as-factor-link':
+          return _.insertAndExecuteCell('cs', `changeColumnType frame: ${flowPrelude.stringify(_frame.frame_id.name)}, column: ${flowPrelude.stringify($a.attr('data-key'))}, type: \'enum\'`);
+        case 'as-numeric-link':
+          return _.insertAndExecuteCell('cs', `changeColumnType frame: ${flowPrelude.stringify(_frame.frame_id.name)}, column: ${flowPrelude.stringify($a.attr('data-key'))}, type: \'int\'`);
+      }
+    });
+    return _grid(vis.element);
   });
-  renderPlot = function (container, render) {
-    return render(function (error, vis) {
-      if (error) {
-        return console.debug(error);
-      }
-      return container(vis.element);
-    });
-  };
-  renderGrid = function (render) {
-    return render(function (error, vis) {
-      if (error) {
-        return console.debug(error);
-      }
-      $('a', vis.element).on('click', function (e) {
-        var $a;
-        $a = $(e.target);
-        switch ($a.attr('data-type')) {
-          case 'summary-link':
-            return _.insertAndExecuteCell('cs', `getColumnSummary ${flowPrelude.stringify(_frame.frame_id.name)}, ${flowPrelude.stringify($a.attr('data-key'))}`);
-          case 'as-factor-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${flowPrelude.stringify(_frame.frame_id.name)}, column: ${flowPrelude.stringify($a.attr('data-key'))}, type: \'enum\'`);
-          case 'as-numeric-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${flowPrelude.stringify(_frame.frame_id.name)}, column: ${flowPrelude.stringify($a.attr('data-key'))}, type: \'int\'`);
-        }
-      });
-      return _grid(vis.element);
-    });
-  };
-  createModel = function () {
-    return _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  };
-  inspect = function () {
-    return _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  };
-  inspectData = function () {
-    return _.insertAndExecuteCell('cs', `getFrameData ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  };
-  splitFrame = function () {
-    return _.insertAndExecuteCell('cs', `assist splitFrame, ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  };
-  predict = function () {
-    return _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  };
-  download = function () {
-    return window.open(`${window.Flow.ContextPath}${(`3/DownloadDataset?frame_id=${encodeURIComponent(_frame.frame_id.name)}`)}`, '_blank');
-  };
-  exportFrame = function () {
-    return _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  };
-  deleteFrame = function () {
-    return _.confirm('Are you sure you want to delete this frame?', {
-      acceptCaption: 'Delete Frame',
-      declineCaption: 'Cancel'
-    }, function (accept) {
-      if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
-      }
-    });
-  };
-  renderFrame = function (frame) {
-    renderGrid(_.plot(function (g) {
-      return g(g.select(), g.from(_.inspect('columns', frame)));
-    }));
-    renderPlot(_chunkSummary, _.plot(function (g) {
-      return g(g.select(), g.from(_.inspect('Chunk compression summary', frame)));
-    }));
-    return renderPlot(_distributionSummary, _.plot(function (g) {
-      return g(g.select(), g.from(_.inspect('Frame distribution summary', frame)));
-    }));
+  createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  predict = () => _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  download = () => window.open(`${window.Flow.ContextPath}${(`3/DownloadDataset?frame_id=${encodeURIComponent(_frame.frame_id.name)}`)}`, '_blank');
+  exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
+    acceptCaption: 'Delete Frame',
+    declineCaption: 'Cancel'
+  }, accept => {
+    if (accept) {
+      return _.insertAndExecuteCell('cs', `deleteFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
+    }
+  });
+  renderFrame = frame => {
+    renderGrid(_.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
+    renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
+    return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
   };
   _lastUsedSearchTerm = null;
-  refreshColumns = function (pageIndex) {
+  refreshColumns = pageIndex => {
     var itemCount;
     var searchTerm;
     var startIndex;
@@ -122,7 +92,7 @@ export function h2oFrameOutput(_, _go, _frame) {
     }
     startIndex = pageIndex * MaxItemsPerPage;
     itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-    return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, function (error, frame) {
+    return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
       if (error) {
         // empty
       } else {
@@ -132,14 +102,14 @@ export function h2oFrameOutput(_, _go, _frame) {
       }
     });
   };
-  goToPreviousPage = function () {
+  goToPreviousPage = () => {
     var currentPage;
     currentPage = _currentPage();
     if (currentPage > 0) {
       refreshColumns(currentPage - 1);
     }
   };
-  goToNextPage = function () {
+  goToNextPage = () => {
     var currentPage;
     currentPage = _currentPage();
     if (currentPage < _maxPages() - 1) {

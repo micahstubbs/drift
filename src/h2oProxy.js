@@ -102,7 +102,7 @@ export function h2oProxy(_) {
   var __modelBuilderEndpoints;
   var __modelBuilders;
   var _storageConfiguration;
-  download = function (type, url, go) {
+  download = (type, url, go) => {
     if (url.substring(0, 1) === '/') {
       url = window.Flow.ContextPath + url.substring(1);
     }
@@ -117,7 +117,7 @@ export function h2oProxy(_) {
       }
     });
   };
-  optsToString = function (opts) {
+  optsToString = opts => {
     var str;
     if (opts != null) {
       str = ` with opts ${JSON.stringify(opts)}`;
@@ -128,14 +128,14 @@ export function h2oProxy(_) {
     }
     return '';
   };
-  http = function (method, path, opts, go) {
+  http = (method, path, opts, go) => {
     var req;
     if (path.substring(0, 1) === '/') {
       path = window.Flow.ContextPath + path.substring(1);
     }
     _.status('server', 'request', path);
     trackPath(path);
-    req = function () {
+    req = (() => {
       switch (method) {
         case 'GET':
           return $.getJSON(path);
@@ -170,8 +170,8 @@ export function h2oProxy(_) {
             processData: false
           });
       }
-    }();
-    req.done(function (data, status, xhr) {
+    })();
+    req.done((data, status, xhr) => {
       var error;
       _.status('server', 'response', path);
       try {
@@ -181,7 +181,7 @@ export function h2oProxy(_) {
         return go(new Flow.Error(`Error processing ${method} ${path}`, error));
       }
     });
-    return req.fail(function (xhr, status, error) {
+    return req.fail((xhr, status, error) => {
       var cause;
       var meta;
       var response;
@@ -192,25 +192,13 @@ export function h2oProxy(_) {
       return go(new Flow.Error(`Error calling ${method} ${path}${optsToString(opts)}`, cause));
     });
   };
-  doGet = function (path, go) {
-    return http('GET', path, null, go);
-  };
-  doPost = function (path, opts, go) {
-    return http('POST', path, opts, go);
-  };
-  doPostJSON = function (path, opts, go) {
-    return http('POSTJSON', path, opts, go);
-  };
-  doPut = function (path, opts, go) {
-    return http('PUT', path, opts, go);
-  };
-  doUpload = function (path, formData, go) {
-    return http('UPLOAD', path, formData, go);
-  };
-  doDelete = function (path, go) {
-    return http('DELETE', path, null, go);
-  };
-  trackPath = function (path) {
+  doGet = (path, go) => http('GET', path, null, go);
+  doPost = (path, opts, go) => http('POST', path, opts, go);
+  doPostJSON = (path, opts, go) => http('POSTJSON', path, opts, go);
+  doPut = (path, opts, go) => http('PUT', path, opts, go);
+  doUpload = (path, formData, go) => http('UPLOAD', path, formData, go);
+  doDelete = (path, go) => http('DELETE', path, null, go);
+  trackPath = path => {
     var base;
     var e;
     var name;
@@ -229,7 +217,7 @@ export function h2oProxy(_) {
       e = _error;
     }
   };
-  mapWithKey = function (obj, f) {
+  mapWithKey = (obj, f) => {
     var key;
     var result;
     var value;
@@ -242,20 +230,16 @@ export function h2oProxy(_) {
     }
     return result;
   };
-  composePath = function (path, opts) {
+  composePath = (path, opts) => {
     var params;
     if (opts) {
-      params = mapWithKey(opts, function (v, k) {
-        return `${k}=${v}`;
-      });
+      params = mapWithKey(opts, (v, k) => `${k}=${v}`);
       return `${path}?${params.join('&')}`;
     }
     return path;
   };
-  requestWithOpts = function (path, opts, go) {
-    return doGet(composePath(path, opts), go);
-  };
-  encodeArrayForPost = function (array) {
+  requestWithOpts = (path, opts, go) => doGet(composePath(path, opts), go);
+  encodeArrayForPost = array => {
     if (array) {
       if (array.length === 0) {
         return null;
@@ -264,7 +248,7 @@ export function h2oProxy(_) {
     }
     return null;
   };
-  encodeObject = function (source) {
+  encodeObject = source => {
     var k;
     var target;
     var v;
@@ -277,7 +261,7 @@ export function h2oProxy(_) {
     }
     return target;
   };
-  encodeObjectForPost = function (source) {
+  encodeObjectForPost = source => {
     var k;
     var target;
     var v;
@@ -290,34 +274,28 @@ export function h2oProxy(_) {
     }
     return target;
   };
-  unwrap = function (go, transform) {
-    return function (error, result) {
-      if (error) {
-        return go(error);
-      }
-      return go(null, transform(result));
-    };
+  unwrap = (go, transform) => (error, result) => {
+    if (error) {
+      return go(error);
+    }
+    return go(null, transform(result));
   };
-  requestExec = function (ast, go) {
-    return doPost('/99/Rapids', { ast }, function (error, result) {
-      if (error) {
-        return go(error);
-      }
-      if (result.error) {
-        return go(new Flow.Error(result.error));
-      }
-      return go(null, result);
-    });
-  };
-  requestInspect = function (key, go) {
+  requestExec = (ast, go) => doPost('/99/Rapids', { ast }, (error, result) => {
+    if (error) {
+      return go(error);
+    }
+    if (result.error) {
+      return go(new Flow.Error(result.error));
+    }
+    return go(null, result);
+  });
+  requestInspect = (key, go) => {
     var opts;
     opts = { key: encodeURIComponent(key) };
     return requestWithOpts('/3/Inspect', opts, go);
   };
-  requestCreateFrame = function (opts, go) {
-    return doPost('/3/CreateFrame', opts, go);
-  };
-  requestSplitFrame = function (frameKey, splitRatios, splitKeys, go) {
+  requestCreateFrame = (opts, go) => doPost('/3/CreateFrame', opts, go);
+  requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
     var opts;
     opts = {
       dataset: frameKey,
@@ -326,46 +304,24 @@ export function h2oProxy(_) {
     };
     return doPost('/3/SplitFrame', opts, go);
   };
-  requestFrames = function (go) {
-    return doGet('/3/Frames', function (error, result) {
-      if (error) {
-        return go(error);
-      }
-      return go(null, result.frames);
-    });
-  };
-  requestFrame = function (key, go) {
-    return doGet(`/3/Frames/${encodeURIComponent(key)}`, unwrap(go, function (result) {
-      return lodash.head(result.frames);
-    }));
-  };
-  requestFrameSlice = function (key, searchTerm, offset, count, go) {
-    return doGet(`/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, function (result) {
-      return lodash.head(result.frames);
-    }));
-  };
-  requestFrameSummary = function (key, go) {
-    return doGet(`/3/Frames/${encodeURIComponent(key)}/summary`, unwrap(go, function (result) {
-      return lodash.head(result.frames);
-    }));
-  };
-  requestFrameSummarySlice = function (key, searchTerm, offset, count, go) {
-    return doGet(`/3/Frames/${encodeURIComponent(key)}/summary?column_offset=${offset}&column_count=${count}&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, function (result) {
-      return lodash.head(result.frames);
-    }));
-  };
-  requestFrameSummaryWithoutData = function (key, go) {
-    return doGet(`/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, function (error, result) {
-      if (error) {
-        return go(error);
-      }
-      return go(null, lodash.head(result.frames));
-    });
-  };
-  requestDeleteFrame = function (key, go) {
-    return doDelete(`/3/Frames/${encodeURIComponent(key)}`, go);
-  };
-  requestExportFrame = function (key, path, overwrite, go) {
+  requestFrames = go => doGet('/3/Frames', (error, result) => {
+    if (error) {
+      return go(error);
+    }
+    return go(null, result.frames);
+  });
+  requestFrame = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}`, unwrap(go, result => lodash.head(result.frames)));
+  requestFrameSlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, result => lodash.head(result.frames)));
+  requestFrameSummary = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary`, unwrap(go, result => lodash.head(result.frames)));
+  requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary?column_offset=${offset}&column_count=${count}&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
+  requestFrameSummaryWithoutData = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
+    if (error) {
+      return go(error);
+    }
+    return go(null, lodash.head(result.frames));
+  });
+  requestDeleteFrame = (key, go) => doDelete(`/3/Frames/${encodeURIComponent(key)}`, go);
+  requestExportFrame = (key, path, overwrite, go) => {
     var params;
     params = {
       path,
@@ -373,36 +329,26 @@ export function h2oProxy(_) {
     };
     return doPost(`/3/Frames/${encodeURIComponent(key)}/export`, params, go);
   };
-  requestColumnSummary = function (frameKey, column, go) {
-    return doGet(`/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`, unwrap(go, function (result) {
-      return lodash.head(result.frames);
-    }));
-  };
-  requestJobs = function (go) {
-    return doGet('/3/Jobs', function (error, result) {
-      if (error) {
-        return go(new Flow.Error('Error fetching jobs', error));
-      }
-      return go(null, result.jobs);
-    });
-  };
-  requestJob = function (key, go) {
-    return doGet(`/3/Jobs/${encodeURIComponent(key)}`, function (error, result) {
-      if (error) {
-        return go(new Flow.Error(`Error fetching job \'${key}\'`, error));
-      }
-      return go(null, lodash.head(result.jobs));
-    });
-  };
-  requestCancelJob = function (key, go) {
-    return doPost(`/3/Jobs/${encodeURIComponent(key)}/cancel`, {}, function (error, result) {
-      if (error) {
-        return go(new Flow.Error(`Error canceling job \'${key}\'`, error));
-      }
-      return go(null);
-    });
-  };
-  requestFileGlob = function (path, limit, go) {
+  requestColumnSummary = (frameKey, column, go) => doGet(`/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`, unwrap(go, result => lodash.head(result.frames)));
+  requestJobs = go => doGet('/3/Jobs', (error, result) => {
+    if (error) {
+      return go(new Flow.Error('Error fetching jobs', error));
+    }
+    return go(null, result.jobs);
+  });
+  requestJob = (key, go) => doGet(`/3/Jobs/${encodeURIComponent(key)}`, (error, result) => {
+    if (error) {
+      return go(new Flow.Error(`Error fetching job \'${key}\'`, error));
+    }
+    return go(null, lodash.head(result.jobs));
+  });
+  requestCancelJob = (key, go) => doPost(`/3/Jobs/${encodeURIComponent(key)}/cancel`, {}, (error, result) => {
+    if (error) {
+      return go(new Flow.Error(`Error canceling job \'${key}\'`, error));
+    }
+    return go(null);
+  });
+  requestFileGlob = (path, limit, go) => {
     var opts;
     opts = {
       src: encodeURIComponent(path),
@@ -410,26 +356,30 @@ export function h2oProxy(_) {
     };
     return requestWithOpts('/3/Typeahead/files', opts, go);
   };
-  requestImportFiles = function (paths, go) {
+  requestImportFiles = (paths, go) => {
     var tasks;
-    tasks = lodash.map(paths, function (path) {
-      return function (go) {
-        return requestImportFile(path, go);
-      };
-    });
+    tasks = lodash.map(paths, path => go => requestImportFile(path, go));
     return Flow.Async.iterate(tasks)(go);
   };
-  requestImportFile = function (path, go) {
+  requestImportFile = (path, go) => {
     var opts;
     opts = { path: encodeURIComponent(path) };
     return requestWithOpts('/3/ImportFiles', opts, go);
   };
-  requestParseSetup = function (sourceKeys, go) {
+  requestParseSetup = (sourceKeys, go) => {
     var opts;
     opts = { source_frames: encodeArrayForPost(sourceKeys) };
     return doPost('/3/ParseSetup', opts, go);
   };
-  requestParseSetupPreview = function (sourceKeys, parseType, separator, useSingleQuotes, checkHeader, columnTypes, go) {
+  requestParseSetupPreview = (
+    sourceKeys,
+    parseType,
+    separator,
+    useSingleQuotes,
+    checkHeader,
+    columnTypes,
+    go
+  ) => {
     var opts;
     opts = {
       source_frames: encodeArrayForPost(sourceKeys),
@@ -441,7 +391,20 @@ export function h2oProxy(_) {
     };
     return doPost('/3/ParseSetup', opts, go);
   };
-  requestParseFiles = function (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
+  requestParseFiles = (
+    sourceKeys,
+    destinationKey,
+    parseType,
+    separator,
+    columnCount,
+    useSingleQuotes,
+    columnNames,
+    columnTypes,
+    deleteOnDone,
+    checkHeader,
+    chunkSize,
+    go
+  ) => {
     var opts;
     opts = {
       destination_frame: destinationKey,
@@ -458,34 +421,26 @@ export function h2oProxy(_) {
     };
     return doPost('/3/Parse', opts, go);
   };
-  requestPartialDependence = function (opts, go) {
-    return doPost('/3/PartialDependence/', opts, go);
-  };
-  requestPartialDependenceData = function (key, go) {
-    return doGet(`/3/PartialDependence/${encodeURIComponent(key)}`, function (error, result) {
-      if (error) {
-        return go(error, result);
-      }
+  requestPartialDependence = (opts, go) => doPost('/3/PartialDependence/', opts, go);
+  requestPartialDependenceData = (key, go) => doGet(`/3/PartialDependence/${encodeURIComponent(key)}`, (error, result) => {
+    if (error) {
       return go(error, result);
-    });
-  };
-  requestGrids = function (go, opts) {
-    return doGet('/99/Grids', function (error, result) {
-      if (error) {
-        return go(error, result);
-      }
-      return go(error, result.grids);
-    });
-  };
-  requestModels = function (go, opts) {
-    return requestWithOpts('/3/Models', opts, function (error, result) {
-      if (error) {
-        return go(error, result);
-      }
-      return go(error, result.models);
-    });
-  };
-  requestGrid = function (key, opts, go) {
+    }
+    return go(error, result);
+  });
+  requestGrids = (go, opts) => doGet('/99/Grids', (error, result) => {
+    if (error) {
+      return go(error, result);
+    }
+    return go(error, result.grids);
+  });
+  requestModels = (go, opts) => requestWithOpts('/3/Models', opts, (error, result) => {
+    if (error) {
+      return go(error, result);
+    }
+    return go(error, result.models);
+  });
+  requestGrid = (key, opts, go) => {
     var params;
     params = void 0;
     if (opts) {
@@ -499,21 +454,15 @@ export function h2oProxy(_) {
     }
     return doGet(composePath(`/99/Grids/' + ${encodeURIComponent(key)}`, params), go);
   };
-  requestModel = function (key, go) {
-    return doGet(`/3/Models/${encodeURIComponent(key)}`, function (error, result) {
-      if (error) {
-        return go(error, result);
-      }
-      return go(error, lodash.head(result.models));
-    });
-  };
-  requestPojoPreview = function (key, go) {
-    return download('text', `/3/Models.java/${encodeURIComponent(key)}/preview`, go);
-  };
-  requestDeleteModel = function (key, go) {
-    return doDelete(`/3/Models/${encodeURIComponent(key)}`, go);
-  };
-  requestImportModel = function (path, overwrite, go) {
+  requestModel = (key, go) => doGet(`/3/Models/${encodeURIComponent(key)}`, (error, result) => {
+    if (error) {
+      return go(error, result);
+    }
+    return go(error, lodash.head(result.models));
+  });
+  requestPojoPreview = (key, go) => download('text', `/3/Models.java/${encodeURIComponent(key)}/preview`, go);
+  requestDeleteModel = (key, go) => doDelete(`/3/Models/${encodeURIComponent(key)}`, go);
+  requestImportModel = (path, overwrite, go) => {
     var opts;
     opts = {
       dir: path,
@@ -521,18 +470,12 @@ export function h2oProxy(_) {
     };
     return doPost('/99/Models.bin/not_in_use', opts, go);
   };
-  requestExportModel = function (key, path, overwrite, go) {
-    return doGet(`/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`, go);
-  };
-  requestModelBuildersVisibility = function (go) {
-    return doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, function (result) {
-      return result.value;
-    }));
-  };
+  requestExportModel = (key, path, overwrite, go) => doGet(`/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`, go);
+  requestModelBuildersVisibility = go => doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
   __modelBuilders = null;
   __modelBuilderEndpoints = null;
   __gridModelBuilderEndpoints = null;
-  cacheModelBuilders = function (modelBuilders) {
+  cacheModelBuilders = modelBuilders => {
     var gridModelBuilderEndpoints;
     var modelBuilder;
     var modelBuilderEndpoints;
@@ -549,28 +492,22 @@ export function h2oProxy(_) {
     __gridModelBuilderEndpoints = gridModelBuilderEndpoints;
     return __modelBuilders = modelBuilders;
   };
-  getModelBuilders = function () {
-    return __modelBuilders;
-  };
-  getModelBuilderEndpoint = function (algo) {
-    return __modelBuilderEndpoints[algo];
-  };
-  getGridModelBuilderEndpoint = function (algo) {
-    return __gridModelBuilderEndpoints[algo];
-  };
-  requestModelBuilders = function (go) {
+  getModelBuilders = () => __modelBuilders;
+  getModelBuilderEndpoint = algo => __modelBuilderEndpoints[algo];
+  getGridModelBuilderEndpoint = algo => __gridModelBuilderEndpoints[algo];
+  requestModelBuilders = go => {
     var modelBuilders;
     var visibility;
     if (modelBuilders = getModelBuilders()) {
       return go(null, modelBuilders);
     }
     visibility = 'Stable';
-    return doGet('/3/ModelBuilders', unwrap(go, function (result) {
+    return doGet('/3/ModelBuilders', unwrap(go, result => {
       var algo;
       var availableBuilders;
       var builder;
       var builders;
-      builders = function () {
+      builders = (() => {
         var _ref;
         var _results;
         _ref = result.model_builders;
@@ -582,8 +519,8 @@ export function h2oProxy(_) {
           }
         }
         return _results;
-      }();
-      availableBuilders = function () {
+      })();
+      availableBuilders = (() => {
         var _i;
         var _j;
         var _len;
@@ -614,17 +551,13 @@ export function h2oProxy(_) {
           default:
             return builders;
         }
-      }();
+      })();
       return cacheModelBuilders(availableBuilders);
     }));
   };
-  requestModelBuilder = function (algo, go) {
-    return doGet(getModelBuilderEndpoint(algo), go);
-  };
-  requestModelInputValidation = function (algo, parameters, go) {
-    return doPost(`${getModelBuilderEndpoint(algo)}/parameters`, encodeObjectForPost(parameters), go);
-  };
-  requestModelBuild = function (algo, parameters, go) {
+  requestModelBuilder = (algo, go) => doGet(getModelBuilderEndpoint(algo), go);
+  requestModelInputValidation = (algo, parameters, go) => doPost(`${getModelBuilderEndpoint(algo)}/parameters`, encodeObjectForPost(parameters), go);
+  requestModelBuild = (algo, parameters, go) => {
     _.trackEvent('model', algo);
     if (parameters.hyper_parameters) {
       parameters.hyper_parameters = flowPrelude.stringify(parameters.hyper_parameters);
@@ -635,10 +568,8 @@ export function h2oProxy(_) {
     }
     return doPost(getModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
   };
-  requestAutoModelBuild = function (parameters, go) {
-    return doPostJSON('/3/AutoMLBuilder', parameters, go);
-  };
-  requestPredict = function (destinationKey, modelKey, frameKey, options, go) {
+  requestAutoModelBuild = (parameters, go) => doPostJSON('/3/AutoMLBuilder', parameters, go);
+  requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
     var opt;
     var opts;
     opts = {};
@@ -657,30 +588,28 @@ export function h2oProxy(_) {
     if (void 0 !== (opt = options.exemplar_index)) {
       opts.exemplar_index = opt;
     }
-    return doPost(`/3/Predictions/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, opts, function (error, result) {
+    return doPost(`/3/Predictions/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, opts, (error, result) => {
       if (error) {
         return go(error);
       }
       return go(null, result);
     });
   };
-  requestPrediction = function (modelKey, frameKey, go) {
-    return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, function (error, result) {
-      if (error) {
-        return go(error);
-      }
-      return go(null, result);
-    });
-  };
-  requestPredictions = function (modelKey, frameKey, _go) {
+  requestPrediction = (modelKey, frameKey, go) => doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, (error, result) => {
+    if (error) {
+      return go(error);
+    }
+    return go(null, result);
+  });
+  requestPredictions = (modelKey, frameKey, _go) => {
     var go;
-    go = function (error, result) {
+    go = (error, result) => {
       var prediction;
       var predictions;
       if (error) {
         return _go(error);
       }
-      predictions = function () {
+      predictions = (() => {
         var _i;
         var _len;
         var _ref;
@@ -698,8 +627,8 @@ export function h2oProxy(_) {
           }
         }
         return _results;
-      }();
-      return _go(null, function () {
+      })();
+      return _go(null, (() => {
         var _i;
         var _len;
         var _results;
@@ -711,7 +640,7 @@ export function h2oProxy(_) {
           }
         }
         return _results;
-      }());
+      })());
     };
     if (modelKey && frameKey) {
       return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/'${encodeURIComponent(frameKey)}`, go);
@@ -723,146 +652,78 @@ export function h2oProxy(_) {
     return doGet('/3/ModelMetrics', go);
   };
   _storageConfiguration = null;
-  requestIsStorageConfigured = function (go) {
+  requestIsStorageConfigured = go => {
     if (_storageConfiguration) {
       return go(null, _storageConfiguration.isConfigured);
     }
-    return doGet('/3/NodePersistentStorage/configured', function (error, result) {
+    return doGet('/3/NodePersistentStorage/configured', (error, result) => {
       _storageConfiguration = { isConfigured: error ? false : result.configured };
       return go(null, _storageConfiguration.isConfigured);
     });
   };
-  requestObjects = function (type, go) {
-    return doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}`, unwrap(go, function (result) {
-      return result.entries;
-    }));
-  };
-  requestObjectExists = function (type, name, go) {
-    return doGet(`/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`, function (error, result) {
-      return go(null, error ? false : result.exists);
-    });
-  };
-  requestObject = function (type, name, go) {
-    return doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, unwrap(go, function (result) {
-      return JSON.parse(result.value);
-    }));
-  };
-  requestDeleteObject = function (type, name, go) {
-    return doDelete(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, go);
-  };
-  requestPutObject = function (type, name, value, go) {
+  requestObjects = (type, go) => doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}`, unwrap(go, result => result.entries));
+  requestObjectExists = (type, name, go) => doGet(`/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`, (error, result) => go(null, error ? false : result.exists));
+  requestObject = (type, name, go) => doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, unwrap(go, result => JSON.parse(result.value)));
+  requestDeleteObject = (type, name, go) => doDelete(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, go);
+  requestPutObject = (type, name, value, go) => {
     var uri;
     uri = `/3/NodePersistentStorage/${encodeURIComponent(type)}`;
     if (name) {
       uri += `/${encodeURIComponent(name)}`;
     }
-    return doPost(uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, function (result) {
-      return result.name;
-    }));
+    return doPost(uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
   };
-  requestUploadObject = function (type, name, formData, go) {
+  requestUploadObject = (type, name, formData, go) => {
     var uri;
     uri = `/3/NodePersistentStorage.bin/${encodeURIComponent(type)}`;
     if (name) {
       uri += `/${encodeURIComponent(name)}`;
     }
-    return doUpload(uri, formData, unwrap(go, function (result) {
-      return result.name;
-    }));
+    return doUpload(uri, formData, unwrap(go, result => result.name));
   };
-  requestUploadFile = function (key, formData, go) {
-    return doUpload(`/3/PostFile?destination_frame=${encodeURIComponent(key)}`, formData, go);
-  };
-  requestCloud = function (go) {
-    return doGet('/3/Cloud', go);
-  };
-  requestTimeline = function (go) {
-    return doGet('/3/Timeline', go);
-  };
-  requestProfile = function (depth, go) {
-    return doGet(`/3/Profiler?depth=${depth}`, go);
-  };
-  requestStackTrace = function (go) {
-    return doGet('/3/JStack', go);
-  };
-  requestRemoveAll = function (go) {
-    return doDelete('/3/DKV', go);
-  };
-  requestEcho = function (message, go) {
-    return doPost('/3/LogAndEcho', { message }, go);
-  };
-  requestLogFile = function (nodeIndex, fileType, go) {
-    return doGet(`/3/Logs/nodes/${nodeIndex}/files/${fileType}`, go);
-  };
-  requestNetworkTest = function (go) {
-    return doGet('/3/NetworkTest', go);
-  };
-  requestAbout = function (go) {
-    return doGet('/3/About', go);
-  };
-  requestShutdown = function (go) {
-    return doPost('/3/Shutdown', {}, go);
-  };
-  requestEndpoints = function (go) {
-    return doGet('/3/Metadata/endpoints', go);
-  };
-  requestEndpoint = function (index, go) {
-    return doGet(`/3/Metadata/endpoints/${index}`, go);
-  };
-  requestSchemas = function (go) {
-    return doGet('/3/Metadata/schemas', go);
-  };
-  requestSchema = function (name, go) {
-    return doGet(`/3/Metadata/schemas/${encodeURIComponent(name)}`, go);
-  };
-  getLines = function (data) {
-    return lodash.filter(data.split('\n'), function (line) {
-      if (line.trim()) {
-        return true;
-      }
-      return false;
-    });
-  };
-  requestPacks = function (go) {
-    return download('text', '/flow/packs/index.list', unwrap(go, getLines));
-  };
-  requestPack = function (packName, go) {
-    return download('text', `/flow/packs/${encodeURIComponent(packName)}/index.list`, unwrap(go, getLines));
-  };
-  requestFlow = function (packName, flowName, go) {
-    return download('json', `/flow/packs/${encodeURIComponent(packName)}/${encodeURIComponent(flowName)}`, go);
-  };
-  requestHelpIndex = function (go) {
-    return download('json', '/flow/help/catalog.json', go);
-  };
-  requestHelpContent = function (name, go) {
-    return download('text', `/flow/help/${name}.html`, go);
-  };
-  requestRDDs = function (go) {
-    return doGet('/3/RDDs', go);
-  };
-  requestDataFrames = function (go) {
-    return doGet('/3/dataframes', go);
-  };
-  requestScalaIntp = function (go) {
-    return doPost('/3/scalaint', {}, go);
-  };
-  requestScalaCode = function (session_id, code, go) {
-    return doPost(`/3/scalaint/${session_id}`, { code }, go);
-  };
-  requestAsH2OFrameFromRDD = function (rdd_id, name, go) {
+  requestUploadFile = (key, formData, go) => doUpload(`/3/PostFile?destination_frame=${encodeURIComponent(key)}`, formData, go);
+  requestCloud = go => doGet('/3/Cloud', go);
+  requestTimeline = go => doGet('/3/Timeline', go);
+  requestProfile = (depth, go) => doGet(`/3/Profiler?depth=${depth}`, go);
+  requestStackTrace = go => doGet('/3/JStack', go);
+  requestRemoveAll = go => doDelete('/3/DKV', go);
+  requestEcho = (message, go) => doPost('/3/LogAndEcho', { message }, go);
+  requestLogFile = (nodeIndex, fileType, go) => doGet(`/3/Logs/nodes/${nodeIndex}/files/${fileType}`, go);
+  requestNetworkTest = go => doGet('/3/NetworkTest', go);
+  requestAbout = go => doGet('/3/About', go);
+  requestShutdown = go => doPost('/3/Shutdown', {}, go);
+  requestEndpoints = go => doGet('/3/Metadata/endpoints', go);
+  requestEndpoint = (index, go) => doGet(`/3/Metadata/endpoints/${index}`, go);
+  requestSchemas = go => doGet('/3/Metadata/schemas', go);
+  requestSchema = (name, go) => doGet(`/3/Metadata/schemas/${encodeURIComponent(name)}`, go);
+  getLines = data => lodash.filter(data.split('\n'), line => {
+    if (line.trim()) {
+      return true;
+    }
+    return false;
+  });
+  requestPacks = go => download('text', '/flow/packs/index.list', unwrap(go, getLines));
+  requestPack = (packName, go) => download('text', `/flow/packs/${encodeURIComponent(packName)}/index.list`, unwrap(go, getLines));
+  requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${encodeURIComponent(packName)}/${encodeURIComponent(flowName)}`, go);
+  requestHelpIndex = go => download('json', '/flow/help/catalog.json', go);
+  requestHelpContent = (name, go) => download('text', `/flow/help/${name}.html`, go);
+  requestRDDs = go => doGet('/3/RDDs', go);
+  requestDataFrames = go => doGet('/3/dataframes', go);
+  requestScalaIntp = go => doPost('/3/scalaint', {}, go);
+  requestScalaCode = (session_id, code, go) => doPost(`/3/scalaint/${session_id}`, { code }, go);
+  requestAsH2OFrameFromRDD = (rdd_id, name, go) => {
     if (name === void 0) {
       return doPost(`/3/RDDs/${rdd_id}/h2oframe`, {}, go);
     }
     return doPost(`/3/RDDs/${rdd_id}/h2oframe`, { h2oframe_id: name }, go);
   };
-  requestAsH2OFrameFromDF = function (df_id, name, go) {
+  requestAsH2OFrameFromDF = (df_id, name, go) => {
     if (name === void 0) {
       return doPost(`/3/dataframes/${df_id}/h2oframe`, {}, go);
     }
     return doPost(`/3/dataframes/${df_id}/h2oframe`, { h2oframe_id: name }, go);
   };
-  requestAsDataFrame = function (hf_id, name, go) {
+  requestAsDataFrame = (hf_id, name, go) => {
     if (name === void 0) {
       return doPost(`/3/h2oframes/${hf_id}/dataframe`, {}, go);
     }

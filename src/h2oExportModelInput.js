@@ -17,18 +17,14 @@ export function h2oExportModelInput(_, _go, modelKey, path, opt) {
   _selectedModelKey = Flow.Dataflow.signal(null);
   _path = Flow.Dataflow.signal(null);
   _overwrite = Flow.Dataflow.signal(opt.overwrite);
-  _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, function (modelKey, path) {
-    return modelKey && path;
-  });
-  exportModel = function () {
-    return _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_selectedModelKey())}, ${flowPrelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
-  };
-  _.requestModels(function (error, models) {
+  _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, (modelKey, path) => modelKey && path);
+  exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_selectedModelKey())}, ${flowPrelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
+  _.requestModels((error, models) => {
     var model;
     if (error) {
       // empty
     } else {
-      _models(function () {
+      _models((() => {
         var _i;
         var _len;
         var _results;
@@ -38,7 +34,7 @@ export function h2oExportModelInput(_, _go, modelKey, path, opt) {
           _results.push(model.model_id.name);
         }
         return _results;
-      }());
+      })());
       return _selectedModelKey(modelKey);
     }
   });

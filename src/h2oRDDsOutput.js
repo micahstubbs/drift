@@ -4,13 +4,11 @@ export function h2oRDDsOutput(_, _go, _rDDs) {
   var createRDDView;
   var _rDDViews;
   _rDDViews = Flow.Dataflow.signal([]);
-  createRDDView = function (rDD) {
-    return {
-      id: rDD.rdd_id,
-      name: rDD.name,
-      partitions: rDD.partitions
-    };
-  };
+  createRDDView = rDD => ({
+    id: rDD.rdd_id,
+    name: rDD.name,
+    partitions: rDD.partitions
+  });
   _rDDViews(lodash.map(_rDDs, createRDDView));
   lodash.defer(_go);
   return {

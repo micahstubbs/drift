@@ -19,27 +19,17 @@ export function h2oFrameDataOutput(_, _go, _frame) {
   _columnNameSearchTerm = Flow.Dataflow.signal(null);
   _currentPage = Flow.Dataflow.signal(0);
   _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
-  _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, function (index) {
-    return index > 0;
+  _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
+  _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
+  renderPlot = (container, render) => render((error, vis) => {
+    if (error) {
+      return console.debug(error);
+    }
+    return container(vis.element);
   });
-  _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, function (maxPages, index) {
-    return index < maxPages - 1;
-  });
-  renderPlot = function (container, render) {
-    return render(function (error, vis) {
-      if (error) {
-        return console.debug(error);
-      }
-      return container(vis.element);
-    });
-  };
-  renderFrame = function (frame) {
-    return renderPlot(_data, _.plot(function (g) {
-      return g(g.select(), g.from(_.inspect('data', frame)));
-    }));
-  };
+  renderFrame = frame => renderPlot(_data, _.plot(g => g(g.select(), g.from(_.inspect('data', frame)))));
   _lastUsedSearchTerm = null;
-  refreshColumns = function (pageIndex) {
+  refreshColumns = pageIndex => {
     var itemCount;
     var searchTerm;
     var startIndex;
@@ -49,7 +39,7 @@ export function h2oFrameDataOutput(_, _go, _frame) {
     }
     startIndex = pageIndex * MaxItemsPerPage;
     itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-    return _.requestFrameDataE(_frame.frame_id.name, searchTerm, startIndex, itemCount, function (error, frame) {
+    return _.requestFrameDataE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
       if (error) {
         // empty
       } else {
@@ -59,14 +49,14 @@ export function h2oFrameDataOutput(_, _go, _frame) {
       }
     });
   };
-  goToPreviousPage = function () {
+  goToPreviousPage = () => {
     var currentPage;
     currentPage = _currentPage();
     if (currentPage > 0) {
       refreshColumns(currentPage - 1);
     }
   };
-  goToNextPage = function () {
+  goToNextPage = () => {
     var currentPage;
     currentPage = _currentPage();
     if (currentPage < _maxPages() - 1) {

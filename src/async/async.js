@@ -18,13 +18,13 @@ export function async() {
   var _join;
   var _noop;
   var __slice = [].slice;
-  createBuffer = function (array) {
+  createBuffer = array => {
     var buffer;
     var _array;
     var _go;
     _array = array || [];
     _go = null;
-    buffer = function (element) {
+    buffer = element => {
       if (element === void 0) {
         return _array;
       }
@@ -34,29 +34,23 @@ export function async() {
       }
       return element;
     };
-    buffer.subscribe = function (go) {
-      return _go = go;
-    };
+    buffer.subscribe = go => _go = go;
     buffer.buffer = _array;
     buffer.isBuffer = true;
     return buffer;
   };
-  _noop = function (go) {
-    return go(null);
+  _noop = go => go(null);
+  _applicate = go => (error, args) => {
+    if (lodash.isFunction(go)) {
+      return go(...[error].concat(args));
+    }
   };
-  _applicate = function (go) {
-    return function (error, args) {
-      if (lodash.isFunction(go)) {
-        return go(...[error].concat(args));
-      }
-    };
-  };
-  _fork = function (f, args) {
+  _fork = (f, args) => {
     var self;
     if (!lodash.isFunction(f)) {
       throw new Error('Not a function.');
     }
-    self = function (go) {
+    self = go => {
       var canGo;
       canGo = lodash.isFunction(go);
       if (self.settled) {
@@ -70,7 +64,7 @@ export function async() {
           }
         }
       } else {
-        return _join(args, function (error, args) {
+        return _join(args, (error, args) => {
           if (error) {
             self.error = error;
             self.fulfilled = false;
@@ -79,7 +73,7 @@ export function async() {
               return go(error);
             }
           } else {
-            return f(...args.concat(function (error, result) {
+            return f(...args.concat((error, result) => {
               if (error) {
                 self.error = error;
                 self.fulfilled = false;
@@ -111,13 +105,13 @@ export function async() {
     self.isFuture = true;
     return self;
   };
-  _isFuture = function (a) {
+  _isFuture = a => {
     if (a != null ? a.isFuture : void 0) {
       return true;
     }
     return false;
   };
-  _join = function (args, go) {
+  _join = (args, go) => {
     var arg;
     var i;
     var _actual;
@@ -147,30 +141,28 @@ export function async() {
     }
     _actual = 0;
     _settled = false;
-    lodash.forEach(_tasks, function (task) {
-      return task.future.call(null, function (error, result) {
-        if (_settled) {
-          return;
-        }
-        if (error) {
+    lodash.forEach(_tasks, task => task.future.call(null, (error, result) => {
+      if (_settled) {
+        return;
+      }
+      if (error) {
+        _settled = true;
+        go(new Flow.Error(`Error evaluating future[${task.resultIndex}]`, error));
+      } else {
+        _results[task.resultIndex] = result;
+        _actual++;
+        if (_actual === _tasks.length) {
           _settled = true;
-          go(new Flow.Error(`Error evaluating future[${task.resultIndex}]`, error));
-        } else {
-          _results[task.resultIndex] = result;
-          _actual++;
-          if (_actual === _tasks.length) {
-            _settled = true;
-            go(null, _results);
-          }
+          go(null, _results);
         }
-      });
-    });
+      }
+    }));
   };
-  pipe = function (tasks) {
+  pipe = tasks => {
     var next;
     var _tasks;
     _tasks = tasks.slice(0);
-    next = function (args, go) {
+    next = (args, go) => {
       var task;
       task = _tasks.shift();
       if (task) {
@@ -194,17 +186,17 @@ export function async() {
       return next(args, go);
     };
   };
-  iterate = function (tasks) {
+  iterate = tasks => {
     var next;
     var _results;
     var _tasks;
     _tasks = tasks.slice(0);
     _results = [];
-    next = function (go) {
+    next = go => {
       var task;
       task = _tasks.shift();
       if (task) {
-        return task(function (error, result) {
+        return task((error, result) => {
           if (error) {
             return go(error);
           }
@@ -214,9 +206,7 @@ export function async() {
       }
       return go(null, _results);
     };
-    return function (go) {
-      return next(go);
-    };
+    return go => next(go);
   };
   _async = function () {
     var args;
@@ -240,7 +230,7 @@ export function async() {
     };
     return _fork(later, args);
   };
-  _find$3 = function (attr, prop, obj) {
+  _find$3 = (attr, prop, obj) => {
     var v;
     var _i;
     var _len;
@@ -256,7 +246,7 @@ export function async() {
       return;
     }
   };
-  _find$2 = function (attr, obj) {
+  _find$2 = (attr, obj) => {
     if (_isFuture(obj)) {
       return _async(_find$2, attr, obj);
     } else if (lodash.isString(attr)) {
@@ -302,7 +292,7 @@ export function async() {
         }
     }
   };
-  _get = function (attr, obj) {
+  _get = (attr, obj) => {
     if (_isFuture(obj)) {
       return _async(_get, attr, obj);
     } else if (lodash.isString(attr)) {

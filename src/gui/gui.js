@@ -14,7 +14,7 @@ export function gui() {
   var textbox;
   var wrapArray;
   var wrapValue;
-  wrapValue = function (value, init) {
+  wrapValue = (value, init) => {
     if (value === void 0) {
       return Flow.Dataflow.signal(init);
     }
@@ -23,7 +23,7 @@ export function gui() {
     }
     return Flow.Dataflow.signal(value);
   };
-  wrapArray = function (elements) {
+  wrapArray = elements => {
     var element;
     if (elements) {
       if (Flow.Dataflow.isSignal(elements)) {
@@ -37,7 +37,7 @@ export function gui() {
     }
     return Flow.Dataflow.signals([]);
   };
-  control = function (type, opts) {
+  control = (type, opts) => {
     var guid;
     if (!opts) {
       opts = {};
@@ -56,28 +56,22 @@ export function gui() {
       }
     };
   };
-  content = function (type, opts) {
+  content = (type, opts) => {
     var self;
     self = control(type, opts);
     self.value = wrapValue(opts.value, '');
     return self;
   };
-  text = function (opts) {
-    return content('text', opts);
-  };
-  html = function (opts) {
-    return content('html', opts);
-  };
-  markdown = function (opts) {
-    return content('markdown', opts);
-  };
-  checkbox = function (opts) {
+  text = opts => content('text', opts);
+  html = opts => content('html', opts);
+  markdown = opts => content('markdown', opts);
+  checkbox = opts => {
     var self;
     self = control('checkbox', opts);
     self.value = wrapValue(opts.value, opts.value);
     return self;
   };
-  dropdown = function (opts) {
+  dropdown = opts => {
     var self;
     self = control('dropdown', opts);
     self.options = opts.options || [];
@@ -85,21 +79,21 @@ export function gui() {
     self.caption = opts.caption || 'Choose...';
     return self;
   };
-  listbox = function (opts) {
+  listbox = opts => {
     var self;
     self = control('listbox', opts);
     self.options = opts.options || [];
     self.values = wrapArray(opts.values);
     return self;
   };
-  textbox = function (opts) {
+  textbox = opts => {
     var self;
     self = control('textbox', opts);
     self.value = wrapValue(opts.value, '');
     self.event = lodash.isString(opts.event) ? opts.event : null;
     return self;
   };
-  textarea = function (opts) {
+  textarea = opts => {
     var self;
     self = control('textarea', opts);
     self.value = wrapValue(opts.value, '');
@@ -107,7 +101,7 @@ export function gui() {
     self.rows = lodash.isNumber(opts.rows) ? opts.rows : 5;
     return self;
   };
-  button = function (opts) {
+  button = opts => {
     var self;
     self = control('button', opts);
     self.click = lodash.isFunction(opts.click) ? opts.click : lodash.noop;

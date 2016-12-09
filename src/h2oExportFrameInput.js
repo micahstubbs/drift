@@ -14,18 +14,14 @@ export function h2oExportFrameInput(_, _go, frameKey, path, opt) {
   _selectedFrame = Flow.Dataflow.signal(frameKey);
   _path = Flow.Dataflow.signal(null);
   _overwrite = Flow.Dataflow.signal(true);
-  _canExportFrame = Flow.Dataflow.lift(_selectedFrame, _path, function (frame, path) {
-    return frame && path;
-  });
-  exportFrame = function () {
-    return _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_selectedFrame())}, ${flowPrelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
-  };
-  _.requestFrames(function (error, frames) {
+  _canExportFrame = Flow.Dataflow.lift(_selectedFrame, _path, (frame, path) => frame && path);
+  exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_selectedFrame())}, ${flowPrelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
+  _.requestFrames((error, frames) => {
     var frame;
     if (error) {
       // empty
     } else {
-      _frames(function () {
+      _frames((() => {
         var _i;
         var _len;
         var _results;
@@ -35,7 +31,7 @@ export function h2oExportFrameInput(_, _go, frameKey, path, opt) {
           _results.push(frame.frame_id.name);
         }
         return _results;
-      }());
+      })());
       return _selectedFrame(frameKey);
     }
   });

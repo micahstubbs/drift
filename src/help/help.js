@@ -9,7 +9,7 @@ export function help() {
   _index = {};
   _homeContent = null;
   _homeMarkdown = '<blockquote>\nUsing Flow for the first time?\n<br/>\n<div style=\'margin-top:10px\'>\n  <button type=\'button\' data-action=\'get-flow\' data-pack-name=\'examples\' data-flow-name=\'QuickStartVideos.flow\' class=\'flow-button\'><i class=\'fa fa-file-movie-o\'></i><span>Quickstart Videos</span>\n  </button>\n</div>\n</blockquote>\n\nOr, <a href=\'#\' data-action=\'get-pack\' data-pack-name=\'examples\'>view example Flows</a> to explore and learn H<sub>2</sub>O.\n\n###### Star H2O on Github!\n\n<iframe src="https://ghbtns.com/github-btn.html?user=h2oai&repo=h2o-3&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>\n\n###### General\n\n%HELP_TOPICS%\n\n###### Examples\n\nFlow packs are a great way to explore and learn H<sub>2</sub>O. Try out these Flows and run them in your browser.<br/><a href=\'#\' data-action=\'get-packs\'>Browse installed packs...</a>\n\n###### H<sub>2</sub>O REST API\n\n- <a href=\'#\' data-action=\'endpoints\'>Routes</a>\n- <a href=\'#\' data-action=\'schemas\'>Schemas</a>\n';
-  Flow.Help = function (_) {
+  Flow.Help = _ => {
     var buildToc;
     var buildTopics;
     var displayEndpoint;
@@ -36,7 +36,7 @@ export function help() {
     _historyIndex = -1;
     _canGoBack = Flow.Dataflow.signal(false);
     _canGoForward = Flow.Dataflow.signal(false);
-    goTo = function (index) {
+    goTo = index => {
       var content;
       content = _history[_historyIndex = index];
       $('a, button', $(content)).each(function (i) {
@@ -44,26 +44,24 @@ export function help() {
         var action;
         $a = $(this);
         if (action = $a.attr('data-action')) {
-          return $a.click(function () {
-            return performAction(action, $a);
-          });
+          return $a.click(() => performAction(action, $a));
         }
       });
       _content(content);
       _canGoForward(_historyIndex < _history.length - 1);
       _canGoBack(_historyIndex > 0);
     };
-    goBack = function () {
+    goBack = () => {
       if (_historyIndex > 0) {
         return goTo(_historyIndex - 1);
       }
     };
-    goForward = function () {
+    goForward = () => {
       if (_historyIndex < _history.length - 1) {
         return goTo(_historyIndex + 1);
       }
     };
-    displayHtml = function (content) {
+    displayHtml = content => {
       if (_historyIndex < _history.length - 1) {
         _history.splice(_historyIndex + 1, _history.length - (_historyIndex + 1), content);
       } else {
@@ -71,10 +69,8 @@ export function help() {
       }
       return goTo(_history.length - 1);
     };
-    fixImageSources = function (html) {
-      return html.replace(/\s+src\s*=\s*"images\//g, ' src="help/images/');
-    };
-    performAction = function (action, $el) {
+    fixImageSources = html => html.replace(/\s+src\s*=\s*"images\//g, ' src="help/images/');
+    performAction = (action, $el) => {
       var packName;
       var routeIndex;
       var schemaName;
@@ -82,7 +78,7 @@ export function help() {
       switch (action) {
         case 'help':
           topic = _index[$el.attr('data-topic')];
-          _.requestHelpContent(topic.name, function (error, html) {
+          _.requestHelpContent(topic.name, (error, html) => {
             var contents;
             var div;
             var h5;
@@ -106,17 +102,15 @@ export function help() {
           _.insertAndExecuteCell('cs', 'assist');
           break;
         case 'get-packs':
-          _.requestPacks(function (error, packNames) {
+          _.requestPacks((error, packNames) => {
             if (!error) {
-              return displayPacks(lodash.filter(packNames, function (packName) {
-                return packName !== 'test';
-              }));
+              return displayPacks(lodash.filter(packNames, packName => packName !== 'test'));
             }
           });
           break;
         case 'get-pack':
           packName = $el.attr('data-pack-name');
-          _.requestPack(packName, function (error, flowNames) {
+          _.requestPack(packName, (error, flowNames) => {
             if (!error) {
               return displayFlows(packName, flowNames);
             }
@@ -126,13 +120,13 @@ export function help() {
           _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
             acceptCaption: 'Load Notebook',
             declineCaption: 'Cancel'
-          }, function (accept) {
+          }, accept => {
             var flowName;
             if (accept) {
               packName = $el.attr('data-pack-name');
               flowName = $el.attr('data-flow-name');
               if (H2O.Util.validateFileExtension(flowName, '.flow')) {
-                return _.requestFlow(packName, flowName, function (error, flow) {
+                return _.requestFlow(packName, flowName, (error, flow) => {
                   if (!error) {
                     return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
                   }
@@ -142,7 +136,7 @@ export function help() {
           });
           break;
         case 'endpoints':
-          _.requestEndpoints(function (error, response) {
+          _.requestEndpoints((error, response) => {
             if (!error) {
               return displayEndpoints(response.routes);
             }
@@ -150,41 +144,37 @@ export function help() {
           break;
         case 'endpoint':
           routeIndex = $el.attr('data-index');
-          _.requestEndpoint(routeIndex, function (error, response) {
+          _.requestEndpoint(routeIndex, (error, response) => {
             if (!error) {
               return displayEndpoint(lodash.head(response.routes));
             }
           });
           break;
         case 'schemas':
-          _.requestSchemas(function (error, response) {
+          _.requestSchemas((error, response) => {
             if (!error) {
-              return displaySchemas(lodash.sortBy(response.schemas, function (schema) {
-                return schema.name;
-              }));
+              return displaySchemas(lodash.sortBy(response.schemas, schema => schema.name));
             }
           });
           break;
         case 'schema':
           schemaName = $el.attr('data-schema');
-          _.requestSchema(schemaName, function (error, response) {
+          _.requestSchema(schemaName, (error, response) => {
             if (!error) {
               return displaySchema(lodash.head(response.schemas));
             }
           });
       }
     };
-    buildToc = function (nodes) {
+    buildToc = nodes => {
       var a;
       var li;
       var ul;
       var _ref;
       _ref = Flow.HTML.template('ul', 'li', 'a href=\'#\' data-action=\'help\' data-topic=\'$1\''), ul = _ref[0], li = _ref[1], a = _ref[2];
-      return ul(lodash.map(nodes, function (node) {
-        return li(a(node.title, node.name));
-      }));
+      return ul(lodash.map(nodes, node => li(a(node.title, node.name))));
     };
-    buildTopics = function (index, topics) {
+    buildTopics = (index, topics) => {
       var topic;
       var _i;
       var _len;
@@ -196,7 +186,7 @@ export function help() {
         }
       }
     };
-    displayPacks = function (packNames) {
+    displayPacks = packNames => {
       var a;
       var div;
       var h5;
@@ -208,15 +198,13 @@ export function help() {
       displayHtml(Flow.HTML.render('div', div([
         mark('Packs'),
         h5('Installed Packs'),
-        div(lodash.map(packNames, function (packName) {
-          return p([
-            i(),
-            a(packName, packName)
-          ]);
-        }))
+        div(lodash.map(packNames, packName => p([
+          i(),
+          a(packName, packName)
+        ])))
       ])));
     };
-    displayFlows = function (packName, flowNames) {
+    displayFlows = (packName, flowNames) => {
       var a;
       var div;
       var h5;
@@ -228,15 +216,13 @@ export function help() {
       displayHtml(Flow.HTML.render('div', div([
         mark('Pack'),
         h5(packName),
-        div(lodash.map(flowNames, function (flowName) {
-          return p([
-            i(),
-            a(flowName, flowName)
-          ]);
-        }))
+        div(lodash.map(flowNames, flowName => p([
+          i(),
+          a(flowName, flowName)
+        ])))
       ])));
     };
-    displayEndpoints = function (routes) {
+    displayEndpoints = routes => {
       var action;
       var code;
       var div;
@@ -260,10 +246,8 @@ export function help() {
       }
       displayHtml(Flow.HTML.render('div', div(els)));
     };
-    goHome = function () {
-      return displayHtml(Flow.HTML.render('div', _homeContent));
-    };
-    displayEndpoint = function (route) {
+    goHome = () => displayHtml(Flow.HTML.render('div', _homeContent));
+    displayEndpoint = route => {
       var action;
       var code;
       var div;
@@ -289,7 +273,7 @@ export function help() {
         p(action(code(route.output_schema), route.output_schema))
       ])));
     };
-    displaySchemas = function (schemas) {
+    displaySchemas = schemas => {
       var action;
       var code;
       var div;
@@ -305,7 +289,7 @@ export function help() {
       els = [
         mark('API'),
         h5('List of Schemas'),
-        ul(function () {
+        ul((() => {
           var _i;
           var _len;
           var _results;
@@ -315,11 +299,11 @@ export function help() {
             _results.push(li(`${action(code(schema.name), schema.name)} ${variable(lodash.escape(schema.type))}`));
           }
           return _results;
-        }())
+        })())
       ];
       return displayHtml(Flow.HTML.render('div', div(els)));
     };
-    displaySchema = function (schema) {
+    displaySchema = schema => {
       var code;
       var content;
       var div;
@@ -349,19 +333,17 @@ export function help() {
       }
       return displayHtml(Flow.HTML.render('div', div(content)));
     };
-    initialize = function (catalog) {
+    initialize = catalog => {
       _catalog = catalog;
       buildTopics(_index, _catalog);
       _homeContent = marked(_homeMarkdown).replace('%HELP_TOPICS%', buildToc(_catalog));
       return goHome();
     };
-    Flow.Dataflow.link(_.ready, function () {
-      return _.requestHelpIndex(function (error, catalog) {
-        if (!error) {
-          return initialize(catalog);
-        }
-      });
-    });
+    Flow.Dataflow.link(_.ready, () => _.requestHelpIndex((error, catalog) => {
+      if (!error) {
+        return initialize(catalog);
+      }
+    }));
     return {
       content: _content,
       goHome,

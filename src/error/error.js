@@ -3,7 +3,7 @@ export function error() {
   var FlowError;
   var __hasProp = {}.hasOwnProperty;
 
-  var __extends = function (child, parent) {
+  var __extends = (child, parent) => {
     var key;
     for (key in parent) {
       if (__hasProp.call(parent, key)) {
@@ -19,7 +19,7 @@ export function error() {
     return child;
   };
 
-  FlowError = function (_super) {
+  FlowError = (_super => {
     __extends(FlowError, _super);
     function FlowError(message, cause) {
       var error;
@@ -39,6 +39,6 @@ export function error() {
       }
     }
     return FlowError;
-  }(Error);
+  })(Error);
   Flow.Error = FlowError;
 }

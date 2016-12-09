@@ -15,7 +15,7 @@ export function h2oAutoModelInput(_, _go, opts) {
   }
   _frames = Flow.Dataflow.signal([]);
   _frame = Flow.Dataflow.signal(null);
-  _hasFrame = Flow.Dataflow.lift(_frame, function (frame) {
+  _hasFrame = Flow.Dataflow.lift(_frame, frame => {
     if (frame) {
       return true;
     }
@@ -23,12 +23,10 @@ export function h2oAutoModelInput(_, _go, opts) {
   });
   _columns = Flow.Dataflow.signal([]);
   _column = Flow.Dataflow.signal(null);
-  _canBuildModel = Flow.Dataflow.lift(_frame, _column, function (frame, column) {
-    return frame && column;
-  });
+  _canBuildModel = Flow.Dataflow.lift(_frame, _column, (frame, column) => frame && column);
   defaultMaxRunTime = 3600;
   _maxRunTime = Flow.Dataflow.signal(defaultMaxRunTime);
-  buildModel = function () {
+  buildModel = () => {
     var arg;
     var maxRunTime;
     var parsed;
@@ -43,12 +41,12 @@ export function h2oAutoModelInput(_, _go, opts) {
     };
     return _.insertAndExecuteCell('cs', `buildAutoModel ${JSON.stringify(arg)}`);
   };
-  _.requestFrames(function (error, frames) {
+  _.requestFrames((error, frames) => {
     var frame;
     if (error) {
       // empty
     } else {
-      _frames(function () {
+      _frames((() => {
         var _i;
         var _len;
         var _results;
@@ -60,20 +58,20 @@ export function h2oAutoModelInput(_, _go, opts) {
           }
         }
         return _results;
-      }());
+      })());
       if (opts.frame) {
         _frame(opts.frame);
       }
     }
   });
-  Flow.Dataflow.react(_frame, function (frame) {
+  Flow.Dataflow.react(_frame, frame => {
     if (frame) {
-      return _.requestFrameSummaryWithoutData(frame, function (error, frame) {
+      return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
         var column;
         if (error) {
           // empty
         } else {
-          _columns(function () {
+          _columns((() => {
             var _i;
             var _len;
             var _ref;
@@ -85,7 +83,7 @@ export function h2oAutoModelInput(_, _go, opts) {
               _results.push(column.label);
             }
             return _results;
-          }());
+          })());
           if (opts.column) {
             _column(opts.column);
             return delete opts.column;

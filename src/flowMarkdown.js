@@ -1,6 +1,6 @@
 export function flowMarkdown(_) {
   var render;
-  render = function (input, output) {
+  render = (input, output) => {
     var error;
     try {
       return output.data({

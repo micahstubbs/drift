@@ -27,15 +27,13 @@ export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile
     'stderr'
   ]);
   _activeFileType = Flow.Dataflow.signal(null);
-  createNode = function (node, index) {
-    return {
-      name: node.ip_port,
-      index
-    };
-  };
-  refreshActiveView = function (node, fileType) {
+  createNode = (node, index) => ({
+    name: node.ip_port,
+    index
+  });
+  refreshActiveView = (node, fileType) => {
     if (node) {
-      return _.requestLogFile(node.index, fileType, function (error, logFile) {
+      return _.requestLogFile(node.index, fileType, (error, logFile) => {
         if (error) {
           return _contents(`Error fetching log file: ${error.message}`);
         }
@@ -44,10 +42,8 @@ export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile
     }
     return _contents('');
   };
-  refresh = function () {
-    return refreshActiveView(_activeNode(), _activeFileType());
-  };
-  initialize = function (cloud, nodeIndex, fileType, logFile) {
+  refresh = () => refreshActiveView(_activeNode(), _activeFileType());
+  initialize = (cloud, nodeIndex, fileType, logFile) => {
     var NODE_INDEX_SELF;
     var clientNode;
     var i;

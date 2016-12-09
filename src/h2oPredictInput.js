@@ -42,10 +42,8 @@ export function h2oPredictInput(_, _go, opt) {
   _hasModels = _selectedModels.length;
   _frames = Flow.Dataflow.signals([]);
   _models = Flow.Dataflow.signals([]);
-  _isDeepLearning = Flow.Dataflow.lift(_selectedModel, function (model) {
-    return model && model.algo === 'deeplearning';
-  });
-  _hasReconError = Flow.Dataflow.lift(_selectedModel, function (model) {
+  _isDeepLearning = Flow.Dataflow.lift(_selectedModel, model => model && model.algo === 'deeplearning');
+  _hasReconError = Flow.Dataflow.lift(_selectedModel, model => {
     var parameter;
     var _i;
     var _len;
@@ -63,7 +61,7 @@ export function h2oPredictInput(_, _go, opt) {
     }
     return false;
   });
-  _hasLeafNodeAssignment = Flow.Dataflow.lift(_selectedModel, function (model) {
+  _hasLeafNodeAssignment = Flow.Dataflow.lift(_selectedModel, model => {
     if (model) {
       switch (model.algo) {
         case 'gbm':
@@ -74,7 +72,7 @@ export function h2oPredictInput(_, _go, opt) {
       }
     }
   });
-  _hasExemplarIndex = Flow.Dataflow.lift(_selectedModel, function (model) {
+  _hasExemplarIndex = Flow.Dataflow.lift(_selectedModel, model => {
     if (model) {
       switch (model.algo) {
         case 'aggregator':
@@ -88,14 +86,19 @@ export function h2oPredictInput(_, _go, opt) {
   _computeDeepFeaturesHiddenLayer = Flow.Dataflow.signal(false);
   _computeLeafNodeAssignment = Flow.Dataflow.signal(false);
   _deepFeaturesHiddenLayer = Flow.Dataflow.signal(0);
-  _deepFeaturesHiddenLayerValue = Flow.Dataflow.lift(_deepFeaturesHiddenLayer, function (text) {
-    return parseInt(text, 10);
-  });
+  _deepFeaturesHiddenLayerValue = Flow.Dataflow.lift(_deepFeaturesHiddenLayer, text => parseInt(text, 10));
   _exemplarIndex = Flow.Dataflow.signal(0);
-  _exemplarIndexValue = Flow.Dataflow.lift(_exemplarIndex, function (text) {
-    return parseInt(text, 10);
-  });
-  _canPredict = Flow.Dataflow.lift(_selectedFrame, _selectedModel, _hasReconError, _computeReconstructionError, _computeDeepFeaturesHiddenLayer, _deepFeaturesHiddenLayerValue, _exemplarIndexValue, _hasExemplarIndex, function (frame, model, hasReconError, computeReconstructionError, computeDeepFeaturesHiddenLayer, deepFeaturesHiddenLayerValue, exemplarIndexValue, hasExemplarIndex) {
+  _exemplarIndexValue = Flow.Dataflow.lift(_exemplarIndex, text => parseInt(text, 10));
+  _canPredict = Flow.Dataflow.lift(_selectedFrame, _selectedModel, _hasReconError, _computeReconstructionError, _computeDeepFeaturesHiddenLayer, _deepFeaturesHiddenLayerValue, _exemplarIndexValue, _hasExemplarIndex, (
+    frame,
+    model,
+    hasReconError,
+    computeReconstructionError,
+    computeDeepFeaturesHiddenLayer,
+    deepFeaturesHiddenLayerValue,
+    exemplarIndexValue,
+    hasExemplarIndex
+  ) => {
     var hasFrameAndModel;
     var hasValidOptions;
     hasFrameAndModel = frame && model || _hasFrames && model || _hasModels && frame || _hasModels && hasExemplarIndex;
@@ -103,12 +106,12 @@ export function h2oPredictInput(_, _go, opt) {
     return hasFrameAndModel && hasValidOptions;
   });
   if (!_hasFrames) {
-    _.requestFrames(function (error, frames) {
+    _.requestFrames((error, frames) => {
       var frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));
       }
-      return _frames(function () {
+      return _frames((() => {
         var _i;
         var _len;
         var _results;
@@ -120,16 +123,16 @@ export function h2oPredictInput(_, _go, opt) {
           }
         }
         return _results;
-      }());
+      })());
     });
   }
   if (!_hasModels) {
-    _.requestModels(function (error, models) {
+    _.requestModels((error, models) => {
       var model;
       if (error) {
         return _exception(new Flow.Error('Error fetching model list.', error));
       }
-      return _models(function () {
+      return _models((() => {
         var _i;
         var _len;
         var _results;
@@ -139,17 +142,15 @@ export function h2oPredictInput(_, _go, opt) {
           _results.push(model.model_id.name);
         }
         return _results;
-      }());
+      })());
     });
   }
   if (!_selectedModel()) {
     if (opt.model && lodash.isString(opt.model)) {
-      _.requestModel(opt.model, function (error, model) {
-        return _selectedModel(model);
-      });
+      _.requestModel(opt.model, (error, model) => _selectedModel(model));
     }
   }
-  predict = function () {
+  predict = () => {
     var cs;
     var destinationKey;
     var frameArg;

@@ -5,7 +5,7 @@ export function flow() {
   var Flow = window.Flow;
   var checkSparklingWater;
   var getContextPath;
-  getContextPath = function () {
+  getContextPath = () => {
     window.Flow.ContextPath = '/';
     return $.ajax({
       url: window.referrer,
@@ -18,7 +18,7 @@ export function flow() {
       async: false
     });
   };
-  checkSparklingWater = function (context) {
+  checkSparklingWater = context => {
     context.onSparklingWater = false;
     return $.ajax({
       url: `${window.Flow.ContextPath}3/Metadata/endpoints`,
@@ -46,7 +46,7 @@ export function flow() {
     });
   };
   if ((typeof window !== 'undefined' && window !== null ? window.$ : void 0) != null) {
-    $(function () {
+    $(() => {
       var context;
       context = {};
       getContextPath();

@@ -43,7 +43,7 @@ export function h2oCreateFrameInput(_, _go) {
   _missingFraction = Flow.Dataflow.signal(0.01);
   _responseFactors = Flow.Dataflow.signal(2);
   _hasResponse = Flow.Dataflow.signal(false);
-  createFrame = function () {
+  createFrame = () => {
     var opts;
     opts = {
       dest: _key(),

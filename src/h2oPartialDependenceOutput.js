@@ -20,14 +20,12 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
   _destinationKey = _result.destination_key;
   _modelId = _result.model_id.name;
   _frameId = _result.frame_id.name;
-  renderPlot = function (target, render) {
-    return render(function (error, vis) {
-      if (error) {
-        return console.debug(error);
-      }
-      return target(vis.element);
-    });
-  };
+  renderPlot = (target, render) => render((error, vis) => {
+    if (error) {
+      return console.debug(error);
+    }
+    return target(vis.element);
+  });
   _plots = [];
   _ref = _result.partial_dependence_data;
   for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -40,17 +38,11 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
         plot: Flow.Dataflow.signal(null),
         frame: Flow.Dataflow.signal(null)
       });
-      renderPlot(section.plot, _.plot(function (g) {
-        return g(g.path(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.point(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.from(table));
-      }));
-      renderPlot(section.frame, _.plot(function (g) {
-        return g(g.select(), g.from(table));
-      }));
+      renderPlot(section.plot, _.plot(g => g(g.path(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.point(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
+      renderPlot(section.frame, _.plot(g => g(g.select(), g.from(table))));
     }
   }
-  _viewFrame = function () {
-    return _.insertAndExecuteCell('cs', `requestPartialDependenceData ${flowPrelude.stringify(_destinationKey)}`);
-  };
+  _viewFrame = () => _.insertAndExecuteCell('cs', `requestPartialDependenceData ${flowPrelude.stringify(_destinationKey)}`);
   lodash.defer(_go);
   return {
     destinationKey: _destinationKey,

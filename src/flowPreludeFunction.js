@@ -12,44 +12,32 @@ export function flowPreludeFunction() {
   var _repeat;
   var _typeOf;
   var _words;
-  _isDefined = function (value) {
-    return !lodash.isUndefined(value);
-  };
-  _isTruthy = function (value) {
+  _isDefined = value => !lodash.isUndefined(value);
+  _isTruthy = value => {
     if (value) {
       return true;
     }
     return false;
   };
-  _isFalsy = function (value) {
+  _isFalsy = value => {
     if (value) {
       return false;
     }
     return true;
   };
-  _negative = function (value) {
-    return !value;
-  };
-  _always = function () {
-    return true;
-  };
-  _never = function () {
-    return false;
-  };
-  _copy = function (array) {
-    return array.slice(0);
-  };
-  _remove = function (array, element) {
+  _negative = value => !value;
+  _always = () => true;
+  _never = () => false;
+  _copy = array => array.slice(0);
+  _remove = (array, element) => {
     var index;
     if ((index = lodash.indexOf(array, element)) > -1) {
       return lodash.head(array.splice(index, 1));
     }
     return void 0;
   };
-  _words = function (text) {
-    return text.split(/\s+/);
-  };
-  _repeat = function (count, value) {
+  _words = text => text.split(/\s+/);
+  _repeat = (count, value) => {
     var array;
     var i;
     var _i;
@@ -59,7 +47,7 @@ export function flowPreludeFunction() {
     }
     return array;
   };
-  _typeOf = function (a) {
+  _typeOf = a => {
     var type;
     type = Object.prototype.toString.call(a);
     if (a === null) {
@@ -92,9 +80,7 @@ export function flowPreludeFunction() {
         return type;
     }
   };
-  _deepClone = function (obj) {
-    return JSON.parse(JSON.stringify(obj));
-  };
+  _deepClone = obj => JSON.parse(JSON.stringify(obj));
   return {
     isDefined: _isDefined,
     isTruthy: _isTruthy,

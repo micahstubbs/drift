@@ -8,7 +8,7 @@ export function objectBrowser() {
   var preview;
   var previewArray;
   var previewObject;
-  isExpandable = function (type) {
+  isExpandable = type => {
     switch (type) {
       case 'null':
       case 'undefined':
@@ -24,12 +24,12 @@ export function objectBrowser() {
         return true;
     }
   };
-  previewArray = function (array) {
+  previewArray = array => {
     var element;
     var ellipsis;
     var previews;
     ellipsis = array.length > 5 ? ', ...' : '';
-    previews = function () {
+    previews = (() => {
       var _i;
       var _len;
       var _ref;
@@ -41,10 +41,10 @@ export function objectBrowser() {
         _results.push(preview(element));
       }
       return _results;
-    }();
+    })();
     return `[${previews.join(', ')}${ellipsis}]`;
   };
-  previewObject = function (object) {
+  previewObject = object => {
     var count;
     var ellipsis;
     var key;
@@ -68,7 +68,7 @@ export function objectBrowser() {
     }
     return `{${previews.join(', ')}${ellipsis}}`;
   };
-  preview = function (element, recurse) {
+  preview = (element, recurse) => {
     var type;
     if (recurse == null) {
       recurse = false;
@@ -99,7 +99,7 @@ export function objectBrowser() {
         return type;
     }
   };
-  Flow.ObjectBrowserElement = function (key, object) {
+  Flow.ObjectBrowserElement = (key, object) => {
     var toggle;
     var _canExpand;
     var _expansions;
@@ -109,7 +109,7 @@ export function objectBrowser() {
     _isExpanded = Flow.Dataflow.signal(false);
     _type = flowPrelude.typeOf(object);
     _canExpand = isExpandable(_type);
-    toggle = function () {
+    toggle = () => {
       var expansions;
       var value;
       if (!_canExpand) {
@@ -138,7 +138,7 @@ export function objectBrowser() {
       canExpand: _canExpand
     };
   };
-  Flow.ObjectBrowser = function (_, _go, key, object) {
+  Flow.ObjectBrowser = (_, _go, key, object) => {
     lodash.defer(_go);
     return {
       object: Flow.ObjectBrowserElement(key, object),

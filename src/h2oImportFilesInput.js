@@ -27,16 +27,16 @@ export function h2oImportFilesInput(_, _go) {
   var _specifiedPath;
   _specifiedPath = Flow.Dataflow.signal('');
   _exception = Flow.Dataflow.signal('');
-  _hasErrorMessage = Flow.Dataflow.lift(_exception, function (exception) {
+  _hasErrorMessage = Flow.Dataflow.lift(_exception, exception => {
     if (exception) {
       return true;
     }
     return false;
   });
-  tryImportFiles = function () {
+  tryImportFiles = () => {
     var specifiedPath;
     specifiedPath = _specifiedPath();
-    return _.requestFileGlob(specifiedPath, -1, function (error, result) {
+    return _.requestFileGlob(specifiedPath, -1, (error, result) => {
       if (error) {
         return _exception(error.stack);
       }
@@ -45,22 +45,16 @@ export function h2oImportFilesInput(_, _go) {
     });
   };
   _importedFiles = Flow.Dataflow.signals([]);
-  _importedFileCount = Flow.Dataflow.lift(_importedFiles, function (files) {
+  _importedFileCount = Flow.Dataflow.lift(_importedFiles, files => {
     if (files.length) {
       return `Found ${Flow.Util.describeCount(files.length, 'file')}:`;
     }
     return '';
   });
-  _hasImportedFiles = Flow.Dataflow.lift(_importedFiles, function (files) {
-    return files.length > 0;
-  });
-  _hasUnselectedFiles = Flow.Dataflow.lift(_importedFiles, function (files) {
-    return lodash.some(files, function (file) {
-      return !file.isSelected();
-    });
-  });
+  _hasImportedFiles = Flow.Dataflow.lift(_importedFiles, files => files.length > 0);
+  _hasUnselectedFiles = Flow.Dataflow.lift(_importedFiles, files => lodash.some(files, file => !file.isSelected()));
   _selectedFiles = Flow.Dataflow.signals([]);
-  _selectedFilesDictionary = Flow.Dataflow.lift(_selectedFiles, function (files) {
+  _selectedFilesDictionary = Flow.Dataflow.lift(_selectedFiles, files => {
     var dictionary;
     var file;
     var _i;
@@ -72,26 +66,20 @@ export function h2oImportFilesInput(_, _go) {
     }
     return dictionary;
   });
-  _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, function (files) {
+  _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, files => {
     if (files.length) {
       return `${Flow.Util.describeCount(files.length, 'file')} selected:`;
     }
     return '(No files selected)';
   });
-  _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, function (files) {
-    return files.length > 0;
-  });
-  importFiles = function (files) {
+  _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, files => files.length > 0);
+  importFiles = files => {
     var paths;
-    paths = lodash.map(files, function (file) {
-      return flowPrelude.stringify(file.path);
-    });
+    paths = lodash.map(files, file => flowPrelude.stringify(file.path));
     return _.insertAndExecuteCell('cs', `importFiles [ ${paths.join(',')} ]`);
   };
-  importSelectedFiles = function () {
-    return importFiles(_selectedFiles());
-  };
-  createSelectedFileItem = function (path) {
+  importSelectedFiles = () => importFiles(_selectedFiles());
+  createSelectedFileItem = path => {
     var self;
     return self = {
       path,
@@ -111,7 +99,7 @@ export function h2oImportFilesInput(_, _go) {
       }
     };
   };
-  createFileItem = function (path, isSelected) {
+  createFileItem = (path, isSelected) => {
     var self;
     self = {
       path,
@@ -121,28 +109,18 @@ export function h2oImportFilesInput(_, _go) {
         return self.isSelected(true);
       }
     };
-    Flow.Dataflow.act(self.isSelected, function (isSelected) {
-      return _hasUnselectedFiles(lodash.some(_importedFiles(), function (file) {
-        return !file.isSelected();
-      }));
-    });
+    Flow.Dataflow.act(self.isSelected, isSelected => _hasUnselectedFiles(lodash.some(_importedFiles(), file => !file.isSelected())));
     return self;
   };
-  createFileItems = function (result) {
-    return lodash.map(result.matches, function (path) {
-      return createFileItem(path, _selectedFilesDictionary()[path]);
-    });
-  };
-  listPathHints = function (query, process) {
-    return _.requestFileGlob(query, 10, function (error, result) {
-      if (!error) {
-        return process(lodash.map(result.matches, function (value) {
-          return { value };
-        }));
-      }
-    });
-  };
-  selectAllFiles = function () {
+  createFileItems = result => lodash.map(result.matches, path => createFileItem(path, _selectedFilesDictionary()[path]));
+  listPathHints = (query, process) => _.requestFileGlob(query, 10, (error, result) => {
+    if (!error) {
+      return process(lodash.map(result.matches, value => ({
+        value
+      })));
+    }
+  });
+  selectAllFiles = () => {
     var dict;
     var file;
     var _i;
@@ -165,7 +143,7 @@ export function h2oImportFilesInput(_, _go) {
       }
     }
   };
-  deselectAllFiles = function () {
+  deselectAllFiles = () => {
     var file;
     var _i;
     var _len;
@@ -177,7 +155,7 @@ export function h2oImportFilesInput(_, _go) {
       file.isSelected(false);
     }
   };
-  processImportResult = function (result) {
+  processImportResult = result => {
     var files;
     files = createFileItems(result);
     return _importedFiles(files);

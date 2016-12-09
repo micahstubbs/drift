@@ -7,10 +7,8 @@ export function format() {
   var formatTime;
   var significantDigitsBeforeDecimal;
   var __formatReal;
-  significantDigitsBeforeDecimal = function (value) {
-    return 1 + Math.floor(Math.log(Math.abs(value)) / Math.LN10);
-  };
-  Digits = function (digits, value) {
+  significantDigitsBeforeDecimal = value => 1 + Math.floor(Math.log(Math.abs(value)) / Math.LN10);
+  Digits = (digits, value) => {
     var magnitude;
     var sd;
     if (value === 0) {
@@ -26,20 +24,18 @@ export function format() {
   if (typeof exports === 'undefined' || exports === null) {
     formatTime = d3.time.format('%Y-%m-%d %H:%M:%S');
   }
-  formatDate = function (time) {
+  formatDate = time => {
     if (time) {
       return formatTime(new Date(time));
     }
     return '-';
   };
   __formatReal = {};
-  formatReal = function (precision) {
+  formatReal = precision => {
     var cached;
     var format;
     format = (cached = __formatReal[precision]) ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${precision}f`);
-    return function (value) {
-      return format(value);
-    };
+    return value => format(value);
   };
   Flow.Format = {
     Digits,

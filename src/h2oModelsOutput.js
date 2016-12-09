@@ -21,14 +21,10 @@ export function h2oModelsOutput(_, _go, _models) {
   _modelViews = Flow.Dataflow.signal([]);
   _checkAllModels = Flow.Dataflow.signal(false);
   _checkedModelCount = Flow.Dataflow.signal(0);
-  _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
-    return count > 1;
-  });
-  _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, function (count) {
-    return count > 0;
-  });
+  _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 1);
+  _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
   _isCheckingAll = false;
-  Flow.Dataflow.react(_checkAllModels, function (checkAll) {
+  Flow.Dataflow.react(_checkAllModels, checkAll => {
     var view;
     var views;
     var _i;
@@ -42,20 +38,20 @@ export function h2oModelsOutput(_, _go, _models) {
     _checkedModelCount(checkAll ? views.length : 0);
     _isCheckingAll = false;
   });
-  createModelView = function (model) {
+  createModelView = model => {
     var cloneModel;
     var inspect;
     var predict;
     var view;
     var _isChecked;
     _isChecked = Flow.Dataflow.signal(false);
-    Flow.Dataflow.react(_isChecked, function () {
+    Flow.Dataflow.react(_isChecked, () => {
       var checkedViews;
       var view;
       if (_isCheckingAll) {
         return;
       }
-      checkedViews = function () {
+      checkedViews = (() => {
         var _i;
         var _len;
         var _ref;
@@ -69,22 +65,14 @@ export function h2oModelsOutput(_, _go, _models) {
           }
         }
         return _results;
-      }();
+      })();
       return _checkedModelCount(checkedViews.length);
     });
-    predict = function () {
-      return _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(model.model_id.name)}`);
-    };
-    cloneModel = function () {
-      return alert('Not implemented');
-      // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
-    };
-    view = function () {
-      return _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model.model_id.name)}`);
-    };
-    inspect = function () {
-      return _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(model.model_id.name)}`);
-    };
+    predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(model.model_id.name)}`);
+    cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
+    alert('Not implemented');
+    view = () => _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model.model_id.name)}`);
+    inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(model.model_id.name)}`);
     return {
       key: model.model_id.name,
       algo: model.algo_full_name,
@@ -95,10 +83,8 @@ export function h2oModelsOutput(_, _go, _models) {
       view
     };
   };
-  buildModel = function () {
-    return _.insertAndExecuteCell('cs', 'buildModel');
-  };
-  collectSelectedKeys = function () {
+  buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
+  collectSelectedKeys = () => {
     var view;
     var _i;
     var _len;
@@ -114,26 +100,20 @@ export function h2oModelsOutput(_, _go, _models) {
     }
     return _results;
   };
-  compareModels = function () {
-    return _.insertAndExecuteCell('cs', `inspect getModels ${flowPrelude.stringify(collectSelectedKeys())}`);
-  };
-  predictUsingModels = function () {
-    return _.insertAndExecuteCell('cs', `predict models: ${flowPrelude.stringify(collectSelectedKeys())}`);
-  };
-  deleteModels = function () {
-    return _.confirm('Are you sure you want to delete these models?', {
-      acceptCaption: 'Delete Models',
-      declineCaption: 'Cancel'
-    }, function (accept) {
-      if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${flowPrelude.stringify(collectSelectedKeys())}`);
-      }
-    });
-  };
-  inspectAll = function () {
+  compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${flowPrelude.stringify(collectSelectedKeys())}`);
+  predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${flowPrelude.stringify(collectSelectedKeys())}`);
+  deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
+    acceptCaption: 'Delete Models',
+    declineCaption: 'Cancel'
+  }, accept => {
+    if (accept) {
+      return _.insertAndExecuteCell('cs', `deleteModels ${flowPrelude.stringify(collectSelectedKeys())}`);
+    }
+  });
+  inspectAll = () => {
     var allKeys;
     var view;
-    allKeys = function () {
+    allKeys = (() => {
       var _i;
       var _len;
       var _ref;
@@ -145,10 +125,10 @@ export function h2oModelsOutput(_, _go, _models) {
         _results.push(view.key);
       }
       return _results;
-    }();
+    })();
     return _.insertAndExecuteCell('cs', `inspect getModels ${flowPrelude.stringify(allKeys)}`);
   };
-  initialize = function (models) {
+  initialize = models => {
     _modelViews(lodash.map(models, createModelView));
     return lodash.defer(_go);
   };

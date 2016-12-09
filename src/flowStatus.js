@@ -9,10 +9,8 @@ export function flowStatus(_) {
   defaultMessage = 'Ready';
   _message = Flow.Dataflow.signal(defaultMessage);
   _connections = Flow.Dataflow.signal(0);
-  _isBusy = Flow.Dataflow.lift(_connections, function (connections) {
-    return connections > 0;
-  });
-  onStatus = function (category, type, data) {
+  _isBusy = Flow.Dataflow.lift(_connections, connections => connections > 0);
+  onStatus = (category, type, data) => {
     var connections;
     console.debug('Status:', category, type, data);
     switch (category) {
@@ -31,9 +29,7 @@ export function flowStatus(_) {
         }
     }
   };
-  Flow.Dataflow.link(_.ready, function () {
-    return Flow.Dataflow.link(_.status, onStatus);
-  });
+  Flow.Dataflow.link(_.ready, () => Flow.Dataflow.link(_.status, onStatus));
   return {
     message: _message,
     connections: _connections,

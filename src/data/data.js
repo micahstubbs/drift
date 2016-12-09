@@ -18,11 +18,9 @@ export function data() {
   var _prototypeId;
   var __slice = [].slice;
   _prototypeId = 0;
-  nextPrototypeName = function () {
-    return `Map${++_prototypeId}`;
-  };
+  nextPrototypeName = () => `Map${++_prototypeId}`;
   _prototypeCache = {};
-  createCompiledPrototype = function (attrs) {
+  createCompiledPrototype = attrs => {
     var attr;
     var cacheKey;
     var i;
@@ -34,7 +32,7 @@ export function data() {
     if (proto = _prototypeCache[cacheKey]) {
       return proto;
     }
-    params = function () {
+    params = (() => {
       var _i;
       var _ref;
       var _results;
@@ -43,8 +41,8 @@ export function data() {
         _results.push(`a${i}`);
       }
       return _results;
-    }();
-    inits = function () {
+    })();
+    inits = (() => {
       var _i;
       var _len;
       var _results;
@@ -54,13 +52,13 @@ export function data() {
         _results.push(`this[${JSON.stringify(attr)}]=a${i};`);
       }
       return _results;
-    }();
+    })();
     prototypeName = nextPrototypeName();
     return _prototypeCache[cacheKey] = new Function(`function ${prototypeName}(${params.join(',')}){${inits.join('')}} return ${prototypeName};`)();
   };
-  createRecordConstructor = function (variables) {
+  createRecordConstructor = variables => {
     var variable;
-    return createCompiledPrototype(function () {
+    return createCompiledPrototype((() => {
       var _i;
       var _len;
       var _results;
@@ -70,9 +68,9 @@ export function data() {
         _results.push(variable.label);
       }
       return _results;
-    }());
+    })());
   };
-  createTable = function (opts) {
+  createTable = opts => {
     var description;
     var expand;
     var fill;
@@ -93,8 +91,8 @@ export function data() {
       variable = variables[_i];
       schema[variable.label] = variable;
     }
-    fill = function (i, go) {
-      _fill(i, function (error, result) {
+    fill = (i, go) => {
+      _fill(i, (error, result) => {
         var index;
         var startIndex;
         var value;
@@ -111,7 +109,7 @@ export function data() {
         return go(null);
       });
     };
-    expand = function (...args) {
+    expand = (...args) => {
       var type;
       var types;
       var _j;
@@ -138,7 +136,7 @@ export function data() {
       _is_table_: true
     };
   };
-  includeZeroInRange = function (range) {
+  includeZeroInRange = range => {
     var hi;
     var lo;
     lo = range[0], hi = range[1];
@@ -155,7 +153,7 @@ export function data() {
     }
     return range;
   };
-  combineRanges = function (...args) {
+  combineRanges = (...args) => {
     var hi;
     var lo;
     var range;
@@ -180,7 +178,7 @@ export function data() {
       hi
     ];
   };
-  computeRange = function (rows, attr) {
+  computeRange = (rows, attr) => {
     var hi;
     var lo;
     var row;
@@ -210,7 +208,7 @@ export function data() {
       1
     ];
   };
-  permute = function (array, indices) {
+  permute = (array, indices) => {
     var i;
     var index;
     var permuted;
@@ -223,23 +221,21 @@ export function data() {
     }
     return permuted;
   };
-  createAbstractVariable = function (_label, _type, _domain, _format, _read) {
-    return {
-      label: _label,
-      type: _type,
-      domain: _domain || [],
-      format: _format || lodash.identity,
-      read: _read
-    };
-  };
-  createNumericVariable = function (_label, _domain, _format, _read) {
+  createAbstractVariable = (_label, _type, _domain, _format, _read) => ({
+    label: _label,
+    type: _type,
+    domain: _domain || [],
+    format: _format || lodash.identity,
+    read: _read
+  });
+  createNumericVariable = (_label, _domain, _format, _read) => {
     var self;
     self = createAbstractVariable(_label, 'Number', _domain || [
       Number.POSITIVE_INFINITY,
       Number.NEGATIVE_INFINITY
     ], _format, _read);
     if (!self.read) {
-      self.read = function (datum) {
+      self.read = datum => {
         if (datum < self.domain[0]) {
           self.domain[0] = datum;
         }
@@ -251,13 +247,13 @@ export function data() {
     }
     return self;
   };
-  createVariable = function (_label, _type, _domain, _format, _read) {
+  createVariable = (_label, _type, _domain, _format, _read) => {
     if (_type === 'Number') {
       return createNumericVariable(_label, _domain, _format, _read);
     }
     return createAbstractVariable(_label, _type, _domain, _format, _read);
   };
-  createFactor = function (_label, _domain, _format, _read) {
+  createFactor = (_label, _domain, _format, _read) => {
     var level;
     var self;
     var _i;
@@ -276,7 +272,7 @@ export function data() {
       }
     }
     if (!self.read) {
-      self.read = function (datum) {
+      self.read = datum => {
         var id;
         level = datum === void 0 || datum === null ? 'null' : datum;
         if (void 0 === (id = _levels[level])) {
@@ -288,7 +284,7 @@ export function data() {
     }
     return self;
   };
-  factor = function (array) {
+  factor = array => {
     var data;
     var domain;
     var i;

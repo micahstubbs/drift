@@ -14,7 +14,7 @@ export function coreUtils() {
   var padTime;
   var sanitizeName;
   var splitTime;
-  describeCount = function (count, singular, plural) {
+  describeCount = (count, singular, plural) => {
     if (!plural) {
       plural = `${singular}s`;
     }
@@ -27,10 +27,8 @@ export function coreUtils() {
         return `${count} ${plural}`;
     }
   };
-  fromNow = function (date) {
-    return moment(date).fromNow();
-  };
-  formatBytes = function (bytes) {
+  fromNow = date => moment(date).fromNow();
+  formatBytes = bytes => {
     var i;
     var sizes;
     sizes = [
@@ -46,10 +44,8 @@ export function coreUtils() {
     i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
     return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
   };
-  padTime = function (n) {
-    return `${(n < 10 ? '0' : '')}${n}`;
-  };
-  splitTime = function (s) {
+  padTime = n => `${(n < 10 ? '0' : '')}${n}`;
+  splitTime = s => {
     var hrs;
     var mins;
     var ms;
@@ -67,7 +63,7 @@ export function coreUtils() {
       ms
     ];
   };
-  formatMilliseconds = function (s) {
+  formatMilliseconds = s => {
     var hrs;
     var mins;
     var ms;
@@ -76,10 +72,8 @@ export function coreUtils() {
     _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
     return `${padTime(hrs)}:${padTime(mins)}:${padTime(secs)}.${ms}`;
   };
-  format1d0 = function (n) {
-    return Math.round(n * 10) / 10;
-  };
-  formatElapsedTime = function (s) {
+  format1d0 = n => Math.round(n * 10) / 10;
+  formatElapsedTime = s => {
     var hrs;
     var mins;
     var ms;
@@ -95,19 +89,11 @@ export function coreUtils() {
     }
     return `${ms}ms`;
   };
-  formatClockTime = function (date) {
-    return moment(date).format('h:mm:ss a');
-  };
+  formatClockTime = date => moment(date).format('h:mm:ss a');
   EOL = '\n';
-  multilineTextToHTML = function (text) {
-    return lodash.map(text.split(EOL), function (str) {
-      return lodash.escape(str);
-    }).join('<br/>');
-  };
-  sanitizeName = function (name) {
-    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
-  };
-  highlight = function (code, lang) {
+  multilineTextToHTML = text => lodash.map(text.split(EOL), str => lodash.escape(str)).join('<br/>');
+  sanitizeName = name => name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
+  highlight = (code, lang) => {
     if (window.hljs) {
       return window.hljs.highlightAuto(code, [lang]).value;
     }

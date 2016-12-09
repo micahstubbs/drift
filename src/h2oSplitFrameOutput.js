@@ -9,12 +9,12 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
   var key;
   var _frames;
   var _ratios;
-  computeRatios = function (sourceRatios) {
+  computeRatios = sourceRatios => {
     var ratio;
     var ratios;
     var total;
     total = 0;
-    ratios = (function () {
+    ratios = ((() => {
       var _i;
       var _len;
       var _results;
@@ -25,16 +25,14 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
         _results.push(ratio);
       }
       return _results;
-    }());
+    })());
     ratios.push(1 - total);
     return ratios;
   };
-  createFrameView = function (key, ratio) {
+  createFrameView = (key, ratio) => {
     var self;
     var view;
-    view = function () {
-      return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(key)}`);
-    };
+    view = () => _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(key)}`);
     return self = {
       key,
       ratio,
@@ -42,7 +40,7 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     };
   };
   _ratios = computeRatios(_splitFrameResult.ratios);
-  _frames = (function () {
+  _frames = ((() => {
     var _i;
     var _len;
     var _ref;
@@ -54,7 +52,7 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
       _results.push(createFrameView(key, _ratios[index]));
     }
     return _results;
-  }());
+  })());
   lodash.defer(_go);
   return {
     frames: _frames,

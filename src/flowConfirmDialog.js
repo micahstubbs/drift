@@ -11,12 +11,8 @@ export function flowConfirmDialog(_, _message, _opts, _go) {
     acceptCaption: 'Yes',
     declineCaption: 'No'
   });
-  accept = function () {
-    return _go(true);
-  };
-  decline = function () {
-    return _go(false);
-  };
+  accept = () => _go(true);
+  decline = () => _go(false);
   return {
     title: _opts.title,
     acceptCaption: _opts.acceptCaption,

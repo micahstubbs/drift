@@ -4,10 +4,8 @@ export function h2oNetworkTestOutput(_, _go, _testResult) {
   var render;
   var _result;
   _result = Flow.Dataflow.signal(null);
-  render = _.plot(function (g) {
-    return g(g.select(), g.from(_.inspect('result', _testResult)));
-  });
-  render(function (error, vis) {
+  render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
+  render((error, vis) => {
     if (error) {
       return console.debug(error);
     }

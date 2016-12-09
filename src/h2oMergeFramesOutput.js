@@ -7,9 +7,7 @@ export function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
   var _frameKey;
   var _viewFrame;
   _frameKey = _mergeFramesResult.key;
-  _viewFrame = function () {
-    return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(_frameKey)}`);
-  };
+  _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(_frameKey)}`);
   lodash.defer(_go);
   return {
     frameKey: _frameKey,

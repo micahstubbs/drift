@@ -28,38 +28,28 @@ export function h2oMergeFramesInput(_, _go) {
   _rightColumns = Flow.Dataflow.signals([]);
   _selectedRightColumn = Flow.Dataflow.signal(null);
   _includeAllRightRows = Flow.Dataflow.signal(false);
-  _canMerge = Flow.Dataflow.lift(_selectedLeftFrame, _selectedLeftColumn, _selectedRightFrame, _selectedRightColumn, function (lf, lc, rf, rc) {
-    return lf && lc && rf && rc;
-  });
-  Flow.Dataflow.react(_selectedLeftFrame, function (frameKey) {
+  _canMerge = Flow.Dataflow.lift(_selectedLeftFrame, _selectedLeftColumn, _selectedRightFrame, _selectedRightColumn, (lf, lc, rf, rc) => lf && lc && rf && rc);
+  Flow.Dataflow.react(_selectedLeftFrame, frameKey => {
     if (frameKey) {
-      return _.requestFrameSummaryWithoutData(frameKey, function (error, frame) {
-        return _leftColumns(lodash.map(frame.columns, function (column, i) {
-          return {
-            label: column.label,
-            index: i
-          };
-        }));
-      });
+      return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _leftColumns(lodash.map(frame.columns, (column, i) => ({
+        label: column.label,
+        index: i
+      }))));
     }
     _selectedLeftColumn(null);
     return _leftColumns([]);
   });
-  Flow.Dataflow.react(_selectedRightFrame, function (frameKey) {
+  Flow.Dataflow.react(_selectedRightFrame, frameKey => {
     if (frameKey) {
-      return _.requestFrameSummaryWithoutData(frameKey, function (error, frame) {
-        return _rightColumns(lodash.map(frame.columns, function (column, i) {
-          return {
-            label: column.label,
-            index: i
-          };
-        }));
-      });
+      return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _rightColumns(lodash.map(frame.columns, (column, i) => ({
+        label: column.label,
+        index: i
+      }))));
     }
     _selectedRightColumn(null);
     return _rightColumns([]);
   });
-  _merge = function () {
+  _merge = () => {
     var cs;
     if (!_canMerge()) {
       return;
@@ -67,12 +57,12 @@ export function h2oMergeFramesInput(_, _go) {
     cs = `mergeFrames ${flowPrelude.stringify(_destinationKey())}, ${flowPrelude.stringify(_selectedLeftFrame())}, ${_selectedLeftColumn().index}, ${_includeAllLeftRows()}, ${flowPrelude.stringify(_selectedRightFrame())}, ${_selectedRightColumn().index}, ${_includeAllRightRows()}`;
     return _.insertAndExecuteCell('cs', cs);
   };
-  _.requestFrames(function (error, frames) {
+  _.requestFrames((error, frames) => {
     var frame;
     if (error) {
       return _exception(new Flow.Error('Error fetching frame list.', error));
     }
-    return _frames(function () {
+    return _frames((() => {
       var _i;
       var _len;
       var _results;
@@ -84,7 +74,7 @@ export function h2oMergeFramesInput(_, _go) {
         }
       }
       return _results;
-    }());
+    })());
   });
   lodash.defer(_go);
   return {

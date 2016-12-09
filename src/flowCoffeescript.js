@@ -8,13 +8,13 @@ export function flowCoffeescript(_, guid, sandbox) {
   var render;
   var _kernel;
   _kernel = flowCoffeescriptKernel();
-  print = function (arg) {
+  print = arg => {
     if (arg !== print) {
       sandbox.results[guid].outputs(arg);
     }
     return print;
   };
-  isRoutine = function (f) {
+  isRoutine = f => {
     var name;
     var routine;
     var _ref;
@@ -29,7 +29,7 @@ export function flowCoffeescript(_, guid, sandbox) {
     }
     return false;
   };
-  render = function (input, output) {
+  render = (input, output) => {
     var cellResult;
     var evaluate;
     var outputBuffer;
@@ -38,27 +38,21 @@ export function flowCoffeescript(_, guid, sandbox) {
       result: Flow.Dataflow.signal(null),
       outputs: outputBuffer = Flow.Async.createBuffer([])
     };
-    evaluate = function (ft) {
+    evaluate = ft => {
       if (ft != null ? ft.isFuture : void 0) {
-        return ft(function (error, result) {
+        return ft((error, result) => {
           var _ref;
           if (error) {
             output.error(new Flow.Error('Error evaluating cell', error));
             return output.end();
           }
           if (result != null ? (_ref = result._flow_) != null ? _ref.render : void 0 : void 0) {
-            return output.data(result._flow_.render(function () {
-              return output.end();
-            }));
+            return output.data(result._flow_.render(() => output.end()));
           }
-          return output.data(Flow.ObjectBrowser(_, function () {
-            return output.end();
-          }('output', result)));
+          return output.data(Flow.ObjectBrowser(_, (() => output.end())('output', result)));
         });
       }
-      return output.data(Flow.ObjectBrowser(_, function () {
-        return output.end();
-      }, 'output', ft));
+      return output.data(Flow.ObjectBrowser(_, () => output.end(), 'output', ft));
     };
     outputBuffer.subscribe(evaluate);
     tasks = [
@@ -72,7 +66,7 @@ export function flowCoffeescript(_, guid, sandbox) {
       _kernel.compileJavascript,
       _kernel.executeJavascript(sandbox, print)
     ];
-    return Flow.Async.pipe(tasks)(input, function (error) {
+    return Flow.Async.pipe(tasks)(input, error => {
       var result;
       if (error) {
         output.error(error);
@@ -84,9 +78,7 @@ export function flowCoffeescript(_, guid, sandbox) {
         }
         return evaluate(result);
       }
-      return output.close(Flow.ObjectBrowser(_, function () {
-        return output.end();
-      }, 'result', result));
+      return output.close(Flow.ObjectBrowser(_, () => output.end(), 'result', result));
     });
   };
   render.isCode = true;
