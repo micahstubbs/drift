@@ -116,7 +116,7 @@
       deepClone: _deepClone,
       stringify: JSON.stringify
     };
-  };
+  }
 
   const flowPrelude$2 = flowPreludeFunction();
 
@@ -1763,7 +1763,7 @@
       tables: lodash.map(_tables, createTableView),
       template: 'flow-inspects-output'
     };
-  };
+  }
 
   const flowPrelude$8 = flowPreludeFunction();
 
@@ -1787,7 +1787,7 @@
       plot,
       template: 'flow-inspect-output'
     };
-  };
+  }
 
   function h2oPlotOutput(_, _go, _plot) {
     var lodash = window._;
@@ -1796,7 +1796,7 @@
       plot: _plot,
       template: 'flow-plot-output'
     };
-  };
+  }
 
   const flowPrelude$9 = flowPreludeFunction();
 
@@ -1851,7 +1851,7 @@
       canPlot: _canPlot,
       template: 'flow-plot-input'
     };
-  };
+  }
 
   function h2oCloudOutput(_, _go, _cloud) {
     var lodash = window._;
@@ -2086,7 +2086,7 @@
       toggleExpansion,
       template: 'flow-cloud-output'
     };
-  };
+  }
 
   function h2oTimelineOutput(_, _go, _timeline) {
     var lodash = window._;
@@ -2204,7 +2204,7 @@
       refresh,
       template: 'flow-timeline-output'
     };
-  };
+  }
 
   function h2oStackTraceOutput(_, _go, _stackTrace) {
     var lodash = window._;
@@ -2269,7 +2269,7 @@
       activeNode: _activeNode,
       template: 'flow-stacktrace-output'
     };
-  };
+  }
 
   function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
     var lodash = window._;
@@ -2349,7 +2349,7 @@
       refresh,
       template: 'flow-log-file-output'
     };
-  };
+  }
 
   function h2oNetworkTestOutput(_, _go, _testResult) {
     var lodash = window._;
@@ -2371,7 +2371,7 @@
       result: _result,
       template: 'flow-network-test-output'
     };
-  };
+  }
 
   function h2oProfileOutput(_, _go, _profile) {
     var lodash = window._;
@@ -2433,7 +2433,7 @@
       activeNode: _activeNode,
       template: 'flow-profile-output'
     };
-  };
+  }
 
   const flowPrelude$10 = flowPreludeFunction();
 
@@ -2573,7 +2573,7 @@
       checkAllFrames: _checkAllFrames,
       template: 'flow-frames-output'
     };
-  };
+  }
 
   const flowPrelude$11 = flowPreludeFunction();
 
@@ -2636,7 +2636,7 @@
       frames: _frames,
       template: 'flow-split-frame-output'
     };
-  };
+  }
 
   const flowPrelude$12 = flowPreludeFunction();
 
@@ -2655,7 +2655,7 @@
       viewFrame: _viewFrame,
       template: 'flow-merge-frames-output'
     };
-  };
+  }
 
   const flowPrelude$13 = flowPreludeFunction();
 
@@ -2718,7 +2718,7 @@
       viewFrame: _viewFrame,
       template: 'flow-partial-dependence-output'
     };
-  };
+  }
 
   const flowPrelude$14 = flowPreludeFunction();
 
@@ -2809,13 +2809,13 @@
       exception: _exception,
       template: 'flow-jobs-output'
     };
-  };
+  }
 
   function h2oCancelJobOutput(_, _go, _cancellation) {
     var lodash = window._;
     lodash.defer(_go);
     return { template: 'flow-cancel-job-output' };
-  };
+  }
 
   function h2oDeleteObjectsOutput(_, _go, _keys) {
     var lodash = window._;
@@ -2825,7 +2825,7 @@
       keys: _keys,
       template: 'flow-delete-objects-output'
     };
-  };
+  }
 
   const flowPrelude$15 = flowPreludeFunction();
 
@@ -3514,7 +3514,7 @@
       isLive: _isLive,
       template: 'flow-model-output'
     };
-  };
+  }
 
   const flowPrelude$16 = flowPreludeFunction();
 
@@ -3723,7 +3723,7 @@
       inspectAll,
       template: 'flow-grid-output'
     };
-  };
+  }
 
   const flowPrelude$17 = flowPreludeFunction();
 
@@ -3760,7 +3760,7 @@
       buildModel,
       template: 'flow-grids-output'
     };
-  };
+  }
 
   const flowPrelude$18 = flowPreludeFunction();
 
@@ -3930,7 +3930,7 @@
       inspect: inspectAll,
       template: 'flow-models-output'
     };
-  };
+  }
 
   const flowPrelude$19 = flowPreludeFunction();
 
@@ -4096,7 +4096,7 @@
       rocCurve: _rocCurve,
       template: 'flow-predicts-output'
     };
-  };
+  }
 
   const flowPrelude$20 = flowPreludeFunction();
 
@@ -4189,7 +4189,7 @@
       canInspect: _canInspect,
       template: 'flow-predict-output'
     };
-  };
+  }
 
   function h2oH2OFrameOutput(_, _go, _result) {
     var lodash = window._;
@@ -4206,7 +4206,7 @@
       h2oframeView: _h2oframeView,
       template: 'flow-h2oframe-output'
     };
-  };
+  }
 
   const flowPrelude$21 = flowPreludeFunction();
 
@@ -4381,7 +4381,7 @@
       deleteFrame,
       template: 'flow-frame-output'
     };
-  };
+  }
 
   const flowPrelude$22 = flowPreludeFunction();
 
@@ -4447,13 +4447,13 @@
       inspect,
       template: 'flow-column-summary-output'
     };
-  };
+  }
 
   function h2oExportFrameOutput(_, _go, result) {
     var lodash = window._;
     lodash.defer(_go);
     return { template: 'flow-export-frame-output' };
-  };
+  }
 
   const flowPrelude$23 = flowPreludeFunction();
 
@@ -4469,13 +4469,13 @@
       viewFrame,
       template: 'flow-bind-frames-output'
     };
-  };
+  }
 
   function h2oExportModelOutput(_, _go, result) {
     var lodash = window._;
     lodash.defer(_go);
     return { template: 'flow-export-model-output' };
-  };
+  }
 
   const flowPrelude$24 = flowPreludeFunction();
 
@@ -4516,7 +4516,7 @@
         return view.template;
       }
     };
-  };
+  }
 
   function h2oRDDsOutput(_, _go, _rDDs) {
     var lodash = window._;
@@ -4538,7 +4538,7 @@
       hasRDDs: _rDDs.length > 0,
       template: 'flow-rdds-output'
     };
-  };
+  }
 
   function h2oDataFramesOutput(_, _go, _dataFrames) {
     var lodash = window._;
@@ -4559,7 +4559,7 @@
       hasDataFrames: _dataFrames.length > 0,
       template: 'flow-dataframes-output'
     };
-  };
+  }
 
   function h2oScalaCodeOutput(_, _go, _result) {
     var lodash = window._;
@@ -4593,7 +4593,7 @@
       scalaCodeView: _scalaCodeView,
       template: 'flow-scala-code-output'
     };
-  };
+  }
 
   function h2oScalaIntpOutput(_, _go, _result) {
     var lodash = window._;
@@ -4610,7 +4610,7 @@
       scalaIntpView: _scalaIntpView,
       template: 'flow-scala-intp-output'
     };
-  };
+  }
 
   function h2oAssist(_, _go, _items) {
     var lodash = window._;
@@ -4642,7 +4642,7 @@
       }(),
       template: 'flow-assist'
     };
-  };
+  }
 
   const flowPrelude$25 = flowPreludeFunction();
 
@@ -4846,7 +4846,7 @@
       importSelectedFiles,
       template: 'flow-import-files'
     };
-  };
+  }
 
   function h2oAutoModelInput(_, _go, opts) {
     var lodash = window._;
@@ -4957,7 +4957,7 @@
       buildModel,
       template: 'flow-automodel-input'
     };
-  };
+  }
 
   const flowPrelude$26 = flowPreludeFunction();
 
@@ -5172,7 +5172,7 @@
       exemplarIndex: _exemplarIndex,
       template: 'flow-predict-input'
     };
-  };
+  }
 
   const flowPrelude$27 = flowPreludeFunction();
 
@@ -5267,7 +5267,7 @@
       createFrame,
       template: 'flow-create-frame-input'
     };
-  };
+  }
 
   const flowPrelude$28 = flowPreludeFunction();
 
@@ -5493,7 +5493,7 @@
       validationMessage: _validationMessage,
       template: 'flow-split-frame-input'
     };
-  };
+  }
 
   const flowPrelude$29 = flowPreludeFunction();
 
@@ -5598,7 +5598,7 @@
       canMerge: _canMerge,
       template: 'flow-merge-frames-input'
     };
-  };
+  }
 
   const flowPrelude$30 = flowPreludeFunction();
 
@@ -5687,7 +5687,7 @@
       canCompute: _canCompute,
       template: 'flow-partial-dependence-input'
     };
-  };
+  }
 
   const flowPrelude$31 = flowPreludeFunction();
 
@@ -5739,7 +5739,7 @@
       exportFrame,
       template: 'flow-export-frame-input'
     };
-  };
+  }
 
   const flowPrelude$32 = flowPreludeFunction();
 
@@ -5769,7 +5769,7 @@
       importModel,
       template: 'flow-import-model-input'
     };
-  };
+  }
 
   const flowPrelude$33 = flowPreludeFunction();
 
@@ -5824,7 +5824,7 @@
       exportModel,
       template: 'flow-export-model-input'
     };
-  };
+  }
 
   function h2oNoAssist(_, _go) {
     var lodash = window._;
@@ -5835,7 +5835,7 @@
       },
       template: 'flow-no-assist'
     };
-  };
+  }
 
   const flowPrelude$6=flowPreludeFunction();function routines(){var lodash=window._;var Flow=window.Flow;var combineTables;var computeFalsePositiveRate;var computeTruePositiveRate;var concatArrays;var convertColumnToVector;var convertTableToFrame;var createArrays;var createDataframe;var createFactor;var createList;var createTempKey;var createVector;var format4f;var format6fi;var formatConfusionMatrix;var formulateGetPredictionsOrigin;var getTwoDimData;var lightning;var parseAndFormatArray;var parseAndFormatObjectArray;var parseNaNs;var parseNulls;var parseNumbers;var repeatValues;var _assistance;var __slice=[].slice;lightning=(typeof window!=='undefined'&&window!==null?window.plot:void 0)!=null?window.plot:{};if(lightning.settings){lightning.settings.axisLabelFont='11px "Source Code Pro", monospace';lightning.settings.axisTitleFont='bold 11px "Source Code Pro", monospace';}createTempKey=function(){return`flow_${Flow.Util.uuid().replace(/\-/g,'')}`;};createVector=lightning.createVector;createFactor=lightning.createFactor;createList=lightning.createList;createDataframe=lightning.createFrame;_assistance={importFiles:{description:'Import file(s) into H<sub>2</sub>O',icon:'files-o'},getFrames:{description:'Get a list of frames in H<sub>2</sub>O',icon:'table'},splitFrame:{description:'Split a frame into two or more frames',icon:'scissors'},mergeFrames:{description:'Merge two frames into one',icon:'link'},getModels:{description:'Get a list of models in H<sub>2</sub>O',icon:'cubes'},getGrids:{description:'Get a list of grid search results in H<sub>2</sub>O',icon:'th'},getPredictions:{description:'Get a list of predictions in H<sub>2</sub>O',icon:'bolt'},getJobs:{description:'Get a list of jobs running in H<sub>2</sub>O',icon:'tasks'},buildModel:{description:'Build a model',icon:'cube'},importModel:{description:'Import a saved model',icon:'cube'},predict:{description:'Make a prediction',icon:'bolt'}};parseNumbers=function(source){var i;var target;var value;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){value=source[i];target[i]=value==='NaN'?void 0:value==='Infinity'?Number.POSITIVE_INFINITY:value==='-Infinity'?Number.NEGATIVE_INFINITY:value;}return target;};convertColumnToVector=function(column,data){switch(column.type){case'byte':case'short':case'int':case'integer':case'long':return createVector(column.name,'Number',parseNumbers(data));case'float':case'double':return createVector(column.name,'Number',parseNumbers(data),format4f);case'string':return createFactor(column.name,'String',data);case'matrix':return createList(column.name,data,formatConfusionMatrix);default:return createList(column.name,data);}};convertTableToFrame=function(table,tableName,metadata){var column;var i;var vectors;vectors=function(){var _i;var _len;var _ref;var _results;_ref=table.columns;_results=[];for(i=_i=0,_len=_ref.length;_i<_len;i=++_i){column=_ref[i];_results.push(convertColumnToVector(column,table.data[i]));}return _results;}();return createDataframe(tableName,vectors,lodash.range(table.rowcount),null,metadata);};getTwoDimData=function(table,columnName){var columnIndex;columnIndex=lodash.findIndex(table.columns,function(column){return column.name===columnName;});if(columnIndex>=0){return table.data[columnIndex];}return void 0;};format4f=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(4).replace(/\.0+$/,'.0');}return number;};format6fi=function(number){if(number){if(number==='NaN'){return void 0;}return number.toFixed(6).replace(/\.0+$/,'');}return number;};combineTables=function(tables){var columnCount;var columnData;var data;var element;var i;var index;var leader;var rowCount;var table;var _i;var _j;var _k;var _l;var _len;var _len1;var _len2;var _ref;leader=lodash.head(tables);rowCount=0;columnCount=leader.data.length;data=new Array(columnCount);for(_i=0,_len=tables.length;_i<_len;_i++){table=tables[_i];rowCount+=table.rowcount;}for(i=_j=0;columnCount>=0?_j<columnCount:_j>columnCount;i=columnCount>=0?++_j:--_j){data[i]=columnData=new Array(rowCount);index=0;for(_k=0,_len1=tables.length;_k<_len1;_k++){table=tables[_k];_ref=table.data[i];for(_l=0,_len2=_ref.length;_l<_len2;_l++){element=_ref[_l];columnData[index++]=element;}}}return{name:leader.name,columns:leader.columns,data,rowcount:rowCount};};createArrays=function(count,length){var i;var _i;var _results;_results=[];for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){_results.push(new Array(length));}return _results;};parseNaNs=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element==='NaN'?void 0:element;}return target;};parseNulls=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?element:void 0;}return target;};parseAndFormatArray=function(source){var element;var i;var target;var _i;var _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?lodash.isNumber(element)?format6fi(element):element:void 0;}return target;};parseAndFormatObjectArray=function(source){var element;var i;var target;var _i;var _len;var _ref;var _ref1;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?((_ref=element.__meta)!=null?_ref.schema_type:void 0)==='Key<Model>'?`<a href=\'#\' data-type=\'model\' data-key=${flowPrelude$6.stringify(element.name)}>${lodash.escape(element.name)}</a>`:((_ref1=element.__meta)!=null?_ref1.schema_type:void 0)==='Key<Frame>'?`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$6.stringify(element.name)}>${lodash.escape(element.name)}</a>`:element:void 0;}return target;};repeatValues=function(count,value){var i;var target;var _i;target=new Array(count);for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){target[i]=value;}return target;};concatArrays=function(arrays){var a;switch(arrays.length){case 0:return[];case 1:return lodash.head(arrays);default:a=lodash.head(arrays);return a.concat(...lodash.tail(arrays));}};computeTruePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return tp/(tp+fn);};computeFalsePositiveRate=function(cm){var fn;var fp;var tn;var tp;var _ref;var _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return fp/(fp+tn);};formatConfusionMatrix=function(cm){var domain;var fn;var fnr;var fp;var fpr;var normal;var strong;var table;var tbody;var tn;var tp;var tr;var yellow;var _ref;var _ref1;var _ref2;var _ref3;_ref=cm.matrix,(_ref1=_ref[0],tn=_ref1[0],fp=_ref1[1]),(_ref2=_ref[1],fn=_ref2[0],tp=_ref2[1]);fnr=fn/(tp+fn);fpr=fp/(fp+tn);domain=cm.domain;_ref3=Flow.HTML.template('table.flow-matrix','tbody','tr','td.strong.flow-center','td','td.bg-yellow'),table=_ref3[0],tbody=_ref3[1],tr=_ref3[2],strong=_ref3[3],normal=_ref3[4],yellow=_ref3[5];return table([tbody([tr([strong('Actual/Predicted'),strong(domain[0]),strong(domain[1]),strong('Error'),strong('Rate')]),tr([strong(domain[0]),yellow(tn),normal(fp),normal(format4f(fpr)),normal(`${fp} / ${fp+tn}`)]),tr([strong(domain[1]),normal(fn),yellow(tp),normal(format4f(fnr)),normal(`${fn} / ${tp+fn}`)]),tr([strong('Total'),strong(tn+fn),strong(tp+fp),strong(format4f((fn+fp)/(fp+tn+tp+fn))),strong(`${fn}${fp} / ${fp+tn+tp+fn}`)])])]);};formulateGetPredictionsOrigin=function(opts){var frameKey;var modelKey;var opt;var sanitizedOpt;var sanitizedOpts;if(lodash.isArray(opts)){sanitizedOpts=function(){var _i;var _len;var _results;_results=[];for(_i=0,_len=opts.length;_i<_len;_i++){opt=opts[_i];sanitizedOpt={};if(opt.model){sanitizedOpt.model=opt.model;}if(opt.frame){sanitizedOpt.frame=opt.frame;}_results.push(sanitizedOpt);}return _results;}();return`getPredictions ${flowPrelude$6.stringify(sanitizedOpts)}`;}modelKey=opts.model,frameKey=opts.frame;if(modelKey&&frameKey){return`getPredictions model: ${flowPrelude$6.stringify(modelKey)}, frame: ${flowPrelude$6.stringify(frameKey)}`;}else if(modelKey){return`getPredictions model: ${flowPrelude$6.stringify(modelKey)}`;}else if(frameKey){return`getPredictions frame: ${flowPrelude$6.stringify(frameKey)}`;}return'getPredictions()';};H2O.Routines=function(_){var asDataFrame;var asH2OFrameFromDF;var asH2OFrameFromRDD;var assist;var attrname;var bindFrames;var blacklistedAttributesBySchema;var buildAutoModel;var buildModel;var buildPartialDependence;var cancelJob;var changeColumnType;var computeSplits;var createFrame;var createGui;var createPlot;var deleteAll;var deleteFrame;var deleteFrames;var deleteModel;var deleteModels;var dump;var dumpFuture;var exportFrame;var exportModel;var extendAsDataFrame;var extendAsH2OFrame;var extendBindFrames;var extendCancelJob;var extendCloud;var extendColumnSummary;var extendDataFrames;var extendDeletedKeys;var extendExportFrame;var extendExportModel;var extendFrame;var extendFrameData;var extendFrameSummary;var extendFrames;var extendGrid;var extendGrids;var extendGuiForm;var extendImportModel;var extendImportResults;var extendJob;var extendJobs;var extendLogFile;var extendMergeFramesResult;var extendModel;var extendModels;var extendNetworkTest;var extendParseResult;var extendParseSetupResults;var extendPartialDependence;var extendPlot;var extendPrediction;var extendPredictions;var extendProfile;var extendRDDs;var extendScalaCode;var extendScalaIntp;var extendSplitFrameResult;var extendStackTrace;var extendTimeline;var f;var findColumnIndexByColumnLabel;var findColumnIndicesByColumnLabels;var flow_;var getCloud;var getColumnSummary;var getDataFrames;var getFrame;var getFrameData;var getFrameSummary;var getFrames;var getGrid;var getGrids;var getJob;var getJobs;var getLogFile;var getModel;var getModelParameterValue;var getModels;var getPartialDependence;var getPrediction;var getPredictions;var getProfile;var getRDDs;var getScalaIntp;var getStackTrace;var getTimeline;var grid;var gui;var importFiles;var importModel;var imputeColumn;var initAssistanceSparklingWater;var inspect;var inspect$1;var inspect$2;var inspectFrameColumns;var inspectFrameData;var inspectModelParameters;var inspectNetworkTestResult;var inspectObject;var inspectObjectArray_;var inspectParametersAcrossModels;var inspectRawArray_;var inspectRawObject_;var inspectTwoDimTable_;var inspect_;var loadScript;var ls;var mergeFrames;var name;var parseFiles;var plot;var predict;var proceed;var read;var render_;var requestAsDataFrame;var requestAsH2OFrameFromDF;var requestAsH2OFrameFromRDD;var requestAutoModelBuild;var requestBindFrames;var requestCancelJob;var requestChangeColumnType;var requestCloud;var requestColumnSummary;var requestCreateFrame;var requestDataFrames;var requestDeleteFrame;var requestDeleteFrames;var requestDeleteModel;var requestDeleteModels;var requestExportFrame;var requestExportModel;var requestFrame;var requestFrameData;var requestFrameSummary;var requestFrameSummarySlice;var requestFrames;var requestGrid;var requestGrids;var requestImportAndParseFiles;var requestImportAndParseSetup;var requestImportFiles;var requestImportModel;var requestImputeColumn;var requestJob;var requestJobs;var requestLogFile;var requestMergeFrames;var requestModel;var requestModelBuild;var requestModels;var requestModelsByKeys;var requestNetworkTest;var requestParseFiles;var requestParseSetup;var requestPartialDependence;var requestPartialDependenceData;var requestPredict;var requestPrediction;var requestPredictions;var requestPredicts;var requestProfile;var requestRDDs;var requestRemoveAll;var requestScalaCode;var requestScalaIntp;var requestSplitFrame;var requestStackTrace;var requestTimeline;var routines;var routinesOnSw;var runScalaCode;var schemaTransforms;var setupParse;var splitFrame;var testNetwork;var transformBinomialMetrics;var unwrapPrediction;var _apply;var _async;var _call;var _fork;var _get;var _isFuture;var _join;var _plot;var _ref;var _schemaHacks;_fork=function(){var args;var f;f=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.fork(f,args);};_join=function(){var args;var go;var _i;args=arguments.length>=2?__slice.call(arguments,0,_i=arguments.length-1):(_i=0,[]),go=arguments[_i++];return Flow.Async.join(args,Flow.Async.applicate(go));};_call=function(){var args;var go;go=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.join(args,Flow.Async.applicate(go));};_apply=function(go,args){return Flow.Async.join(args,go);};_isFuture=Flow.Async.isFuture;_async=Flow.Async.async;_get=Flow.Async.get;proceed=function(func,args,go){return go(null,render_({},function(){return func(...[_].concat(args||[]));}));};proceed=function(func,args,go){return go(null,render_(...[{},func].concat(args||[])));};extendGuiForm=function(form){return render_(form,flowForm,form);};createGui=function(controls,go){return go(null,extendGuiForm(Flow.Dataflow.signals(controls||[])));};gui=function(controls){return _fork(createGui,controls);};_ref=Flow.Gui;for(name in _ref){if({}.hasOwnProperty.call(_ref,name)){f=_ref[name];gui[name]=f;}}flow_=function(raw){return raw._flow_||(raw._flow_={_cache_:{}});};render_=function(raw,render){flow_(raw).render=render;return raw;};render_=function(){var args;var raw;var render;raw=arguments[0],render=arguments[1],args=arguments.length>=3?__slice.call(arguments,2):[];flow_(raw).render=function(go){return render(...[_,go].concat(args));};return raw;};inspect_=function(raw,inspectors){var attr;var root;root=flow_(raw);if(root.inspect==null){root.inspect={};}for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];root.inspect[attr]=f;}}return raw;};inspect=function(a,b){if(arguments.length===1){return inspect$1(a);}return inspect$2(a,b);};inspect$1=function(obj){var attr;var inspections;var inspectors;var _ref1;if(_isFuture(obj)){return _async(inspect,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){inspections=[];for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];inspections.push(inspect$2(attr,obj));}}render_(inspections,h2oInspectsOutput,inspections);return inspections;}return{};};ls=function(obj){var inspectors;var _ref1;if(_isFuture(obj)){return _async(ls,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){return lodash.keys(inspectors);}return[];};inspect$2=function(attr,obj){var cached;var inspection;var inspectors;var key;var root;if(!attr){return;}if(_isFuture(obj)){return _async(inspect,attr,obj);}if(!obj){return;}if(!(root=obj._flow_)){return;}if(!(inspectors=root.inspect)){return;}if(cached=root._cache_[key=`inspect_${attr}`]){return cached;}if(!(f=inspectors[attr])){return;}if(!lodash.isFunction(f)){return;}root._cache_[key]=inspection=f();render_(inspection,h2oInspectOutput,inspection);return inspection;};_plot=function(render,go){return render(function(error,vis){if(error){return go(new Flow.Error('Error rendering vis.',error));}return go(null,vis);});};extendPlot=function(vis){return render_(vis,h2oPlotOutput,vis.element);};createPlot=function(f,go){return _plot(f(lightning),function(error,vis){if(error){return go(error);}return go(null,extendPlot(vis));});};plot=function(f){if(_isFuture(f)){return _fork(proceed,h2oPlotInput,f);}else if(lodash.isFunction(f)){return _fork(createPlot,f);}return assist(plot);};grid=function(f){return plot(function(g){return g(g.select(),g.from(f));});};transformBinomialMetrics=function(metrics){var cms;var domain;var fns;var fps;var i;var scores;var tns;var tp;var tps;if(scores=metrics.thresholds_and_metric_scores){domain=metrics.domain;tps=getTwoDimData(scores,'tps');tns=getTwoDimData(scores,'tns');fps=getTwoDimData(scores,'fps');fns=getTwoDimData(scores,'fns');cms=function(){var _i;var _len;var _results;_results=[];for(i=_i=0,_len=tps.length;_i<_len;i=++_i){tp=tps[i];_results.push({domain,matrix:[[tns[i],fps[i]],[fns[i],tp]]});}return _results;}();scores.columns.push({name:'CM',description:'CM',format:'matrix',type:'matrix'});scores.data.push(cms);}return metrics;};extendCloud=function(cloud){return render_(cloud,h2oCloudOutput,cloud);};extendTimeline=function(timeline){return render_(timeline,h2oTimelineOutput,timeline);};extendStackTrace=function(stackTrace){return render_(stackTrace,h2oStackTraceOutput,stackTrace);};extendLogFile=function(cloud,nodeIndex,fileType,logFile){return render_(logFile,h2oLogFileOutput,cloud,nodeIndex,fileType,logFile);};inspectNetworkTestResult=function(testResult){return function(){return convertTableToFrame(testResult.table,testResult.table.name,{description:testResult.table.name,origin:'testNetwork'});};};extendNetworkTest=function(testResult){inspect_(testResult,{result:inspectNetworkTestResult(testResult)});return render_(testResult,h2oNetworkTestOutput,testResult);};extendProfile=function(profile){return render_(profile,h2oProfileOutput,profile);};extendFrames=function(frames){render_(frames,h2oFramesOutput,frames);return frames;};extendSplitFrameResult=function(result){render_(result,h2oSplitFrameOutput,result);return result;};extendMergeFramesResult=function(result){render_(result,h2oMergeFramesOutput,result);return result;};extendPartialDependence=function(result){var data;var i;var inspections;var origin;var _i;var _len;var _ref1;inspections={};_ref1=result.partial_dependence_data;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){data=_ref1[i];origin=`getPartialDependence ${flowPrelude$6.stringify(result.destination_key)}`;inspections[`plot${i+1}`]=inspectTwoDimTable_(origin,`plot${i+1}`,data);}inspect_(result,inspections);render_(result,h2oPartialDependenceOutput,result);return result;};getModelParameterValue=function(type,value){switch(type){case'Key<Frame>':case'Key<Model>':if(value!=null){return value.name;}return void 0;// break; // no-unreachable
   case'VecSpecifier':if(value!=null){return value.column_name;}return void 0;// break; // no-unreachable
@@ -6044,10 +6044,10 @@
   }
 
   function knockout() {
+    var lodash = window._;
     if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
       return;
     }
-    var lodash = window._;
     ko.bindingHandlers.raw = {
       update(element, valueAccessor, allBindings, viewModel, bindingContext) {
         var $element;
@@ -6424,7 +6424,7 @@
       decline,
       template: 'confirm-dialog'
     };
-  };
+  }
 
   function flowAlertDialog(_, _message, _opts, _go) {
     var lodash = window._;
@@ -6447,7 +6447,7 @@
       accept,
       template: 'alert-dialog'
     };
-  };
+  }
 
   function dialogs() {
     var Flow = window.Flow;
@@ -7898,7 +7898,7 @@
     };
     render.isCode = false;
     return render;
-  };
+  }
 
   function flowCoffeescriptKernel() {
     var lodash = window._;
@@ -8347,7 +8347,7 @@
     };
     render.isCode = true;
     return render;
-  };
+  }
 
   function flowRaw(_) {
     var render;
@@ -8360,7 +8360,7 @@
     };
     render.isCode = false;
     return render;
-  };
+  }
 
   function flowStatus(_) {
     var lodash = window._;
@@ -8403,11 +8403,11 @@
       connections: _connections,
       isBusy: _isBusy
     };
-  };
+  }
 
   function flowOutline(_, _cells) {
     return { cells: _cells };
-  };
+  }
 
   function flowBrowser(_) {
     var lodash = window._;
@@ -8495,7 +8495,7 @@
       hasDocs: _hasDocs,
       loadNotebooks
     };
-  };
+  }
 
   function flowSidebar(_, cells) {
     var Flow = window.Flow;
@@ -8569,7 +8569,7 @@
       isHelpMode: _isHelpMode,
       switchToHelp
     };
-  };
+  }
 
   function flowCell(_, _renderers, type, input) {
     var lodash = window._;
@@ -8769,7 +8769,7 @@
       },
       template: 'flow-cell'
     };
-  };
+  }
 
   function flowFileOpenDialog(_, _go) {
     var Flow = window.Flow;
@@ -8831,7 +8831,7 @@
       decline,
       template: 'file-open-dialog'
     };
-  };
+  }
 
   function flowFileUploadDialog(_, _go) {
     var Flow = window.Flow;
@@ -8866,7 +8866,7 @@
       decline,
       template: 'file-upload-dialog'
     };
-  };
+  }
 
   function flowMarkdown(_) {
     var render;
@@ -8886,7 +8886,7 @@
     };
     render.isCode = false;
     return render;
-  };
+  }
 
   const flowPrelude$37 = flowPreludeFunction();
 
@@ -10295,7 +10295,7 @@
     _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
     return _.requestAsDataFrame = Flow.Dataflow.slot();
-  };
+  }
 
   function h2oProxy(_) {
     var lodash = window._;
@@ -11244,12 +11244,12 @@
     Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);
     Flow.Dataflow.link(_.requestAsH2OFrameFromRDD, requestAsH2OFrameFromRDD);
     return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
-  };
+  }
 
   function h2oApplication(_) {
     h2oApplicationContext(_);
     return h2oProxy(_);
-  };
+  }
 
   function flowApplicationContext(_) {
     var Flow = window.Flow;
@@ -11277,7 +11277,7 @@
     _.confirm = Flow.Dataflow.slot();
     _.alert = Flow.Dataflow.slot();
     return _.dialog = Flow.Dataflow.slot();
-  };
+  }
 
   function flowSandbox(_, routines) {
     return {
@@ -11285,7 +11285,7 @@
       context: {},
       results: {}
     };
-  };
+  }
 
   function flowAnalytics(_) {
     var lodash = window._;
@@ -11306,7 +11306,7 @@
         });
       });
     });
-  };
+  }
 
   function flowGrowl(_) {
     var Flow = window.Flow;
@@ -11316,7 +11316,7 @@
       }
       return $.bootstrapGrowl(message);
     });
-  };
+  }
 
   function flowAutosave(_) {
     var Flow = window.Flow;
@@ -11341,7 +11341,7 @@
       Flow.Dataflow.link(_.setDirty, setDirty);
       return Flow.Dataflow.link(_.setPristine, setPristine);
     });
-  };
+  }
 
   function flowApplication(_, routines) {
     var Flow = window.Flow;
@@ -11360,7 +11360,7 @@
       sandbox: _sandbox,
       view: _notebook
     };
-  };
+  }
 
   function flow() {
     var Flow = window.Flow;
