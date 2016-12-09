@@ -1,5 +1,6 @@
 export function flowFileOpenDialog(_, _go) {
   const Flow = window.Flow;
+  const H2O = window.H2O;
   let accept;
   let checkIfNameIsInUse;
   let decline;

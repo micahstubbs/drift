@@ -1,6 +1,7 @@
 export function help() {
   const lodash = window._;
   const Flow = window.Flow;
+  const H2O = window.H2O;
   let _catalog;
   let _homeContent;
   let _homeMarkdown;

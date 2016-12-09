@@ -13,6 +13,8 @@ const flowPrelude = flowPreludeFunction();
 export function notebook() {
   const lodash = window._;
   const Flow = window.Flow;
+  const Mousetrap = window.Mousetrap;
+  const $ = window.jQuery;
   const __slice = [].slice;
   Flow.Renderers = (_, _sandbox) => ({
     h1() {
@@ -56,143 +58,46 @@ export function notebook() {
     }
   });
   Flow.Notebook = (_, _renderers) => {
-    let appendCell;
-    let appendCellAndRun;
-    let checkConsistency;
-    let checkIfNameIsInUse;
-    let clearCell;
-    let cloneCell;
-    let continueRunningAllCells;
-    let convertCellToCode;
-    let convertCellToHeading;
-    let convertCellToMarkdown;
-    let convertCellToRaw;
-    let convertCellToScala;
-    let copyCell;
-    let createCell;
-    let createNotebook;
-    let cutCell;
-    let deleteCell;
-    let deserialize;
-    let displayAbout;
-    let displayDocumentation;
-    let displayFAQ;
-    let displayKeyboardShortcuts;
-    let duplicateNotebook;
-    let editName;
-    let executeAllCells;
-    let executeCommand;
-    let exportNotebook;
-    let findBuildProperty;
-    let getBuildProperties;
-    let goToH2OUrl;
-    let goToUrl;
-    let insertAbove;
-    let insertBelow;
-    let insertCell;
-    let insertCellAbove;
-    let insertCellAboveAndRun;
-    let insertCellBelow;
-    let insertCellBelowAndRun;
-    let insertNewCellAbove;
-    let insertNewCellBelow;
-    let insertNewScalaCellAbove;
-    let insertNewScalaCellBelow;
-    let loadNotebook;
     let menuCell;
-    let mergeCellBelow;
-    let moveCellDown;
-    let moveCellUp;
-    let openNotebook;
-    let pasteCellAbove;
-    let pasteCellBelow;
-    let promptForNotebook;
-    let removeCell;
-    let runAllCells;
-    let runCell;
-    let runCellAndInsertBelow;
-    let runCellAndSelectBelow;
-    let saveName;
-    let saveNotebook;
-    let selectCell;
-    let selectNextCell;
-    let selectPreviousCell;
-    let serialize;
-    let showBrowser;
-    let showClipboard;
-    let showHelp;
-    let showOutline;
-    let shutdown;
-    let splitCell;
-    let stopRunningAll;
-    let storeNotebook;
-    let switchToCommandMode;
-    let switchToEditMode;
-    let toggleAllInputs;
-    let toggleAllOutputs;
-    let toggleInput;
-    let toggleOutput;
-    let toggleSidebar;
-    let undoLastDelete;
-    let uploadFile;
-    let _about;
-    let _areInputsHidden;
-    let _areOutputsHidden;
-    let _cells;
     let _clipboardCell;
-    let _dialogs;
-    let _initializeInterpreter;
-    let _isEditingName;
-    let _isRunningAll;
-    let _isSidebarHidden;
     let _lastDeletedCell;
-    let _localName;
-    let _remoteName;
-    let _runningCaption;
-    let _runningCellInput;
-    let _runningPercent;
     let _selectedCell;
     let _selectedCellIndex;
-    let _sidebar;
-    let _status;
-    _localName = Flow.Dataflow.signal('Untitled Flow');
+    const _localName = Flow.Dataflow.signal('Untitled Flow');
     Flow.Dataflow.react(_localName, name => document.title = `H2O${(name && name.trim() ? `- ${name}` : '')}`);
-    _remoteName = Flow.Dataflow.signal(null);
-    _isEditingName = Flow.Dataflow.signal(false);
-    editName = () => _isEditingName(true);
-    saveName = () => _isEditingName(false);
-    _cells = Flow.Dataflow.signals([]);
+    const _remoteName = Flow.Dataflow.signal(null);
+    const _isEditingName = Flow.Dataflow.signal(false);
+    const editName = () => _isEditingName(true);
+    const saveName = () => _isEditingName(false);
+    const _cells = Flow.Dataflow.signals([]);
     _selectedCell = null;
     _selectedCellIndex = -1;
     _clipboardCell = null;
     _lastDeletedCell = null;
-    _areInputsHidden = Flow.Dataflow.signal(false);
-    _areOutputsHidden = Flow.Dataflow.signal(false);
-    _isSidebarHidden = Flow.Dataflow.signal(false);
-    _isRunningAll = Flow.Dataflow.signal(false);
-    _runningCaption = Flow.Dataflow.signal('Running');
-    _runningPercent = Flow.Dataflow.signal('0%');
-    _runningCellInput = Flow.Dataflow.signal('');
-    _status = flowStatus(_);
-    _sidebar = flowSidebar(_, _cells);
-    _about = Flow.About(_);
-    _dialogs = Flow.Dialogs(_);
-    _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
+    const _areInputsHidden = Flow.Dataflow.signal(false);
+    const _areOutputsHidden = Flow.Dataflow.signal(false);
+    const  _isSidebarHidden = Flow.Dataflow.signal(false);
+    const _isRunningAll = Flow.Dataflow.signal(false);
+    const _runningCaption = Flow.Dataflow.signal('Running');
+    const _runningPercent = Flow.Dataflow.signal('0%');
+    const _runningCellInput = Flow.Dataflow.signal('');
+    const _status = flowStatus(_);
+    const _sidebar = flowSidebar(_, _cells);
+    const _about = Flow.About(_);
+    const _dialogs = Flow.Dialogs(_);
+    const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
       if (error) {
         return _.scalaIntpId(-1);
       }
       return _.scalaIntpId(response.session_id);
     });
-    serialize = () => {
+    const serialize = () => {
       let cell;
-      let cells;
-      cells = (() => {
+      const cells = (() => {
         let _i;
         let _len;
-        let _ref;
-        let _results;
-        _ref = _cells();
-        _results = [];
+        const _ref = _cells();
+        const _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cell = _ref[_i];
           _results.push({
@@ -207,21 +112,17 @@ export function notebook() {
         cells
       };
     };
-    deserialize = (localName, remoteName, doc) => {
+    const deserialize = (localName, remoteName, doc) => {
       let cell;
-      let cells;
       let _i;
       let _len;
-      let _ref;
       _localName(localName);
       _remoteName(remoteName);
-      cells = (() => {
+      const cells = (() => {
         let _i;
         let _len;
-        let _ref;
-        let _results;
-        _ref = doc.cells;
-        _results = [];
+        const _ref = doc.cells;
+        const _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cell = _ref[_i];
           _results.push(createCell(cell.type, cell.input));
@@ -230,7 +131,7 @@ export function notebook() {
       })();
       _cells(cells);
       selectCell(lodash.head(cells));
-      _ref = _cells();
+      const _ref = _cells();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cell = _ref[_i];
         if (!cell.isCode()) {
@@ -238,7 +139,7 @@ export function notebook() {
         }
       }
     };
-    createCell = (type, input) => {
+    function createCell(type, input) {
       if (type == null) {
         type = 'cs';
       }
@@ -247,19 +148,18 @@ export function notebook() {
       }
       return flowCell(_, _renderers, type, input);
     };
-    checkConsistency = () => {
+    const checkConsistency = () => {
       let cell;
       let i;
       let selectionCount;
       let _i;
       let _len;
-      let _ref;
       selectionCount = 0;
-      _ref = _cells();
+      const _ref = _cells();
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         cell = _ref[i];
         if (!cell) {
-          error(`index ${i} is empty`);
+          console.error(`index ${i} is empty`);
         } else {
           if (cell.isSelected()) {
             selectionCount++;
@@ -267,10 +167,10 @@ export function notebook() {
         }
       }
       if (selectionCount !== 1) {
-        error(`selected cell count = ${selectionCount}`);
+        console.error(`selected cell count = ${selectionCount}`);
       }
     };
-    selectCell = (target, scrollIntoView, scrollImmediately) => {
+    function selectCell(target, scrollIntoView, scrollImmediately) {
       if (scrollIntoView == null) {
         scrollIntoView = true;
       }
@@ -292,39 +192,38 @@ export function notebook() {
       }
       return _selectedCell;
     };
-    cloneCell = cell => createCell(cell.type(), cell.input());
-    switchToCommandMode = () => _selectedCell.isActive(false);
-    switchToEditMode = () => {
+    const cloneCell = cell => createCell(cell.type(), cell.input());
+    const switchToCommandMode = () => _selectedCell.isActive(false);
+    const switchToEditMode = () => {
       _selectedCell.isActive(true);
       return false;
     };
-    convertCellToCode = () => _selectedCell.type('cs');
-    convertCellToHeading = level => () => {
+    const convertCellToCode = () => _selectedCell.type('cs');
+    const convertCellToHeading = level => () => {
       _selectedCell.type(`h${level}`);
       return _selectedCell.execute();
     };
-    convertCellToMarkdown = () => {
+    const convertCellToMarkdown = () => {
       _selectedCell.type('md');
       return _selectedCell.execute();
     };
-    convertCellToRaw = () => {
+    const convertCellToRaw = () => {
       _selectedCell.type('raw');
       return _selectedCell.execute();
     };
-    convertCellToScala = () => _selectedCell.type('sca');
-    copyCell = () => _clipboardCell = _selectedCell;
-    cutCell = () => {
+    const convertCellToScala = () => _selectedCell.type('sca');
+    const copyCell = () => _clipboardCell = _selectedCell;
+    const cutCell = () => {
       copyCell();
       return removeCell();
     };
-    deleteCell = () => {
+    const deleteCell = () => {
       _lastDeletedCell = _selectedCell;
       return removeCell();
     };
-    removeCell = () => {
-      let cells;
+    function removeCell() {
       let removedCell;
-      cells = _cells();
+      const cells = _cells();
       if (cells.length > 1) {
         if (_selectedCellIndex === cells.length - 1) {
           removedCell = lodash.head(_cells.splice(_selectedCellIndex, 1));
@@ -338,48 +237,44 @@ export function notebook() {
         }
       }
     };
-    insertCell = (index, cell) => {
+    const insertCell = (index, cell) => {
       _cells.splice(index, 0, cell);
       selectCell(cell);
       return cell;
     };
-    insertAbove = cell => insertCell(_selectedCellIndex, cell);
-    insertBelow = cell => insertCell(_selectedCellIndex + 1, cell);
-    appendCell = cell => insertCell(_cells().length, cell);
-    insertCellAbove = (type, input) => insertAbove(createCell(type, input));
-    insertCellBelow = (type, input) => insertBelow(createCell(type, input));
-    insertNewCellAbove = () => insertAbove(createCell('cs'));
-    insertNewCellBelow = () => insertBelow(createCell('cs'));
-    insertNewScalaCellAbove = () => insertAbove(createCell('sca'));
-    insertNewScalaCellBelow = () => insertBelow(createCell('sca'));
-    insertCellAboveAndRun = (type, input) => {
-      let cell;
-      cell = insertAbove(createCell(type, input));
+    const insertAbove = cell => insertCell(_selectedCellIndex, cell);
+    const insertBelow = cell => insertCell(_selectedCellIndex + 1, cell);
+    const appendCell = cell => insertCell(_cells().length, cell);
+    const insertCellAbove = (type, input) => insertAbove(createCell(type, input));
+    const insertCellBelow = (type, input) => insertBelow(createCell(type, input));
+    const insertNewCellAbove = () => insertAbove(createCell('cs'));
+    const insertNewCellBelow = () => insertBelow(createCell('cs'));
+    const insertNewScalaCellAbove = () => insertAbove(createCell('sca'));
+    const insertNewScalaCellBelow = () => insertBelow(createCell('sca'));
+    const insertCellAboveAndRun = (type, input) => {
+      const cell = insertAbove(createCell(type, input));
       cell.execute();
       return cell;
     };
-    insertCellBelowAndRun = (type, input) => {
-      let cell;
-      cell = insertBelow(createCell(type, input));
+    const insertCellBelowAndRun = (type, input) => {
+      const cell = insertBelow(createCell(type, input));
       cell.execute();
       return cell;
     };
-    appendCellAndRun = (type, input) => {
-      let cell;
-      cell = appendCell(createCell(type, input));
+    const appendCellAndRun = (type, input) => {
+      const cell = appendCell(createCell(type, input));
       cell.execute();
       return cell;
     };
-    moveCellDown = () => {
-      let cells;
-      cells = _cells();
+    const moveCellDown = () => {
+      const cells = _cells();
       if (_selectedCellIndex !== cells.length - 1) {
         _cells.splice(_selectedCellIndex, 1);
         _selectedCellIndex++;
         _cells.splice(_selectedCellIndex, 0, _selectedCell);
       }
     };
-    moveCellUp = () => {
+    const moveCellUp = () => {
       let cells;
       if (_selectedCellIndex !== 0) {
         cells = _cells();
@@ -388,10 +283,9 @@ export function notebook() {
         _cells.splice(_selectedCellIndex, 0, _selectedCell);
       }
     };
-    mergeCellBelow = () => {
-      let cells;
+    const mergeCellBelow = () => {
       let nextCell;
-      cells = _cells();
+      const cells = _cells();
       if (_selectedCellIndex !== cells.length - 1) {
         nextCell = cells[_selectedCellIndex + 1];
         if (_selectedCell.type() === nextCell.type()) {
@@ -400,7 +294,7 @@ export function notebook() {
         }
       }
     };
-    splitCell = () => {
+    const splitCell = () => {
       let cursorPosition;
       let input;
       let left;
@@ -422,36 +316,36 @@ export function notebook() {
         }
       }
     };
-    pasteCellAbove = () => {
+    const pasteCellAbove = () => {
       if (_clipboardCell) {
         return insertCell(_selectedCellIndex, cloneCell(_clipboardCell));
       }
     };
-    pasteCellBelow = () => {
+    const pasteCellBelow = () => {
       if (_clipboardCell) {
         return insertCell(_selectedCellIndex + 1, cloneCell(_clipboardCell));
       }
     };
-    undoLastDelete = () => {
+    const undoLastDelete = () => {
       if (_lastDeletedCell) {
         insertCell(_selectedCellIndex + 1, _lastDeletedCell);
       }
       return _lastDeletedCell = null;
     };
-    runCell = () => {
+    const runCell = () => {
       _selectedCell.execute();
       return false;
     };
-    runCellAndInsertBelow = () => {
+    const runCellAndInsertBelow = () => {
       _selectedCell.execute(() => insertNewCellBelow());
       return false;
     };
-    runCellAndSelectBelow = () => {
+    const runCellAndSelectBelow = () => {
       _selectedCell.execute(() => selectNextCell());
       return false;
     };
-    checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
-    storeNotebook = (localName, remoteName) => _.requestPutObject('notebook', localName, serialize(), error => {
+    const checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
+    const storeNotebook = (localName, remoteName) => _.requestPutObject('notebook', localName, serialize(), error => {
       if (error) {
         return _.alert(`Error saving notebook: ${error.message}`);
       }
@@ -467,14 +361,12 @@ export function notebook() {
       }
       return _.saved();
     });
-    saveNotebook = () => {
-      let localName;
-      let remoteName;
-      localName = Flow.Util.sanitizeName(_localName());
+    const saveNotebook = () => {
+      const localName = Flow.Util.sanitizeName(_localName());
       if (localName === '') {
         return _.alert('Invalid notebook name.');
       }
-      remoteName = _remoteName();
+      const remoteName = _remoteName();
       if (remoteName) {
         storeNotebook(localName, remoteName);
       }
@@ -492,7 +384,7 @@ export function notebook() {
         return storeNotebook(localName, remoteName);
       });
     };
-    promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
+    const promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
       let error;
       let filename;
       let _ref;
@@ -505,7 +397,7 @@ export function notebook() {
         return _.loaded();
       }
     });
-    uploadFile = () => _.dialog(flowFileUploadDialog, result => {
+    const uploadFile = () => _.dialog(flowFileUploadDialog, result => {
       let error;
       let _ref;
       if (result) {
@@ -517,15 +409,14 @@ export function notebook() {
         return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${flowPrelude.stringify(result.result.destination_frame)}]`);
       }
     });
-    toggleInput = () => _selectedCell.toggleInput();
-    toggleOutput = () => _selectedCell.toggleOutput();
-    toggleAllInputs = () => {
+    const toggleInput = () => _selectedCell.toggleInput();
+    const toggleOutput = () => _selectedCell.toggleOutput();
+    const toggleAllInputs = () => {
       let cell;
-      let wereHidden;
       let _i;
       let _len;
       let _ref;
-      wereHidden = _areInputsHidden();
+      const wereHidden = _areInputsHidden();
       _areInputsHidden(!wereHidden);
       if (wereHidden) {
         _ref = _cells();
@@ -535,29 +426,28 @@ export function notebook() {
         }
       }
     };
-    toggleAllOutputs = () => _areOutputsHidden(!_areOutputsHidden());
-    toggleSidebar = () => _isSidebarHidden(!_isSidebarHidden());
-    showBrowser = () => {
+    const toggleAllOutputs = () => _areOutputsHidden(!_areOutputsHidden());
+    const toggleSidebar = () => _isSidebarHidden(!_isSidebarHidden());
+    const showBrowser = () => {
       _isSidebarHidden(false);
       return _.showBrowser();
     };
-    showOutline = () => {
+    const showOutline = () => {
       _isSidebarHidden(false);
       return _.showOutline();
     };
-    showClipboard = () => {
+    const showClipboard = () => {
       _isSidebarHidden(false);
       return _.showClipboard();
     };
-    selectNextCell = () => {
-      let cells;
-      cells = _cells();
+    function selectNextCell() {
+      const cells = _cells();
       if (_selectedCellIndex !== cells.length - 1) {
         selectCell(cells[_selectedCellIndex + 1]);
       }
       return false;
     };
-    selectPreviousCell = () => {
+    const selectPreviousCell = () => {
       let cells;
       if (_selectedCellIndex !== 0) {
         cells = _cells();
@@ -565,8 +455,8 @@ export function notebook() {
       }
       return false;
     };
-    displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
-    findBuildProperty = caption => {
+    const displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
+    const findBuildProperty = caption => {
       let entry;
       if (Flow.BuildProperties) {
         if (entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption)) {
@@ -576,9 +466,8 @@ export function notebook() {
       }
       return void 0;
     };
-    getBuildProperties = () => {
-      let projectVersion;
-      projectVersion = findBuildProperty('H2O Build project version');
+    const getBuildProperties = () => {
+      const projectVersion = findBuildProperty('H2O Build project version');
       return [
         findBuildProperty('H2O Build git branch'),
         projectVersion,
@@ -586,7 +475,7 @@ export function notebook() {
         findBuildProperty('H2O Build git hash') || 'master'
       ];
     };
-    displayDocumentation = () => {
+    const displayDocumentation = () => {
       let buildVersion;
       let gitBranch;
       let gitHash;
@@ -598,7 +487,7 @@ export function notebook() {
       }
       return window.open(`https://github.com/h2oai/h2o-3/blob/${gitHash}/h2o-docs/src/product/flow/README.md`, '_blank');
     };
-    displayFAQ = () => {
+    const displayFAQ = () => {
       let buildVersion;
       let gitBranch;
       let gitHash;
@@ -610,19 +499,19 @@ export function notebook() {
       }
       return window.open(`https://github.com/h2oai/h2o-3/blob/${gitHash}/h2o-docs/src/product/howto/FAQ.md`, '_blank');
     };
-    executeCommand = command => () => _.insertAndExecuteCell('cs', command);
-    displayAbout = () => $('#aboutDialog').modal();
-    shutdown = () => _.requestShutdown((error, result) => {
+    const executeCommand = command => () => _.insertAndExecuteCell('cs', command);
+    const displayAbout = () => $('#aboutDialog').modal();
+    const shutdown = () => _.requestShutdown((error, result) => {
       if (error) {
         return _.growl(`Shutdown failed: ${error.message}`, 'danger');
       }
       return _.growl('Shutdown complete!', 'warning');
     });
-    showHelp = () => {
+    const showHelp = () => {
       _isSidebarHidden(false);
       return _.showHelp();
     };
-    createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
+    const createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
       acceptCaption: 'Create New Notebook',
       declineCaption: 'Cancel'
     }, accept => {
@@ -637,38 +526,39 @@ export function notebook() {
         });
       }
     });
-    duplicateNotebook = () => deserialize(`Copy of ${_localName()}`, null, serialize());
-    openNotebook = (name, doc) => deserialize(name, null, doc);
-    loadNotebook = name => _.requestObject('notebook', name, (error, doc) => {
-      let _ref;
-      if (error) {
-        return _.alert((_ref = error.message) != null ? _ref : error);
-      }
-      return deserialize(name, name, doc);
-    });
-    exportNotebook = () => {
+    const duplicateNotebook = () => deserialize(`Copy of ${_localName()}`, null, serialize());
+    const openNotebook = (name, doc) => deserialize(name, null, doc);
+    function loadNotebook(name) { 
+      return _.requestObject('notebook', name, (error, doc) => {
+        let _ref;
+        if (error) {
+          return _.alert((_ref = error.message) != null ? _ref : error);
+        }
+        return deserialize(name, name, doc);
+      });
+    };
+
+    const exportNotebook = () => {
       let remoteName;
       if (remoteName = _remoteName()) {
         return window.open(`/3/NodePersistentStorage.bin/notebook/${remoteName}`, '_blank');
       }
       return _.alert('Please save this notebook before exporting.');
     };
-    goToH2OUrl = url => () => window.open(window.Flow.ContextPath + url, '_blank');
-    goToUrl = url => () => window.open(url, '_blank');
-    executeAllCells = (fromBeginning, go) => {
-      let cellCount;
+    const goToH2OUrl = url => () => window.open(window.Flow.ContextPath + url, '_blank');
+    const goToUrl = url => () => window.open(url, '_blank');
+    const executeAllCells = (fromBeginning, go) => {
       let cellIndex;
       let cells;
-      let executeNextCell;
       _isRunningAll(true);
       cells = _cells().slice(0);
-      cellCount = cells.length;
+      const cellCount = cells.length;
       cellIndex = 0;
       if (!fromBeginning) {
         cells = cells.slice(_selectedCellIndex);
         cellIndex = _selectedCellIndex;
       }
-      executeNextCell = () => {
+      const executeNextCell = () => {
         let cell;
         if (_isRunningAll()) {
           cell = cells.shift();
@@ -691,7 +581,7 @@ export function notebook() {
       };
       return executeNextCell();
     };
-    runAllCells = fromBeginning => {
+    const runAllCells = fromBeginning => {
       if (fromBeginning == null) {
         fromBeginning = true;
       }
@@ -707,13 +597,13 @@ export function notebook() {
         }
       });
     };
-    continueRunningAllCells = () => runAllCells(false);
-    stopRunningAll = () => _isRunningAll(false);
-    clearCell = () => {
+    const continueRunningAllCells = () => runAllCells(false);
+    const stopRunningAll = () => _isRunningAll(false);
+    const clearCell = () => {
       _selectedCell.clear();
       return _selectedCell.autoResize();
     };
-    clearAllCells = () => {
+    const clearAllCells = () => {
       let cell;
       let _i;
       let _len;

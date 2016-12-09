@@ -4,6 +4,7 @@ const flowPrelude = flowPreludeFunction();
 export function parseInput() {
   const lodash = window._;
   const Flow = window.Flow;
+  const H2O = window.H2O;
   const MaxItemsPerPage = 15;
   const parseTypes = lodash.map([
     'AUTO',

@@ -42,7 +42,7 @@ export function objectBrowser() {
     let value;
     count = 0;
     const previews = [];
-    ellipsis = '';
+    let ellipsis = '';
     for (key in object) {
       if ({}.hasOwnProperty.call(object, key)) {
         value = object[key];
