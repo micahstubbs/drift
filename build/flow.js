@@ -121,96 +121,6 @@
 
   const flowPrelude$1 = flowPreludeFunction();
 
-  function h2oApplicationContext(_) {
-    var Flow = window.Flow;
-    _.requestFileGlob = Flow.Dataflow.slot();
-    _.requestCreateFrame = Flow.Dataflow.slot();
-    _.requestSplitFrame = Flow.Dataflow.slot();
-    _.requestImportFile = Flow.Dataflow.slot();
-    _.requestImportFiles = Flow.Dataflow.slot();
-    _.requestParseFiles = Flow.Dataflow.slot();
-    _.requestInspect = Flow.Dataflow.slot();
-    _.requestParseSetup = Flow.Dataflow.slot();
-    _.requestParseSetupPreview = Flow.Dataflow.slot();
-    _.requestFrames = Flow.Dataflow.slot();
-    _.requestFrame = Flow.Dataflow.slot();
-    _.requestFrameSlice = Flow.Dataflow.slot();
-    _.requestFrameSummary = Flow.Dataflow.slot();
-    _.requestFrameDataE = Flow.Dataflow.slot();
-    _.requestFrameSummarySlice = Flow.Dataflow.slot();
-    _.requestFrameSummarySliceE = Flow.Dataflow.slot();
-    _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
-    _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestExportFrame = Flow.Dataflow.slot();
-    _.requestColumnSummary = Flow.Dataflow.slot();
-    _.requestModelBuilder = Flow.Dataflow.slot();
-    _.requestModelBuilders = Flow.Dataflow.slot();
-    _.requestModelBuild = Flow.Dataflow.slot();
-    _.requestModelInputValidation = Flow.Dataflow.slot();
-    _.requestAutoModelBuild = Flow.Dataflow.slot();
-    _.requestPredict = Flow.Dataflow.slot();
-    _.requestPrediction = Flow.Dataflow.slot();
-    _.requestPredictions = Flow.Dataflow.slot();
-    _.requestPartialDependence = Flow.Dataflow.slot();
-    _.requestPartialDependenceData = Flow.Dataflow.slot();
-    _.requestGrids = Flow.Dataflow.slot();
-    _.requestModels = Flow.Dataflow.slot();
-    _.requestGrid = Flow.Dataflow.slot();
-    _.requestModel = Flow.Dataflow.slot();
-    _.requestPojoPreview = Flow.Dataflow.slot();
-    _.requestDeleteModel = Flow.Dataflow.slot();
-    _.requestImportModel = Flow.Dataflow.slot();
-    _.requestExportModel = Flow.Dataflow.slot();
-    _.requestJobs = Flow.Dataflow.slot();
-    _.requestJob = Flow.Dataflow.slot();
-    _.requestCancelJob = Flow.Dataflow.slot();
-    _.requestObjects = Flow.Dataflow.slot();
-    _.requestObject = Flow.Dataflow.slot();
-    _.requestObjectExists = Flow.Dataflow.slot();
-    _.requestDeleteObject = Flow.Dataflow.slot();
-    _.requestPutObject = Flow.Dataflow.slot();
-    _.requestUploadObject = Flow.Dataflow.slot();
-    _.requestUploadFile = Flow.Dataflow.slot();
-    _.requestCloud = Flow.Dataflow.slot();
-    _.requestTimeline = Flow.Dataflow.slot();
-    _.requestProfile = Flow.Dataflow.slot();
-    _.requestStackTrace = Flow.Dataflow.slot();
-    _.requestRemoveAll = Flow.Dataflow.slot();
-    _.requestEcho = Flow.Dataflow.slot();
-    _.requestLogFile = Flow.Dataflow.slot();
-    _.requestNetworkTest = Flow.Dataflow.slot();
-    _.requestAbout = Flow.Dataflow.slot();
-    _.requestShutdown = Flow.Dataflow.slot();
-    _.requestEndpoints = Flow.Dataflow.slot();
-    _.requestEndpoint = Flow.Dataflow.slot();
-    _.requestSchemas = Flow.Dataflow.slot();
-    _.requestSchema = Flow.Dataflow.slot();
-    _.requestPacks = Flow.Dataflow.slot();
-    _.requestPack = Flow.Dataflow.slot();
-    _.requestFlow = Flow.Dataflow.slot();
-    _.requestHelpIndex = Flow.Dataflow.slot();
-    _.requestHelpContent = Flow.Dataflow.slot();
-    _.requestExec = Flow.Dataflow.slot();
-    _.ls = Flow.Dataflow.slot();
-    _.inspect = Flow.Dataflow.slot();
-    _.plot = Flow.Dataflow.slot();
-    _.grid = Flow.Dataflow.slot();
-    _.enumerate = Flow.Dataflow.slot();
-    _.scalaIntpId = Flow.Dataflow.signal(-1);
-    _.requestRDDs = Flow.Dataflow.slot();
-    _.requestDataFrames = Flow.Dataflow.slot();
-    _.requestScalaIntp = Flow.Dataflow.slot();
-    _.requestScalaCode = Flow.Dataflow.slot();
-    _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
-    _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
-    return _.requestAsDataFrame = Flow.Dataflow.slot();
-  };
-
-  function h2oApplication(_) {
-    h2oApplicationContext(_);
-    return H2O.Proxy(_);
-  };
-
   const flowPrelude$2 = flowPreludeFunction();
 
   function modelInput() {
@@ -10175,117 +10085,6 @@
     };
   }
 
-  function flowApplicationContext(_) {
-    var Flow = window.Flow;
-    _.ready = Flow.Dataflow.slots();
-    _.initialized = Flow.Dataflow.slots();
-    _.open = Flow.Dataflow.slot();
-    _.load = Flow.Dataflow.slot();
-    _.saved = Flow.Dataflow.slots();
-    _.loaded = Flow.Dataflow.slots();
-    _.setDirty = Flow.Dataflow.slots();
-    _.setPristine = Flow.Dataflow.slots();
-    _.status = Flow.Dataflow.slot();
-    _.trackEvent = Flow.Dataflow.slot();
-    _.trackException = Flow.Dataflow.slot();
-    _.selectCell = Flow.Dataflow.slot();
-    _.insertCell = Flow.Dataflow.slot();
-    _.insertAndExecuteCell = Flow.Dataflow.slot();
-    _.executeAllCells = Flow.Dataflow.slot();
-    _.showHelp = Flow.Dataflow.slot();
-    _.showOutline = Flow.Dataflow.slot();
-    _.showBrowser = Flow.Dataflow.slot();
-    _.showClipboard = Flow.Dataflow.slot();
-    _.saveClip = Flow.Dataflow.slot();
-    _.growl = Flow.Dataflow.slot();
-    _.confirm = Flow.Dataflow.slot();
-    _.alert = Flow.Dataflow.slot();
-    return _.dialog = Flow.Dataflow.slot();
-  };
-
-  function flowSandbox(_, routines) {
-    return {
-      routines,
-      context: {},
-      results: {}
-    };
-  };
-
-  function flowAnalytics(_) {
-    var lodash = window._;
-    var Flow = window.Flow;
-    Flow.Dataflow.link(_.trackEvent, function (category, action, label, value) {
-      return lodash.defer(function () {
-        return window.ga('send', 'event', category, action, label, value);
-      });
-    });
-    return Flow.Dataflow.link(_.trackException, function (description) {
-      return lodash.defer(function () {
-        _.requestEcho(`FLOW: ${ description }`, function () {});
-        return window.ga('send', 'exception', {
-          exDescription: description,
-          exFatal: false,
-          appName: 'Flow',
-          appVersion: Flow.Version
-        });
-      });
-    });
-  };
-
-  function flowGrowl(_) {
-    var Flow = window.Flow;
-    return Flow.Dataflow.link(_.growl, function (message, type) {
-      if (type) {
-        return $.bootstrapGrowl(message, { type });
-      }
-      return $.bootstrapGrowl(message);
-    });
-  };
-
-  function flowAutosave(_) {
-    var Flow = window.Flow;
-    var setDirty;
-    var setPristine;
-    var warnOnExit;
-    warnOnExit = function (e) {
-      var message;
-      message = 'Warning: you are about to exit Flow.';
-      if (e = e != null ? e : window.event) {
-        e.returnValue = message;
-      }
-      return message;
-    };
-    setDirty = function () {
-      return window.onbeforeunload = warnOnExit;
-    };
-    setPristine = function () {
-      return window.onbeforeunload = null;
-    };
-    return Flow.Dataflow.link(_.ready, function () {
-      Flow.Dataflow.link(_.setDirty, setDirty);
-      return Flow.Dataflow.link(_.setPristine, setPristine);
-    });
-  };
-
-  function flowApplication(_, routines) {
-    var Flow = window.Flow;
-    var _notebook;
-    var _renderers;
-    var _sandbox;
-    flowApplicationContext(_);
-    _sandbox = flowSandbox(_, routines(_));
-    _renderers = Flow.Renderers(_, _sandbox);
-    flowAnalytics(_);
-    flowGrowl(_);
-    flowAutosave(_);
-    _notebook = Flow.Notebook(_, _renderers);
-    return {
-      context: _,
-      sandbox: _sandbox,
-      view: _notebook
-    };
-  };
-
   function gui() {
     var lodash = window._;
     var Flow = window.Flow;
@@ -10414,6 +10213,266 @@
     };
   }
 
+  function h2oApplicationContext(_) {
+    var Flow = window.Flow;
+    _.requestFileGlob = Flow.Dataflow.slot();
+    _.requestCreateFrame = Flow.Dataflow.slot();
+    _.requestSplitFrame = Flow.Dataflow.slot();
+    _.requestImportFile = Flow.Dataflow.slot();
+    _.requestImportFiles = Flow.Dataflow.slot();
+    _.requestParseFiles = Flow.Dataflow.slot();
+    _.requestInspect = Flow.Dataflow.slot();
+    _.requestParseSetup = Flow.Dataflow.slot();
+    _.requestParseSetupPreview = Flow.Dataflow.slot();
+    _.requestFrames = Flow.Dataflow.slot();
+    _.requestFrame = Flow.Dataflow.slot();
+    _.requestFrameSlice = Flow.Dataflow.slot();
+    _.requestFrameSummary = Flow.Dataflow.slot();
+    _.requestFrameDataE = Flow.Dataflow.slot();
+    _.requestFrameSummarySlice = Flow.Dataflow.slot();
+    _.requestFrameSummarySliceE = Flow.Dataflow.slot();
+    _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
+    _.requestDeleteFrame = Flow.Dataflow.slot();
+    _.requestExportFrame = Flow.Dataflow.slot();
+    _.requestColumnSummary = Flow.Dataflow.slot();
+    _.requestModelBuilder = Flow.Dataflow.slot();
+    _.requestModelBuilders = Flow.Dataflow.slot();
+    _.requestModelBuild = Flow.Dataflow.slot();
+    _.requestModelInputValidation = Flow.Dataflow.slot();
+    _.requestAutoModelBuild = Flow.Dataflow.slot();
+    _.requestPredict = Flow.Dataflow.slot();
+    _.requestPrediction = Flow.Dataflow.slot();
+    _.requestPredictions = Flow.Dataflow.slot();
+    _.requestPartialDependence = Flow.Dataflow.slot();
+    _.requestPartialDependenceData = Flow.Dataflow.slot();
+    _.requestGrids = Flow.Dataflow.slot();
+    _.requestModels = Flow.Dataflow.slot();
+    _.requestGrid = Flow.Dataflow.slot();
+    _.requestModel = Flow.Dataflow.slot();
+    _.requestPojoPreview = Flow.Dataflow.slot();
+    _.requestDeleteModel = Flow.Dataflow.slot();
+    _.requestImportModel = Flow.Dataflow.slot();
+    _.requestExportModel = Flow.Dataflow.slot();
+    _.requestJobs = Flow.Dataflow.slot();
+    _.requestJob = Flow.Dataflow.slot();
+    _.requestCancelJob = Flow.Dataflow.slot();
+    _.requestObjects = Flow.Dataflow.slot();
+    _.requestObject = Flow.Dataflow.slot();
+    _.requestObjectExists = Flow.Dataflow.slot();
+    _.requestDeleteObject = Flow.Dataflow.slot();
+    _.requestPutObject = Flow.Dataflow.slot();
+    _.requestUploadObject = Flow.Dataflow.slot();
+    _.requestUploadFile = Flow.Dataflow.slot();
+    _.requestCloud = Flow.Dataflow.slot();
+    _.requestTimeline = Flow.Dataflow.slot();
+    _.requestProfile = Flow.Dataflow.slot();
+    _.requestStackTrace = Flow.Dataflow.slot();
+    _.requestRemoveAll = Flow.Dataflow.slot();
+    _.requestEcho = Flow.Dataflow.slot();
+    _.requestLogFile = Flow.Dataflow.slot();
+    _.requestNetworkTest = Flow.Dataflow.slot();
+    _.requestAbout = Flow.Dataflow.slot();
+    _.requestShutdown = Flow.Dataflow.slot();
+    _.requestEndpoints = Flow.Dataflow.slot();
+    _.requestEndpoint = Flow.Dataflow.slot();
+    _.requestSchemas = Flow.Dataflow.slot();
+    _.requestSchema = Flow.Dataflow.slot();
+    _.requestPacks = Flow.Dataflow.slot();
+    _.requestPack = Flow.Dataflow.slot();
+    _.requestFlow = Flow.Dataflow.slot();
+    _.requestHelpIndex = Flow.Dataflow.slot();
+    _.requestHelpContent = Flow.Dataflow.slot();
+    _.requestExec = Flow.Dataflow.slot();
+    _.ls = Flow.Dataflow.slot();
+    _.inspect = Flow.Dataflow.slot();
+    _.plot = Flow.Dataflow.slot();
+    _.grid = Flow.Dataflow.slot();
+    _.enumerate = Flow.Dataflow.slot();
+    _.scalaIntpId = Flow.Dataflow.signal(-1);
+    _.requestRDDs = Flow.Dataflow.slot();
+    _.requestDataFrames = Flow.Dataflow.slot();
+    _.requestScalaIntp = Flow.Dataflow.slot();
+    _.requestScalaCode = Flow.Dataflow.slot();
+    _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
+    _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
+    return _.requestAsDataFrame = Flow.Dataflow.slot();
+  };
+
+  function h2oApplication(_) {
+    h2oApplicationContext(_);
+    return H2O.Proxy(_);
+  };
+
+  function flowApplicationContext(_) {
+    var Flow = window.Flow;
+    _.ready = Flow.Dataflow.slots();
+    _.initialized = Flow.Dataflow.slots();
+    _.open = Flow.Dataflow.slot();
+    _.load = Flow.Dataflow.slot();
+    _.saved = Flow.Dataflow.slots();
+    _.loaded = Flow.Dataflow.slots();
+    _.setDirty = Flow.Dataflow.slots();
+    _.setPristine = Flow.Dataflow.slots();
+    _.status = Flow.Dataflow.slot();
+    _.trackEvent = Flow.Dataflow.slot();
+    _.trackException = Flow.Dataflow.slot();
+    _.selectCell = Flow.Dataflow.slot();
+    _.insertCell = Flow.Dataflow.slot();
+    _.insertAndExecuteCell = Flow.Dataflow.slot();
+    _.executeAllCells = Flow.Dataflow.slot();
+    _.showHelp = Flow.Dataflow.slot();
+    _.showOutline = Flow.Dataflow.slot();
+    _.showBrowser = Flow.Dataflow.slot();
+    _.showClipboard = Flow.Dataflow.slot();
+    _.saveClip = Flow.Dataflow.slot();
+    _.growl = Flow.Dataflow.slot();
+    _.confirm = Flow.Dataflow.slot();
+    _.alert = Flow.Dataflow.slot();
+    return _.dialog = Flow.Dataflow.slot();
+  };
+
+  function flowSandbox(_, routines) {
+    return {
+      routines,
+      context: {},
+      results: {}
+    };
+  };
+
+  function flowAnalytics(_) {
+    var lodash = window._;
+    var Flow = window.Flow;
+    Flow.Dataflow.link(_.trackEvent, function (category, action, label, value) {
+      return lodash.defer(function () {
+        return window.ga('send', 'event', category, action, label, value);
+      });
+    });
+    return Flow.Dataflow.link(_.trackException, function (description) {
+      return lodash.defer(function () {
+        _.requestEcho(`FLOW: ${ description }`, function () {});
+        return window.ga('send', 'exception', {
+          exDescription: description,
+          exFatal: false,
+          appName: 'Flow',
+          appVersion: Flow.Version
+        });
+      });
+    });
+  };
+
+  function flowGrowl(_) {
+    var Flow = window.Flow;
+    return Flow.Dataflow.link(_.growl, function (message, type) {
+      if (type) {
+        return $.bootstrapGrowl(message, { type });
+      }
+      return $.bootstrapGrowl(message);
+    });
+  };
+
+  function flowAutosave(_) {
+    var Flow = window.Flow;
+    var setDirty;
+    var setPristine;
+    var warnOnExit;
+    warnOnExit = function (e) {
+      var message;
+      message = 'Warning: you are about to exit Flow.';
+      if (e = e != null ? e : window.event) {
+        e.returnValue = message;
+      }
+      return message;
+    };
+    setDirty = function () {
+      return window.onbeforeunload = warnOnExit;
+    };
+    setPristine = function () {
+      return window.onbeforeunload = null;
+    };
+    return Flow.Dataflow.link(_.ready, function () {
+      Flow.Dataflow.link(_.setDirty, setDirty);
+      return Flow.Dataflow.link(_.setPristine, setPristine);
+    });
+  };
+
+  function flowApplication(_, routines) {
+    var Flow = window.Flow;
+    var _notebook;
+    var _renderers;
+    var _sandbox;
+    flowApplicationContext(_);
+    _sandbox = flowSandbox(_, routines(_));
+    _renderers = Flow.Renderers(_, _sandbox);
+    flowAnalytics(_);
+    flowGrowl(_);
+    flowAutosave(_);
+    _notebook = Flow.Notebook(_, _renderers);
+    return {
+      context: _,
+      sandbox: _sandbox,
+      view: _notebook
+    };
+  };
+
+  function flow() {
+    var Flow = window.Flow;
+    var checkSparklingWater;
+    var getContextPath;
+    getContextPath = function () {
+      window.Flow.ContextPath = '/';
+      return $.ajax({
+        url: window.referrer,
+        type: 'GET',
+        success(data, status, xhr) {
+          if (xhr.getAllResponseHeaders().indexOf('X-h2o-context-path') !== -1) {
+            return window.Flow.ContextPath = xhr.getResponseHeader('X-h2o-context-path');
+          }
+        },
+        async: false
+      });
+    };
+    checkSparklingWater = function (context) {
+      context.onSparklingWater = false;
+      return $.ajax({
+        url: `${ window.Flow.ContextPath }3/Metadata/endpoints`,
+        type: 'GET',
+        dataType: 'json',
+        success(response) {
+          var route;
+          var _i;
+          var _len;
+          var _ref;
+          var _results;
+          _ref = response.routes;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            route = _ref[_i];
+            if (route.url_pattern === '/3/scalaint') {
+              _results.push(context.onSparklingWater = true);
+            } else {
+              _results.push(void 0);
+            }
+          }
+          return _results;
+        },
+        async: false
+      });
+    };
+    if ((typeof window !== 'undefined' && window !== null ? window.$ : void 0) != null) {
+      $(function () {
+        var context;
+        context = {};
+        getContextPath();
+        checkSparklingWater(context);
+        window.flow = flowApplication(context, H2O.Routines);
+        h2oApplication(context);
+        ko.applyBindings(window.flow);
+        context.ready();
+        return context.initialized();
+      });
+    }
+  }
+
   const flowPrelude = flowPreludeFunction();
 
   // flow.coffee
@@ -10423,63 +10482,7 @@
     var lodash = window._;
     window.Flow = {};
     window.H2O = {};
-    (function () {
-      var checkSparklingWater;
-      var getContextPath;
-      getContextPath = function () {
-        window.Flow.ContextPath = '/';
-        return $.ajax({
-          url: window.referrer,
-          type: 'GET',
-          success(data, status, xhr) {
-            if (xhr.getAllResponseHeaders().indexOf('X-h2o-context-path') !== -1) {
-              return window.Flow.ContextPath = xhr.getResponseHeader('X-h2o-context-path');
-            }
-          },
-          async: false
-        });
-      };
-      checkSparklingWater = function (context) {
-        context.onSparklingWater = false;
-        return $.ajax({
-          url: `${ window.Flow.ContextPath }3/Metadata/endpoints`,
-          type: 'GET',
-          dataType: 'json',
-          success(response) {
-            var route;
-            var _i;
-            var _len;
-            var _ref;
-            var _results;
-            _ref = response.routes;
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              route = _ref[_i];
-              if (route.url_pattern === '/3/scalaint') {
-                _results.push(context.onSparklingWater = true);
-              } else {
-                _results.push(void 0);
-              }
-            }
-            return _results;
-          },
-          async: false
-        });
-      };
-      if ((typeof window !== 'undefined' && window !== null ? window.$ : void 0) != null) {
-        $(function () {
-          var context;
-          context = {};
-          getContextPath();
-          checkSparklingWater(context);
-          window.flow = flowApplication(context, H2O.Routines);
-          h2oApplication(context);
-          ko.applyBindings(window.flow);
-          context.ready();
-          return context.initialized();
-        });
-      }
-    }).call(this);
+    flow();
     about();
     clipboard();
     failure();
