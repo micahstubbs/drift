@@ -4,11 +4,7 @@ const flowPrelude = flowPreludeFunction();
 export function objectBrowser() {
   const lodash = window._;
   const Flow = window.Flow;
-  let isExpandable;
-  let preview;
-  let previewArray;
-  let previewObject;
-  isExpandable = type => {
+  const isExpandable = type => {
     switch (type) {
       case 'null':
       case 'undefined':
@@ -24,18 +20,14 @@ export function objectBrowser() {
         return true;
     }
   };
-  previewArray = array => {
+  const previewArray = array => {
     let element;
-    let ellipsis;
-    let previews;
-    ellipsis = array.length > 5 ? ', ...' : '';
-    previews = (() => {
+    const ellipsis = array.length > 5 ? ', ...' : '';
+    const previews = (() => {
       let _i;
       let _len;
-      let _ref;
-      let _results;
-      _ref = lodash.head(array, 5);
-      _results = [];
+      const _ref = lodash.head(array, 5);
+      const _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
         _results.push(preview(element));
@@ -44,14 +36,12 @@ export function objectBrowser() {
     })();
     return `[${previews.join(', ')}${ellipsis}]`;
   };
-  previewObject = object => {
+  const previewObject = object => {
     let count;
-    let ellipsis;
     let key;
-    let previews;
     let value;
     count = 0;
-    previews = [];
+    const previews = [];
     ellipsis = '';
     for (key in object) {
       if ({}.hasOwnProperty.call(object, key)) {
@@ -68,12 +58,11 @@ export function objectBrowser() {
     }
     return `{${previews.join(', ')}${ellipsis}}`;
   };
-  preview = (element, recurse) => {
-    let type;
+  const preview = (element, recurse) => {
     if (recurse == null) {
       recurse = false;
     }
-    type = flowPrelude.typeOf(element);
+    const type = flowPrelude.typeOf(element);
     switch (type) {
       case 'Boolean':
       case 'String':
@@ -100,16 +89,11 @@ export function objectBrowser() {
     }
   };
   Flow.ObjectBrowserElement = (key, object) => {
-    let toggle;
-    let _canExpand;
-    let _expansions;
-    let _isExpanded;
-    let _type;
-    _expansions = Flow.Dataflow.signal(null);
-    _isExpanded = Flow.Dataflow.signal(false);
-    _type = flowPrelude.typeOf(object);
-    _canExpand = isExpandable(_type);
-    toggle = () => {
+    const _expansions = Flow.Dataflow.signal(null);
+    const _isExpanded = Flow.Dataflow.signal(false);
+    const _type = flowPrelude.typeOf(object);
+    const _canExpand = isExpandable(_type);
+    const toggle = () => {
       let expansions;
       let value;
       if (!_canExpand) {
