@@ -1074,15 +1074,13 @@
   function jobOutput() {
     const lodash = window._;
     const Flow = window.Flow;
-    let getJobOutputStatusColor;
-    let getJobProgressPercent;
-    let jobOutputStatusColors;
-    jobOutputStatusColors = {
+    const H2O = window.H2O;
+    const jobOutputStatusColors = {
       failed: '#d9534f',
       done: '#ccc',
       running: '#f0ad4e'
     };
-    getJobOutputStatusColor = status => {
+    const getJobOutputStatusColor = status => {
       switch (status) {
         case 'DONE':
           return jobOutputStatusColors.done;
@@ -1093,38 +1091,14 @@
           return jobOutputStatusColors.failed;
       }
     };
-    getJobProgressPercent = progress => `${ Math.ceil(100 * progress) }%`;
+    const getJobProgressPercent = progress => `${ Math.ceil(100 * progress) }%`;
     H2O.JobOutput = (_, _go, _job) => {
-      let canView;
-      let cancel;
-      let initialize;
-      let isJobRunning;
-      let messageIcons;
-      let refresh;
-      let updateJob;
-      let view;
-      let _canCancel;
-      let _canView;
-      let _description;
-      let _destinationKey;
-      let _destinationType;
-      let _exception;
-      let _isBusy;
-      let _isLive;
-      let _key;
-      let _messages;
-      let _progress;
-      let _progressMessage;
-      let _remainingTime;
-      let _runTime;
-      let _status;
-      let _statusColor;
-      _isBusy = Flow.Dataflow.signal(false);
-      _isLive = Flow.Dataflow.signal(false);
-      _key = _job.key.name;
-      _description = _job.description;
-      _destinationKey = _job.dest.name;
-      _destinationType = (() => {
+      const _isBusy = Flow.Dataflow.signal(false);
+      const _isLive = Flow.Dataflow.signal(false);
+      const _key = _job.key.name;
+      const _description = _job.description;
+      const _destinationKey = _job.dest.name;
+      const _destinationType = (() => {
         switch (_job.dest.type) {
           case 'Key<Frame>':
             return 'Frame';
@@ -1142,23 +1116,23 @@
             return 'Unknown';
         }
       })();
-      _runTime = Flow.Dataflow.signal(null);
-      _remainingTime = Flow.Dataflow.signal(null);
-      _progress = Flow.Dataflow.signal(null);
-      _progressMessage = Flow.Dataflow.signal(null);
-      _status = Flow.Dataflow.signal(null);
-      _statusColor = Flow.Dataflow.signal(null);
-      _exception = Flow.Dataflow.signal(null);
-      _messages = Flow.Dataflow.signal(null);
-      _canView = Flow.Dataflow.signal(false);
-      _canCancel = Flow.Dataflow.signal(false);
-      isJobRunning = job => job.status === 'CREATED' || job.status === 'RUNNING';
-      messageIcons = {
+      const _runTime = Flow.Dataflow.signal(null);
+      const _remainingTime = Flow.Dataflow.signal(null);
+      const _progress = Flow.Dataflow.signal(null);
+      const _progressMessage = Flow.Dataflow.signal(null);
+      const _status = Flow.Dataflow.signal(null);
+      const _statusColor = Flow.Dataflow.signal(null);
+      const _exception = Flow.Dataflow.signal(null);
+      const _messages = Flow.Dataflow.signal(null);
+      const _canView = Flow.Dataflow.signal(false);
+      const _canCancel = Flow.Dataflow.signal(false);
+      const isJobRunning = job => job.status === 'CREATED' || job.status === 'RUNNING';
+      const messageIcons = {
         ERROR: 'fa-times-circle red',
         WARN: 'fa-warning orange',
         INFO: 'fa-info-circle'
       };
-      canView = job => {
+      const canView = job => {
         switch (_destinationType) {
           case 'Model':
           case 'Grid':
@@ -1167,7 +1141,7 @@
             return !isJobRunning(job);
         }
       };
-      updateJob = job => {
+      const updateJob = job => {
         let cause;
         let message;
         let messages;
@@ -1181,10 +1155,8 @@
           messages = (() => {
             let _i;
             let _len;
-            let _ref;
-            let _results;
-            _ref = job.messages;
-            _results = [];
+            const _ref = job.messages;
+            const _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               message = _ref[_i];
               if (message.message_type !== 'HIDE') {
@@ -1207,7 +1179,7 @@
         _canView(canView(job));
         return _canCancel(isJobRunning(job));
       };
-      refresh = () => {
+      const refresh = () => {
         _isBusy(true);
         return _.requestJob(_key, (error, job) => {
           _isBusy(false);
@@ -1233,7 +1205,7 @@
           return refresh();
         }
       });
-      view = () => {
+      const view = () => {
         if (!_canView()) {
           return;
         }
@@ -1252,13 +1224,13 @@
             return alert(`This frame was exported to\n${ _job.dest.name }`);
         }
       };
-      cancel = () => _.requestCancelJob(_key, (error, result) => {
+      const cancel = () => _.requestCancelJob(_key, (error, result) => {
         if (error) {
           return console.debug(error);
         }
         return updateJob(_job);
       });
-      initialize = job => {
+      const initialize = job => {
         updateJob(job);
         if (isJobRunning(job)) {
           return _isLive(true);
