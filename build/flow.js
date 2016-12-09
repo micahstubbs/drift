@@ -1745,21 +1745,13 @@
   function h2oTimelineOutput(_, _go, _timeline) {
     const lodash = window._;
     const Flow = window.Flow;
-    let createEvent;
-    let refresh;
-    let toggleRefresh;
-    let updateTimeline;
-    let _data;
-    let _headers;
-    let _isBusy;
-    let _isLive;
-    let _timestamp;
-    _isLive = Flow.Dataflow.signal(false);
-    _isBusy = Flow.Dataflow.signal(false);
-    _headers = ['HH:MM:SS:MS', 'nanosec', 'Who', 'I/O Type', 'Event', 'Type', 'Bytes'];
-    _data = Flow.Dataflow.signal(null);
-    _timestamp = Flow.Dataflow.signal(Date.now());
-    createEvent = event => {
+    const _exception = Flow.Dataflow.signal(null);
+    const _isLive = Flow.Dataflow.signal(false);
+    const _isBusy = Flow.Dataflow.signal(false);
+    const _headers = ['HH:MM:SS:MS', 'nanosec', 'Who', 'I/O Type', 'Event', 'Type', 'Bytes'];
+    const _data = Flow.Dataflow.signal(null);
+    const _timestamp = Flow.Dataflow.signal(Date.now());
+    const createEvent = event => {
       switch (event.type) {
         case 'io':
           return [event.date, event.nanos, event.node, event.io_flavor || '-', 'I/O', '-', event.data];
@@ -1770,40 +1762,29 @@
         default:
       }
     };
-    updateTimeline = timeline => {
+    const updateTimeline = timeline => {
       let cell;
       let event;
-      let grid;
       let header;
-      let table;
-      let tbody;
-      let td;
-      let th;
-      let thead;
-      let ths;
-      let tr;
-      let trs;
-      let _ref;
-      _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td');
-      grid = _ref[0];
-      table = _ref[1];
-      thead = _ref[2];
-      tbody = _ref[3];
-      tr = _ref[4];
-      th = _ref[5];
-      td = _ref[6];
-      ths = (() => {
+      const _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td');
+      const grid = _ref[0];
+      const table = _ref[1];
+      const thead = _ref[2];
+      const tbody = _ref[3];
+      const tr = _ref[4];
+      const th = _ref[5];
+      const td = _ref[6];
+      const ths = (() => {
         let _i;
         let _len;
-        let _results;
-        _results = [];
+        const _results = [];
         for (_i = 0, _len = _headers.length; _i < _len; _i++) {
           header = _headers[_i];
           _results.push(th(header));
         }
         return _results;
       })();
-      trs = (() => {
+      const trs = (() => {
         let _i;
         let _len;
         const _ref1 = timeline.events;
@@ -1826,8 +1807,8 @@
       })();
       return _data(Flow.HTML.render('div', grid([table([thead(tr(ths)), tbody(trs)])])));
     };
-    toggleRefresh = () => _isLive(!_isLive());
-    refresh = () => {
+    const toggleRefresh = () => _isLive(!_isLive());
+    const refresh = () => {
       _isBusy(true);
       return _.requestTimeline((error, timeline) => {
         _isBusy(false);
