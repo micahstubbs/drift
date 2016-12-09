@@ -76,7 +76,7 @@ export function notebook() {
     _lastDeletedCell = null;
     const _areInputsHidden = Flow.Dataflow.signal(false);
     const _areOutputsHidden = Flow.Dataflow.signal(false);
-    const  _isSidebarHidden = Flow.Dataflow.signal(false);
+    const _isSidebarHidden = Flow.Dataflow.signal(false);
     const _isRunningAll = Flow.Dataflow.signal(false);
     const _runningCaption = Flow.Dataflow.signal('Running');
     const _runningPercent = Flow.Dataflow.signal('0%');
@@ -147,7 +147,7 @@ export function notebook() {
         input = '';
       }
       return flowCell(_, _renderers, type, input);
-    };
+    }
     const checkConsistency = () => {
       let cell;
       let i;
@@ -191,7 +191,7 @@ export function notebook() {
         lodash.defer(() => _selectedCell.scrollIntoView(scrollImmediately));
       }
       return _selectedCell;
-    };
+    }
     const cloneCell = cell => createCell(cell.type(), cell.input());
     const switchToCommandMode = () => _selectedCell.isActive(false);
     const switchToEditMode = () => {
@@ -236,7 +236,7 @@ export function notebook() {
           _.saveClip('trash', removedCell.type(), removedCell.input());
         }
       }
-    };
+    }
     const insertCell = (index, cell) => {
       _cells.splice(index, 0, cell);
       selectCell(cell);
@@ -446,7 +446,7 @@ export function notebook() {
         selectCell(cells[_selectedCellIndex + 1]);
       }
       return false;
-    };
+    }
     const selectPreviousCell = () => {
       let cells;
       if (_selectedCellIndex !== 0) {
@@ -528,7 +528,7 @@ export function notebook() {
     });
     const duplicateNotebook = () => deserialize(`Copy of ${_localName()}`, null, serialize());
     const openNotebook = (name, doc) => deserialize(name, null, doc);
-    function loadNotebook(name) { 
+    function loadNotebook(name) {
       return _.requestObject('notebook', name, (error, doc) => {
         let _ref;
         if (error) {
@@ -536,7 +536,7 @@ export function notebook() {
         }
         return deserialize(name, name, doc);
       });
-    };
+    }
 
     const exportNotebook = () => {
       let remoteName;
