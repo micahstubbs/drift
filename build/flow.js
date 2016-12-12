@@ -9357,8 +9357,7 @@
   }
 
   function flowHeading(_, level) {
-    let render;
-    render = (input, output) => {
+    const render = (input, output) => {
       output.data({
         text: input.trim() || '(Untitled)',
         template: `flow-${ level }`
