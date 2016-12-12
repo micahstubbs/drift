@@ -4240,46 +4240,21 @@
   function h2oPredictInput(_, _go, opt) {
     const lodash = window._;
     const Flow = window.Flow;
-    let predict;
-    let _canPredict;
-    let _computeDeepFeaturesHiddenLayer;
-    let _computeLeafNodeAssignment;
-    let _computeReconstructionError;
-    let _deepFeaturesHiddenLayer;
-    let _deepFeaturesHiddenLayerValue;
-    let _destinationKey;
-    let _exception;
-    let _exemplarIndex;
-    let _exemplarIndexValue;
-    let _frames;
-    let _hasExemplarIndex;
-    let _hasFrames;
-    let _hasLeafNodeAssignment;
-    let _hasModels;
-    let _hasReconError;
-    let _isDeepLearning;
-    let _models;
     let _ref;
-    let _selectedFrame;
-    let _selectedFrames;
-    let _selectedFramesCaption;
-    let _selectedModel;
-    let _selectedModels;
-    let _selectedModelsCaption;
-    _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
-    _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
-    _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
-    _selectedModelsCaption = _selectedModels.join(', ');
-    _selectedFramesCaption = _selectedFrames.join(', ');
-    _exception = Flow.Dataflow.signal(null);
-    _selectedFrame = Flow.Dataflow.signal(null);
-    _selectedModel = Flow.Dataflow.signal(null);
-    _hasFrames = _selectedFrames.length;
-    _hasModels = _selectedModels.length;
-    _frames = Flow.Dataflow.signals([]);
-    _models = Flow.Dataflow.signals([]);
-    _isDeepLearning = Flow.Dataflow.lift(_selectedModel, model => model && model.algo === 'deeplearning');
-    _hasReconError = Flow.Dataflow.lift(_selectedModel, model => {
+    const _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
+    const _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
+    const _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
+    const _selectedModelsCaption = _selectedModels.join(', ');
+    const _selectedFramesCaption = _selectedFrames.join(', ');
+    const _exception = Flow.Dataflow.signal(null);
+    const _selectedFrame = Flow.Dataflow.signal(null);
+    const _selectedModel = Flow.Dataflow.signal(null);
+    const _hasFrames = _selectedFrames.length;
+    const _hasModels = _selectedModels.length;
+    const _frames = Flow.Dataflow.signals([]);
+    const _models = Flow.Dataflow.signals([]);
+    const _isDeepLearning = Flow.Dataflow.lift(_selectedModel, model => model && model.algo === 'deeplearning');
+    const _hasReconError = Flow.Dataflow.lift(_selectedModel, model => {
       let parameter;
       let _i;
       let _len;
@@ -4297,7 +4272,7 @@
       }
       return false;
     });
-    _hasLeafNodeAssignment = Flow.Dataflow.lift(_selectedModel, model => {
+    const _hasLeafNodeAssignment = Flow.Dataflow.lift(_selectedModel, model => {
       if (model) {
         switch (model.algo) {
           case 'gbm':
@@ -4308,7 +4283,7 @@
         }
       }
     });
-    _hasExemplarIndex = Flow.Dataflow.lift(_selectedModel, model => {
+    const _hasExemplarIndex = Flow.Dataflow.lift(_selectedModel, model => {
       if (model) {
         switch (model.algo) {
           case 'aggregator':
@@ -4318,18 +4293,16 @@
         }
       }
     });
-    _computeReconstructionError = Flow.Dataflow.signal(false);
-    _computeDeepFeaturesHiddenLayer = Flow.Dataflow.signal(false);
-    _computeLeafNodeAssignment = Flow.Dataflow.signal(false);
-    _deepFeaturesHiddenLayer = Flow.Dataflow.signal(0);
-    _deepFeaturesHiddenLayerValue = Flow.Dataflow.lift(_deepFeaturesHiddenLayer, text => parseInt(text, 10));
-    _exemplarIndex = Flow.Dataflow.signal(0);
-    _exemplarIndexValue = Flow.Dataflow.lift(_exemplarIndex, text => parseInt(text, 10));
-    _canPredict = Flow.Dataflow.lift(_selectedFrame, _selectedModel, _hasReconError, _computeReconstructionError, _computeDeepFeaturesHiddenLayer, _deepFeaturesHiddenLayerValue, _exemplarIndexValue, _hasExemplarIndex, (frame, model, hasReconError, computeReconstructionError, computeDeepFeaturesHiddenLayer, deepFeaturesHiddenLayerValue, exemplarIndexValue, hasExemplarIndex) => {
-      let hasFrameAndModel;
-      let hasValidOptions;
-      hasFrameAndModel = frame && model || _hasFrames && model || _hasModels && frame || _hasModels && hasExemplarIndex;
-      hasValidOptions = hasReconError ? computeReconstructionError ? true : computeDeepFeaturesHiddenLayer ? !lodash.isNaN(deepFeaturesHiddenLayerValue) : true : true;
+    const _computeReconstructionError = Flow.Dataflow.signal(false);
+    const _computeDeepFeaturesHiddenLayer = Flow.Dataflow.signal(false);
+    const _computeLeafNodeAssignment = Flow.Dataflow.signal(false);
+    const _deepFeaturesHiddenLayer = Flow.Dataflow.signal(0);
+    const _deepFeaturesHiddenLayerValue = Flow.Dataflow.lift(_deepFeaturesHiddenLayer, text => parseInt(text, 10));
+    const _exemplarIndex = Flow.Dataflow.signal(0);
+    const _exemplarIndexValue = Flow.Dataflow.lift(_exemplarIndex, text => parseInt(text, 10));
+    const _canPredict = Flow.Dataflow.lift(_selectedFrame, _selectedModel, _hasReconError, _computeReconstructionError, _computeDeepFeaturesHiddenLayer, _deepFeaturesHiddenLayerValue, _exemplarIndexValue, _hasExemplarIndex, (frame, model, hasReconError, computeReconstructionError, computeDeepFeaturesHiddenLayer, deepFeaturesHiddenLayerValue, exemplarIndexValue, hasExemplarIndex) => {
+      const hasFrameAndModel = frame && model || _hasFrames && model || _hasModels && frame || _hasModels && hasExemplarIndex;
+      const hasValidOptions = hasReconError ? computeReconstructionError ? true : computeDeepFeaturesHiddenLayer ? !lodash.isNaN(deepFeaturesHiddenLayerValue) : true : true;
       return hasFrameAndModel && hasValidOptions;
     });
     if (!_hasFrames) {
@@ -4341,8 +4314,7 @@
         return _frames((() => {
           let _i;
           let _len;
-          let _results;
-          _results = [];
+          const _results = [];
           for (_i = 0, _len = frames.length; _i < _len; _i++) {
             frame = frames[_i];
             if (!frame.is_text) {
@@ -4362,8 +4334,7 @@
         return _models((() => {
           let _i;
           let _len;
-          let _results;
-          _results = [];
+          const _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
             _results.push(model.model_id.name);
@@ -4377,9 +4348,8 @@
         _.requestModel(opt.model, (error, model) => _selectedModel(model));
       }
     }
-    predict = () => {
+    const predict = () => {
       let cs;
-      let destinationKey;
       let frameArg;
       let modelArg;
       if (_hasFrames) {
@@ -4392,7 +4362,7 @@
         modelArg = _selectedModel();
         frameArg = _selectedFrame();
       }
-      destinationKey = _destinationKey();
+      const destinationKey = _destinationKey();
       cs = `predict model: ${ flowPrelude$25.stringify(modelArg) }, frame: ${ flowPrelude$25.stringify(frameArg) }`;
       if (destinationKey) {
         cs += `, predictions_frame: ${ flowPrelude$25.stringify(destinationKey) }`;
