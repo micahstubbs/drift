@@ -12030,9 +12030,10 @@
 
   function flow() {
     const Flow = window.Flow;
-    let checkSparklingWater;
-    let getContextPath;
-    getContextPath = () => {
+    const ko = window.ko;
+    const H2O = window.H2O;
+    const $ = window.jQuery;
+    const getContextPath = () => {
       window.Flow.ContextPath = '/';
       return $.ajax({
         url: window.referrer,
@@ -12045,7 +12046,7 @@
         async: false
       });
     };
-    checkSparklingWater = context => {
+    const checkSparklingWater = context => {
       context.onSparklingWater = false;
       return $.ajax({
         url: `${ window.Flow.ContextPath }3/Metadata/endpoints`,
@@ -12055,10 +12056,8 @@
           let route;
           let _i;
           let _len;
-          let _ref;
-          let _results;
-          _ref = response.routes;
-          _results = [];
+          const _ref = response.routes;
+          const _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             route = _ref[_i];
             if (route.url_pattern === '/3/scalaint') {
@@ -12074,8 +12073,7 @@
     };
     if ((typeof window !== 'undefined' && window !== null ? window.$ : void 0) != null) {
       $(() => {
-        let context;
-        context = {};
+        const context = {};
         getContextPath();
         checkSparklingWater(context);
         window.flow = flowApplication(context, H2O.Routines);
