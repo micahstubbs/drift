@@ -3920,14 +3920,10 @@
   function h2oScalaCodeOutput(_, _go, _result) {
     const lodash = window._;
     const Flow = window.Flow;
-    let createScalaCodeView;
-    let _scalaCodeView;
-    let _scalaLinkText;
-    let _scalaResponseVisible;
-    _scalaCodeView = Flow.Dataflow.signal(null);
-    _scalaResponseVisible = Flow.Dataflow.signal(false);
-    _scalaLinkText = Flow.Dataflow.signal('Show Scala Response');
-    createScalaCodeView = result => ({
+    const _scalaCodeView = Flow.Dataflow.signal(null);
+    const _scalaResponseVisible = Flow.Dataflow.signal(false);
+    const _scalaLinkText = Flow.Dataflow.signal('Show Scala Response');
+    const createScalaCodeView = result => ({
       output: result.output,
       response: result.response,
       status: result.status,
