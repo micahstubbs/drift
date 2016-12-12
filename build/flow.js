@@ -3642,10 +3642,8 @@
   function h2oDataFramesOutput(_, _go, _dataFrames) {
     const lodash = window._;
     const Flow = window.Flow;
-    let createDataFrameView;
-    let _dataFramesViews;
-    _dataFramesViews = Flow.Dataflow.signal([]);
-    createDataFrameView = dataFrame => ({
+    const _dataFramesViews = Flow.Dataflow.signal([]);
+    const createDataFrameView = dataFrame => ({
       dataframe_id: dataFrame.dataframe_id,
       partitions: dataFrame.partitions
     });
