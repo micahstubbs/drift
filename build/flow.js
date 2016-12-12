@@ -3881,10 +3881,8 @@
   function h2oRDDsOutput(_, _go, _rDDs) {
     const lodash = window._;
     const Flow = window.Flow;
-    let createRDDView;
-    let _rDDViews;
-    _rDDViews = Flow.Dataflow.signal([]);
-    createRDDView = rDD => ({
+    const _rDDViews = Flow.Dataflow.signal([]);
+    const createRDDView = rDD => ({
       id: rDD.rdd_id,
       name: rDD.name,
       partitions: rDD.partitions
