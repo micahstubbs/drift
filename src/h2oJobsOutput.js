@@ -4,25 +4,14 @@ const flowPrelude = flowPreludeFunction();
 export function h2oJobsOutput(_, _go, jobs) {
   const lodash = window._;
   const Flow = window.Flow;
-  let createJobView;
-  let initialize;
-  let refresh;
-  let toggleRefresh;
-  let _exception;
-  let _hasJobViews;
-  let _isBusy;
-  let _isLive;
-  let _jobViews;
-  _jobViews = Flow.Dataflow.signals([]);
-  _hasJobViews = Flow.Dataflow.lift(_jobViews, jobViews => jobViews.length > 0);
-  _isLive = Flow.Dataflow.signal(false);
-  _isBusy = Flow.Dataflow.signal(false);
-  _exception = Flow.Dataflow.signal(null);
-  createJobView = job => {
-    let type;
-    let view;
-    view = () => _.insertAndExecuteCell('cs', `getJob ${flowPrelude.stringify(job.key.name)}`);
-    type = (() => {
+  const _jobViews = Flow.Dataflow.signals([]);
+  const _hasJobViews = Flow.Dataflow.lift(_jobViews, jobViews => jobViews.length > 0);
+  const _isLive = Flow.Dataflow.signal(false);
+  const _isBusy = Flow.Dataflow.signal(false);
+  const _exception = Flow.Dataflow.signal(null);
+  const createJobView = job => {
+    const view = () => _.insertAndExecuteCell('cs', `getJob ${flowPrelude.stringify(job.key.name)}`);
+    const type = (() => {
       switch (job.dest.type) {
         case 'Key<Frame>':
           return 'Frame';
@@ -47,8 +36,8 @@ export function h2oJobsOutput(_, _go, jobs) {
       view
     };
   };
-  toggleRefresh = () => _isLive(!_isLive());
-  refresh = () => {
+  const toggleRefresh = () => _isLive(!_isLive());
+  const refresh = () => {
     _isBusy(true);
     return _.requestJobs((error, jobs) => {
       _isBusy(false);
@@ -67,7 +56,7 @@ export function h2oJobsOutput(_, _go, jobs) {
       return refresh();
     }
   });
-  initialize = () => {
+  const initialize = () => {
     _jobViews(lodash.map(jobs, createJobView));
     return lodash.defer(_go);
   };
