@@ -4,38 +4,16 @@ const flowPrelude = flowPreludeFunction();
 export function h2oImportFilesInput(_, _go) {
   const lodash = window._;
   const Flow = window.Flow;
-  let createFileItem;
-  let createFileItems;
-  let createSelectedFileItem;
-  let deselectAllFiles;
-  let importFiles;
-  let importSelectedFiles;
-  let listPathHints;
-  let processImportResult;
-  let selectAllFiles;
-  let tryImportFiles;
-  let _exception;
-  let _hasErrorMessage;
-  let _hasImportedFiles;
-  let _hasSelectedFiles;
-  let _hasUnselectedFiles;
-  let _importedFileCount;
-  let _importedFiles;
-  let _selectedFileCount;
-  let _selectedFiles;
-  let _selectedFilesDictionary;
-  let _specifiedPath;
-  _specifiedPath = Flow.Dataflow.signal('');
-  _exception = Flow.Dataflow.signal('');
-  _hasErrorMessage = Flow.Dataflow.lift(_exception, exception => {
+  const _specifiedPath = Flow.Dataflow.signal('');
+  const _exception = Flow.Dataflow.signal('');
+  const _hasErrorMessage = Flow.Dataflow.lift(_exception, exception => {
     if (exception) {
       return true;
     }
     return false;
   });
-  tryImportFiles = () => {
-    let specifiedPath;
-    specifiedPath = _specifiedPath();
+  const tryImportFiles = () => {
+    const specifiedPath = _specifiedPath();
     return _.requestFileGlob(specifiedPath, -1, (error, result) => {
       if (error) {
         return _exception(error.stack);
@@ -44,42 +22,40 @@ export function h2oImportFilesInput(_, _go) {
       return processImportResult(result);
     });
   };
-  _importedFiles = Flow.Dataflow.signals([]);
-  _importedFileCount = Flow.Dataflow.lift(_importedFiles, files => {
+  const _importedFiles = Flow.Dataflow.signals([]);
+  const _importedFileCount = Flow.Dataflow.lift(_importedFiles, files => {
     if (files.length) {
       return `Found ${Flow.Util.describeCount(files.length, 'file')}:`;
     }
     return '';
   });
-  _hasImportedFiles = Flow.Dataflow.lift(_importedFiles, files => files.length > 0);
-  _hasUnselectedFiles = Flow.Dataflow.lift(_importedFiles, files => lodash.some(files, file => !file.isSelected()));
-  _selectedFiles = Flow.Dataflow.signals([]);
-  _selectedFilesDictionary = Flow.Dataflow.lift(_selectedFiles, files => {
-    let dictionary;
+  const _hasImportedFiles = Flow.Dataflow.lift(_importedFiles, files => files.length > 0);
+  const _hasUnselectedFiles = Flow.Dataflow.lift(_importedFiles, files => lodash.some(files, file => !file.isSelected()));
+  const _selectedFiles = Flow.Dataflow.signals([]);
+  const _selectedFilesDictionary = Flow.Dataflow.lift(_selectedFiles, files => {
     let file;
     let _i;
     let _len;
-    dictionary = {};
+    const dictionary = {};
     for (_i = 0, _len = files.length; _i < _len; _i++) {
       file = files[_i];
       dictionary[file.path] = true;
     }
     return dictionary;
   });
-  _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, files => {
+  const _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, files => {
     if (files.length) {
       return `${Flow.Util.describeCount(files.length, 'file')} selected:`;
     }
     return '(No files selected)';
   });
-  _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, files => files.length > 0);
-  importFiles = files => {
-    let paths;
-    paths = lodash.map(files, file => flowPrelude.stringify(file.path));
+  const _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, files => files.length > 0);
+  const importFiles = files => {
+    const paths = lodash.map(files, file => flowPrelude.stringify(file.path));
     return _.insertAndExecuteCell('cs', `importFiles [ ${paths.join(',')} ]`);
   };
-  importSelectedFiles = () => importFiles(_selectedFiles());
-  createSelectedFileItem = path => {
+  const importSelectedFiles = () => importFiles(_selectedFiles());
+  const createSelectedFileItem = path => {
     let self;
     return self = {
       path,
@@ -87,9 +63,8 @@ export function h2oImportFilesInput(_, _go) {
         let file;
         let _i;
         let _len;
-        let _ref;
         _selectedFiles.remove(self);
-        _ref = _importedFiles();
+        const _ref = _importedFiles();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           file = _ref[_i];
           if (file.path === path) {
@@ -99,9 +74,8 @@ export function h2oImportFilesInput(_, _go) {
       }
     };
   };
-  createFileItem = (path, isSelected) => {
-    let self;
-    self = {
+  const createFileItem = (path, isSelected) => {
+    const self = {
       path,
       isSelected: Flow.Dataflow.signal(isSelected),
       select() {
@@ -112,30 +86,27 @@ export function h2oImportFilesInput(_, _go) {
     Flow.Dataflow.act(self.isSelected, isSelected => _hasUnselectedFiles(lodash.some(_importedFiles(), file => !file.isSelected())));
     return self;
   };
-  createFileItems = result => lodash.map(result.matches, path => createFileItem(path, _selectedFilesDictionary()[path]));
-  listPathHints = (query, process) => _.requestFileGlob(query, 10, (error, result) => {
+  const createFileItems = result => lodash.map(result.matches, path => createFileItem(path, _selectedFilesDictionary()[path]));
+  const listPathHints = (query, process) => _.requestFileGlob(query, 10, (error, result) => {
     if (!error) {
       return process(lodash.map(result.matches, value => ({
         value
       })));
     }
   });
-  selectAllFiles = () => {
-    let dict;
+  const selectAllFiles = () => {
     let file;
     let _i;
     let _j;
     let _len;
     let _len1;
-    let _ref;
-    let _ref1;
-    dict = {};
-    _ref = _selectedFiles();
+    const dict = {};
+    const _ref = _selectedFiles();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       file = _ref[_i];
       dict[file.path] = true;
     }
-    _ref1 = _importedFiles();
+    const _ref1 = _importedFiles();
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       file = _ref1[_j];
       if (!dict[file.path]) {
@@ -143,23 +114,21 @@ export function h2oImportFilesInput(_, _go) {
       }
     }
   };
-  deselectAllFiles = () => {
+  const deselectAllFiles = () => {
     let file;
     let _i;
     let _len;
-    let _ref;
     _selectedFiles([]);
-    _ref = _importedFiles();
+    const _ref = _importedFiles();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       file = _ref[_i];
       file.isSelected(false);
     }
   };
-  processImportResult = result => {
-    let files;
-    files = createFileItems(result);
+  function processImportResult(result) {
+    const files = createFileItems(result);
     return _importedFiles(files);
-  };
+  }
   lodash.defer(_go);
   return {
     specifiedPath: _specifiedPath,
