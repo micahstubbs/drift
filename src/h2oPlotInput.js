@@ -2,27 +2,19 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oPlotInput(_, _go, _frame) {
-  let plot;
+  const Flow = window.Flow;
+  const lodash = window._;
   let vector;
-  let _canPlot;
-  let _color;
-  let _type;
-  let _types;
-  let _vectors;
-  let _x;
-  let _y;
-  _types = [
+  const _types = [
     'point',
     'path',
     'rect'
   ];
-  _vectors = (() => {
+  const _vectors = (() => {
     let _i;
     let _len;
-    let _ref;
-    let _results;
-    _ref = _frame.vectors;
-    _results = [];
+    const _ref = _frame.vectors;
+    const _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       vector = _ref[_i];
       if (vector.type === 'String' || vector.type === 'Number') {
@@ -31,15 +23,14 @@ export function h2oPlotInput(_, _go, _frame) {
     }
     return _results;
   })();
-  _type = Flow.Dataflow.signal(null);
-  _x = Flow.Dataflow.signal(null);
-  _y = Flow.Dataflow.signal(null);
-  _color = Flow.Dataflow.signal(null);
-  _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
-  plot = () => {
+  const _type = Flow.Dataflow.signal(null);
+  const _x = Flow.Dataflow.signal(null);
+  const _y = Flow.Dataflow.signal(null);
+  const _color = Flow.Dataflow.signal(null);
+  const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
+  const plot = () => {
     let color;
-    let command;
-    command = (color = _color()) ? `plot (g) -> g(\n  g.${_type()}(\n    g.position ${flowPrelude.stringify(_x())}, ${flowPrelude.stringify(_y())}\n    g.color ${flowPrelude.stringify(color)}\n  )\n  g.from inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)` : `plot (g) -> g(\n  g.${_type()}(\n    g.position ${flowPrelude.stringify(_x())}, ${flowPrelude.stringify(_y())}\n  )\n  g.from inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)`;
+    const command = (color = _color()) ? `plot (g) -> g(\n  g.${_type()}(\n    g.position ${flowPrelude.stringify(_x())}, ${flowPrelude.stringify(_y())}\n    g.color ${flowPrelude.stringify(color)}\n  )\n  g.from inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)` : `plot (g) -> g(\n  g.${_type()}(\n    g.position ${flowPrelude.stringify(_x())}, ${flowPrelude.stringify(_y())}\n  )\n  g.from inspect ${flowPrelude.stringify(_frame.label)}, ${_frame.metadata.origin}\n)`;
     return _.insertAndExecuteCell('cs', command);
   };
   lodash.defer(_go);
