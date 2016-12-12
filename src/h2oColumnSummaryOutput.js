@@ -4,21 +4,13 @@ const flowPrelude = flowPreludeFunction();
 export function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
   const lodash = window._;
   const Flow = window.Flow;
-  let column;
-  let impute;
-  let inspect;
-  let renderPlot;
   let table;
-  let _characteristicsPlot;
-  let _distributionPlot;
-  let _domainPlot;
-  let _summaryPlot;
-  column = lodash.head(frame.columns);
-  _characteristicsPlot = Flow.Dataflow.signal(null);
-  _summaryPlot = Flow.Dataflow.signal(null);
-  _distributionPlot = Flow.Dataflow.signal(null);
-  _domainPlot = Flow.Dataflow.signal(null);
-  renderPlot = (target, render) => render((error, vis) => {
+  const column = lodash.head(frame.columns);
+  const _characteristicsPlot = Flow.Dataflow.signal(null);
+  const _summaryPlot = Flow.Dataflow.signal(null);
+  const _distributionPlot = Flow.Dataflow.signal(null);
+  const _domainPlot = Flow.Dataflow.signal(null);
+  const renderPlot = (target, render) => render((error, vis) => {
     if (error) {
       return console.debug(error);
     }
@@ -36,8 +28,8 @@ export function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
   if (table = _.inspect('domain', frame)) {
     renderPlot(_domainPlot, _.plot(g => g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000))));
   }
-  impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${flowPrelude.stringify(frameKey)}, column: ${flowPrelude.stringify(columnName)}`);
-  inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`);
+  const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${flowPrelude.stringify(frameKey)}, column: ${flowPrelude.stringify(columnName)}`);
+  const inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`);
   lodash.defer(_go);
   return {
     label: column.label,
