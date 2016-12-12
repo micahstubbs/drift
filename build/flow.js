@@ -2379,40 +2379,17 @@
   function h2oModelOutput(_, _go, _model, refresh) {
     const lodash = window._;
     const Flow = window.Flow;
-    let createOutput;
-    let _isLive;
-    let _output;
-    let _refresh;
-    let _toggleRefresh;
-    _output = Flow.Dataflow.signal(null);
-    createOutput = _model => {
-      let cloneModel;
+    const $ = window.jQuery;
+    const _output = Flow.Dataflow.signal(null);
+    const createOutput = _model => {
       let confusionMatrix;
-      let deleteModel;
-      let downloadMojo;
-      let downloadPojo;
-      let exportModel;
-      let format4f;
-      let getAucAsLabel;
-      let getThresholdsAndCriteria;
-      let inspect;
       let lambdaSearchParameter;
       let output;
       let plotter;
-      let predict;
-      let previewPojo;
-      let renderMultinomialConfusionMatrix;
-      let renderPlot;
       let table;
       let tableName;
-      let toggle;
       let _i;
-      let _inputParameters;
-      let _isExpanded;
-      let _isPojoLoaded;
       let _len;
-      let _plots;
-      let _pojoPreview;
       let _ref;
       let _ref1;
       let _ref10;
@@ -2430,7 +2407,6 @@
       let _ref21;
       let _ref22;
       let _ref23;
-      let _ref24;
       let _ref25;
       let _ref3;
       let _ref4;
@@ -2439,24 +2415,23 @@
       let _ref7;
       let _ref8;
       let _ref9;
-      _isExpanded = Flow.Dataflow.signal(false);
-      _plots = Flow.Dataflow.signals([]);
-      _pojoPreview = Flow.Dataflow.signal(null);
-      _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, preview => {
+      const _isExpanded = Flow.Dataflow.signal(false);
+      const _plots = Flow.Dataflow.signals([]);
+      const _pojoPreview = Flow.Dataflow.signal(null);
+      const _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, preview => {
         if (preview) {
           return true;
         }
         return false;
       });
-      _inputParameters = lodash.map(_model.parameters, parameter => {
+      const _inputParameters = lodash.map(_model.parameters, parameter => {
         let actual_value;
         let default_value;
         let help;
         let label;
         let type;
-        let value;
         type = parameter.type, default_value = parameter.default_value, actual_value = parameter.actual_value, label = parameter.label, help = parameter.help;
-        value = (() => {
+        const value = (() => {
           switch (type) {
             case 'Key<Frame>':
             case 'Key<Model>':
@@ -2494,7 +2469,7 @@
           isModified: default_value === actual_value
         };
       });
-      format4f = number => {
+      const format4f = number => {
         if (number) {
           if (number === 'NaN') {
             return void 0;
@@ -2503,14 +2478,14 @@
         }
         return number;
       };
-      getAucAsLabel = (model, tableName) => {
+      const getAucAsLabel = (model, tableName) => {
         let metrics;
         if (metrics = _.inspect(tableName, model)) {
           return ` , AUC = ${ metrics.schema.AUC.at(0) }`;
         }
         return '';
       };
-      getThresholdsAndCriteria = (model, tableName) => {
+      const getThresholdsAndCriteria = (model, tableName) => {
         let criteria;
         let criterionTable;
         let i;
@@ -2523,8 +2498,7 @@
           thresholds = (() => {
             let _i;
             let _ref;
-            let _results;
-            _results = [];
+            const _results = [];
             for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
               _results.push({
                 index: i,
@@ -2538,8 +2512,7 @@
           criteria = (() => {
             let _i;
             let _ref;
-            let _results;
-            _results = [];
+            const _results = [];
             for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
               _results.push({
                 index: idxVector.at(i),
@@ -2555,12 +2528,10 @@
         }
         return void 0;
       };
-      renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
-        let container;
-        let linkedFrame;
+      const renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
         let rocPanel;
-        container = Flow.Dataflow.signal(null);
-        linkedFrame = Flow.Dataflow.signal(null);
+        const container = Flow.Dataflow.signal(null);
+        const linkedFrame = Flow.Dataflow.signal(null);
         if (thresholdsAndCriteria) {
           rocPanel = {
             thresholds: Flow.Dataflow.signals(thresholdsAndCriteria.thresholds),
@@ -2575,8 +2546,7 @@
             return console.debug(error);
           }
           $('a', vis.element).on('click', e => {
-            let $a;
-            $a = $(e.target);
+            const $a = $(e.target);
             switch ($a.attr('data-type')) {
               case 'frame':
                 return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
@@ -2591,12 +2561,10 @@
               let currentCriterion;
               let frame;
               let indices;
-              let renderTable;
               let selectedIndex;
-              let subframe;
               frame = _arg.frame, indices = _arg.indices;
-              subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
-              renderTable = g => g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
+              const subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
+              const renderTable = g => g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
               _.plot(renderTable)((error, table) => {
                 if (!error) {
                   return linkedFrame(table.element);
@@ -2647,42 +2615,34 @@
           isCollapsed
         });
       };
-      renderMultinomialConfusionMatrix = (title, cm) => {
+      const renderMultinomialConfusionMatrix = (title, cm) => {
         let bold;
         let cell;
         let cells;
         let column;
-        let columnCount;
-        let errorColumnIndex;
-        let headers;
         let i;
         let normal;
-        let rowCount;
         let rowIndex;
-        let rows;
         let table;
         let tbody;
-        let totalRowIndex;
         let tr;
         let yellow;
         let _i;
         let _ref;
         _ref = Flow.HTML.template('table.flow-confusion-matrix', 'tbody', 'tr', 'td', 'td.strong', 'td.bg-yellow'), table = _ref[0], tbody = _ref[1], tr = _ref[2], normal = _ref[3], bold = _ref[4], yellow = _ref[5];
-        columnCount = cm.columns.length;
-        rowCount = cm.rowcount;
-        headers = lodash.map(cm.columns, (column, i) => bold(column.description));
+        const columnCount = cm.columns.length;
+        const rowCount = cm.rowcount;
+        const headers = lodash.map(cm.columns, (column, i) => bold(column.description));
         headers.unshift(normal(' '));
-        rows = [tr(headers)];
-        errorColumnIndex = columnCount - 2;
-        totalRowIndex = rowCount - 1;
+        const rows = [tr(headers)];
+        const errorColumnIndex = columnCount - 2;
+        const totalRowIndex = rowCount - 1;
         for (rowIndex = _i = 0; rowCount >= 0 ? _i < rowCount : _i > rowCount; rowIndex = rowCount >= 0 ? ++_i : --_i) {
           cells = (() => {
             let _j;
             let _len;
-            let _ref1;
-            let _results;
-            _ref1 = cm.data;
-            _results = [];
+            const _ref1 = cm.data;
+            const _results = [];
             for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
               column = _ref1[i];
               cell = i < errorColumnIndex ? i === rowIndex ? yellow : rowIndex < totalRowIndex ? normal : bold : bold;
@@ -2881,7 +2841,7 @@
       if (table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _model)) {
         renderPlot('Cross Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
       }
-      _ref24 = _.ls(_model);
+      const _ref24 = _.ls(_model);
       for (_i = 0, _len = _ref24.length; _i < _len; _i++) {
         tableName = _ref24[_i];
         if (!(tableName !== 'parameters')) {
@@ -2900,20 +2860,20 @@
           renderPlot(tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
         }
       }
-      toggle = () => _isExpanded(!_isExpanded());
-      cloneModel = () => alert('Not implemented');
-      predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.model_id.name) }`);
-      inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
-      previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
+      const toggle = () => _isExpanded(!_isExpanded());
+      const cloneModel = () => alert('Not implemented');
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+      const previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
         }
         return _pojoPreview(`<pre>${ Flow.Util.highlight(result, 'java') }</pre>`);
       });
-      downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
-      downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
-      exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
-      deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
+      const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
+      const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
+      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+      const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
         acceptCaption: 'Delete Model',
         declineCaption: 'Cancel'
       }, accept => {
@@ -2940,21 +2900,23 @@
         deleteModel
       };
     };
-    _isLive = Flow.Dataflow.signal(false);
+    const _isLive = Flow.Dataflow.signal(false);
     Flow.Dataflow.act(_isLive, isLive => {
       if (isLive) {
         return _refresh();
       }
     });
-    _refresh = () => refresh((error, model) => {
-      if (!error) {
-        _output(createOutput(model));
-        if (_isLive()) {
-          return lodash.delay(_refresh, 2000);
+    function _refresh() {
+      refresh((error, model) => {
+        if (!error) {
+          _output(createOutput(model));
+          if (_isLive()) {
+            return lodash.delay(_refresh, 2000);
+          }
         }
-      }
-    });
-    _toggleRefresh = () => _isLive(!_isLive());
+      });
+    }
+    const _toggleRefresh = () => _isLive(!_isLive());
     _output(createOutput(_model));
     lodash.defer(_go);
     return {
@@ -3192,33 +3154,18 @@
   function h2oModelsOutput(_, _go, _models) {
     const lodash = window._;
     const Flow = window.Flow;
-    let buildModel;
-    let collectSelectedKeys;
-    let compareModels;
-    let createModelView;
-    let deleteModels;
-    let initialize;
-    let inspectAll;
-    let predictUsingModels;
-    let _canCompareModels;
-    let _checkAllModels;
-    let _checkedModelCount;
-    let _hasSelectedModels;
-    let _isCheckingAll;
-    let _modelViews;
-    _modelViews = Flow.Dataflow.signal([]);
-    _checkAllModels = Flow.Dataflow.signal(false);
-    _checkedModelCount = Flow.Dataflow.signal(0);
-    _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 1);
-    _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
-    _isCheckingAll = false;
+    const _modelViews = Flow.Dataflow.signal([]);
+    const _checkAllModels = Flow.Dataflow.signal(false);
+    const _checkedModelCount = Flow.Dataflow.signal(0);
+    const _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 1);
+    const _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
+    let _isCheckingAll = false;
     Flow.Dataflow.react(_checkAllModels, checkAll => {
       let view;
-      let views;
       let _i;
       let _len;
       _isCheckingAll = true;
-      views = _modelViews();
+      const views = _modelViews();
       for (_i = 0, _len = views.length; _i < _len; _i++) {
         view = views[_i];
         view.isChecked(checkAll);
@@ -3226,26 +3173,18 @@
       _checkedModelCount(checkAll ? views.length : 0);
       _isCheckingAll = false;
     });
-    createModelView = model => {
-      let cloneModel;
-      let inspect;
-      let predict;
-      let view;
-      let _isChecked;
-      _isChecked = Flow.Dataflow.signal(false);
+    const createModelView = model => {
+      const _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
-        let checkedViews;
         let view;
         if (_isCheckingAll) {
           return;
         }
-        checkedViews = (() => {
+        const checkedViews = (() => {
           let _i;
           let _len;
-          let _ref;
-          let _results;
-          _ref = _modelViews();
-          _results = [];
+          const _ref = _modelViews();
+          const _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             view = _ref[_i];
             if (view.isChecked()) {
@@ -3256,11 +3195,11 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(model.model_id.name) }`);
-      cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(model.model_id.name) }`);
+      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
       alert('Not implemented');
-      view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
-      inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
       return {
         key: model.model_id.name,
         algo: model.algo_full_name,
@@ -3271,15 +3210,13 @@
         view
       };
     };
-    buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
-    collectSelectedKeys = () => {
+    const buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
+    const collectSelectedKeys = () => {
       let view;
       let _i;
       let _len;
-      let _ref;
-      let _results;
-      _ref = _modelViews();
-      _results = [];
+      const _ref = _modelViews();
+      const _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         view = _ref[_i];
         if (view.isChecked()) {
@@ -3288,9 +3225,9 @@
       }
       return _results;
     };
-    compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
-    predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
-    deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
+    const compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
+    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
+    const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
       acceptCaption: 'Delete Models',
       declineCaption: 'Cancel'
     }, accept => {
@@ -3298,16 +3235,13 @@
         return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
       }
     });
-    inspectAll = () => {
-      let allKeys;
+    const inspectAll = () => {
       let view;
-      allKeys = (() => {
+      const allKeys = (() => {
         let _i;
         let _len;
-        let _ref;
-        let _results;
-        _ref = _modelViews();
-        _results = [];
+        const _ref = _modelViews();
+        const _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           view = _ref[_i];
           _results.push(view.key);
@@ -3316,7 +3250,7 @@
       })();
       return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$17.stringify(allKeys) }`);
     };
-    initialize = models => {
+    const initialize = models => {
       _modelViews(lodash.map(models, createModelView));
       return lodash.defer(_go);
     };
