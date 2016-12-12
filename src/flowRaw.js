@@ -1,6 +1,5 @@
 export function flowRaw(_) {
-  let render;
-  render = (input, output) => {
+  const render = (input, output) => {
     output.data({
       text: input,
       template: 'flow-raw'
