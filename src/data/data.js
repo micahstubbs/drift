@@ -1,68 +1,47 @@
 export function data() {
   const lodash = window._;
   const Flow = window.Flow;
-  let combineRanges;
-  let computeRange;
-  let createAbstractVariable;
-  let createCompiledPrototype;
-  let createFactor;
-  let createNumericVariable;
-  let createRecordConstructor;
-  let createTable;
-  let createVariable;
-  let factor;
-  let includeZeroInRange;
-  let nextPrototypeName;
-  let permute;
-  let _prototypeCache;
   let _prototypeId;
   const __slice = [].slice;
   _prototypeId = 0;
-  nextPrototypeName = () => `Map${++_prototypeId}`;
-  _prototypeCache = {};
-  createCompiledPrototype = attrs => {
+  const nextPrototypeName = () => `Map${++_prototypeId}`;
+  const _prototypeCache = {};
+  const createCompiledPrototype = attrs => {
     let attr;
-    let cacheKey;
     let i;
-    let inits;
-    let params;
     let proto;
-    let prototypeName;
-    cacheKey = attrs.join('\0');
+    const cacheKey = attrs.join('\0');
     if (proto = _prototypeCache[cacheKey]) {
       return proto;
     }
-    params = (() => {
+    const params = (() => {
       let _i;
       let _ref;
-      let _results;
-      _results = [];
+      const _results = [];
       for (i = _i = 0, _ref = attrs.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
         _results.push(`a${i}`);
       }
       return _results;
     })();
-    inits = (() => {
+    const inits = (() => {
       let _i;
       let _len;
-      let _results;
-      _results = [];
+      const _results = [];
       for (i = _i = 0, _len = attrs.length; _i < _len; i = ++_i) {
         attr = attrs[i];
         _results.push(`this[${JSON.stringify(attr)}]=a${i};`);
       }
       return _results;
     })();
-    prototypeName = nextPrototypeName();
+    const prototypeName = nextPrototypeName();
     return _prototypeCache[cacheKey] = new Function(`function ${prototypeName}(${params.join(',')}){${inits.join('')}} return ${prototypeName};`)();
   };
-  createRecordConstructor = variables => {
+  const createRecordConstructor = variables => {
     let variable;
     return createCompiledPrototype((() => {
       let _i;
       let _len;
-      let _results;
-      _results = [];
+      const _results = [];
       for (_i = 0, _len = variables.length; _i < _len; _i++) {
         variable = variables[_i];
         _results.push(variable.label);
@@ -70,14 +49,11 @@ export function data() {
       return _results;
     })());
   };
-  createTable = opts => {
+  const createTable = opts => {
     let description;
-    let expand;
-    let fill;
     let label;
     let meta;
     let rows;
-    let schema;
     let variable;
     let variables;
     let _i;
@@ -86,13 +62,13 @@ export function data() {
     if (!description) {
       description = 'No description available.';
     }
-    schema = {};
+    const schema = {};
     for (_i = 0, _len = variables.length; _i < _len; _i++) {
       variable = variables[_i];
       schema[variable.label] = variable;
     }
-    fill = (i, go) => {
-      _fill(i, (error, result) => {
+    const fill = (i, go) => {
+      _fill(i, (error, result) => { // eslint-disable-line
         let index;
         let startIndex;
         let value;
@@ -109,14 +85,12 @@ export function data() {
         return go(null);
       });
     };
-    expand = (...args) => {
+    const expand = (...args) => {
       let type;
-      let types;
       let _j;
       let _len1;
-      let _results;
-      types = args.length >= 1 ? __slice.call(args, 0) : [];
-      _results = [];
+      const types = args.length >= 1 ? __slice.call(args, 0) : [];
+      const _results = [];
       for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
         type = types[_j];
         label = lodash.uniqueId('__flow_variable_');
@@ -136,7 +110,7 @@ export function data() {
       _is_table_: true
     };
   };
-  includeZeroInRange = range => {
+  const includeZeroInRange = range => {
     let hi;
     let lo;
     lo = range[0], hi = range[1];
@@ -153,15 +127,14 @@ export function data() {
     }
     return range;
   };
-  combineRanges = (...args) => {
+  const combineRanges = (...args) => {
     let hi;
     let lo;
     let range;
-    let ranges;
     let value;
     let _i;
     let _len;
-    ranges = args.length >= 1 ? __slice.call(args, 0) : [];
+    const ranges = args.length >= 1 ? __slice.call(args, 0) : [];
     lo = Number.POSITIVE_INFINITY;
     hi = Number.NEGATIVE_INFINITY;
     for (_i = 0, _len = ranges.length; _i < _len; _i++) {
@@ -178,7 +151,7 @@ export function data() {
       hi
     ];
   };
-  computeRange = (rows, attr) => {
+  const computeRange = (rows, attr) => {
     let hi;
     let lo;
     let row;
@@ -208,29 +181,27 @@ export function data() {
       1
     ];
   };
-  permute = (array, indices) => {
+  const permute = (array, indices) => {
     let i;
     let index;
-    let permuted;
     let _i;
     let _len;
-    permuted = new Array(array.length);
+    const permuted = new Array(array.length);
     for (i = _i = 0, _len = indices.length; _i < _len; i = ++_i) {
       index = indices[i];
       permuted[i] = array[index];
     }
     return permuted;
   };
-  createAbstractVariable = (_label, _type, _domain, _format, _read) => ({
+  const createAbstractVariable = (_label, _type, _domain, _format, _read) => ({
     label: _label,
     type: _type,
     domain: _domain || [],
     format: _format || lodash.identity,
     read: _read
   });
-  createNumericVariable = (_label, _domain, _format, _read) => {
-    let self;
-    self = createAbstractVariable(_label, 'Number', _domain || [
+  function createNumericVariable(_label, _domain, _format, _read) {
+    const self = createAbstractVariable(_label, 'Number', _domain || [
       Number.POSITIVE_INFINITY,
       Number.NEGATIVE_INFINITY
     ], _format, _read);
@@ -246,24 +217,22 @@ export function data() {
       };
     }
     return self;
-  };
-  createVariable = (_label, _type, _domain, _format, _read) => {
+  }
+  const createVariable = (_label, _type, _domain, _format, _read) => {
     if (_type === 'Number') {
       return createNumericVariable(_label, _domain, _format, _read);
     }
     return createAbstractVariable(_label, _type, _domain, _format, _read);
   };
-  createFactor = (_label, _domain, _format, _read) => {
+  const createFactor = (_label, _domain, _format, _read) => {
     let level;
-    let self;
     let _i;
     let _id;
     let _len;
-    let _levels;
     let _ref;
-    self = createAbstractVariable(_label, 'Factor', _domain || [], _format, _read);
+    const self = createAbstractVariable(_label, 'Factor', _domain || [], _format, _read);
     _id = 0;
-    _levels = {};
+    const _levels = {};
     if (self.domain.length) {
       _ref = self.domain;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -284,20 +253,17 @@ export function data() {
     }
     return self;
   };
-  factor = array => {
-    let data;
-    let domain;
+  const factor = array => {
     let i;
     let id;
     let level;
-    let levels;
     let _i;
     let _id;
     let _len;
     _id = 0;
-    levels = {};
-    domain = [];
-    data = new Array(array.length);
+    const levels = {};
+    const domain = [];
+    const data = new Array(array.length);
     for (i = _i = 0, _len = array.length; _i < _len; i = ++_i) {
       level = array[i];
       if (void 0 === (id = levels[level])) {
