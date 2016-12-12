@@ -4,31 +4,18 @@ const flowPrelude = flowPreludeFunction();
 export function h2oMergeFramesInput(_, _go) {
   const lodash = window._;
   const Flow = window.Flow;
-  let _canMerge;
-  let _destinationKey;
-  let _exception;
-  let _frames;
-  let _includeAllLeftRows;
-  let _includeAllRightRows;
-  let _leftColumns;
-  let _merge;
-  let _rightColumns;
-  let _selectedLeftColumn;
-  let _selectedLeftFrame;
-  let _selectedRightColumn;
-  let _selectedRightFrame;
-  _exception = Flow.Dataflow.signal(null);
-  _destinationKey = Flow.Dataflow.signal(`merged-${Flow.Util.uuid()}`);
-  _frames = Flow.Dataflow.signals([]);
-  _selectedLeftFrame = Flow.Dataflow.signal(null);
-  _leftColumns = Flow.Dataflow.signals([]);
-  _selectedLeftColumn = Flow.Dataflow.signal(null);
-  _includeAllLeftRows = Flow.Dataflow.signal(false);
-  _selectedRightFrame = Flow.Dataflow.signal(null);
-  _rightColumns = Flow.Dataflow.signals([]);
-  _selectedRightColumn = Flow.Dataflow.signal(null);
-  _includeAllRightRows = Flow.Dataflow.signal(false);
-  _canMerge = Flow.Dataflow.lift(_selectedLeftFrame, _selectedLeftColumn, _selectedRightFrame, _selectedRightColumn, (lf, lc, rf, rc) => lf && lc && rf && rc);
+  const _exception = Flow.Dataflow.signal(null);
+  const _destinationKey = Flow.Dataflow.signal(`merged-${Flow.Util.uuid()}`);
+  const _frames = Flow.Dataflow.signals([]);
+  const _selectedLeftFrame = Flow.Dataflow.signal(null);
+  const _leftColumns = Flow.Dataflow.signals([]);
+  const _selectedLeftColumn = Flow.Dataflow.signal(null);
+  const _includeAllLeftRows = Flow.Dataflow.signal(false);
+  const _selectedRightFrame = Flow.Dataflow.signal(null);
+  const _rightColumns = Flow.Dataflow.signals([]);
+  const _selectedRightColumn = Flow.Dataflow.signal(null);
+  const _includeAllRightRows = Flow.Dataflow.signal(false);
+  const _canMerge = Flow.Dataflow.lift(_selectedLeftFrame, _selectedLeftColumn, _selectedRightFrame, _selectedRightColumn, (lf, lc, rf, rc) => lf && lc && rf && rc);
   Flow.Dataflow.react(_selectedLeftFrame, frameKey => {
     if (frameKey) {
       return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _leftColumns(lodash.map(frame.columns, (column, i) => ({
@@ -49,12 +36,11 @@ export function h2oMergeFramesInput(_, _go) {
     _selectedRightColumn(null);
     return _rightColumns([]);
   });
-  _merge = () => {
-    let cs;
+  const _merge = () => {
     if (!_canMerge()) {
       return;
     }
-    cs = `mergeFrames ${flowPrelude.stringify(_destinationKey())}, ${flowPrelude.stringify(_selectedLeftFrame())}, ${_selectedLeftColumn().index}, ${_includeAllLeftRows()}, ${flowPrelude.stringify(_selectedRightFrame())}, ${_selectedRightColumn().index}, ${_includeAllRightRows()}`;
+    const cs = `mergeFrames ${flowPrelude.stringify(_destinationKey())}, ${flowPrelude.stringify(_selectedLeftFrame())}, ${_selectedLeftColumn().index}, ${_includeAllLeftRows()}, ${flowPrelude.stringify(_selectedRightFrame())}, ${_selectedRightColumn().index}, ${_includeAllRightRows()}`;
     return _.insertAndExecuteCell('cs', cs);
   };
   _.requestFrames((error, frames) => {
@@ -65,8 +51,7 @@ export function h2oMergeFramesInput(_, _go) {
     return _frames((() => {
       let _i;
       let _len;
-      let _results;
-      _results = [];
+      const _results = [];
       for (_i = 0, _len = frames.length; _i < _len; _i++) {
         frame = frames[_i];
         if (!frame.is_text) {
