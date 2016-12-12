@@ -1,6 +1,6 @@
 export function error() {
   const Flow = window.Flow;
-  let FlowError;
+  const printStackTrace = window.printStackTrace;
   const __hasProp = {}.hasOwnProperty;
 
   const __extends = (child, parent) => {
@@ -19,7 +19,7 @@ export function error() {
     return child;
   };
 
-  FlowError = (_super => {
+  const FlowError = (_super => {
     __extends(FlowError, _super);
     function FlowError(message, cause) {
       let error;

@@ -7942,7 +7942,7 @@
 
   function error() {
     const Flow = window.Flow;
-    let FlowError;
+    const printStackTrace = window.printStackTrace;
     const __hasProp = {}.hasOwnProperty;
 
     const __extends = (child, parent) => {
@@ -7961,7 +7961,7 @@
       return child;
     };
 
-    FlowError = (_super => {
+    const FlowError = (_super => {
       __extends(FlowError, _super);
       function FlowError(message, cause) {
         let error;
@@ -8031,28 +8031,16 @@
 
   function dialogs() {
     const Flow = window.Flow;
+    const $ = window.jQuery;
     const __slice = [].slice;
     Flow.Dialogs = _ => {
-      let showDialog;
-      let _dialog;
-      _dialog = Flow.Dataflow.signal(null);
-      showDialog = (ctor, args, _go) => {
-        let $dialog;
+      const _dialog = Flow.Dataflow.signal(null);
+      const showDialog = (ctor, args, _go) => {
         let dialog;
-        let go;
         let responded;
         responded = false;
-        go = response => {
-          if (!responded) {
-            responded = true;
-            $dialog.modal('hide');
-            if (_go) {
-              return _go(response);
-            }
-          }
-        };
         _dialog(dialog = ctor(...[_].concat(args).concat(go)));
-        $dialog = $(`#${ dialog.template }`);
+        const $dialog = $(`#${ dialog.template }`);
         $dialog.modal();
         $dialog.on('hidden.bs.modal', e => {
           if (!responded) {
@@ -8063,6 +8051,15 @@
             }
           }
         });
+        function go(response) {
+          if (!responded) {
+            responded = true;
+            $dialog.modal('hide');
+            if (_go) {
+              return _go(response);
+            }
+          }
+        }
       };
       Flow.Dataflow.link(_.dialog, function () {
         let args;
