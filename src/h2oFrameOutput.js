@@ -4,52 +4,29 @@ const flowPrelude = flowPreludeFunction();
 export function h2oFrameOutput(_, _go, _frame) {
   const lodash = window._;
   const Flow = window.Flow;
-  let MaxItemsPerPage;
-  let createModel;
-  let deleteFrame;
-  let download;
-  let exportFrame;
-  let goToNextPage;
-  let goToPreviousPage;
-  let inspect;
-  let inspectData;
-  let predict;
-  let refreshColumns;
-  let renderFrame;
-  let renderGrid;
-  let renderPlot;
-  let splitFrame;
-  let _canGoToNextPage;
-  let _canGoToPreviousPage;
-  let _chunkSummary;
-  let _columnNameSearchTerm;
-  let _currentPage;
-  let _distributionSummary;
-  let _grid;
+  const $ = window.jQuery;
   let _lastUsedSearchTerm;
-  let _maxPages;
-  MaxItemsPerPage = 20;
-  _grid = Flow.Dataflow.signal(null);
-  _chunkSummary = Flow.Dataflow.signal(null);
-  _distributionSummary = Flow.Dataflow.signal(null);
-  _columnNameSearchTerm = Flow.Dataflow.signal(null);
-  _currentPage = Flow.Dataflow.signal(0);
-  _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
-  _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
-  _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-  renderPlot = (container, render) => render((error, vis) => {
+  const MaxItemsPerPage = 20;
+  const _grid = Flow.Dataflow.signal(null);
+  const _chunkSummary = Flow.Dataflow.signal(null);
+  const _distributionSummary = Flow.Dataflow.signal(null);
+  const _columnNameSearchTerm = Flow.Dataflow.signal(null);
+  const _currentPage = Flow.Dataflow.signal(0);
+  const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
+  const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
+  const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
+  const renderPlot = (container, render) => render((error, vis) => {
     if (error) {
       return console.debug(error);
     }
     return container(vis.element);
   });
-  renderGrid = render => render((error, vis) => {
+  const renderGrid = render => render((error, vis) => {
     if (error) {
       return console.debug(error);
     }
     $('a', vis.element).on('click', e => {
-      let $a;
-      $a = $(e.target);
+      const $a = $(e.target);
       switch ($a.attr('data-type')) {
         case 'summary-link':
           return _.insertAndExecuteCell('cs', `getColumnSummary ${flowPrelude.stringify(_frame.frame_id.name)}, ${flowPrelude.stringify($a.attr('data-key'))}`);
@@ -61,14 +38,14 @@ export function h2oFrameOutput(_, _go, _frame) {
     });
     return _grid(vis.element);
   });
-  createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  predict = () => _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  download = () => window.open(`${window.Flow.ContextPath}${(`3/DownloadDataset?frame_id=${encodeURIComponent(_frame.frame_id.name)}`)}`, '_blank');
-  exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
+  const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  const download = () => window.open(`${window.Flow.ContextPath}${(`3/DownloadDataset?frame_id=${encodeURIComponent(_frame.frame_id.name)}`)}`, '_blank');
+  const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
     acceptCaption: 'Delete Frame',
     declineCaption: 'Cancel'
   }, accept => {
@@ -76,22 +53,19 @@ export function h2oFrameOutput(_, _go, _frame) {
       return _.insertAndExecuteCell('cs', `deleteFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
     }
   });
-  renderFrame = frame => {
+  const renderFrame = frame => {
     renderGrid(_.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
     renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
     return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
   };
   _lastUsedSearchTerm = null;
-  refreshColumns = pageIndex => {
-    let itemCount;
-    let searchTerm;
-    let startIndex;
-    searchTerm = _columnNameSearchTerm();
+  const refreshColumns = pageIndex => {
+    const searchTerm = _columnNameSearchTerm();
     if (searchTerm !== _lastUsedSearchTerm) {
       pageIndex = 0;
     }
-    startIndex = pageIndex * MaxItemsPerPage;
-    itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
+    const startIndex = pageIndex * MaxItemsPerPage;
+    const itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
     return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
       if (error) {
         // empty
@@ -102,16 +76,14 @@ export function h2oFrameOutput(_, _go, _frame) {
       }
     });
   };
-  goToPreviousPage = () => {
-    let currentPage;
-    currentPage = _currentPage();
+  const goToPreviousPage = () => {
+    const currentPage = _currentPage();
     if (currentPage > 0) {
       refreshColumns(currentPage - 1);
     }
   };
-  goToNextPage = () => {
-    let currentPage;
-    currentPage = _currentPage();
+  const goToNextPage = () => {
+    const currentPage = _currentPage();
     if (currentPage < _maxPages() - 1) {
       refreshColumns(currentPage + 1);
     }
