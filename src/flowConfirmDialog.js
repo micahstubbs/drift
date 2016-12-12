@@ -1,8 +1,6 @@
 export function flowConfirmDialog(_, _message, _opts, _go) {
   const lodash = window._;
   const Flow = window.Flow;
-  let accept;
-  let decline;
   if (_opts == null) {
     _opts = {};
   }
@@ -11,8 +9,8 @@ export function flowConfirmDialog(_, _message, _opts, _go) {
     acceptCaption: 'Yes',
     declineCaption: 'No'
   });
-  accept = () => _go(true);
-  decline = () => _go(false);
+  const accept = () => _go(true);
+  const decline = () => _go(false);
   return {
     title: _opts.title,
     acceptCaption: _opts.acceptCaption,
