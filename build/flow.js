@@ -9932,32 +9932,19 @@
 
   function flowSidebar(_, cells) {
     const Flow = window.Flow;
-    let switchToBrowser;
-    let switchToClipboard;
-    let switchToHelp;
-    let switchToOutline;
-    let _browser;
-    let _clipboard;
-    let _help;
-    let _isBrowserMode;
-    let _isClipboardMode;
-    let _isHelpMode;
-    let _isOutlineMode;
-    let _mode;
-    let _outline;
-    _mode = Flow.Dataflow.signal('help');
-    _outline = flowOutline(_, cells);
-    _isOutlineMode = Flow.Dataflow.lift(_mode, mode => mode === 'outline');
-    switchToOutline = () => _mode('outline');
-    _browser = flowBrowser(_);
-    _isBrowserMode = Flow.Dataflow.lift(_mode, mode => mode === 'browser');
-    switchToBrowser = () => _mode('browser');
-    _clipboard = Flow.Clipboard(_);
-    _isClipboardMode = Flow.Dataflow.lift(_mode, mode => mode === 'clipboard');
-    switchToClipboard = () => _mode('clipboard');
-    _help = Flow.Help(_);
-    _isHelpMode = Flow.Dataflow.lift(_mode, mode => mode === 'help');
-    switchToHelp = () => _mode('help');
+    const _mode = Flow.Dataflow.signal('help');
+    const _outline = flowOutline(_, cells);
+    const _isOutlineMode = Flow.Dataflow.lift(_mode, mode => mode === 'outline');
+    const switchToOutline = () => _mode('outline');
+    const _browser = flowBrowser(_);
+    const _isBrowserMode = Flow.Dataflow.lift(_mode, mode => mode === 'browser');
+    const switchToBrowser = () => _mode('browser');
+    const _clipboard = Flow.Clipboard(_);
+    const _isClipboardMode = Flow.Dataflow.lift(_mode, mode => mode === 'clipboard');
+    const switchToClipboard = () => _mode('clipboard');
+    const _help = Flow.Help(_);
+    const _isHelpMode = Flow.Dataflow.lift(_mode, mode => mode === 'help');
+    const switchToHelp = () => _mode('help');
     Flow.Dataflow.link(_.ready, () => {
       Flow.Dataflow.link(_.showHelp, () => switchToHelp());
       Flow.Dataflow.link(_.showClipboard, () => switchToClipboard());
