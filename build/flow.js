@@ -2211,10 +2211,8 @@
   function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
     const lodash = window._;
     const Flow = window.Flow;
-    let _frameKey;
-    let _viewFrame;
-    _frameKey = _mergeFramesResult.key;
-    _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$11.stringify(_frameKey) }`);
+    const _frameKey = _mergeFramesResult.key;
+    const _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$11.stringify(_frameKey) }`);
     lodash.defer(_go);
     return {
       frameKey: _frameKey,
