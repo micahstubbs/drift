@@ -1,21 +1,11 @@
 export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
   const lodash = window._;
   const Flow = window.Flow;
-  let createNode;
-  let initialize;
-  let refresh;
-  let refreshActiveView;
-  let _activeFileType;
-  let _activeNode;
-  let _contents;
-  let _exception;
-  let _fileTypes;
-  let _nodes;
-  _exception = Flow.Dataflow.signal(null);
-  _contents = Flow.Dataflow.signal('');
-  _nodes = Flow.Dataflow.signal([]);
-  _activeNode = Flow.Dataflow.signal(null);
-  _fileTypes = Flow.Dataflow.signal([
+  const _exception = Flow.Dataflow.signal(null);
+  const _contents = Flow.Dataflow.signal('');
+  const _nodes = Flow.Dataflow.signal([]);
+  const _activeNode = Flow.Dataflow.signal(null);
+  const _fileTypes = Flow.Dataflow.signal([
     'trace',
     'debug',
     'info',
@@ -26,12 +16,12 @@ export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile
     'stdout',
     'stderr'
   ]);
-  _activeFileType = Flow.Dataflow.signal(null);
-  createNode = (node, index) => ({
+  const _activeFileType = Flow.Dataflow.signal(null);
+  const createNode = (node, index) => ({
     name: node.ip_port,
     index
   });
-  refreshActiveView = (node, fileType) => {
+  const refreshActiveView = (node, fileType) => {
     if (node) {
       return _.requestLogFile(node.index, fileType, (error, logFile) => {
         if (error) {
@@ -42,25 +32,23 @@ export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile
     }
     return _contents('');
   };
-  refresh = () => refreshActiveView(_activeNode(), _activeFileType());
-  initialize = (cloud, nodeIndex, fileType, logFile) => {
+  const refresh = () => refreshActiveView(_activeNode(), _activeFileType());
+  const initialize = (cloud, nodeIndex, fileType, logFile) => {
     let NODE_INDEX_SELF;
     let clientNode;
     let i;
     let n;
-    let nodes;
     let _i;
     let _len;
-    let _ref;
     _activeFileType(fileType);
     _contents(logFile.log);
-    nodes = [];
+    const nodes = [];
     if (cloud.is_client) {
       clientNode = { ip_port: 'driver' };
       NODE_INDEX_SELF = -1;
       nodes.push(createNode(clientNode, NODE_INDEX_SELF));
     }
-    _ref = cloud.nodes;
+    const _ref = cloud.nodes;
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       n = _ref[i];
       nodes.push(createNode(n, i));
