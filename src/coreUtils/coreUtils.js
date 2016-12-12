@@ -1,20 +1,8 @@
 export function coreUtils() {
   const lodash = window._;
   const Flow = window.Flow;
-  let EOL;
-  let describeCount;
-  let format1d0;
-  let formatBytes;
-  let formatClockTime;
-  let formatElapsedTime;
-  let formatMilliseconds;
-  let fromNow;
-  let highlight;
-  let multilineTextToHTML;
-  let padTime;
-  let sanitizeName;
-  let splitTime;
-  describeCount = (count, singular, plural) => {
+  const moment = window.moment;
+  const describeCount = (count, singular, plural) => {
     if (!plural) {
       plural = `${singular}s`;
     }
@@ -27,11 +15,9 @@ export function coreUtils() {
         return `${count} ${plural}`;
     }
   };
-  fromNow = date => moment(date).fromNow();
-  formatBytes = bytes => {
-    let i;
-    let sizes;
-    sizes = [
+  const fromNow = date => moment(date).fromNow();
+  const formatBytes = bytes => {
+    const sizes = [
       'Bytes',
       'KB',
       'MB',
@@ -41,21 +27,17 @@ export function coreUtils() {
     if (bytes === 0) {
       return '0 Byte';
     }
-    i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
     return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
   };
-  padTime = n => `${(n < 10 ? '0' : '')}${n}`;
-  splitTime = s => {
-    let hrs;
-    let mins;
-    let ms;
-    let secs;
-    ms = s % 1000;
+  const padTime = n => `${(n < 10 ? '0' : '')}${n}`;
+  const splitTime = s => {
+    const ms = s % 1000;
     s = (s - ms) / 1000;
-    secs = s % 60;
+    const secs = s % 60;
     s = (s - secs) / 60;
-    mins = s % 60;
-    hrs = (s - mins) / 60;
+    const mins = s % 60;
+    const hrs = (s - mins) / 60;
     return [
       hrs,
       mins,
@@ -63,7 +45,7 @@ export function coreUtils() {
       ms
     ];
   };
-  formatMilliseconds = s => {
+  const formatMilliseconds = s => {
     let hrs;
     let mins;
     let ms;
@@ -72,8 +54,8 @@ export function coreUtils() {
     _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
     return `${padTime(hrs)}:${padTime(mins)}:${padTime(secs)}.${ms}`;
   };
-  format1d0 = n => Math.round(n * 10) / 10;
-  formatElapsedTime = s => {
+  const format1d0 = n => Math.round(n * 10) / 10;
+  const formatElapsedTime = s => {
     let hrs;
     let mins;
     let ms;
@@ -89,11 +71,11 @@ export function coreUtils() {
     }
     return `${ms}ms`;
   };
-  formatClockTime = date => moment(date).format('h:mm:ss a');
-  EOL = '\n';
-  multilineTextToHTML = text => lodash.map(text.split(EOL), str => lodash.escape(str)).join('<br/>');
-  sanitizeName = name => name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
-  highlight = (code, lang) => {
+  const formatClockTime = date => moment(date).format('h:mm:ss a');
+  const EOL = '\n';
+  const multilineTextToHTML = text => lodash.map(text.split(EOL), str => lodash.escape(str)).join('<br/>');
+  const sanitizeName = name => name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
+  const highlight = (code, lang) => {
     if (window.hljs) {
       return window.hljs.highlightAuto(code, [lang]).value;
     }
