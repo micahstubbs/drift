@@ -3534,8 +3534,7 @@
   function h2oBindFramesOutput(_, _go, key, result) {
     const lodash = window._;
     const Flow = window.Flow;
-    let viewFrame;
-    viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$22.stringify(key) }`);
+    const viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$22.stringify(key) }`);
     lodash.defer(_go);
     return {
       viewFrame,
