@@ -10220,8 +10220,8 @@
   }
 
   function flowMarkdown(_) {
-    let render;
-    render = (input, output) => {
+    const marked = window.marked;
+    const render = (input, output) => {
       let error;
       try {
         return output.data({
