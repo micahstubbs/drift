@@ -1,20 +1,7 @@
 export function gui() {
   const lodash = window._;
   const Flow = window.Flow;
-  let button;
-  let checkbox;
-  let content;
-  let control;
-  let dropdown;
-  let html;
-  let listbox;
-  let markdown;
-  let text;
-  let textarea;
-  let textbox;
-  let wrapArray;
-  let wrapValue;
-  wrapValue = (value, init) => {
+  const wrapValue = (value, init) => {
     if (value === void 0) {
       return Flow.Dataflow.signal(init);
     }
@@ -23,7 +10,7 @@ export function gui() {
     }
     return Flow.Dataflow.signal(value);
   };
-  wrapArray = elements => {
+  const wrapArray = elements => {
     let element;
     if (elements) {
       if (Flow.Dataflow.isSignal(elements)) {
@@ -37,12 +24,11 @@ export function gui() {
     }
     return Flow.Dataflow.signals([]);
   };
-  control = (type, opts) => {
-    let guid;
+  const control = (type, opts) => {
     if (!opts) {
       opts = {};
     }
-    guid = `gui_${lodash.uniqueId()}`;
+    const guid = `gui_${lodash.uniqueId()}`;
     return {
       type,
       id: opts.id || guid,
@@ -56,54 +42,47 @@ export function gui() {
       }
     };
   };
-  content = (type, opts) => {
-    let self;
-    self = control(type, opts);
+  const content = (type, opts) => {
+    const self = control(type, opts);
     self.value = wrapValue(opts.value, '');
     return self;
   };
-  text = opts => content('text', opts);
-  html = opts => content('html', opts);
-  markdown = opts => content('markdown', opts);
-  checkbox = opts => {
-    let self;
-    self = control('checkbox', opts);
+  const text = opts => content('text', opts);
+  const html = opts => content('html', opts);
+  const markdown = opts => content('markdown', opts);
+  const checkbox = opts => {
+    const self = control('checkbox', opts);
     self.value = wrapValue(opts.value, opts.value);
     return self;
   };
-  dropdown = opts => {
-    let self;
-    self = control('dropdown', opts);
+  const dropdown = opts => {
+    const self = control('dropdown', opts);
     self.options = opts.options || [];
     self.value = wrapValue(opts.value);
     self.caption = opts.caption || 'Choose...';
     return self;
   };
-  listbox = opts => {
-    let self;
-    self = control('listbox', opts);
+  const listbox = opts => {
+    const self = control('listbox', opts);
     self.options = opts.options || [];
     self.values = wrapArray(opts.values);
     return self;
   };
-  textbox = opts => {
-    let self;
-    self = control('textbox', opts);
+  const textbox = opts => {
+    const self = control('textbox', opts);
     self.value = wrapValue(opts.value, '');
     self.event = lodash.isString(opts.event) ? opts.event : null;
     return self;
   };
-  textarea = opts => {
-    let self;
-    self = control('textarea', opts);
+  const textarea = opts => {
+    const self = control('textarea', opts);
     self.value = wrapValue(opts.value, '');
     self.event = lodash.isString(opts.event) ? opts.event : null;
     self.rows = lodash.isNumber(opts.rows) ? opts.rows : 5;
     return self;
   };
-  button = opts => {
-    let self;
-    self = control('button', opts);
+  const button = opts => {
+    const self = control('button', opts);
     self.click = lodash.isFunction(opts.click) ? opts.click : lodash.noop;
     return self;
   };
