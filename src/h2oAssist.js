@@ -1,9 +1,8 @@
 export function h2oAssist(_, _go, _items) {
   const lodash = window._;
-  let createAssistItem;
   let item;
   let name;
-  createAssistItem = (name, item) => ({
+  const createAssistItem = (name, item) => ({
     name,
     description: item.description,
     icon: `fa fa-${item.icon} flow-icon`,
@@ -15,8 +14,7 @@ export function h2oAssist(_, _go, _items) {
   lodash.defer(_go);
   return {
     routines: (() => {
-      let _results;
-      _results = [];
+      const _results = [];
       for (name in _items) {
         if ({}.hasOwnProperty.call(_items, name)) {
           item = _items[name];
