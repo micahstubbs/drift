@@ -104,9 +104,9 @@
     };
   }
 
-  const flowPrelude$2 = flowPreludeFunction();
+  const flowPrelude$1 = flowPreludeFunction();
 
-  const flowPrelude$3 = flowPreludeFunction();
+  const flowPrelude$2 = flowPreludeFunction();
 
   function modelInput() {
     const lodash = window._;
@@ -434,7 +434,7 @@
       let _len2;
       const _exception = Flow.Dataflow.signal(null);
       const _validationFailureMessage = Flow.Dataflow.signal('');
-      const _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$3.isTruthy);
+      const _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$2.isTruthy);
       const _gridStrategies = ['Cartesian', 'RandomDiscrete'];
       const _isGrided = Flow.Dataflow.signal(false);
       const _gridId = Flow.Dataflow.signal(`grid-${ Flow.Util.uuid() }`);
@@ -755,7 +755,7 @@
         _exception(null);
         return performValidations(true, () => {
           const parameters = collectParameters(false);
-          return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ flowPrelude$3.stringify(parameters) }`);
+          return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ flowPrelude$2.stringify(parameters) }`);
         });
       };
       const _revalidate = value => {
@@ -863,7 +863,7 @@
           let parameters;
           if (builder) {
             algorithm = builder.algo;
-            parameters = flowPrelude$3.deepClone(builder.parameters);
+            parameters = flowPrelude$2.deepClone(builder.parameters);
             return populateFramesAndColumns(frameKey, algorithm, parameters, () => _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters)));
           }
           return _modelForm(null);
@@ -883,7 +883,7 @@
     };
   }
 
-  const flowPrelude$4 = flowPreludeFunction();
+  const flowPrelude$3 = flowPreludeFunction();
 
   function parseInput() {
     const lodash = window._;
@@ -1030,7 +1030,7 @@
           }
           return _results;
         })();
-        return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude$4.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude$4.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude$4.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude$4.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude$4.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
+        return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude$3.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude$3.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude$3.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude$3.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude$3.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
       };
       const _canGoToNextPage = Flow.Dataflow.lift(_activePage, currentPage => (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length);
       const _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, currentPage => currentPage.index > 0);
@@ -1069,7 +1069,7 @@
     };
   }
 
-  const flowPrelude$5 = flowPreludeFunction();
+  const flowPrelude$4 = flowPreludeFunction();
 
   function jobOutput() {
     const lodash = window._;
@@ -1211,13 +1211,13 @@
         }
         switch (_destinationType) {
           case 'Frame':
-            return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$5.stringify(_destinationKey) }`);
+            return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$4.stringify(_destinationKey) }`);
           case 'Model':
-            return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$5.stringify(_destinationKey) }`);
+            return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$4.stringify(_destinationKey) }`);
           case 'Grid':
-            return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$5.stringify(_destinationKey) }`);
+            return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$4.stringify(_destinationKey) }`);
           case 'PartialDependence':
-            return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$5.stringify(_destinationKey) }`);
+            return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$4.stringify(_destinationKey) }`);
           case 'Auto Model':
             return _.insertAndExecuteCell('cs', 'getGrids');
           case 'Void':
@@ -1407,7 +1407,7 @@
     };
   }
 
-  const flowPrelude$7 = flowPreludeFunction();
+  const flowPrelude$6 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
     const lodash = window._;
@@ -1417,8 +1417,8 @@
       let grid;
       let inspect;
       let plot;
-      inspect = () => _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$7.stringify(table.label) }, ${ table.metadata.origin }`);
-      grid = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$7.stringify(table.label) }, ${ table.metadata.origin }`);
+      inspect = () => _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$6.stringify(table.label) }, ${ table.metadata.origin }`);
+      grid = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$6.stringify(table.label) }, ${ table.metadata.origin }`);
       plot = () => _.insertAndExecuteCell('cs', table.metadata.plot);
       return {
         label: table.label,
@@ -1437,14 +1437,14 @@
     };
   }
 
-  const flowPrelude$8 = flowPreludeFunction();
+  const flowPrelude$7 = flowPreludeFunction();
 
   function h2oInspectOutput(_, _go, _frame) {
     const lodash = window._;
     const Flow = window.Flow;
     let plot;
     let view;
-    view = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$8.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
+    view = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$7.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
     plot = () => _.insertAndExecuteCell('cs', _frame.metadata.plot);
     lodash.defer(_go);
     return {
@@ -1466,7 +1466,7 @@
     };
   }
 
-  const flowPrelude$9 = flowPreludeFunction();
+  const flowPrelude$8 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
     let plot;
@@ -1502,7 +1502,7 @@
     plot = () => {
       let color;
       let command;
-      command = (color = _color()) ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$9.stringify(_x()) }, ${ flowPrelude$9.stringify(_y()) }\n    g.color ${ flowPrelude$9.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$9.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$9.stringify(_x()) }, ${ flowPrelude$9.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$9.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      command = (color = _color()) ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$8.stringify(_x()) }, ${ flowPrelude$8.stringify(_y()) }\n    g.color ${ flowPrelude$8.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$8.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$8.stringify(_x()) }, ${ flowPrelude$8.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$8.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
       return _.insertAndExecuteCell('cs', command);
     };
     lodash.defer(_go);
@@ -2048,7 +2048,7 @@
     };
   }
 
-  const flowPrelude$10 = flowPreludeFunction();
+  const flowPrelude$9 = flowPreludeFunction();
 
   function h2oFramesOutput(_, _go, _frames) {
     const lodash = window._;
@@ -2114,13 +2114,13 @@
       columnLabels = lodash.head(lodash.map(frame.columns, column => column.label), 15);
       view = () => {
         if (frame.is_text) {
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$10.stringify(frame.frame_id.name) } ]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$9.stringify(frame.frame_id.name) } ]`);
         }
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$10.stringify(frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$9.stringify(frame.frame_id.name) }`);
       };
-      predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$10.stringify(frame.frame_id.name) }`);
-      inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$10.stringify(frame.frame_id.name) }`);
-      createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$10.stringify(frame.frame_id.name) }`);
+      predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$9.stringify(frame.frame_id.name) }`);
+      inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$9.stringify(frame.frame_id.name) }`);
+      createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$9.stringify(frame.frame_id.name) }`);
       return {
         key: frame.frame_id.name,
         isChecked: _isChecked,
@@ -2151,13 +2151,13 @@
       }
       return _results;
     };
-    predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$10.stringify(collectSelectedKeys()) }`);
+    predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$9.stringify(collectSelectedKeys()) }`);
     deleteFrames = () => _.confirm('Are you sure you want to delete these frames?', {
       acceptCaption: 'Delete Frames',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$10.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$9.stringify(collectSelectedKeys()) }`);
       }
     });
     _frameViews(lodash.map(_frames, createFrameView));
@@ -2174,7 +2174,7 @@
     };
   }
 
-  const flowPrelude$11 = flowPreludeFunction();
+  const flowPrelude$10 = flowPreludeFunction();
 
   function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     const lodash = window._;
@@ -2200,7 +2200,7 @@
     };
     const createFrameView = (key, ratio) => {
       let self;
-      const view = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$11.stringify(key) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$10.stringify(key) }`);
       return self = {
         key,
         ratio,
@@ -2226,7 +2226,7 @@
     };
   }
 
-  const flowPrelude$12 = flowPreludeFunction();
+  const flowPrelude$11 = flowPreludeFunction();
 
   function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
     const lodash = window._;
@@ -2234,7 +2234,7 @@
     let _frameKey;
     let _viewFrame;
     _frameKey = _mergeFramesResult.key;
-    _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$12.stringify(_frameKey) }`);
+    _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$11.stringify(_frameKey) }`);
     lodash.defer(_go);
     return {
       frameKey: _frameKey,
@@ -2243,7 +2243,7 @@
     };
   }
 
-  const flowPrelude$13 = flowPreludeFunction();
+  const flowPrelude$12 = flowPreludeFunction();
 
   function h2oPartialDependenceOutput(_, _go, _result) {
     let data;
@@ -2286,7 +2286,7 @@
         renderPlot(section.frame, _.plot(g => g(g.select(), g.from(table))));
       }
     }
-    _viewFrame = () => _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ flowPrelude$13.stringify(_destinationKey) }`);
+    _viewFrame = () => _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ flowPrelude$12.stringify(_destinationKey) }`);
     lodash.defer(_go);
     return {
       destinationKey: _destinationKey,
@@ -2298,7 +2298,7 @@
     };
   }
 
-  const flowPrelude$14 = flowPreludeFunction();
+  const flowPrelude$13 = flowPreludeFunction();
 
   function h2oJobsOutput(_, _go, jobs) {
     const lodash = window._;
@@ -2320,7 +2320,7 @@
     createJobView = job => {
       let type;
       let view;
-      view = () => _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$14.stringify(job.key.name) }`);
+      view = () => _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$13.stringify(job.key.name) }`);
       type = (() => {
         switch (job.dest.type) {
           case 'Key<Frame>':
@@ -2399,7 +2399,7 @@
     };
   }
 
-  const flowPrelude$15 = flowPreludeFunction();
+  const flowPrelude$14 = flowPreludeFunction();
 
   function h2oModelOutput(_, _go, _model, refresh) {
     const lodash = window._;
@@ -2604,9 +2604,9 @@
             $a = $(e.target);
             switch ($a.attr('data-type')) {
               case 'frame':
-                return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$15.stringify($a.attr('data-key')) }`);
+                return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
               case 'model':
-                return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$15.stringify($a.attr('data-key')) }`);
+                return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
             }
           });
           container(vis.element);
@@ -2927,8 +2927,8 @@
       }
       toggle = () => _isExpanded(!_isExpanded());
       cloneModel = () => alert('Not implemented');
-      predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$15.stringify(_model.model_id.name) }`);
-      inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$15.stringify(_model.model_id.name) }`);
+      predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+      inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
       previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
@@ -2937,13 +2937,13 @@
       });
       downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
       downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
-      exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$15.stringify(_model.model_id.name) }`);
+      exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
       deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
         acceptCaption: 'Delete Model',
         declineCaption: 'Cancel'
       }, accept => {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$15.stringify(_model.model_id.name) }`);
+          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
         }
       });
       return {
@@ -2990,7 +2990,7 @@
     };
   }
 
-  const flowPrelude$16 = flowPreludeFunction();
+  const flowPrelude$15 = flowPreludeFunction();
 
   function h2oGridOutput(_, _go, _grid) {
     const lodash = window._;
@@ -3067,11 +3067,11 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$16.stringify(model_id.name) }`);
+      predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$15.stringify(model_id.name) }`);
       cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
       alert('Not implemented');
-      view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$16.stringify(model_id.name) }`);
-      inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$16.stringify(model_id.name) }`);
+      view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$15.stringify(model_id.name) }`);
+      inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$15.stringify(model_id.name) }`);
       return {
         key: model_id.name,
         isChecked: _isChecked,
@@ -3098,14 +3098,14 @@
       }
       return _results;
     };
-    compareModels = () => _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$16.stringify(collectSelectedKeys()) }`);
-    predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$16.stringify(collectSelectedKeys()) }`);
+    compareModels = () => _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$15.stringify(collectSelectedKeys()) }`);
+    predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$15.stringify(collectSelectedKeys()) }`);
     deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
       acceptCaption: 'Delete Models',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$16.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$15.stringify(collectSelectedKeys()) }`);
       }
     });
     inspect = () => {
@@ -3134,7 +3134,7 @@
         }
         return _results;
       })();
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$16.stringify(allKeys) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$15.stringify(allKeys) }`);
     };
     initialize = grid => {
       let errorViews;
@@ -3179,7 +3179,7 @@
     };
   }
 
-  const flowPrelude$17 = flowPreludeFunction();
+  const flowPrelude$16 = flowPreludeFunction();
 
   function h2oGridsOutput(_, _go, _grids) {
     const lodash = window._;
@@ -3191,7 +3191,7 @@
     _gridViews = Flow.Dataflow.signal([]);
     createGridView = grid => {
       let view;
-      view = () => _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$17.stringify(grid.grid_id.name) }`);
+      view = () => _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$16.stringify(grid.grid_id.name) }`);
       return {
         key: grid.grid_id.name,
         size: grid.model_ids.length,
@@ -3212,7 +3212,7 @@
     };
   }
 
-  const flowPrelude$18 = flowPreludeFunction();
+  const flowPrelude$17 = flowPreludeFunction();
 
   function h2oModelsOutput(_, _go, _models) {
     const lodash = window._;
@@ -3281,11 +3281,11 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$18.stringify(model.model_id.name) }`);
+      predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(model.model_id.name) }`);
       cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
       alert('Not implemented');
-      view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$18.stringify(model.model_id.name) }`);
-      inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$18.stringify(model.model_id.name) }`);
+      view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
+      inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
       return {
         key: model.model_id.name,
         algo: model.algo_full_name,
@@ -3313,14 +3313,14 @@
       }
       return _results;
     };
-    compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$18.stringify(collectSelectedKeys()) }`);
-    predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$18.stringify(collectSelectedKeys()) }`);
+    compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
+    predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
     deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
       acceptCaption: 'Delete Models',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$18.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$17.stringify(collectSelectedKeys()) }`);
       }
     });
     inspectAll = () => {
@@ -3339,7 +3339,7 @@
         }
         return _results;
       })();
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$18.stringify(allKeys) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$17.stringify(allKeys) }`);
     };
     initialize = models => {
       _modelViews(lodash.map(models, createModelView));
@@ -3362,7 +3362,7 @@
     };
   }
 
-  const flowPrelude$19 = flowPreludeFunction();
+  const flowPrelude$18 = flowPreludeFunction();
 
   function h2oPredictsOutput(_, _go, opts, _predictions) {
     const lodash = window._;
@@ -3446,12 +3446,12 @@
       });
       view = () => {
         if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$19.stringify(_modelKey) }, frame: ${ flowPrelude$19.stringify(_frameKey) }`);
+          return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$18.stringify(_modelKey) }, frame: ${ flowPrelude$18.stringify(_frameKey) }`);
         }
       };
       inspect = () => {
         if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$19.stringify(_modelKey) }, frame: ${ flowPrelude$19.stringify(_frameKey) }`);
+          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$18.stringify(_modelKey) }, frame: ${ flowPrelude$18.stringify(_frameKey) }`);
         }
       };
       return {
@@ -3488,7 +3488,7 @@
         }
         return _results;
       })();
-      return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$19.stringify(selectedKeys) }`);
+      return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$18.stringify(selectedKeys) }`);
     };
     plotPredictions = () => _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
     plotScores = () => _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
@@ -3516,7 +3516,7 @@
     };
   }
 
-  const flowPrelude$20 = flowPreludeFunction();
+  const flowPrelude$19 = flowPreludeFunction();
 
   function h2oPredictOutput(_, _go, prediction) {
     const lodash = window._;
@@ -3547,7 +3547,7 @@
         let targetFrameName;
         predictionsFrameName = prediction.predictions.frame_id.name;
         targetFrameName = `combined-${ predictionsFrameName }`;
-        return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$20.stringify(targetFrameName) }, [ ${ flowPrelude$20.stringify(predictionsFrameName) }, ${ flowPrelude$20.stringify(frame.name) } ]`);
+        return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$19.stringify(targetFrameName) }, [ ${ flowPrelude$19.stringify(predictionsFrameName) }, ${ flowPrelude$19.stringify(frame.name) } ]`);
       };
       render((error, vis) => {
         if (error) {
@@ -3558,9 +3558,9 @@
           $a = $(e.target);
           switch ($a.attr('data-type')) {
             case 'frame':
-              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$20.stringify($a.attr('data-key')) }`);
+              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$19.stringify($a.attr('data-key')) }`);
             case 'model':
-              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$20.stringify($a.attr('data-key')) }`);
+              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$19.stringify($a.attr('data-key')) }`);
           }
         });
         return container(vis.element);
@@ -3591,7 +3591,7 @@
         }
       }
     }
-    inspect = () => _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$20.stringify(model.name) }, frame: ${ flowPrelude$20.stringify(frame.name) }`);
+    inspect = () => _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$19.stringify(model.name) }, frame: ${ flowPrelude$19.stringify(frame.name) }`);
     lodash.defer(_go);
     return {
       plots: _plots,
@@ -3618,7 +3618,7 @@
     };
   }
 
-  const flowPrelude$21 = flowPreludeFunction();
+  const flowPrelude$20 = flowPreludeFunction();
 
   function h2oFrameOutput(_, _go, _frame) {
     const lodash = window._;
@@ -3671,28 +3671,28 @@
         $a = $(e.target);
         switch ($a.attr('data-type')) {
           case 'summary-link':
-            return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$21.stringify(_frame.frame_id.name) }, ${ flowPrelude$21.stringify($a.attr('data-key')) }`);
+            return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$20.stringify(_frame.frame_id.name) }, ${ flowPrelude$20.stringify($a.attr('data-key')) }`);
           case 'as-factor-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$21.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$21.stringify($a.attr('data-key')) }, type: \'enum\'`);
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$20.stringify($a.attr('data-key')) }, type: \'enum\'`);
           case 'as-numeric-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$21.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$21.stringify($a.attr('data-key')) }, type: \'int\'`);
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$20.stringify($a.attr('data-key')) }, type: \'int\'`);
         }
       });
       return _grid(vis.element);
     });
-    createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
-    inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
-    inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
-    splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
-    predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
+    createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+    inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+    inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+    splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
+    predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
     download = () => window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
-    exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
+    exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
     deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
       acceptCaption: 'Delete Frame',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$21.stringify(_frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$20.stringify(_frame.frame_id.name) }`);
       }
     });
     renderFrame = frame => {
@@ -3763,7 +3763,7 @@
     };
   }
 
-  const flowPrelude$22 = flowPreludeFunction();
+  const flowPrelude$21 = flowPreludeFunction();
 
   function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
     const lodash = window._;
@@ -3800,8 +3800,8 @@
     if (table = _.inspect('domain', frame)) {
       renderPlot(_domainPlot, _.plot(g => g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000))));
     }
-    impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$22.stringify(frameKey) }, column: ${ flowPrelude$22.stringify(columnName) }`);
-    inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$22.stringify(frameKey) }, ${ flowPrelude$22.stringify(columnName) }`);
+    impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$21.stringify(frameKey) }, column: ${ flowPrelude$21.stringify(columnName) }`);
+    inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$21.stringify(frameKey) }, ${ flowPrelude$21.stringify(columnName) }`);
     lodash.defer(_go);
     return {
       label: column.label,
@@ -3821,13 +3821,13 @@
     return { template: 'flow-export-frame-output' };
   }
 
-  const flowPrelude$23 = flowPreludeFunction();
+  const flowPrelude$22 = flowPreludeFunction();
 
   function h2oBindFramesOutput(_, _go, key, result) {
     const lodash = window._;
     const Flow = window.Flow;
     let viewFrame;
-    viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$23.stringify(key) }`);
+    viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$22.stringify(key) }`);
     lodash.defer(_go);
     return {
       viewFrame,
@@ -3841,7 +3841,7 @@
     return { template: 'flow-export-model-output' };
   }
 
-  const flowPrelude$24 = flowPreludeFunction();
+  const flowPrelude$23 = flowPreludeFunction();
 
   function h2oImportFilesOutput(_, _go, _importResults) {
     const lodash = window._;
@@ -3862,7 +3862,7 @@
     _importViews = lodash.map(_importResults, createImportView);
     parse = () => {
       let paths;
-      paths = lodash.map(_allFrames, flowPrelude$24.stringify);
+      paths = lodash.map(_allFrames, flowPrelude$23.stringify);
       return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ paths.join(',') } ]`);
     };
     lodash.defer(_go);
@@ -3990,7 +3990,7 @@
     };
   }
 
-  const flowPrelude$25 = flowPreludeFunction();
+  const flowPrelude$24 = flowPreludeFunction();
 
   function h2oImportFilesInput(_, _go) {
     const lodash = window._;
@@ -4066,7 +4066,7 @@
     _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, files => files.length > 0);
     importFiles = files => {
       let paths;
-      paths = lodash.map(files, file => flowPrelude$25.stringify(file.path));
+      paths = lodash.map(files, file => flowPrelude$24.stringify(file.path));
       return _.insertAndExecuteCell('cs', `importFiles [ ${ paths.join(',') } ]`);
     };
     importSelectedFiles = () => importFiles(_selectedFiles());
@@ -4281,7 +4281,7 @@
     };
   }
 
-  const flowPrelude$26 = flowPreludeFunction();
+  const flowPrelude$25 = flowPreludeFunction();
 
   function h2oPredictInput(_, _go, opt) {
     const lodash = window._;
@@ -4439,9 +4439,9 @@
         frameArg = _selectedFrame();
       }
       destinationKey = _destinationKey();
-      cs = `predict model: ${ flowPrelude$26.stringify(modelArg) }, frame: ${ flowPrelude$26.stringify(frameArg) }`;
+      cs = `predict model: ${ flowPrelude$25.stringify(modelArg) }, frame: ${ flowPrelude$25.stringify(frameArg) }`;
       if (destinationKey) {
-        cs += `, predictions_frame: ${ flowPrelude$26.stringify(destinationKey) }`;
+        cs += `, predictions_frame: ${ flowPrelude$25.stringify(destinationKey) }`;
       }
       if (_hasReconError()) {
         if (_computeReconstructionError()) {
@@ -4488,7 +4488,7 @@
     };
   }
 
-  const flowPrelude$27 = flowPreludeFunction();
+  const flowPrelude$26 = flowPreludeFunction();
 
   function h2oCreateFrameInput(_, _go) {
     const lodash = window._;
@@ -4555,7 +4555,7 @@
         response_factors: _responseFactors(),
         has_response: _hasResponse()
       };
-      return _.insertAndExecuteCell('cs', `createFrame ${ flowPrelude$27.stringify(opts) }`);
+      return _.insertAndExecuteCell('cs', `createFrame ${ flowPrelude$26.stringify(opts) }`);
     };
     lodash.defer(_go);
     return {
@@ -4583,7 +4583,7 @@
     };
   }
 
-  const flowPrelude$28 = flowPreludeFunction();
+  const flowPrelude$27 = flowPreludeFunction();
 
   function h2oSplitFrameInput(_, _go, _frameKey) {
     const lodash = window._;
@@ -4702,12 +4702,12 @@
       const _key = Flow.Dataflow.signal('');
       const _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
       Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
-      flowPrelude$28.remove = () => _splits.remove(self);
+      flowPrelude$27.remove = () => _splits.remove(self);
       return self = {
         key: _key,
         ratioText: _ratioText,
         ratio: _ratio,
-        remove: flowPrelude$28.remove
+        remove: flowPrelude$27.remove
       };
     };
     const addSplitRatio = ratio => _splits.push(createSplit(ratio));
@@ -4717,7 +4717,7 @@
         return _validationMessage(error);
       }
       _validationMessage('');
-      return _.insertAndExecuteCell('cs', `splitFrame ${ flowPrelude$28.stringify(_frame()) }, ${ flowPrelude$28.stringify(splitRatios) }, ${ flowPrelude$28.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
+      return _.insertAndExecuteCell('cs', `splitFrame ${ flowPrelude$27.stringify(_frame()) }, ${ flowPrelude$27.stringify(splitRatios) }, ${ flowPrelude$27.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
     });
     const initialize = () => {
       _.requestFrames((error, frames) => {
@@ -4760,7 +4760,7 @@
     };
   }
 
-  const flowPrelude$29 = flowPreludeFunction();
+  const flowPrelude$28 = flowPreludeFunction();
 
   function h2oMergeFramesInput(_, _go) {
     const lodash = window._;
@@ -4815,7 +4815,7 @@
       if (!_canMerge()) {
         return;
       }
-      cs = `mergeFrames ${ flowPrelude$29.stringify(_destinationKey()) }, ${ flowPrelude$29.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ flowPrelude$29.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
+      cs = `mergeFrames ${ flowPrelude$28.stringify(_destinationKey()) }, ${ flowPrelude$28.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ flowPrelude$28.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames((error, frames) => {
@@ -4855,7 +4855,7 @@
     };
   }
 
-  const flowPrelude$30 = flowPreludeFunction();
+  const flowPrelude$29 = flowPreludeFunction();
 
   function h2oPartialDependenceInput(_, _go) {
     const lodash = window._;
@@ -4889,7 +4889,7 @@
         frame_id: _selectedFrame(),
         nbins: _nbins()
       };
-      cs = `buildPartialDependence ${ flowPrelude$30.stringify(opts) }`;
+      cs = `buildPartialDependence ${ flowPrelude$29.stringify(opts) }`;
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames((error, frames) => {
@@ -4942,7 +4942,7 @@
     };
   }
 
-  const flowPrelude$31 = flowPreludeFunction();
+  const flowPrelude$30 = flowPreludeFunction();
 
   function h2oExportFrameInput(_, _go, frameKey, path, opt) {
     const lodash = window._;
@@ -4958,7 +4958,7 @@
     _path = Flow.Dataflow.signal(null);
     _overwrite = Flow.Dataflow.signal(true);
     _canExportFrame = Flow.Dataflow.lift(_selectedFrame, _path, (frame, path) => frame && path);
-    exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$31.stringify(_selectedFrame()) }, ${ flowPrelude$31.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$30.stringify(_selectedFrame()) }, ${ flowPrelude$30.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     _.requestFrames((error, frames) => {
       let frame;
       if (error) {
@@ -4990,7 +4990,7 @@
     };
   }
 
-  const flowPrelude$32 = flowPreludeFunction();
+  const flowPrelude$31 = flowPreludeFunction();
 
   function h2oImportModelInput(_, _go, path, opt) {
     const lodash = window._;
@@ -5005,7 +5005,7 @@
     _path = Flow.Dataflow.signal(path);
     _overwrite = Flow.Dataflow.signal(opt.overwrite);
     _canImportModel = Flow.Dataflow.lift(_path, path => path && path.length);
-    importModel = () => _.insertAndExecuteCell('cs', `importModel ${ flowPrelude$32.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    importModel = () => _.insertAndExecuteCell('cs', `importModel ${ flowPrelude$31.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     lodash.defer(_go);
     return {
       path: _path,
@@ -5016,7 +5016,7 @@
     };
   }
 
-  const flowPrelude$33 = flowPreludeFunction();
+  const flowPrelude$32 = flowPreludeFunction();
 
   function h2oExportModelInput(_, _go, modelKey, path, opt) {
     const lodash = window._;
@@ -5035,7 +5035,7 @@
     _path = Flow.Dataflow.signal(null);
     _overwrite = Flow.Dataflow.signal(opt.overwrite);
     _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, (modelKey, path) => modelKey && path);
-    exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$33.stringify(_selectedModelKey()) }, ${ flowPrelude$33.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$32.stringify(_selectedModelKey()) }, ${ flowPrelude$32.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     _.requestModels((error, models) => {
       let model;
       if (error) {
@@ -5078,7 +5078,7 @@
     };
   }
 
-  const flowPrelude$6 = flowPreludeFunction();
+  const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
     const lodash = window._;
@@ -5347,7 +5347,7 @@
       target = new Array(source.length);
       for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
         element = source[i];
-        target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$6.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$6.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : element : void 0;
+        target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$5.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : element : void 0;
       }
       return target;
     };
@@ -5443,15 +5443,15 @@
           }
           return _results;
         })();
-        return `getPredictions ${ flowPrelude$6.stringify(sanitizedOpts) }`;
+        return `getPredictions ${ flowPrelude$5.stringify(sanitizedOpts) }`;
       }
       modelKey = opts.model, frameKey = opts.frame;
       if (modelKey && frameKey) {
-        return `getPredictions model: ${ flowPrelude$6.stringify(modelKey) }, frame: ${ flowPrelude$6.stringify(frameKey) }`;
+        return `getPredictions model: ${ flowPrelude$5.stringify(modelKey) }, frame: ${ flowPrelude$5.stringify(frameKey) }`;
       } else if (modelKey) {
-        return `getPredictions model: ${ flowPrelude$6.stringify(modelKey) }`;
+        return `getPredictions model: ${ flowPrelude$5.stringify(modelKey) }`;
       } else if (frameKey) {
-        return `getPredictions frame: ${ flowPrelude$6.stringify(frameKey) }`;
+        return `getPredictions frame: ${ flowPrelude$5.stringify(frameKey) }`;
       }
       return 'getPredictions()';
     };
@@ -5884,7 +5884,7 @@
         _ref1 = result.partial_dependence_data;
         for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
           data = _ref1[i];
-          origin = `getPartialDependence ${ flowPrelude$6.stringify(result.destination_key) }`;
+          origin = `getPartialDependence ${ flowPrelude$5.stringify(result.destination_key) }`;
           inspections[`plot${ i + 1 }`] = inspectTwoDimTable_(origin, `plot${ i + 1 }`, data);
         }
         inspect_(result, inspections);
@@ -5997,7 +5997,7 @@
         })();
         return createDataframe('parameters', vectors, lodash.range(models.length), null, {
           description: `Parameters for models ${ modelKeys.join(', ') }`,
-          origin: `getModels ${ flowPrelude$6.stringify(modelKeys) }`
+          origin: `getModels ${ flowPrelude$5.stringify(modelKeys) }`
         });
       };
       inspectModelParameters = model => () => {
@@ -6030,7 +6030,7 @@
         })();
         return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
           description: `Parameters for model \'${ model.model_id.name }\'`,
-          origin: `getModel ${ flowPrelude$6.stringify(model.model_id.name) }`
+          origin: `getModel ${ flowPrelude$5.stringify(model.model_id.name) }`
         });
       };
       extendJob = job => render_(job, H2O.JobOutput, job);
@@ -6117,7 +6117,7 @@
             attrs = _schemaHacks[schema];
             dicts[schema] = dict = { __meta: true };
             if (attrs.fields) {
-              _ref1 = flowPrelude$6.words(attrs.fields);
+              _ref1 = flowPrelude$5.words(attrs.fields);
               for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
                 field = _ref1[_i];
                 dict[field] = true;
@@ -6180,11 +6180,11 @@
                   } else if (lodash.isObject(v)) {
                     if (meta = v.__meta) {
                       if (meta.schema_type === 'Key<Frame>') {
-                        record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$6.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
+                        record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
                       } else if (meta.schema_type === 'Key<Model>') {
-                        record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$6.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
+                        record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$5.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
                       } else if (meta.schema_type === 'Frame') {
-                        record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$6.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
+                        record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
                       } else {
                         inspectObject(inspections, `${ name } - ${ k }`, origin, v);
                       }
@@ -6212,7 +6212,7 @@
           let _ref1;
           inspections = {};
           inspections.parameters = inspectModelParameters(model);
-          origin = `getModel ${ flowPrelude$6.stringify(model.model_id.name) }`;
+          origin = `getModel ${ flowPrelude$5.stringify(model.model_id.name) }`;
           inspectObject(inspections, 'output', origin, model.output);
           if (model.__meta.schema_type === 'NaiveBayesModel') {
             if (lodash.isArray(model.output.pcond)) {
@@ -6239,9 +6239,9 @@
       extendGrid = (grid, opts) => {
         let inspections;
         let origin;
-        origin = `getGrid ${ flowPrelude$6.stringify(grid.grid_id.name) }`;
+        origin = `getGrid ${ flowPrelude$5.stringify(grid.grid_id.name) }`;
         if (opts) {
-          origin += `, ${ flowPrelude$6.stringify(opts) }`;
+          origin += `, ${ flowPrelude$5.stringify(opts) }`;
         }
         inspections = {
           summary: inspectTwoDimTable_(origin, 'summary', grid.summary_table),
@@ -6296,10 +6296,10 @@
         predictionFrame = result.predictions_frame;
         inspections = {};
         if (prediction) {
-          inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$6.stringify(modelKey) }, frame: ${ flowPrelude$6.stringify(frameKey) }`, prediction);
+          inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$5.stringify(modelKey) }, frame: ${ flowPrelude$5.stringify(frameKey) }`, prediction);
         } else {
           prediction = {};
-          inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$6.stringify(modelKey) }, frame: ${ flowPrelude$6.stringify(frameKey) }`, { prediction_frame: predictionFrame });
+          inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$5.stringify(modelKey) }, frame: ${ flowPrelude$5.stringify(frameKey) }`, { prediction_frame: predictionFrame });
         }
         inspect_(prediction, inspections);
         return render_(prediction, h2oPredictOutput, prediction);
@@ -6317,7 +6317,7 @@
         let typeVector;
         let vectors;
         attrs = ['label', 'type', 'missing_count|Missing', 'zero_count|Zeros', 'positive_infinity_count|+Inf', 'negative_infinity_count|-Inf', 'min', 'max', 'mean', 'sigma', 'cardinality'];
-        toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${ flowPrelude$6.stringify(label) }>${ lodash.escape(label) }</a>`;
+        toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${ flowPrelude$5.stringify(label) }>${ lodash.escape(label) }</a>`;
         toConversionLink = value => {
           let label;
           let type;
@@ -6325,10 +6325,10 @@
           _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
           switch (type) {
             case 'enum':
-              return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${ flowPrelude$6.stringify(label) }>Convert to numeric</a>`;
+              return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${ flowPrelude$5.stringify(label) }>Convert to numeric</a>`;
             case 'int':
             case 'string':
-              return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${ flowPrelude$6.stringify(label) }>Convert to enum</a>'`;
+              return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${ flowPrelude$5.stringify(label) }>Convert to enum</a>'`;
             default:
               return void 0;
           }
@@ -6453,8 +6453,8 @@
         vectors.push(createFactor('Actions', 'String', actionsData, null, toConversionLink));
         return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
           description: `A list of ${ tableLabel } in the H2O Frame.`,
-          origin: `getFrameSummary ${ flowPrelude$6.stringify(frameKey) }`,
-          plot: `plot inspect \'${ tableLabel }\', getFrameSummary ${ flowPrelude$6.stringify(frameKey) }`
+          origin: `getFrameSummary ${ flowPrelude$5.stringify(frameKey) }`,
+          plot: `plot inspect \'${ tableLabel }\', getFrameSummary ${ flowPrelude$5.stringify(frameKey) }`
         });
       };
       inspectFrameData = (frameKey, frame) => () => {
@@ -6519,14 +6519,14 @@
         })()));
         return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
           description: 'A partial list of rows in the H2O Frame.',
-          origin: `getFrameData ${ flowPrelude$6.stringify(frameKey) }`
+          origin: `getFrameData ${ flowPrelude$5.stringify(frameKey) }`
         });
       };
       extendFrameData = (frameKey, frame) => {
         let inspections;
         let origin;
         inspections = { data: inspectFrameData(frameKey, frame) };
-        origin = `getFrameData ${ flowPrelude$6.stringify(frameKey) }`;
+        origin = `getFrameData ${ flowPrelude$5.stringify(frameKey) }`;
         inspect_(frame, inspections);
         return render_(frame, h2oFrameDataOutput, frame);
       };
@@ -6557,7 +6557,7 @@
         if (enumColumns.length > 0) {
           inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
         }
-        origin = `getFrameSummary ${ flowPrelude$6.stringify(frameKey) }`;
+        origin = `getFrameSummary ${ flowPrelude$5.stringify(frameKey) }`;
         inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
         inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
         inspect_(frame, inspections);
@@ -6587,7 +6587,7 @@
         if (enumColumns.length > 0) {
           inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
         }
-        origin = `getFrameSummary ${ flowPrelude$6.stringify(frameKey) }`;
+        origin = `getFrameSummary ${ flowPrelude$5.stringify(frameKey) }`;
         inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
         inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
         inspect_(frame, inspections);
@@ -6609,7 +6609,7 @@
           vectors = [createVector('percentile', 'Number', frame.default_percentiles), createVector('value', 'Number', column.percentiles)];
           return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
             description: `Percentiles for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`
+            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
           });
         };
         inspectDistribution = () => {
@@ -6683,8 +6683,8 @@
           vectors = [createFactor('interval', 'String', intervalData), createVector('width', 'Number', widthData), createVector('count', 'Number', countData)];
           return createDataframe('distribution', vectors, lodash.range(binCount), null, {
             description: `Distribution for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`,
-            plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`
+            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`,
+            plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
           });
         };
         inspectCharacteristics = () => {
@@ -6716,8 +6716,8 @@
           vectors = [createFactor('characteristic', 'String', characteristicData), createVector('count', 'Number', countData), createVector('percent', 'Number', percentData)];
           return createDataframe('characteristics', vectors, lodash.range(characteristicData.length), null, {
             description: `Characteristics for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`,
-            plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`
+            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`,
+            plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
           });
         };
         inspectSummary = () => {
@@ -6743,8 +6743,8 @@
           vectors = [createFactor('column', 'String', [columnName]), createVector('mean', 'Number', [mean]), createVector('q1', 'Number', [q1]), createVector('q2', 'Number', [q2]), createVector('q3', 'Number', [q3]), createVector('min', 'Number', [minimum]), createVector('max', 'Number', [maximum])];
           return createDataframe('summary', vectors, lodash.range(1), null, {
             description: `Summary for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`,
-            plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`
+            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`,
+            plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
           });
         };
         inspectDomain = () => {
@@ -6774,8 +6774,8 @@
           vectors = [createFactor('label', 'String', labels), createVector('count', 'Number', counts), createVector('percent', 'Number', percents)];
           return createDataframe('domain', vectors, lodash.range(sortedLevels.length), null, {
             description: `Domain for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`,
-            plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$6.stringify(frameKey) }, ${ flowPrelude$6.stringify(columnName) }`
+            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`,
+            plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
           });
         };
         inspections = { characteristics: inspectCharacteristics };
@@ -7000,7 +7000,7 @@
       };
       getFrames = () => _fork(requestFrames);
       getFrame = frameKey => {
-        switch (flowPrelude$6.typeOf(frameKey)) {
+        switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrame, frameKey);
           default:
@@ -7009,7 +7009,7 @@
       };
       bindFrames = (key, sourceKeys) => _fork(requestBindFrames, key, sourceKeys);
       getFrameSummary = frameKey => {
-        switch (flowPrelude$6.typeOf(frameKey)) {
+        switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrameSummary, frameKey);
           default:
@@ -7017,7 +7017,7 @@
         }
       };
       getFrameData = frameKey => {
-        switch (flowPrelude$6.typeOf(frameKey)) {
+        switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrameData, frameKey, void 0, 0, 20);
           default:
@@ -7118,7 +7118,7 @@
         return go(null, extendModel(model));
       });
       getModel = modelKey => {
-        switch (flowPrelude$6.typeOf(modelKey)) {
+        switch (flowPrelude$5.typeOf(modelKey)) {
           case 'String':
             return _fork(requestModel, modelKey);
           default:
@@ -7132,7 +7132,7 @@
         return go(null, extendGrid(grid, opts));
       });
       getGrid = (gridKey, opts) => {
-        switch (flowPrelude$6.typeOf(gridKey)) {
+        switch (flowPrelude$5.typeOf(gridKey)) {
           case 'String':
             return _fork(requestGrid, gridKey, opts);
           default:
@@ -7316,7 +7316,7 @@
       });
       getJobs = () => _fork(requestJobs);
       getJob = arg => {
-        switch (flowPrelude$6.typeOf(arg)) {
+        switch (flowPrelude$5.typeOf(arg)) {
           case 'String':
             return _fork(requestJob, arg);
           case 'Object':
@@ -7336,7 +7336,7 @@
         return go(null, extendCancelJob({}));
       });
       cancelJob = arg => {
-        switch (flowPrelude$6.typeOf(arg)) {
+        switch (flowPrelude$5.typeOf(arg)) {
           case 'String':
             return _fork(requestCancelJob, arg);
           default:
@@ -7351,7 +7351,7 @@
         return go(null, extendImportResults(importResults));
       });
       importFiles = paths => {
-        switch (flowPrelude$6.typeOf(paths)) {
+        switch (flowPrelude$5.typeOf(paths)) {
           case 'Array':
             return _fork(requestImportFiles, paths);
           default:
@@ -8551,7 +8551,7 @@
     };
   }
 
-  const flowPrelude$34 = flowPreludeFunction();
+  const flowPrelude$33 = flowPreludeFunction();
 
   function dataflow() {
     const lodash = window._;
@@ -8620,12 +8620,12 @@
           arrows.push(arrow = {
             func,
             dispose() {
-              return flowPrelude$34.remove(arrows, arrow);
+              return flowPrelude$33.remove(arrows, arrow);
             }
           });
           return arrow;
         };
-        self.dispose = () => lodash.forEach(flowPrelude$34.copy(arrows), arrow => arrow.dispose());
+        self.dispose = () => lodash.forEach(flowPrelude$33.copy(arrows), arrow => arrow.dispose());
         return self;
       };
       if (typeof ko !== 'undefined' && ko !== null) {
@@ -8666,7 +8666,7 @@
             arrows.push(arrow = {
               func,
               dispose() {
-                return flowPrelude$34.remove(arrows, arrow);
+                return flowPrelude$33.remove(arrows, arrow);
               }
             });
             return arrow;
@@ -8685,7 +8685,7 @@
       createSignal = function (value, equalityComparer) {
         let observable;
         if (arguments.length === 0) {
-          return createSignal(void 0, flowPrelude$34.never);
+          return createSignal(void 0, flowPrelude$33.never);
         }
         observable = createObservable(value);
         if (lodash.isFunction(equalityComparer)) {
@@ -9086,7 +9086,7 @@
     };
   }
 
-  const flowPrelude$35 = flowPreludeFunction();
+  const flowPrelude$34 = flowPreludeFunction();
 
   function async() {
     const lodash = window._;
@@ -9355,9 +9355,9 @@
       switch (args.length) {
         case 3:
           a = args[0], b = args[1], c = args[2];
-          ta = flowPrelude$35.typeOf(a);
-          tb = flowPrelude$35.typeOf(b);
-          tc = flowPrelude$35.typeOf(c);
+          ta = flowPrelude$34.typeOf(a);
+          tb = flowPrelude$34.typeOf(b);
+          tc = flowPrelude$34.typeOf(c);
           if (ta === 'Array' && tb === 'String') {
             return _find$3(b, c, a);
           } else if (ta === 'String' && (tc = 'Array')) {
@@ -9404,7 +9404,7 @@
     };
   }
 
-  const flowPrelude$36 = flowPreludeFunction();
+  const flowPrelude$35 = flowPreludeFunction();
 
   function objectBrowser() {
     const lodash = window._;
@@ -9467,7 +9467,7 @@
       if (recurse == null) {
         recurse = false;
       }
-      const type = flowPrelude$36.typeOf(element);
+      const type = flowPrelude$35.typeOf(element);
       switch (type) {
         case 'Boolean':
         case 'String':
@@ -9496,7 +9496,7 @@
     Flow.ObjectBrowserElement = (key, object) => {
       const _expansions = Flow.Dataflow.signal(null);
       const _isExpanded = Flow.Dataflow.signal(false);
-      const _type = flowPrelude$36.typeOf(object);
+      const _type = flowPrelude$35.typeOf(object);
       const _canExpand = isExpandable(_type);
       const toggle = () => {
         let expansions;
@@ -10723,7 +10723,7 @@
     return render;
   }
 
-  const flowPrelude$37 = flowPreludeFunction();
+  const flowPrelude$36 = flowPreludeFunction();
 
   function notebook() {
     const lodash = window._;
@@ -11118,7 +11118,7 @@
             return _.growl((_ref = error.message) != null ? _ref : error);
           }
           _.growl('File uploaded successfully!');
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$37.stringify(result.result.destination_frame) }]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$36.stringify(result.result.destination_frame) }]`);
         }
       });
       const toggleInput = () => _selectedCell.toggleInput();
@@ -11352,7 +11352,7 @@
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
       }
       const initializeMenus = builder => {
-        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$37.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
+        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$36.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
         return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')), createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')), createMenuItem('Shut Down', shutdown)]), createMenu('Help', [createMenuItem('Assist Me', executeCommand('assist')), menuDivider, createMenuItem('Contents', showHelp), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider, createMenuItem('About', displayAbout)])];
       };
       const setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
@@ -11485,7 +11485,7 @@
     };
   }
 
-  const flowPrelude$38 = flowPreludeFunction();
+  const flowPrelude$37 = flowPreludeFunction();
 
   function clipboard() {
     const lodash = window._;
@@ -11533,7 +11533,7 @@
         }
         execute = () => _.insertAndExecuteCell(_type, _input);
         insert = () => _.insertCell(_type, _input);
-        flowPrelude$38.remove = () => {
+        flowPrelude$37.remove = () => {
           if (_canRemove) {
             return removeClip(_list, self);
           }
@@ -11543,7 +11543,7 @@
           input: _input,
           execute,
           insert,
-          remove: flowPrelude$38.remove,
+          remove: flowPrelude$37.remove,
           canRemove: _canRemove
         };
       };
@@ -11857,111 +11857,17 @@
     return _.requestAsDataFrame = Flow.Dataflow.slot();
   }
 
+  const flowPrelude$38 = flowPreludeFunction();
+
   function h2oProxy(_) {
     const lodash = window._;
     const Flow = window.Flow;
-    let cacheModelBuilders;
-    let composePath;
-    let doDelete;
-    let doGet;
-    let doPost;
-    let doPostJSON;
-    let doPut;
-    let doUpload;
-    let download;
-    let encodeArrayForPost;
-    let encodeObject;
-    let encodeObjectForPost;
-    let getGridModelBuilderEndpoint;
-    let getLines;
-    let getModelBuilderEndpoint;
-    let getModelBuilders;
-    let http;
-    let mapWithKey;
-    let optsToString;
-    let requestAbout;
-    let requestAsDataFrame;
-    let requestAsH2OFrameFromDF;
-    let requestAsH2OFrameFromRDD;
-    let requestAutoModelBuild;
-    let requestCancelJob;
-    let requestCloud;
-    let requestColumnSummary;
-    let requestCreateFrame;
-    let requestDataFrames;
-    let requestDeleteFrame;
-    let requestDeleteModel;
-    let requestDeleteObject;
-    let requestEcho;
-    let requestEndpoint;
-    let requestEndpoints;
-    let requestExec;
-    let requestExportFrame;
-    let requestExportModel;
-    let requestFileGlob;
-    let requestFlow;
-    let requestFrame;
-    let requestFrameSlice;
-    let requestFrameSummary;
-    let requestFrameSummarySlice;
-    let requestFrameSummaryWithoutData;
-    let requestFrames;
-    let requestGrid;
-    let requestGrids;
-    let requestHelpContent;
-    let requestHelpIndex;
-    let requestImportFile;
-    let requestImportFiles;
-    let requestImportModel;
-    let requestInspect;
-    let requestIsStorageConfigured;
-    let requestJob;
-    let requestJobs;
-    let requestLogFile;
-    let requestModel;
-    let requestModelBuild;
-    let requestModelBuilder;
-    let requestModelBuilders;
-    let requestModelBuildersVisibility;
-    let requestModelInputValidation;
-    let requestModels;
-    let requestNetworkTest;
-    let requestObject;
-    let requestObjectExists;
-    let requestObjects;
-    let requestPack;
-    let requestPacks;
-    let requestParseFiles;
-    let requestParseSetup;
-    let requestParseSetupPreview;
-    let requestPartialDependence;
-    let requestPartialDependenceData;
-    let requestPojoPreview;
-    let requestPredict;
-    let requestPrediction;
-    let requestPredictions;
-    let requestProfile;
-    let requestPutObject;
-    let requestRDDs;
-    let requestRemoveAll;
-    let requestScalaCode;
-    let requestScalaIntp;
-    let requestSchema;
-    let requestSchemas;
-    let requestShutdown;
-    let requestSplitFrame;
-    let requestStackTrace;
-    let requestTimeline;
-    let requestUploadFile;
-    let requestUploadObject;
-    let requestWithOpts;
-    let trackPath;
-    let unwrap;
+    const $ = window.jQuery;
     let __gridModelBuilderEndpoints;
     let __modelBuilderEndpoints;
     let __modelBuilders;
     let _storageConfiguration;
-    download = (type, url, go) => {
+    const download = (type, url, go) => {
       if (url.substring(0, 1) === '/') {
         url = window.Flow.ContextPath + url.substring(1);
       }
@@ -11976,7 +11882,7 @@
         }
       });
     };
-    optsToString = opts => {
+    const optsToString = opts => {
       let str;
       if (opts != null) {
         str = ` with opts ${ JSON.stringify(opts) }`;
@@ -11987,14 +11893,13 @@
       }
       return '';
     };
-    http = (method, path, opts, go) => {
-      let req;
+    const http = (method, path, opts, go) => {
       if (path.substring(0, 1) === '/') {
         path = window.Flow.ContextPath + path.substring(1);
       }
       _.status('server', 'request', path);
       trackPath(path);
-      req = (() => {
+      const req = (() => {
         switch (method) {
           case 'GET':
             return $.getJSON(path);
@@ -12041,23 +11946,21 @@
         }
       });
       return req.fail((xhr, status, error) => {
-        let cause;
         let meta;
-        let response;
         let serverError;
         _.status('server', 'error', path);
-        response = xhr.responseJSON;
-        cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+        const response = xhr.responseJSON;
+        const cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
         return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
       });
     };
-    doGet = (path, go) => http('GET', path, null, go);
-    doPost = (path, opts, go) => http('POST', path, opts, go);
-    doPostJSON = (path, opts, go) => http('POSTJSON', path, opts, go);
-    doPut = (path, opts, go) => http('PUT', path, opts, go);
-    doUpload = (path, formData, go) => http('UPLOAD', path, formData, go);
-    doDelete = (path, go) => http('DELETE', path, null, go);
-    trackPath = path => {
+    const doGet = (path, go) => http('GET', path, null, go);
+    const doPost = (path, opts, go) => http('POST', path, opts, go);
+    const doPostJSON = (path, opts, go) => http('POSTJSON', path, opts, go);
+    const doPut = (path, opts, go) => http('PUT', path, opts, go);
+    const doUpload = (path, formData, go) => http('UPLOAD', path, formData, go);
+    const doDelete = (path, go) => http('DELETE', path, null, go);
+    function trackPath(path) {
       let base;
       let e;
       let name;
@@ -12075,12 +11978,11 @@
       } catch (_error) {
         e = _error;
       }
-    };
-    mapWithKey = (obj, f) => {
+    }
+    const mapWithKey = (obj, f) => {
       let key;
-      let result;
       let value;
-      result = [];
+      const result = [];
       for (key in obj) {
         if ({}.hasOwnProperty.call(obj, key)) {
           value = obj[key];
@@ -12089,7 +11991,7 @@
       }
       return result;
     };
-    composePath = (path, opts) => {
+    const composePath = (path, opts) => {
       let params;
       if (opts) {
         params = mapWithKey(opts, (v, k) => `${ k }=${ v }`);
@@ -12097,8 +11999,8 @@
       }
       return path;
     };
-    requestWithOpts = (path, opts, go) => doGet(composePath(path, opts), go);
-    encodeArrayForPost = array => {
+    const requestWithOpts = (path, opts, go) => doGet(composePath(path, opts), go);
+    const encodeArrayForPost = array => {
       if (array) {
         if (array.length === 0) {
           return null;
@@ -12111,11 +12013,10 @@
       }
       return null;
     };
-    encodeObject = source => {
+    const encodeObject = source => {
       let k;
-      let target;
       let v;
-      target = {};
+      const target = {};
       for (k in source) {
         if ({}.hasOwnProperty.call(source, k)) {
           v = source[k];
@@ -12124,11 +12025,10 @@
       }
       return target;
     };
-    encodeObjectForPost = source => {
+    const encodeObjectForPost = source => {
       let k;
-      let target;
       let v;
-      target = {};
+      const target = {};
       for (k in source) {
         if ({}.hasOwnProperty.call(source, k)) {
           v = source[k];
@@ -12137,13 +12037,13 @@
       }
       return target;
     };
-    unwrap = (go, transform) => (error, result) => {
+    const unwrap = (go, transform) => (error, result) => {
       if (error) {
         return go(error);
       }
       return go(null, transform(result));
     };
-    requestExec = (ast, go) => doPost('/99/Rapids', { ast }, (error, result) => {
+    const requestExec = (ast, go) => doPost('/99/Rapids', { ast }, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -12152,91 +12052,83 @@
       }
       return go(null, result);
     });
-    requestInspect = (key, go) => {
-      let opts;
-      opts = { key: encodeURIComponent(key) };
+    const requestInspect = (key, go) => {
+      const opts = { key: encodeURIComponent(key) };
       return requestWithOpts('/3/Inspect', opts, go);
     };
-    requestCreateFrame = (opts, go) => doPost('/3/CreateFrame', opts, go);
-    requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
-      let opts;
-      opts = {
+    const requestCreateFrame = (opts, go) => doPost('/3/CreateFrame', opts, go);
+    const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
+      const opts = {
         dataset: frameKey,
         ratios: encodeArrayForPost(splitRatios),
         dest_keys: encodeArrayForPost(splitKeys)
       };
       return doPost('/3/SplitFrame', opts, go);
     };
-    requestFrames = go => doGet('/3/Frames', (error, result) => {
+    const requestFrames = go => doGet('/3/Frames', (error, result) => {
       if (error) {
         return go(error);
       }
       return go(null, result.frames);
     });
-    requestFrame = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }`, unwrap(go, result => lodash.head(result.frames)));
-    requestFrameSlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }?column_offset=${ offset }&column_count=${ count }`, unwrap(go, result => lodash.head(result.frames)));
-    requestFrameSummary = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, result => lodash.head(result.frames)));
-    requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
-    requestFrameSummaryWithoutData = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
+    const requestFrame = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }`, unwrap(go, result => lodash.head(result.frames)));
+    const requestFrameSlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }?column_offset=${ offset }&column_count=${ count }`, unwrap(go, result => lodash.head(result.frames)));
+    const requestFrameSummary = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, result => lodash.head(result.frames)));
+    const requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
+    const requestFrameSummaryWithoutData = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
       if (error) {
         return go(error);
       }
       return go(null, lodash.head(result.frames));
     });
-    requestDeleteFrame = (key, go) => doDelete(`/3/Frames/${ encodeURIComponent(key) }`, go);
-    requestExportFrame = (key, path, overwrite, go) => {
-      let params;
-      params = {
+    const requestDeleteFrame = (key, go) => doDelete(`/3/Frames/${ encodeURIComponent(key) }`, go);
+    const requestExportFrame = (key, path, overwrite, go) => {
+      const params = {
         path,
         force: overwrite ? 'true' : 'false'
       };
       return doPost(`/3/Frames/${ encodeURIComponent(key) }/export`, params, go);
     };
-    requestColumnSummary = (frameKey, column, go) => doGet(`/3/Frames/${ encodeURIComponent(frameKey) }/columns/${ encodeURIComponent(column) }/summary`, unwrap(go, result => lodash.head(result.frames)));
-    requestJobs = go => doGet('/3/Jobs', (error, result) => {
+    const requestColumnSummary = (frameKey, column, go) => doGet(`/3/Frames/${ encodeURIComponent(frameKey) }/columns/${ encodeURIComponent(column) }/summary`, unwrap(go, result => lodash.head(result.frames)));
+    const requestJobs = go => doGet('/3/Jobs', (error, result) => {
       if (error) {
         return go(new Flow.Error('Error fetching jobs', error));
       }
       return go(null, result.jobs);
     });
-    requestJob = (key, go) => doGet(`/3/Jobs/${ encodeURIComponent(key) }`, (error, result) => {
+    const requestJob = (key, go) => doGet(`/3/Jobs/${ encodeURIComponent(key) }`, (error, result) => {
       if (error) {
         return go(new Flow.Error(`Error fetching job \'${ key }\'`, error));
       }
       return go(null, lodash.head(result.jobs));
     });
-    requestCancelJob = (key, go) => doPost(`/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
+    const requestCancelJob = (key, go) => doPost(`/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
       if (error) {
         return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
       }
       return go(null);
     });
-    requestFileGlob = (path, limit, go) => {
-      let opts;
-      opts = {
+    const requestFileGlob = (path, limit, go) => {
+      const opts = {
         src: encodeURIComponent(path),
         limit
       };
       return requestWithOpts('/3/Typeahead/files', opts, go);
     };
-    requestImportFiles = (paths, go) => {
-      let tasks;
-      tasks = lodash.map(paths, path => go => requestImportFile(path, go));
+    const requestImportFiles = (paths, go) => {
+      const tasks = lodash.map(paths, path => go => requestImportFile(path, go));
       return Flow.Async.iterate(tasks)(go);
     };
-    requestImportFile = (path, go) => {
-      let opts;
-      opts = { path: encodeURIComponent(path) };
+    const requestImportFile = (path, go) => {
+      const opts = { path: encodeURIComponent(path) };
       return requestWithOpts('/3/ImportFiles', opts, go);
     };
-    requestParseSetup = (sourceKeys, go) => {
-      let opts;
-      opts = { source_frames: encodeArrayForPost(sourceKeys) };
+    const requestParseSetup = (sourceKeys, go) => {
+      const opts = { source_frames: encodeArrayForPost(sourceKeys) };
       return doPost('/3/ParseSetup', opts, go);
     };
-    requestParseSetupPreview = (sourceKeys, parseType, separator, useSingleQuotes, checkHeader, columnTypes, go) => {
-      let opts;
-      opts = {
+    const requestParseSetupPreview = (sourceKeys, parseType, separator, useSingleQuotes, checkHeader, columnTypes, go) => {
+      const opts = {
         source_frames: encodeArrayForPost(sourceKeys),
         parse_type: parseType,
         separator,
@@ -12246,9 +12138,8 @@
       };
       return doPost('/3/ParseSetup', opts, go);
     };
-    requestParseFiles = (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => {
-      let opts;
-      opts = {
+    const requestParseFiles = (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => {
+      const opts = {
         destination_frame: destinationKey,
         source_frames: encodeArrayForPost(sourceKeys),
         parse_type: parseType,
@@ -12263,26 +12154,26 @@
       };
       return doPost('/3/Parse', opts, go);
     };
-    requestPartialDependence = (opts, go) => doPost('/3/PartialDependence/', opts, go);
-    requestPartialDependenceData = (key, go) => doGet(`/3/PartialDependence/${ encodeURIComponent(key) }`, (error, result) => {
+    const requestPartialDependence = (opts, go) => doPost('/3/PartialDependence/', opts, go);
+    const requestPartialDependenceData = (key, go) => doGet(`/3/PartialDependence/${ encodeURIComponent(key) }`, (error, result) => {
       if (error) {
         return go(error, result);
       }
       return go(error, result);
     });
-    requestGrids = (go, opts) => doGet('/99/Grids', (error, result) => {
+    const requestGrids = (go, opts) => doGet('/99/Grids', (error, result) => {
       if (error) {
         return go(error, result);
       }
       return go(error, result.grids);
     });
-    requestModels = (go, opts) => requestWithOpts('/3/Models', opts, (error, result) => {
+    const requestModels = (go, opts) => requestWithOpts('/3/Models', opts, (error, result) => {
       if (error) {
         return go(error, result);
       }
       return go(error, result.models);
     });
-    requestGrid = (key, opts, go) => {
+    const requestGrid = (key, opts, go) => {
       let params;
       params = void 0;
       if (opts) {
@@ -12296,35 +12187,32 @@
       }
       return doGet(composePath(`/99/Grids/' + ${ encodeURIComponent(key) }`, params), go);
     };
-    requestModel = (key, go) => doGet(`/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
+    const requestModel = (key, go) => doGet(`/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
       if (error) {
         return go(error, result);
       }
       return go(error, lodash.head(result.models));
     });
-    requestPojoPreview = (key, go) => download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
-    requestDeleteModel = (key, go) => doDelete(`/3/Models/${ encodeURIComponent(key) }`, go);
-    requestImportModel = (path, overwrite, go) => {
-      let opts;
-      opts = {
+    const requestPojoPreview = (key, go) => download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
+    const requestDeleteModel = (key, go) => doDelete(`/3/Models/${ encodeURIComponent(key) }`, go);
+    const requestImportModel = (path, overwrite, go) => {
+      const opts = {
         dir: path,
         force: overwrite
       };
       return doPost('/99/Models.bin/not_in_use', opts, go);
     };
-    requestExportModel = (key, path, overwrite, go) => doGet(`/99/Models.bin/${ encodeURIComponent(key) }?dir=${ encodeURIComponent(path) }&force=${ overwrite }`, go);
-    requestModelBuildersVisibility = go => doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
+    const requestExportModel = (key, path, overwrite, go) => doGet(`/99/Models.bin/${ encodeURIComponent(key) }?dir=${ encodeURIComponent(path) }&force=${ overwrite }`, go);
+    const requestModelBuildersVisibility = go => doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
     __modelBuilders = null;
     __modelBuilderEndpoints = null;
     __gridModelBuilderEndpoints = null;
-    cacheModelBuilders = modelBuilders => {
-      let gridModelBuilderEndpoints;
+    const cacheModelBuilders = modelBuilders => {
       let modelBuilder;
-      let modelBuilderEndpoints;
       let _i;
       let _len;
-      modelBuilderEndpoints = {};
-      gridModelBuilderEndpoints = {};
+      const modelBuilderEndpoints = {};
+      const gridModelBuilderEndpoints = {};
       for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
         modelBuilder = modelBuilders[_i];
         modelBuilderEndpoints[modelBuilder.algo] = `/${ modelBuilder.__meta.schema_version }/ModelBuilders/${ modelBuilder.algo }`;
@@ -12334,26 +12222,21 @@
       __gridModelBuilderEndpoints = gridModelBuilderEndpoints;
       return __modelBuilders = modelBuilders;
     };
-    getModelBuilders = () => __modelBuilders;
-    getModelBuilderEndpoint = algo => __modelBuilderEndpoints[algo];
-    getGridModelBuilderEndpoint = algo => __gridModelBuilderEndpoints[algo];
-    requestModelBuilders = go => {
+    const getModelBuilders = () => __modelBuilders;
+    const getModelBuilderEndpoint = algo => __modelBuilderEndpoints[algo];
+    const getGridModelBuilderEndpoint = algo => __gridModelBuilderEndpoints[algo];
+    const requestModelBuilders = go => {
       let modelBuilders;
-      let visibility;
       if (modelBuilders = getModelBuilders()) {
         return go(null, modelBuilders);
       }
-      visibility = 'Stable';
+      const visibility = 'Stable';
       return doGet('/3/ModelBuilders', unwrap(go, result => {
         let algo;
-        let availableBuilders;
         let builder;
-        let builders;
-        builders = (() => {
-          let _ref;
-          let _results;
-          _ref = result.model_builders;
-          _results = [];
+        const builders = (() => {
+          const _ref = result.model_builders;
+          const _results = [];
           for (algo in _ref) {
             if ({}.hasOwnProperty.call(_ref, algo)) {
               builder = _ref[algo];
@@ -12362,7 +12245,7 @@
           }
           return _results;
         })();
-        availableBuilders = (() => {
+        const availableBuilders = (() => {
           let _i;
           let _j;
           let _len;
@@ -12397,24 +12280,23 @@
         return cacheModelBuilders(availableBuilders);
       }));
     };
-    requestModelBuilder = (algo, go) => doGet(getModelBuilderEndpoint(algo), go);
-    requestModelInputValidation = (algo, parameters, go) => doPost(`${ getModelBuilderEndpoint(algo) }/parameters`, encodeObjectForPost(parameters), go);
-    requestModelBuild = (algo, parameters, go) => {
+    const requestModelBuilder = (algo, go) => doGet(getModelBuilderEndpoint(algo), go);
+    const requestModelInputValidation = (algo, parameters, go) => doPost(`${ getModelBuilderEndpoint(algo) }/parameters`, encodeObjectForPost(parameters), go);
+    const requestModelBuild = (algo, parameters, go) => {
       _.trackEvent('model', algo);
       if (parameters.hyper_parameters) {
-        parameters.hyper_parameters = flowPrelude.stringify(parameters.hyper_parameters);
+        parameters.hyper_parameters = flowPrelude$38.stringify(parameters.hyper_parameters);
         if (parameters.search_criteria) {
-          parameters.search_criteria = flowPrelude.stringify(parameters.search_criteria);
+          parameters.search_criteria = flowPrelude$38.stringify(parameters.search_criteria);
         }
         return doPost(getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
       }
       return doPost(getModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
     };
-    requestAutoModelBuild = (parameters, go) => doPostJSON('/3/AutoMLBuilder', parameters, go);
-    requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
+    const requestAutoModelBuild = (parameters, go) => doPostJSON('/3/AutoMLBuilder', parameters, go);
+    const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
       let opt;
-      let opts;
-      opts = {};
+      const opts = {};
       if (destinationKey) {
         opts.predictions_frame = destinationKey;
       }
@@ -12437,27 +12319,23 @@
         return go(null, result);
       });
     };
-    requestPrediction = (modelKey, frameKey, go) => doGet(`/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, (error, result) => {
+    const requestPrediction = (modelKey, frameKey, go) => doGet(`/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, (error, result) => {
       if (error) {
         return go(error);
       }
       return go(null, result);
     });
-    requestPredictions = (modelKey, frameKey, _go) => {
-      let go;
-      go = (error, result) => {
+    const requestPredictions = (modelKey, frameKey, _go) => {
+      const go = (error, result) => {
         let prediction;
-        let predictions;
         if (error) {
           return _go(error);
         }
-        predictions = (() => {
+        const predictions = (() => {
           let _i;
           let _len;
-          let _ref;
-          let _results;
-          _ref = result.model_metrics;
-          _results = [];
+          const _ref = result.model_metrics;
+          const _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             prediction = _ref[_i];
             if (modelKey && prediction.model.name !== modelKey) {
@@ -12473,8 +12351,7 @@
         return _go(null, (() => {
           let _i;
           let _len;
-          let _results;
-          _results = [];
+          const _results = [];
           for (_i = 0, _len = predictions.length; _i < _len; _i++) {
             prediction = predictions[_i];
             if (prediction) {
@@ -12494,7 +12371,7 @@
       return doGet('/3/ModelMetrics', go);
     };
     _storageConfiguration = null;
-    requestIsStorageConfigured = go => {
+    const requestIsStorageConfigured = go => {
       if (_storageConfiguration) {
         return go(null, _storageConfiguration.isConfigured);
       }
@@ -12503,11 +12380,11 @@
         return go(null, _storageConfiguration.isConfigured);
       });
     };
-    requestObjects = (type, go) => doGet(`/3/NodePersistentStorage/${ encodeURIComponent(type) }`, unwrap(go, result => result.entries));
-    requestObjectExists = (type, name, go) => doGet(`/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`, (error, result) => go(null, error ? false : result.exists));
-    requestObject = (type, name, go) => doGet(`/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, unwrap(go, result => JSON.parse(result.value)));
-    requestDeleteObject = (type, name, go) => doDelete(`/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
-    requestPutObject = (type, name, value, go) => {
+    const requestObjects = (type, go) => doGet(`/3/NodePersistentStorage/${ encodeURIComponent(type) }`, unwrap(go, result => result.entries));
+    const requestObjectExists = (type, name, go) => doGet(`/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`, (error, result) => go(null, error ? false : result.exists));
+    const requestObject = (type, name, go) => doGet(`/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, unwrap(go, result => JSON.parse(result.value)));
+    const requestDeleteObject = (type, name, go) => doDelete(`/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
+    const requestPutObject = (type, name, value, go) => {
       let uri;
       uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
       if (name) {
@@ -12515,7 +12392,7 @@
       }
       return doPost(uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
     };
-    requestUploadObject = (type, name, formData, go) => {
+    const requestUploadObject = (type, name, formData, go) => {
       let uri;
       uri = `/3/NodePersistentStorage.bin/${ encodeURIComponent(type) }`;
       if (name) {
@@ -12523,49 +12400,49 @@
       }
       return doUpload(uri, formData, unwrap(go, result => result.name));
     };
-    requestUploadFile = (key, formData, go) => doUpload(`/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
-    requestCloud = go => doGet('/3/Cloud', go);
-    requestTimeline = go => doGet('/3/Timeline', go);
-    requestProfile = (depth, go) => doGet(`/3/Profiler?depth=${ depth }`, go);
-    requestStackTrace = go => doGet('/3/JStack', go);
-    requestRemoveAll = go => doDelete('/3/DKV', go);
-    requestEcho = (message, go) => doPost('/3/LogAndEcho', { message }, go);
-    requestLogFile = (nodeIndex, fileType, go) => doGet(`/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
-    requestNetworkTest = go => doGet('/3/NetworkTest', go);
-    requestAbout = go => doGet('/3/About', go);
-    requestShutdown = go => doPost('/3/Shutdown', {}, go);
-    requestEndpoints = go => doGet('/3/Metadata/endpoints', go);
-    requestEndpoint = (index, go) => doGet(`/3/Metadata/endpoints/${ index }`, go);
-    requestSchemas = go => doGet('/3/Metadata/schemas', go);
-    requestSchema = (name, go) => doGet(`/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
-    getLines = data => lodash.filter(data.split('\n'), line => {
+    const requestUploadFile = (key, formData, go) => doUpload(`/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
+    const requestCloud = go => doGet('/3/Cloud', go);
+    const requestTimeline = go => doGet('/3/Timeline', go);
+    const requestProfile = (depth, go) => doGet(`/3/Profiler?depth=${ depth }`, go);
+    const requestStackTrace = go => doGet('/3/JStack', go);
+    const requestRemoveAll = go => doDelete('/3/DKV', go);
+    const requestEcho = (message, go) => doPost('/3/LogAndEcho', { message }, go);
+    const requestLogFile = (nodeIndex, fileType, go) => doGet(`/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
+    const requestNetworkTest = go => doGet('/3/NetworkTest', go);
+    const requestAbout = go => doGet('/3/About', go);
+    const requestShutdown = go => doPost('/3/Shutdown', {}, go);
+    const requestEndpoints = go => doGet('/3/Metadata/endpoints', go);
+    const requestEndpoint = (index, go) => doGet(`/3/Metadata/endpoints/${ index }`, go);
+    const requestSchemas = go => doGet('/3/Metadata/schemas', go);
+    const requestSchema = (name, go) => doGet(`/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
+    const getLines = data => lodash.filter(data.split('\n'), line => {
       if (line.trim()) {
         return true;
       }
       return false;
     });
-    requestPacks = go => download('text', '/flow/packs/index.list', unwrap(go, getLines));
-    requestPack = (packName, go) => download('text', `/flow/packs/${ encodeURIComponent(packName) }/index.list`, unwrap(go, getLines));
-    requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
-    requestHelpIndex = go => download('json', '/flow/help/catalog.json', go);
-    requestHelpContent = (name, go) => download('text', `/flow/help/${ name }.html`, go);
-    requestRDDs = go => doGet('/3/RDDs', go);
-    requestDataFrames = go => doGet('/3/dataframes', go);
-    requestScalaIntp = go => doPost('/3/scalaint', {}, go);
-    requestScalaCode = (session_id, code, go) => doPost(`/3/scalaint/${ session_id }`, { code }, go);
-    requestAsH2OFrameFromRDD = (rdd_id, name, go) => {
+    const requestPacks = go => download('text', '/flow/packs/index.list', unwrap(go, getLines));
+    const requestPack = (packName, go) => download('text', `/flow/packs/${ encodeURIComponent(packName) }/index.list`, unwrap(go, getLines));
+    const requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
+    const requestHelpIndex = go => download('json', '/flow/help/catalog.json', go);
+    const requestHelpContent = (name, go) => download('text', `/flow/help/${ name }.html`, go);
+    const requestRDDs = go => doGet('/3/RDDs', go);
+    const requestDataFrames = go => doGet('/3/dataframes', go);
+    const requestScalaIntp = go => doPost('/3/scalaint', {}, go);
+    const requestScalaCode = (session_id, code, go) => doPost(`/3/scalaint/${ session_id }`, { code }, go);
+    const requestAsH2OFrameFromRDD = (rdd_id, name, go) => {
       if (name === void 0) {
         return doPost(`/3/RDDs/${ rdd_id }/h2oframe`, {}, go);
       }
       return doPost(`/3/RDDs/${ rdd_id }/h2oframe`, { h2oframe_id: name }, go);
     };
-    requestAsH2OFrameFromDF = (df_id, name, go) => {
+    const requestAsH2OFrameFromDF = (df_id, name, go) => {
       if (name === void 0) {
         return doPost(`/3/dataframes/${ df_id }/h2oframe`, {}, go);
       }
       return doPost(`/3/dataframes/${ df_id }/h2oframe`, { h2oframe_id: name }, go);
     };
-    requestAsDataFrame = (hf_id, name, go) => {
+    const requestAsDataFrame = (hf_id, name, go) => {
       if (name === void 0) {
         return doPost(`/3/h2oframes/${ hf_id }/dataframe`, {}, go);
       }
@@ -12811,7 +12688,7 @@
     }
   }
 
-  const flowPrelude$1 = flowPreludeFunction();
+  const flowPrelude = flowPreludeFunction();
 
   // flow.coffee
   // parent IIFE for the rest of this file
