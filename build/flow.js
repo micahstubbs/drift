@@ -1962,10 +1962,8 @@
   function h2oNetworkTestOutput(_, _go, _testResult) {
     const lodash = window._;
     const Flow = window.Flow;
-    let render;
-    let _result;
-    _result = Flow.Dataflow.signal(null);
-    render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
+    const _result = Flow.Dataflow.signal(null);
+    const render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
     render((error, vis) => {
       if (error) {
         return console.debug(error);
