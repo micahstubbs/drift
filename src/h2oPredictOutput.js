@@ -4,32 +4,25 @@ const flowPrelude = flowPreludeFunction();
 export function h2oPredictOutput(_, _go, prediction) {
   const lodash = window._;
   const Flow = window.Flow;
+  const $ = window.jQuery;
   let frame;
-  let inspect;
   let model;
-  let renderPlot;
   let table;
   let tableName;
-  let _canInspect;
   let _i;
   let _len;
-  let _plots;
   let _ref;
   let _ref1;
   if (prediction) {
     frame = prediction.frame, model = prediction.model;
   }
-  _plots = Flow.Dataflow.signals([]);
-  _canInspect = prediction.__meta;
-  renderPlot = (title, prediction, render) => {
-    let combineWithFrame;
-    let container;
-    container = Flow.Dataflow.signal(null);
-    combineWithFrame = () => {
-      let predictionsFrameName;
-      let targetFrameName;
-      predictionsFrameName = prediction.predictions.frame_id.name;
-      targetFrameName = `combined-${predictionsFrameName}`;
+  const _plots = Flow.Dataflow.signals([]);
+  const _canInspect = prediction.__meta;
+  const renderPlot = (title, prediction, render) => {
+    const container = Flow.Dataflow.signal(null);
+    const combineWithFrame = () => {
+      const predictionsFrameName = prediction.predictions.frame_id.name;
+      const targetFrameName = `combined-${predictionsFrameName}`;
       return _.insertAndExecuteCell('cs', `bindFrames ${flowPrelude.stringify(targetFrameName)}, [ ${flowPrelude.stringify(predictionsFrameName)}, ${flowPrelude.stringify(frame.name)} ]`);
     };
     render((error, vis) => {
@@ -37,8 +30,7 @@ export function h2oPredictOutput(_, _go, prediction) {
         return console.debug(error);
       }
       $('a', vis.element).on('click', e => {
-        let $a;
-        $a = $(e.target);
+        const $a = $(e.target);
         switch ($a.attr('data-type')) {
           case 'frame':
             return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify($a.attr('data-key'))}`);
@@ -74,7 +66,7 @@ export function h2oPredictOutput(_, _go, prediction) {
       }
     }
   }
-  inspect = () => _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(model.name)}, frame: ${flowPrelude.stringify(frame.name)}`);
+  const inspect = () => _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(model.name)}, frame: ${flowPrelude.stringify(frame.name)}`);
   lodash.defer(_go);
   return {
     plots: _plots,
