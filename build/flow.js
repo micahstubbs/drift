@@ -9812,25 +9812,15 @@
   function flowBrowser(_) {
     const lodash = window._;
     const Flow = window.Flow;
-    let createNotebookView;
-    let loadNotebooks;
-    let _docs;
-    let _hasDocs;
-    let _sortedDocs;
-    _docs = Flow.Dataflow.signals([]);
-    _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
-    _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
-    createNotebookView = notebook => {
-      let load;
-      let purge;
+    const _docs = Flow.Dataflow.signals([]);
+    const _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
+    const _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
+    const createNotebookView = notebook => {
       let self;
-      let _date;
-      let _fromNow;
-      let _name;
-      _name = notebook.name;
-      _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
-      _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
-      load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
+      const _name = notebook.name;
+      const _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
+      const _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
+      const load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
         acceptCaption: 'Load Notebook',
         declineCaption: 'Cancel'
       }, accept => {
@@ -9838,7 +9828,7 @@
           return _.load(_name);
         }
       });
-      purge = () => _.confirm(`Are you sure you want to delete this notebook?\n"${ _name }"`, {
+      const purge = () => _.confirm(`Are you sure you want to delete this notebook?\n"${ _name }"`, {
         acceptCaption: 'Delete',
         declineCaption: 'Keep'
       }, accept => {
@@ -9846,7 +9836,7 @@
           return _.requestDeleteObject('notebook', _name, error => {
             let _ref;
             if (error) {
-              return _alert((_ref = error.message) != null ? _ref : error);
+              return _.alert((_ref = error.message) != null ? _ref : error);
             }
             _docs.remove(self);
             return _.growl('Notebook deleted.');
@@ -9861,7 +9851,7 @@
         purge
       };
     };
-    loadNotebooks = () => _.requestObjects('notebook', (error, notebooks) => {
+    const loadNotebooks = () => _.requestObjects('notebook', (error, notebooks) => {
       if (error) {
         return console.debug(error);
       }
@@ -9919,59 +9909,32 @@
   function flowCell(_, _renderers, type, input) {
     const lodash = window._;
     const Flow = window.Flow;
-    let activate;
-    let clear;
-    let clip;
-    let execute;
-    let navigate;
-    let select;
     let self;
-    let toggleInput;
-    let toggleOutput;
-    let _actions;
-    let _errors;
-    let _guid;
-    let _hasError;
-    let _hasInput;
-    let _hasOutput;
-    let _input;
-    let _isActive;
-    let _isBusy;
-    let _isCode;
-    let _isInputVisible;
-    let _isOutputHidden;
-    let _isReady;
-    let _isSelected;
-    let _outputs;
-    let _render;
-    let _result;
-    let _time;
-    let _type;
     if (type == null) {
       type = 'cs';
     }
     if (input == null) {
       input = '';
     }
-    _guid = lodash.uniqueId();
-    _type = Flow.Dataflow.signal(type);
-    _render = Flow.Dataflow.lift(_type, type => _renderers[type](_guid));
-    _isCode = Flow.Dataflow.lift(_render, render => render.isCode);
-    _isSelected = Flow.Dataflow.signal(false);
-    _isActive = Flow.Dataflow.signal(false);
-    _hasError = Flow.Dataflow.signal(false);
-    _isBusy = Flow.Dataflow.signal(false);
-    _isReady = Flow.Dataflow.lift(_isBusy, isBusy => !isBusy);
-    _time = Flow.Dataflow.signal('');
-    _hasInput = Flow.Dataflow.signal(true);
-    _input = Flow.Dataflow.signal(input);
-    _outputs = Flow.Dataflow.signals([]);
-    _errors = [];
-    _result = Flow.Dataflow.signal(null);
-    _hasOutput = Flow.Dataflow.lift(_outputs, outputs => outputs.length > 0);
-    _isInputVisible = Flow.Dataflow.signal(true);
-    _isOutputHidden = Flow.Dataflow.signal(false);
-    _actions = {};
+    const _guid = lodash.uniqueId();
+    const _type = Flow.Dataflow.signal(type);
+    const _render = Flow.Dataflow.lift(_type, type => _renderers[type](_guid));
+    const _isCode = Flow.Dataflow.lift(_render, render => render.isCode);
+    const _isSelected = Flow.Dataflow.signal(false);
+    const _isActive = Flow.Dataflow.signal(false);
+    const _hasError = Flow.Dataflow.signal(false);
+    const _isBusy = Flow.Dataflow.signal(false);
+    const _isReady = Flow.Dataflow.lift(_isBusy, isBusy => !isBusy);
+    const _time = Flow.Dataflow.signal('');
+    const _hasInput = Flow.Dataflow.signal(true);
+    const _input = Flow.Dataflow.signal(input);
+    const _outputs = Flow.Dataflow.signals([]);
+    const _errors = [];
+    const _result = Flow.Dataflow.signal(null);
+    const _hasOutput = Flow.Dataflow.lift(_outputs, outputs => outputs.length > 0);
+    const _isInputVisible = Flow.Dataflow.signal(true);
+    const _isOutputHidden = Flow.Dataflow.signal(false);
+    const _actions = {};
     Flow.Dataflow.act(_isActive, isActive => {
       if (isActive) {
         _.selectCell(self);
@@ -9986,19 +9949,19 @@
         return _isActive(false);
       }
     });
-    select = () => {
+    const select = () => {
       _.selectCell(self, false);
       return true;
     };
-    navigate = () => {
+    const navigate = () => {
       _.selectCell(self);
       return true;
     };
-    activate = () => _isActive(true);
-    clip = () => _.saveClip('user', _type(), _input());
-    toggleInput = () => _isInputVisible(!_isInputVisible());
-    toggleOutput = () => _isOutputHidden(!_isOutputHidden());
-    clear = () => {
+    const activate = () => _isActive(true);
+    const clip = () => _.saveClip('user', _type(), _input());
+    const toggleInput = () => _isInputVisible(!_isInputVisible());
+    const toggleOutput = () => _isOutputHidden(!_isOutputHidden());
+    const clear = () => {
       _result(null);
       _outputs([]);
       _errors.length = 0;
@@ -10007,10 +9970,8 @@
         return _hasInput(true);
       }
     };
-    execute = go => {
-      let render;
-      let startTime;
-      startTime = Date.now();
+    const execute = go => {
+      const startTime = Date.now();
       _time(`Started at ${ Flow.Util.formatClockTime(startTime) }`);
       input = _input().trim();
       if (!input) {
@@ -10019,7 +9980,7 @@
         }
         return void 0;
       }
-      render = _render();
+      const render = _render();
       _isBusy(true);
       clear();
       if (_type() === 'sca') {

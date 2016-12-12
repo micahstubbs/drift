@@ -1,25 +1,15 @@
 export function flowBrowser(_) {
   const lodash = window._;
   const Flow = window.Flow;
-  let createNotebookView;
-  let loadNotebooks;
-  let _docs;
-  let _hasDocs;
-  let _sortedDocs;
-  _docs = Flow.Dataflow.signals([]);
-  _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
-  _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
-  createNotebookView = notebook => {
-    let load;
-    let purge;
+  const _docs = Flow.Dataflow.signals([]);
+  const _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
+  const _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
+  const createNotebookView = notebook => {
     let self;
-    let _date;
-    let _fromNow;
-    let _name;
-    _name = notebook.name;
-    _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
-    _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
-    load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
+    const _name = notebook.name;
+    const _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
+    const _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
+    const load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
       acceptCaption: 'Load Notebook',
       declineCaption: 'Cancel'
     }, accept => {
@@ -27,7 +17,7 @@ export function flowBrowser(_) {
         return _.load(_name);
       }
     });
-    purge = () => _.confirm(`Are you sure you want to delete this notebook?\n"${_name}"`, {
+    const purge = () => _.confirm(`Are you sure you want to delete this notebook?\n"${_name}"`, {
       acceptCaption: 'Delete',
       declineCaption: 'Keep'
     }, accept => {
@@ -35,7 +25,7 @@ export function flowBrowser(_) {
         return _.requestDeleteObject('notebook', _name, error => {
           let _ref;
           if (error) {
-            return _alert((_ref = error.message) != null ? _ref : error);
+            return _.alert((_ref = error.message) != null ? _ref : error);
           }
           _docs.remove(self);
           return _.growl('Notebook deleted.');
@@ -50,7 +40,7 @@ export function flowBrowser(_) {
       purge
     };
   };
-  loadNotebooks = () => _.requestObjects('notebook', (error, notebooks) => {
+  const loadNotebooks = () => _.requestObjects('notebook', (error, notebooks) => {
     if (error) {
       return console.debug(error);
     }
