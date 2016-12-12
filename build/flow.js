@@ -4770,36 +4770,25 @@
   function h2oPartialDependenceInput(_, _go) {
     const lodash = window._;
     const Flow = window.Flow;
-    let _canCompute;
-    let _compute;
-    let _destinationKey;
-    let _exception;
-    let _frames;
-    let _models;
-    let _nbins;
-    let _selectedFrame;
-    let _selectedModel;
-    _exception = Flow.Dataflow.signal(null);
-    _destinationKey = Flow.Dataflow.signal(`ppd-${ Flow.Util.uuid() }`);
-    _frames = Flow.Dataflow.signals([]);
-    _models = Flow.Dataflow.signals([]);
-    _selectedModel = Flow.Dataflow.signals(null);
-    _selectedFrame = Flow.Dataflow.signal(null);
-    _nbins = Flow.Dataflow.signal(20);
-    _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
-    _compute = () => {
-      let cs;
-      let opts;
+    const _exception = Flow.Dataflow.signal(null);
+    const _destinationKey = Flow.Dataflow.signal(`ppd-${ Flow.Util.uuid() }`);
+    const _frames = Flow.Dataflow.signals([]);
+    const _models = Flow.Dataflow.signals([]);
+    const _selectedModel = Flow.Dataflow.signals(null);
+    const _selectedFrame = Flow.Dataflow.signal(null);
+    const _nbins = Flow.Dataflow.signal(20);
+    const _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
+    const _compute = () => {
       if (!_canCompute()) {
         return;
       }
-      opts = {
+      const opts = {
         destination_key: _destinationKey(),
         model_id: _selectedModel(),
         frame_id: _selectedFrame(),
         nbins: _nbins()
       };
-      cs = `buildPartialDependence ${ flowPrelude$29.stringify(opts) }`;
+      const cs = `buildPartialDependence ${ flowPrelude$29.stringify(opts) }`;
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames((error, frames) => {
@@ -4810,8 +4799,7 @@
       return _frames((() => {
         let _i;
         let _len;
-        let _results;
-        _results = [];
+        const _results = [];
         for (_i = 0, _len = frames.length; _i < _len; _i++) {
           frame = frames[_i];
           if (!frame.is_text) {
@@ -4829,8 +4817,7 @@
       return _models((() => {
         let _i;
         let _len;
-        let _results;
-        _results = [];
+        const _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
           _results.push(model.model_id.name);
