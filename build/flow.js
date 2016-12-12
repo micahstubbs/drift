@@ -6,56 +6,43 @@
 
   function flowPreludeFunction() {
     const Flow = window.Flow;
-    let _always;
-    let _copy;
-    let _deepClone;
-    let _isDefined;
-    let _isFalsy;
-    let _isTruthy;
-    let _negative;
-    let _never;
-    let _remove;
-    let _repeat;
-    let _typeOf;
-    let _words;
-    _isDefined = value => !lodash.isUndefined(value);
-    _isTruthy = value => {
+    const lodash = window._;
+    const _isDefined = value => !lodash.isUndefined(value);
+    const _isTruthy = value => {
       if (value) {
         return true;
       }
       return false;
     };
-    _isFalsy = value => {
+    const _isFalsy = value => {
       if (value) {
         return false;
       }
       return true;
     };
-    _negative = value => !value;
-    _always = () => true;
-    _never = () => false;
-    _copy = array => array.slice(0);
-    _remove = (array, element) => {
+    const _negative = value => !value;
+    const _always = () => true;
+    const _never = () => false;
+    const _copy = array => array.slice(0);
+    const _remove = (array, element) => {
       let index;
       if ((index = lodash.indexOf(array, element)) > -1) {
         return lodash.head(array.splice(index, 1));
       }
       return void 0;
     };
-    _words = text => text.split(/\s+/);
-    _repeat = (count, value) => {
-      let array;
+    const _words = text => text.split(/\s+/);
+    const _repeat = (count, value) => {
       let i;
       let _i;
-      array = [];
+      const array = [];
       for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
         array.push(value);
       }
       return array;
     };
-    _typeOf = a => {
-      let type;
-      type = Object.prototype.toString.call(a);
+    const _typeOf = a => {
+      const type = Object.prototype.toString.call(a);
       if (a === null) {
         return 'null';
       } else if (a === void 0) {
@@ -86,7 +73,7 @@
           return type;
       }
     };
-    _deepClone = obj => JSON.parse(JSON.stringify(obj));
+    const _deepClone = obj => JSON.parse(JSON.stringify(obj));
     return {
       isDefined: _isDefined,
       isTruthy: _isTruthy,
