@@ -1,40 +1,30 @@
 export function h2oAutoModelInput(_, _go, opts) {
   const lodash = window._;
   const Flow = window.Flow;
-  let buildModel;
-  let defaultMaxRunTime;
-  let _canBuildModel;
-  let _column;
-  let _columns;
-  let _frame;
-  let _frames;
-  let _hasFrame;
-  let _maxRunTime;
   if (opts == null) {
     opts = {};
   }
-  _frames = Flow.Dataflow.signal([]);
-  _frame = Flow.Dataflow.signal(null);
-  _hasFrame = Flow.Dataflow.lift(_frame, frame => {
+  const _frames = Flow.Dataflow.signal([]);
+  const _frame = Flow.Dataflow.signal(null);
+  const _hasFrame = Flow.Dataflow.lift(_frame, frame => {
     if (frame) {
       return true;
     }
     return false;
   });
-  _columns = Flow.Dataflow.signal([]);
-  _column = Flow.Dataflow.signal(null);
-  _canBuildModel = Flow.Dataflow.lift(_frame, _column, (frame, column) => frame && column);
-  defaultMaxRunTime = 3600;
-  _maxRunTime = Flow.Dataflow.signal(defaultMaxRunTime);
-  buildModel = () => {
-    let arg;
+  const _columns = Flow.Dataflow.signal([]);
+  const _column = Flow.Dataflow.signal(null);
+  const _canBuildModel = Flow.Dataflow.lift(_frame, _column, (frame, column) => frame && column);
+  const defaultMaxRunTime = 3600;
+  const _maxRunTime = Flow.Dataflow.signal(defaultMaxRunTime);
+  const buildModel = () => {
     let maxRunTime;
     let parsed;
     maxRunTime = defaultMaxRunTime;
     if (!lodash.isNaN(parsed = parseInt(_maxRunTime(), 10))) {
       maxRunTime = parsed;
     }
-    arg = {
+    const arg = {
       frame: _frame(),
       column: _column(),
       maxRunTime
@@ -49,8 +39,7 @@ export function h2oAutoModelInput(_, _go, opts) {
       _frames((() => {
         let _i;
         let _len;
-        let _results;
-        _results = [];
+        const _results = [];
         for (_i = 0, _len = frames.length; _i < _len; _i++) {
           frame = frames[_i];
           if (!frame.is_text) {
@@ -74,10 +63,8 @@ export function h2oAutoModelInput(_, _go, opts) {
           _columns((() => {
             let _i;
             let _len;
-            let _ref;
-            let _results;
-            _ref = frame.columns;
-            _results = [];
+            const _ref = frame.columns;
+            const _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               column = _ref[_i];
               _results.push(column.label);
