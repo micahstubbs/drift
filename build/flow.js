@@ -1991,25 +1991,18 @@
   function h2oProfileOutput(_, _go, _profile) {
     const lodash = window._;
     const Flow = window.Flow;
-    let createNode;
     let i;
     let node;
-    let _activeNode;
-    let _nodes;
-    _activeNode = Flow.Dataflow.signal(null);
-    createNode = node => {
-      let display;
-      let entries;
+    const _activeNode = Flow.Dataflow.signal(null);
+    const createNode = node => {
       let entry;
       let self;
-      display = () => _activeNode(self);
-      entries = (() => {
+      const display = () => _activeNode(self);
+      const entries = (() => {
         let _i;
         let _len;
-        let _ref;
-        let _results;
-        _ref = node.entries;
-        _results = [];
+        const _ref = node.entries;
+        const _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           entry = _ref[_i];
           _results.push({
@@ -2026,13 +2019,11 @@
         display
       };
     };
-    _nodes = (() => {
+    const _nodes = (() => {
       let _i;
       let _len;
-      let _ref;
-      let _results;
-      _ref = _profile.nodes;
-      _results = [];
+      const _ref = _profile.nodes;
+      const _results = [];
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         node = _ref[i];
         _results.push(createNode(node));
