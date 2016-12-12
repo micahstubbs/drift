@@ -3358,28 +3358,12 @@
   function h2oPredictsOutput(_, _go, opts, _predictions) {
     const lodash = window._;
     const Flow = window.Flow;
-    let arePredictionsComparable;
-    let comparePredictions;
-    let createPredictionView;
-    let initialize;
-    let inspectAll;
-    let plotMetrics;
-    let plotPredictions;
-    let plotScores;
-    let predict;
-    let _canComparePredictions;
-    let _checkAllPredictions;
     let _isCheckingAll;
-    let _metricsTable;
-    let _predictionViews;
-    let _predictionsTable;
-    let _rocCurve;
-    let _scoresTable;
-    _predictionViews = Flow.Dataflow.signal([]);
-    _checkAllPredictions = Flow.Dataflow.signal(false);
-    _canComparePredictions = Flow.Dataflow.signal(false);
-    _rocCurve = Flow.Dataflow.signal(null);
-    arePredictionsComparable = views => {
+    const _predictionViews = Flow.Dataflow.signal([]);
+    const _checkAllPredictions = Flow.Dataflow.signal(false);
+    const _canComparePredictions = Flow.Dataflow.signal(false);
+    const _rocCurve = Flow.Dataflow.signal(null);
+    const arePredictionsComparable = views => {
       if (views.length === 0) {
         return false;
       }
@@ -3390,9 +3374,8 @@
       let view;
       let _i;
       let _len;
-      let _ref;
       _isCheckingAll = true;
-      _ref = _predictionViews();
+      const _ref = _predictionViews();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         view = _ref[_i];
         view.isChecked(checkAll);
@@ -3400,31 +3383,22 @@
       _canComparePredictions(checkAll && arePredictionsComparable(_predictionViews()));
       _isCheckingAll = false;
     });
-    createPredictionView = prediction => {
-      let inspect;
-      let view;
-      let _frameKey;
-      let _hasFrame;
-      let _isChecked;
-      let _modelKey;
+    const createPredictionView = prediction => {
       let _ref;
-      _modelKey = prediction.model.name;
-      _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
-      _hasFrame = _frameKey;
-      _isChecked = Flow.Dataflow.signal(false);
+      const _modelKey = prediction.model.name;
+      const _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
+      const _hasFrame = _frameKey;
+      const _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
-        let checkedViews;
         let view;
         if (_isCheckingAll) {
           return;
         }
-        checkedViews = (() => {
+        const checkedViews = (() => {
           let _i;
           let _len;
-          let _ref1;
-          let _results;
-          _ref1 = _predictionViews();
-          _results = [];
+          const _ref1 = _predictionViews();
+          const _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             view = _ref1[_i];
             if (view.isChecked()) {
@@ -3435,12 +3409,12 @@
         })();
         return _canComparePredictions(arePredictionsComparable(checkedViews));
       });
-      view = () => {
+      const view = () => {
         if (_hasFrame) {
           return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$18.stringify(_modelKey) }, frame: ${ flowPrelude$18.stringify(_frameKey) }`);
         }
       };
-      inspect = () => {
+      const inspect = () => {
         if (_hasFrame) {
           return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$18.stringify(_modelKey) }, frame: ${ flowPrelude$18.stringify(_frameKey) }`);
         }
@@ -3455,19 +3429,16 @@
         inspect
       };
     };
-    _predictionsTable = _.inspect('predictions', _predictions);
-    _metricsTable = _.inspect('metrics', _predictions);
-    _scoresTable = _.inspect('scores', _predictions);
-    comparePredictions = () => {
-      let selectedKeys;
+    const _predictionsTable = _.inspect('predictions', _predictions);
+    const _metricsTable = _.inspect('metrics', _predictions);
+    const _scoresTable = _.inspect('scores', _predictions);
+    const comparePredictions = () => {
       let view;
-      selectedKeys = (() => {
+      const selectedKeys = (() => {
         let _i;
         let _len;
-        let _ref;
-        let _results;
-        _ref = _predictionViews();
-        _results = [];
+        const _ref = _predictionViews();
+        const _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           view = _ref[_i];
           if (view.isChecked()) {
@@ -3481,12 +3452,12 @@
       })();
       return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$18.stringify(selectedKeys) }`);
     };
-    plotPredictions = () => _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
-    plotScores = () => _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
-    plotMetrics = () => _.insertAndExecuteCell('cs', _metricsTable.metadata.plot);
-    inspectAll = () => _.insertAndExecuteCell('cs', `inspect ${ _predictionsTable.metadata.origin }`);
-    predict = () => _.insertAndExecuteCell('cs', 'predict');
-    initialize = predictions => {
+    const plotPredictions = () => _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
+    const plotScores = () => _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
+    const plotMetrics = () => _.insertAndExecuteCell('cs', _metricsTable.metadata.plot);
+    const inspectAll = () => _.insertAndExecuteCell('cs', `inspect ${ _predictionsTable.metadata.origin }`);
+    const predict = () => _.insertAndExecuteCell('cs', 'predict');
+    const initialize = predictions => {
       _predictionViews(lodash.map(predictions, createPredictionView));
       return lodash.defer(_go);
     };
