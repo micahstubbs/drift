@@ -2228,32 +2228,27 @@
   const flowPrelude$12 = flowPreludeFunction();
 
   function h2oPartialDependenceOutput(_, _go, _result) {
+    const lodash = window._;
+    const Flow = window.Flow;
     let data;
     let i;
-    let renderPlot;
     let section;
     let table;
     let x;
     let y;
-    let _destinationKey;
-    let _frameId;
     let _i;
     let _len;
-    let _modelId;
-    let _plots;
-    let _ref;
-    let _viewFrame;
-    _destinationKey = _result.destination_key;
-    _modelId = _result.model_id.name;
-    _frameId = _result.frame_id.name;
-    renderPlot = (target, render) => render((error, vis) => {
+    const _destinationKey = _result.destination_key;
+    const _modelId = _result.model_id.name;
+    const _frameId = _result.frame_id.name;
+    const renderPlot = (target, render) => render((error, vis) => {
       if (error) {
         return console.debug(error);
       }
       return target(vis.element);
     });
-    _plots = [];
-    _ref = _result.partial_dependence_data;
+    const _plots = [];
+    const _ref = _result.partial_dependence_data;
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       data = _ref[i];
       if (table = _.inspect(`plot${ i + 1 }`, _result)) {
@@ -2268,7 +2263,7 @@
         renderPlot(section.frame, _.plot(g => g(g.select(), g.from(table))));
       }
     }
-    _viewFrame = () => _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ flowPrelude$12.stringify(_destinationKey) }`);
+    const _viewFrame = () => _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ flowPrelude$12.stringify(_destinationKey) }`);
     lodash.defer(_go);
     return {
       destinationKey: _destinationKey,
