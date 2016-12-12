@@ -8012,7 +8012,6 @@
   function flowAlertDialog(_, _message, _opts, _go) {
     const lodash = window._;
     const Flow = window.Flow;
-    let accept;
     if (_opts == null) {
       _opts = {};
     }
@@ -8020,7 +8019,7 @@
       title: 'Alert',
       acceptCaption: 'OK'
     });
-    accept = () => _go(true);
+    const accept = () => _go(true);
     return {
       title: _opts.title,
       acceptCaption: _opts.acceptCaption,
