@@ -4,27 +4,12 @@ const flowPrelude = flowPreludeFunction();
 export function async() {
   const lodash = window._;
   const Flow = window.Flow;
-  let createBuffer;
-  let iterate;
-  let pipe;
-  let _applicate;
-  let _async;
-  let _find;
-  let _find$2;
-  let _find$3;
-  let _fork;
-  let _get;
-  let _isFuture;
-  let _join;
-  let _noop;
   const __slice = [].slice;
-  createBuffer = array => {
-    let buffer;
-    let _array;
+  const createBuffer = array => {
     let _go;
-    _array = array || [];
+    const _array = array || [];
     _go = null;
-    buffer = element => {
+    const buffer = element => {
       if (element === void 0) {
         return _array;
       }
@@ -39,20 +24,18 @@ export function async() {
     buffer.isBuffer = true;
     return buffer;
   };
-  _noop = go => go(null);
-  _applicate = go => (error, args) => {
+  const _noop = go => go(null);
+  const _applicate = go => (error, args) => {
     if (lodash.isFunction(go)) {
       return go(...[error].concat(args));
     }
   };
-  _fork = (f, args) => {
-    let self;
+  const _fork = (f, args) => {
     if (!lodash.isFunction(f)) {
       throw new Error('Not a function.');
     }
-    self = go => {
-      let canGo;
-      canGo = lodash.isFunction(go);
+    const self = go => {
+      const canGo = lodash.isFunction(go);
       if (self.settled) {
         if (self.rejected) {
           if (canGo) {
@@ -105,26 +88,24 @@ export function async() {
     self.isFuture = true;
     return self;
   };
-  _isFuture = a => {
+  const _isFuture = a => {
     if (a != null ? a.isFuture : void 0) {
       return true;
     }
     return false;
   };
-  _join = (args, go) => {
+  function _join(args, go) {
     let arg;
     let i;
     let _actual;
     let _i;
     let _len;
-    let _results;
     let _settled;
-    let _tasks;
     if (args.length === 0) {
       return go(null, []);
     }
-    _tasks = [];
-    _results = [];
+    const _tasks = [];
+    const _results = [];
     for (i = _i = 0, _len = args.length; _i < _len; i = ++_i) {
       arg = args[i];
       if (arg != null ? arg.isFuture : void 0) {
@@ -157,14 +138,11 @@ export function async() {
         }
       }
     }));
-  };
-  pipe = tasks => {
-    let next;
-    let _tasks;
-    _tasks = tasks.slice(0);
-    next = (args, go) => {
-      let task;
-      task = _tasks.shift();
+  }
+  const pipe = tasks => {
+    const _tasks = tasks.slice(0);
+    const next = (args, go) => {
+      const task = _tasks.shift();
       if (task) {
         return task(...args.concat(function () {
           let error;
@@ -186,15 +164,11 @@ export function async() {
       return next(args, go);
     };
   };
-  iterate = tasks => {
-    let next;
-    let _results;
-    let _tasks;
-    _tasks = tasks.slice(0);
-    _results = [];
-    next = go => {
-      let task;
-      task = _tasks.shift();
+  const iterate = tasks => {
+    const _tasks = tasks.slice(0);
+    const _results = [];
+    const next = go => {
+      const task = _tasks.shift();
       if (task) {
         return task((error, result) => {
           if (error) {
@@ -208,12 +182,11 @@ export function async() {
     };
     return go => next(go);
   };
-  _async = function () {
+  const _async = function () {
     let args;
     let f;
-    let later;
     f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-    later = function () {
+    const later = function () {
       let args;
       let error;
       let go;
@@ -230,7 +203,7 @@ export function async() {
     };
     return _fork(later, args);
   };
-  _find$3 = (attr, prop, obj) => {
+  const _find$3 = (attr, prop, obj) => {
     let v;
     let _i;
     let _len;
@@ -246,7 +219,7 @@ export function async() {
       return;
     }
   };
-  _find$2 = (attr, obj) => {
+  const _find$2 = (attr, obj) => {
     if (_isFuture(obj)) {
       return _async(_find$2, attr, obj);
     } else if (lodash.isString(attr)) {
@@ -256,15 +229,14 @@ export function async() {
       return obj[attr];
     }
   };
-  _find = function () {
+  const _find = function () {
     let a;
-    let args;
     let b;
     let c;
     let ta;
     let tb;
     let tc;
-    args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
+    const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
     switch (args.length) {
       case 3:
         a = args[0], b = args[1], c = args[2];
@@ -292,7 +264,7 @@ export function async() {
         }
     }
   };
-  _get = (attr, obj) => {
+  const _get = (attr, obj) => {
     if (_isFuture(obj)) {
       return _async(_get, attr, obj);
     } else if (lodash.isString(attr)) {
