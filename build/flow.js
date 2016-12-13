@@ -4231,7 +4231,7 @@
     const createSplitName = (key, ratio) => `${ key }_${ format4f(ratio) }`;
     function updateSplitRatiosAndNames() {
       let entry;
-      let frame;
+      const frame = _frame();
       let ratio;
       let totalRatio;
       let _i;
