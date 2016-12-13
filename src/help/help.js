@@ -20,8 +20,8 @@ export function help() {
     const goTo = index => {
       const content = _history[_historyIndex = index];
       $('a, button', $(content)).each(function (i) {
-        const action = $a.attr('data-action');
         const $a = $(this);
+        const action = $a.attr('data-action');
         if (action) {
           return $a.click(() => performAction(action, $a));
         }

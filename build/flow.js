@@ -4245,7 +4245,7 @@
         totalRatio += ratio;
       }
       const lastSplitRatio = _lastSplitRatio(1 - totalRatio);
-      const frameKey = (frame = _frame()) ? frame : 'frame';
+      const frameKey = frame || 'frame';
       const _ref1 = _splits();
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         entry = _ref1[_j];
@@ -8992,8 +8992,8 @@
       const goTo = index => {
         const content = _history[_historyIndex = index];
         $('a, button', $(content)).each(function (i) {
-          const action = $a.attr('data-action');
           const $a = $(this);
+          const action = $a.attr('data-action');
           if (action) {
             return $a.click(() => performAction(action, $a));
           }
@@ -11232,11 +11232,11 @@
         }
       });
       return req.fail((xhr, status, error) => {
-        let meta;
         let serverError;
         _.status('server', 'error', path);
         const response = xhr.responseJSON;
-        const cause = (meta = response != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+        const meta = response;
+        const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
         return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
       });
     };
@@ -11512,8 +11512,8 @@
     const getModelBuilderEndpoint = algo => __modelBuilderEndpoints[algo];
     const getGridModelBuilderEndpoint = algo => __gridModelBuilderEndpoints[algo];
     const requestModelBuilders = go => {
-      let modelBuilders;
-      if (modelBuilders = getModelBuilders()) {
+      const modelBuilders = getModelBuilders();
+      if (modelBuilders) {
         return go(null, modelBuilders);
       }
       const visibility = 'Stable';
@@ -11586,16 +11586,20 @@
       if (destinationKey) {
         opts.predictions_frame = destinationKey;
       }
-      if (void 0 !== (opt = options.reconstruction_error)) {
+      opt = options.reconstruction_error;
+      if (void 0 !== opt) {
         opts.reconstruction_error = opt;
       }
-      if (void 0 !== (opt = options.deep_features_hidden_layer)) {
+      opt = options.deep_features_hidden_layer;
+      if (void 0 !== opt) {
         opts.deep_features_hidden_layer = opt;
       }
-      if (void 0 !== (opt = options.leaf_node_assignment)) {
+      opt = options.leaf_node_assignment;
+      if (void 0 !== opt) {
         opts.leaf_node_assignment = opt;
       }
-      if (void 0 !== (opt = options.exemplar_index)) {
+      opt = options.exemplar_index;
+      if (void 0 !== opt) {
         opts.exemplar_index = opt;
       }
       return doPost(`/3/Predictions/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, opts, (error, result) => {
