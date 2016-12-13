@@ -8992,9 +8992,9 @@
       const goTo = index => {
         const content = _history[_historyIndex = index];
         $('a, button', $(content)).each(function (i) {
-          let action;
+          const action = $a.attr('data-action');
           const $a = $(this);
-          if (action = $a.attr('data-action')) {
+          if (action) {
             return $a.click(() => performAction(action, $a));
           }
         });
@@ -9176,7 +9176,7 @@
       }
       const goHome = () => displayHtml(Flow.HTML.render('div', _homeContent));
       function displayEndpoint(route) {
-        let _ref1;
+        const _ref1 = route.path_params;
         const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'', 'code');
         const div = _ref[0];
         const mark = _ref[1];
@@ -9185,7 +9185,7 @@
         const p = _ref[4];
         const action = _ref[5];
         const code = _ref[6];
-        return displayHtml(Flow.HTML.render('div', div([mark('Route'), h5(route.url_pattern), h6('Method'), p(code(route.http_method)), h6('Summary'), p(route.summary), h6('Parameters'), p(((_ref1 = route.path_params) != null ? _ref1.length : void 0) ? route.path_params.join(', ') : '-'), h6('Input Schema'), p(action(code(route.input_schema), route.input_schema)), h6('Output Schema'), p(action(code(route.output_schema), route.output_schema))])));
+        return displayHtml(Flow.HTML.render('div', div([mark('Route'), h5(route.url_pattern), h6('Method'), p(code(route.http_method)), h6('Summary'), p(route.summary), h6('Parameters'), p((_ref1 != null ? _ref1.length : void 0) ? route.path_params.join(', ') : '-'), h6('Input Schema'), p(action(code(route.input_schema), route.input_schema)), h6('Output Schema'), p(action(code(route.output_schema), route.output_schema))])));
       }
       function displaySchemas(schemas) {
         let schema;
