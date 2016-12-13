@@ -391,7 +391,8 @@ export function notebook() {
       if (result) {
         error = result.error, filename = result.filename;
         if (error) {
-          return _.growl((_ref = error.message) != null ? _ref : error);
+          _ref = error.message;
+          return _.growl(_ref != null ? _ref : error);
         }
         loadNotebook(filename);
         return _.loaded();
@@ -403,7 +404,8 @@ export function notebook() {
       if (result) {
         error = result.error;
         if (error) {
-          return _.growl((_ref = error.message) != null ? _ref : error);
+          _ref = error.message;
+          return _.growl((_ref) != null ? _ref : error);
         }
         _.growl('File uploaded successfully!');
         return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${flowPrelude.stringify(result.result.destination_frame)}]`);
@@ -459,7 +461,8 @@ export function notebook() {
     const findBuildProperty = caption => {
       let entry;
       if (Flow.BuildProperties) {
-        if (entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption)) {
+        entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption);
+        if (entry) {
           return entry.value;
         }
         return void 0;
@@ -532,15 +535,16 @@ export function notebook() {
       return _.requestObject('notebook', name, (error, doc) => {
         let _ref;
         if (error) {
-          return _.alert((_ref = error.message) != null ? _ref : error);
+          _ref = error.message;
+          return _.alert((_ref) != null ? _ref : error);
         }
         return deserialize(name, name, doc);
       });
     }
 
     const exportNotebook = () => {
-      let remoteName;
-      if (remoteName = _remoteName()) {
+      const remoteName = _remoteName();
+      if (remoteName) {
         return window.open(`/3/NodePersistentStorage.bin/notebook/${remoteName}`, '_blank');
       }
       return _.alert('Please save this notebook before exporting.');
