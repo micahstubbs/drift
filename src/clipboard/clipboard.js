@@ -4,8 +4,7 @@ const flowPrelude = flowPreludeFunction();
 export function clipboard() {
   const lodash = window._;
   const Flow = window.Flow;
-  let SystemClips;
-  SystemClips = [
+  const SystemClips = [
     'assist',
     'importFiles',
     'getFrames',
@@ -16,46 +15,27 @@ export function clipboard() {
     'predict'
   ];
   Flow.Clipboard = _ => {
-    let addClip;
-    let createClip;
-    let emptyTrash;
-    let initialize;
-    let lengthOf;
-    let loadUserClips;
-    let removeClip;
-    let saveUserClips;
-    let serializeUserClips;
-    let _hasTrashClips;
-    let _hasUserClips;
-    let _systemClipCount;
-    let _systemClips;
-    let _trashClipCount;
-    let _trashClips;
-    let _userClipCount;
-    let _userClips;
-    lengthOf = array => {
+    const lengthOf = array => {
       if (array.length) {
         return `(${array.length})`;
       }
       return '';
     };
-    _systemClips = Flow.Dataflow.signals([]);
-    _systemClipCount = Flow.Dataflow.lift(_systemClips, lengthOf);
-    _userClips = Flow.Dataflow.signals([]);
-    _userClipCount = Flow.Dataflow.lift(_userClips, lengthOf);
-    _hasUserClips = Flow.Dataflow.lift(_userClips, clips => clips.length > 0);
-    _trashClips = Flow.Dataflow.signals([]);
-    _trashClipCount = Flow.Dataflow.lift(_trashClips, lengthOf);
-    _hasTrashClips = Flow.Dataflow.lift(_trashClips, clips => clips.length > 0);
-    createClip = (_list, _type, _input, _canRemove) => {
-      let execute;
-      let insert;
+    const _systemClips = Flow.Dataflow.signals([]);
+    const _systemClipCount = Flow.Dataflow.lift(_systemClips, lengthOf);
+    const _userClips = Flow.Dataflow.signals([]);
+    const _userClipCount = Flow.Dataflow.lift(_userClips, lengthOf);
+    const _hasUserClips = Flow.Dataflow.lift(_userClips, clips => clips.length > 0);
+    const _trashClips = Flow.Dataflow.signals([]);
+    const _trashClipCount = Flow.Dataflow.lift(_trashClips, lengthOf);
+    const _hasTrashClips = Flow.Dataflow.lift(_trashClips, clips => clips.length > 0);
+    const createClip = (_list, _type, _input, _canRemove) => {
       let self;
       if (_canRemove == null) {
         _canRemove = true;
       }
-      execute = () => _.insertAndExecuteCell(_type, _input);
-      insert = () => _.insertCell(_type, _input);
+      const execute = () => _.insertAndExecuteCell(_type, _input);
+      const insert = () => _.insertCell(_type, _input);
       flowPrelude.remove = () => {
         if (_canRemove) {
           return removeClip(_list, self);
@@ -70,17 +50,17 @@ export function clipboard() {
         canRemove: _canRemove
       };
     };
-    addClip = (list, type, input) => list.push(createClip(list, type, input));
-    removeClip = (list, clip) => {
+    const addClip = (list, type, input) => list.push(createClip(list, type, input));
+    function removeClip(list, clip) {
       if (list === _userClips) {
         _userClips.remove(clip);
         saveUserClips();
         return _trashClips.push(createClip(_trashClips, clip.type, clip.input));
       }
       return _trashClips.remove(clip);
-    };
-    emptyTrash = () => _trashClips.removeAll();
-    loadUserClips = () => _.requestObjectExists('environment', 'clips', (error, exists) => {
+    }
+    const emptyTrash = () => _trashClips.removeAll();
+    const loadUserClips = () => _.requestObjectExists('environment', 'clips', (error, exists) => {
       if (exists) {
         return _.requestObject('environment', 'clips', (error, doc) => {
           if (!error) {
@@ -89,7 +69,7 @@ export function clipboard() {
         });
       }
     });
-    serializeUserClips = () => ({
+    const serializeUserClips = () => ({
       version: '1.0.0',
 
       clips: lodash.map(_userClips(), clip => ({
@@ -97,12 +77,14 @@ export function clipboard() {
         input: clip.input
       }))
     });
-    saveUserClips = () => _.requestPutObject('environment', 'clips', serializeUserClips(), error => {
-      if (error) {
-        _.alert(`Error saving clips: ${error.message}`);
-      }
-    });
-    initialize = () => {
+    function saveUserClips() {
+      return _.requestPutObject('environment', 'clips', serializeUserClips(), error => {
+        if (error) {
+          _.alert(`Error saving clips: ${error.message}`);
+        }
+      });
+    }
+    const initialize = () => {
       _systemClips(lodash.map(SystemClips, input => createClip(_systemClips, 'cs', input, false)));
       return Flow.Dataflow.link(_.ready, () => {
         loadUserClips();
