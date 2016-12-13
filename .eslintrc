@@ -1,4 +1,4 @@
-    {
+{
   "extends": "airbnb",
   "rules": {
     "no-nested-ternary": "off",
