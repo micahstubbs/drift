@@ -65,7 +65,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
       totalRatio += ratio;
     }
     const lastSplitRatio = _lastSplitRatio(1 - totalRatio);
-    const frameKey = (frame = _frame()) ? frame : 'frame';
+    const frameKey = frame || 'frame';
     const _ref1 = _splits();
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       entry = _ref1[_j];
