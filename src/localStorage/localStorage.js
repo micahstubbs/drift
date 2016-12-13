@@ -29,8 +29,8 @@ export function localStorage() {
     return objs;
   };
   const read = (type, id) => {
-    let raw;
-    if (raw = _ls.getobj(keyOf(type, id))) {
+    const raw = _ls.getobj(keyOf(type, id));
+    if (raw) {
       return JSON.parse(raw);
     }
     return null;
