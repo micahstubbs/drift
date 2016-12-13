@@ -10911,21 +10911,19 @@
     const Flow = window.Flow;
     Flow.Version = '0.4.54';
     Flow.About = _ => {
-      let _properties;
-      _properties = Flow.Dataflow.signals([]);
+      const _properties = Flow.Dataflow.signals([]);
       Flow.Dataflow.link(_.ready, () => {
         if (Flow.BuildProperties) {
           return _properties(Flow.BuildProperties);
         }
         return _.requestAbout((error, response) => {
           let name;
-          let properties;
           let value;
           let _i;
           let _len;
           let _ref;
           let _ref1;
-          properties = [];
+          const properties = [];
           if (!error) {
             _ref = response.entries;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
