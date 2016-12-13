@@ -50,7 +50,7 @@ export function imputeInput() {
     const _groupByColumns = Flow.Dataflow.signals([]);
     const _canImpute = Flow.Dataflow.lift(_frame, _column, (frame, column) => frame && column);
     const impute = () => {
-      let combineMethod;
+      const combineMethod = _combineMethod();
       let groupByColumns;
       const method = _method();
       const arg = {
@@ -59,7 +59,7 @@ export function imputeInput() {
         method: method.value
       };
       if (method.value === 'median') {
-        if (combineMethod = _combineMethod()) {
+        if (combineMethod) {
           arg.combineMethod = combineMethod.value;
         }
       } else {
