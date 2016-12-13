@@ -7700,8 +7700,8 @@
     ko.bindingHandlers.enterKey = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
         let $element;
-        let action;
-        if (action = ko.unwrap(valueAccessor())) {
+        const action = ko.unwrap(valueAccessor());
+        if (action) {
           if (lodash.isFunction(action)) {
             $element = $(element);
             $element.keydown(e => {
@@ -7718,8 +7718,8 @@
     ko.bindingHandlers.typeahead = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
         let $element;
-        let action;
-        if (action = ko.unwrap(valueAccessor())) {
+        const action = ko.unwrap(valueAccessor());
+        if (action) {
           if (lodash.isFunction(action)) {
             $element = $(element);
             $element.typeahead(null, {
@@ -7734,8 +7734,8 @@
     };
     ko.bindingHandlers.cursorPosition = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let arg;
-        if (arg = ko.unwrap(valueAccessor())) {
+        const arg = ko.unwrap(valueAccessor());
+        if (arg) {
           arg.getCursorPosition = () => $(element).textrange('get', 'position');
         }
       }
@@ -7743,9 +7743,9 @@
     ko.bindingHandlers.autoResize = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
         let $el;
-        let arg;
+        const arg = ko.unwrap(valueAccessor());
         let resize;
-        if (arg = ko.unwrap(valueAccessor())) {
+        if (arg) {
           arg.autoResize = resize = () => lodash.defer(() => $el.css('height', 'auto').height(element.scrollHeight));
           $el = $(element).on('input', resize);
           resize();
@@ -7756,8 +7756,8 @@
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
         let $el;
         let $viewport;
-        let arg;
-        if (arg = ko.unwrap(valueAccessor())) {
+        const arg = ko.unwrap(valueAccessor());
+        if (arg) {
           $el = $(element);
           $viewport = $el.closest('.flow-box-notebook');
           arg.scrollIntoView = immediate => {
