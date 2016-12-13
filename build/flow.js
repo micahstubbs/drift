@@ -134,8 +134,6 @@
       let isArrayValued;
       let isInt;
       let isReal;
-      let _ref;
-      let _ref1;
       isArrayValued = isInt = isReal = false;
       switch (type) {
         case 'byte[]':
@@ -160,7 +158,9 @@
         case 'double':
           isReal = true;
       }
-      const _text = Flow.Dataflow.signal(isArrayValued ? ((_ref = parameter.actual_value) != null ? _ref : []).join(', ') : (_ref1 = parameter.actual_value) != null ? _ref1 : '');
+      const _ref = parameter.actual_value;
+      const _ref1 = parameter.actual_value;
+      const _text = Flow.Dataflow.signal(isArrayValued ? (_ref != null ? _ref : []).join(', ') : _ref1 != null ? _ref1 : '');
       const _textGrided = Flow.Dataflow.signal(`${ _text() };`);
       const textToValues = text => {
         let parsed;
@@ -175,11 +175,13 @@
           for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
             value = _ref2[_i];
             if (isInt) {
-              if (!lodash.isNaN(parsed = parseInt(value, 10))) {
+              parsed = parseInt(value, 10);
+              if (!lodash.isNaN(parsed)) {
                 vals.push(parsed);
               }
             } else if (isReal) {
-              if (!lodash.isNaN(parsed = parseFloat(value))) {
+              parsed = parseFloat(value);
+              if (!lodash.isNaN(parsed)) {
                 vals.push(parsed);
               }
             } else {
@@ -200,7 +202,8 @@
         const _ref2 = `${ text }`.split(/\s*;\s*/g);
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           part = _ref2[_i];
-          if (token = part.trim()) {
+          token = part.trim();
+          if (token) {
             lodash.values.push(textToValues(token));
           }
         }
@@ -649,16 +652,20 @@
           searchCriteria = { strategy: _gridStrategy() };
           switch (searchCriteria.strategy) {
             case 'RandomDiscrete':
-              if (!lodash.isNaN(maxModels = parseInt(_gridMaxModels(), 10))) {
+              maxModels = parseInt(_gridMaxModels(), 10);
+              if (!lodash.isNaN(maxModels)) {
                 searchCriteria.max_models = maxModels;
               }
-              if (!lodash.isNaN(maxRuntime = parseInt(_gridMaxRuntime(), 10))) {
+              maxRuntime = parseInt(_gridMaxRuntime(), 10);
+              if (!lodash.isNaN(maxRuntime)) {
                 searchCriteria.max_runtime_secs = maxRuntime;
               }
-              if (!lodash.isNaN(gridStoppingRounds = parseInt(_gridStoppingRounds(), 10))) {
+              gridStoppingRounds = parseInt(_gridStoppingRounds(), 10);
+              if (!lodash.isNaN(gridStoppingRounds)) {
                 searchCriteria.stopping_rounds = gridStoppingRounds;
               }
-              if (!lodash.isNaN(stoppingTolerance = parseFloat(_gridStoppingTolerance()))) {
+              stoppingTolerance = parseFloat(_gridStoppingTolerance());
+              if (!lodash.isNaN(stoppingTolerance)) {
                 searchCriteria.stopping_tolerance = stoppingTolerance;
               }
               searchCriteria.stopping_metric = _gridStoppingMetric();
@@ -696,7 +703,8 @@
               controls = _controlGroups[_l];
               for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
                 control = controls[_m];
-                if (validations = validationsByControlName[control.name]) {
+                validations = validationsByControlName[control.name];
+                if (validations) {
                   for (_n = 0, _len5 = validations.length; _n < _len5; _n++) {
                     validation = validations[_n];
                     if (validation.message_type === 'TRACE') {
