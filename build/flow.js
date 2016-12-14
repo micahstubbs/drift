@@ -157,6 +157,9 @@
         case 'float':
         case 'double':
           isReal = true;
+          break;
+        default:
+        // do nothing
       }
       const _ref = parameter.actual_value;
       const _ref1 = parameter.actual_value;
@@ -667,6 +670,9 @@
                 searchCriteria.stopping_tolerance = stoppingTolerance;
               }
               searchCriteria.stopping_metric = _gridStoppingMetric();
+              break;
+            default:
+            // do nothing
           }
           parameters.search_criteria = searchCriteria;
         }
@@ -723,6 +729,9 @@
                             control.hasError(true);
                             control.message(validation.message);
                             hasErrors = true;
+                            break;
+                          default:
+                          // do nothing
                         }
                       }
                     }
@@ -11026,7 +11035,6 @@
             _ref = response.entries;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               _ref1 = _ref[_i];
-              console.log('_ref1', _ref1);
               name = _ref1.name;
               value = _ref1.value;
               properties.push({

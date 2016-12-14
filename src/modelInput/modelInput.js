@@ -63,6 +63,9 @@ export function modelInput() {
       case 'float':
       case 'double':
         isReal = true;
+        break;
+      default:
+        // do nothing
     }
     const _ref = parameter.actual_value;
     const _ref1 = parameter.actual_value;
@@ -601,6 +604,9 @@ export function modelInput() {
               searchCriteria.stopping_tolerance = stoppingTolerance;
             }
             searchCriteria.stopping_metric = _gridStoppingMetric();
+            break;
+          default:
+            // do nothing
         }
         parameters.search_criteria = searchCriteria;
       }
@@ -657,6 +663,9 @@ export function modelInput() {
                           control.hasError(true);
                           control.message(validation.message);
                           hasErrors = true;
+                          break;
+                        default:
+                          // do nothing
                       }
                     }
                   }
