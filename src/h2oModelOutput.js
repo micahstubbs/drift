@@ -49,12 +49,11 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       return false;
     });
     const _inputParameters = lodash.map(_model.parameters, parameter => {
-      let actual_value;
-      let default_value;
-      let help;
-      let label;
-      let type;
-      type = parameter.type, default_value = parameter.default_value, actual_value = parameter.actual_value, label = parameter.label, help = parameter.help;
+      const type = parameter.type;
+      const default_value = parameter.default_value;
+      const actual_value = parameter.actual_value;
+      const label = parameter.label;
+      const help = parameter.help;
       const value = (() => {
         switch (type) {
           case 'Key<Frame>':
@@ -183,10 +182,9 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         if (vis.subscribe) {
           vis.subscribe('markselect', _arg => {
             let currentCriterion;
-            let frame;
-            let indices;
             let selectedIndex;
-            frame = _arg.frame, indices = _arg.indices;
+            const frame = _arg.frame;
+            const indices = _arg.indices;
             const subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
             const renderTable = g => g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
             _.plot(renderTable)((error, table) => {
@@ -240,20 +238,19 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       });
     };
     const renderMultinomialConfusionMatrix = (title, cm) => {
-      let bold;
       let cell;
       let cells;
       let column;
       let i;
-      let normal;
       let rowIndex;
-      let table;
-      let tbody;
-      let tr;
-      let yellow;
       let _i;
-      let _ref;
-      _ref = Flow.HTML.template('table.flow-confusion-matrix', 'tbody', 'tr', 'td', 'td.strong', 'td.bg-yellow'), table = _ref[0], tbody = _ref[1], tr = _ref[2], normal = _ref[3], bold = _ref[4], yellow = _ref[5];
+      const _ref = Flow.HTML.template('table.flow-confusion-matrix', 'tbody', 'tr', 'td', 'td.strong', 'td.bg-yellow');
+      const table = _ref[0];
+      const tbody = _ref[1];
+      const tr = _ref[2];
+      const normal = _ref[3];
+      const bold = _ref[4];
+      const yellow = _ref[5];
       const columnCount = cm.columns.length;
       const rowCount = cm.rowcount;
       const headers = lodash.map(cm.columns, (column, i) => bold(column.description));
