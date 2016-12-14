@@ -29,7 +29,7 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     return self = {
       key,
       ratio,
-      view
+      view,
     };
   };
   const _ratios = computeRatios(_splitFrameResult.ratios);
@@ -47,7 +47,7 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
   lodash.defer(_go);
   return {
     frames: _frames,
-    template: 'flow-split-frame-output'
+    template: 'flow-split-frame-output',
   };
 }
 

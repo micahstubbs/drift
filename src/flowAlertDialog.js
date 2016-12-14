@@ -6,7 +6,7 @@ export function flowAlertDialog(_, _message, _opts, _go) {
   }
   lodash.defaults(_opts, {
     title: 'Alert',
-    acceptCaption: 'OK'
+    acceptCaption: 'OK',
   });
   const accept = () => _go(true);
   return {
@@ -14,7 +14,7 @@ export function flowAlertDialog(_, _message, _opts, _go) {
     acceptCaption: _opts.acceptCaption,
     message: Flow.Util.multilineTextToHTML(_message),
     accept,
-    template: 'alert-dialog'
+    template: 'alert-dialog',
   };
 }
 

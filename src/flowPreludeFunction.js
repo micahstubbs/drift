@@ -81,7 +81,7 @@ export function flowPreludeFunction() {
     repeat: _repeat,
     typeOf: _typeOf,
     deepClone: _deepClone,
-    stringify: JSON.stringify
+    stringify: JSON.stringify,
   };
 }
 

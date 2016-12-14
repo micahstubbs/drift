@@ -13,7 +13,7 @@ export function flowFileOpenDialog(_, _go) {
   const checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
   const uploadFile = basename => _.requestUploadObject('notebook', basename, new FormData(_form()), (error, filename) => _go({
     error,
-    filename
+    filename,
   }));
   const accept = () => {
     let basename;
@@ -39,7 +39,7 @@ export function flowFileOpenDialog(_, _go) {
     canAccept: _canAccept,
     accept,
     decline,
-    template: 'file-open-dialog'
+    template: 'file-open-dialog',
   };
 }
 

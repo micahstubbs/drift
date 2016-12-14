@@ -28,7 +28,7 @@ export function flowStatus(_) {
   return {
     message: _message,
     connections: _connections,
-    isBusy: _isBusy
+    isBusy: _isBusy,
   };
 }
 

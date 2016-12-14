@@ -10,7 +10,7 @@ export function h2oGridsOutput(_, _go, _grids) {
     return {
       key: grid.grid_id.name,
       size: grid.model_ids.length,
-      view
+      view,
     };
   };
   const buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
@@ -23,7 +23,7 @@ export function h2oGridsOutput(_, _go, _grids) {
     gridViews: _gridViews,
     hasGrids: _grids.length > 0,
     buildModel,
-    template: 'flow-grids-output'
+    template: 'flow-grids-output',
   };
 }
 

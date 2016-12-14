@@ -14,14 +14,14 @@ export function h2oInspectsOutput(_, _go, _tables) {
       inspect,
       grid,
       canPlot: table.metadata.plot,
-      plot
+      plot,
     };
   };
   lodash.defer(_go);
   return {
     hasTables: _tables.length > 0,
     tables: lodash.map(_tables, createTableView),
-    template: 'flow-inspects-output'
+    template: 'flow-inspects-output',
   };
 }
 

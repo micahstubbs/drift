@@ -33,7 +33,7 @@ export function modelInput() {
       isVisible: _isVisible,
       isGridable: parameter.gridable,
       isGrided: _isGrided,
-      isNotGrided: _isNotGrided
+      isNotGrided: _isNotGrided,
     };
   };
   const createTextboxControl = (parameter, type) => {
@@ -125,7 +125,7 @@ export function modelInput() {
   };
   const createGridableValues = (values, defaultValue) => lodash.map(values, value => ({
     label: value,
-    value: Flow.Dataflow.signal(true)
+    value: Flow.Dataflow.signal(true),
   }));
   const createDropdownControl = parameter => {
     const _value = Flow.Dataflow.signal(parameter.actual_value);
@@ -167,7 +167,7 @@ export function modelInput() {
         value: value.value,
         type: value.type,
         missingLabel: value.missingLabel,
-        missingPercent: value.missingPercent
+        missingPercent: value.missingPercent,
       };
     };
     const _entries = Flow.Dataflow.lift(_values, values => lodash.map(values, createEntry));
@@ -333,7 +333,7 @@ export function modelInput() {
     const _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude.isTruthy);
     const _gridStrategies = [
       'Cartesian',
-      'RandomDiscrete'
+      'RandomDiscrete',
     ];
     const _isGrided = Flow.Dataflow.signal(false);
     const _gridId = Flow.Dataflow.signal(`grid-${Flow.Util.uuid()}`);
@@ -350,7 +350,7 @@ export function modelInput() {
       'AUC',
       'lift_top_group',
       'r2',
-      'misclassification'
+      'misclassification',
     ];
     const _gridStoppingMetric = Flow.Dataflow.signal(_gridStoppingMetrics[0]);
     const _gridStoppingTolerance = Flow.Dataflow.signal(0.001);
@@ -358,7 +358,7 @@ export function modelInput() {
     const _controlGroups = lodash.map([
       'critical',
       'secondary',
-      'expert'
+      'expert',
     ], type => {
       const controls = lodash.filter(lodash.map(_parametersByLevel[type], createControlFromParameter), a => {
         if (a) {
@@ -389,7 +389,7 @@ export function modelInput() {
     if (criticalControls.length) {
       _form.push({
         kind: 'group',
-        title: 'Parameters'
+        title: 'Parameters',
       });
       for (_i = 0, _len = criticalControls.length; _i < _len; _i++) {
         control = criticalControls[_i];
@@ -399,7 +399,7 @@ export function modelInput() {
     if (secondaryControls.length) {
       _form.push({
         kind: 'group',
-        title: 'Advanced'
+        title: 'Advanced',
       });
       for (_j = 0, _len1 = secondaryControls.length; _j < _len1; _j++) {
         control = secondaryControls[_j];
@@ -409,7 +409,7 @@ export function modelInput() {
     if (expertControls.length) {
       _form.push({
         kind: 'group',
-        title: 'Expert'
+        title: 'Expert',
       });
       for (_k = 0, _len2 = expertControls.length; _k < _len2; _k++) {
         control = expertControls[_k];
@@ -450,7 +450,7 @@ export function modelInput() {
         'ignored_columns',
         'offset_column',
         'weights_column',
-        'fold_column'
+        'fold_column',
       ], findFormField), trainingFrameParameter = _ref[0], validationFrameParameter = _ref[1], responseColumnParameter = _ref[2], ignoredColumnsParameter = _ref[3], offsetColumnsParameter = _ref[4], weightsColumnParameter = _ref[5], foldColumnParameter = _ref[6];
       if (trainingFrameParameter) {
         if (responseColumnParameter || ignoredColumnsParameter) {
@@ -467,7 +467,7 @@ export function modelInput() {
                       type: column.type === 'enum' ? `enum(${column.domain_cardinality})` : column.type,
                       value: column.label,
                       missingPercent,
-                      missingLabel: missingPercent === 0 ? '' : `${Math.round(missingPercent)}% NA`
+                      missingLabel: missingPercent === 0 ? '' : `${Math.round(missingPercent)}% NA`,
                     };
                   });
                   if (responseColumnParameter) {
@@ -544,7 +544,7 @@ export function modelInput() {
               default:
                 hyperParameters[control.name] = [
                   true,
-                  false
+                  false,
                 ];
             }
           } else {
@@ -725,7 +725,7 @@ export function modelInput() {
       parameterTemplateOf,
       createModel,
       hasValidationFailures: _hasValidationFailures,
-      validationFailureMessage: _validationFailureMessage
+      validationFailureMessage: _validationFailureMessage,
     };
   };
   H2O.ModelInput = (_, _go, _algo, _opts) => {
@@ -808,7 +808,7 @@ export function modelInput() {
       modelForm: _modelForm,
       canCreateModel: _canCreateModel,
       createModel,
-      template: 'flow-model-input'
+      template: 'flow-model-input',
     };
   };
 }

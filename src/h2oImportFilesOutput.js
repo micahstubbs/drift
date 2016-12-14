@@ -9,7 +9,7 @@ export function h2oImportFilesOutput(_, _go, _importResults) {
   const _title = `${_allFrames.length} / ${_importResults.length} files imported.`;
   const createImportView = result => ({
     files: result.files,
-    template: 'flow-import-file-output'
+    template: 'flow-import-file-output',
   });
   const _importViews = lodash.map(_importResults, createImportView);
   const parse = () => {
@@ -25,7 +25,7 @@ export function h2oImportFilesOutput(_, _go, _importResults) {
     template: 'flow-import-files-output',
     templateOf(view) {
       return view.template;
-    }
+    },
   };
 }
 

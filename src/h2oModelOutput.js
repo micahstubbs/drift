@@ -90,7 +90,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         label,
         value,
         help,
-        isModified: default_value === actual_value
+        isModified: default_value === actual_value,
       };
     });
     const format4f = number => {
@@ -126,7 +126,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
             _results.push({
               index: i,
-              value: thresholdVector.at(i)
+              value: thresholdVector.at(i),
             });
           }
           return _results;
@@ -140,14 +140,14 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
             _results.push({
               index: idxVector.at(i),
-              value: metricVector.valueAt(i)
+              value: metricVector.valueAt(i),
             });
           }
           return _results;
         })();
         return {
           thresholds,
-          criteria
+          criteria,
         };
       }
       return void 0;
@@ -161,7 +161,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           thresholds: Flow.Dataflow.signals(thresholdsAndCriteria.thresholds),
           threshold: Flow.Dataflow.signal(null),
           criteria: Flow.Dataflow.signals(thresholdsAndCriteria.criteria),
-          criterion: Flow.Dataflow.signal(null)
+          criterion: Flow.Dataflow.signal(null),
         };
       }
       render((error, vis) => {
@@ -236,7 +236,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         plot: container,
         frame: linkedFrame,
         controls: Flow.Dataflow.signal(rocPanel),
-        isCollapsed
+        isCollapsed,
       });
     };
     const renderMultinomialConfusionMatrix = (title, cm) => {
@@ -282,7 +282,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         plot: Flow.Dataflow.signal(Flow.HTML.render('div', table(tbody(rows)))),
         frame: Flow.Dataflow.signal(null),
         controls: Flow.Dataflow.signal(null),
-        isCollapsed: false
+        isCollapsed: false,
       });
     };
     switch (_model.algo) {
@@ -565,7 +565,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_model.model_id.name)}`);
     const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
       acceptCaption: 'Delete Model',
-      declineCaption: 'Cancel'
+      declineCaption: 'Cancel',
     }, accept => {
       if (accept) {
         return _.insertAndExecuteCell('cs', `deleteModel ${flowPrelude.stringify(_model.model_id.name)}`);
@@ -587,7 +587,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       pojoPreview: _pojoPreview,
       isPojoLoaded: _isPojoLoaded,
       exportModel,
-      deleteModel
+      deleteModel,
     };
   };
   const _isLive = Flow.Dataflow.signal(false);
@@ -613,7 +613,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     output: _output,
     toggleRefresh: _toggleRefresh,
     isLive: _isLive,
-    template: 'flow-model-output'
+    template: 'flow-model-output',
   };
 }
 

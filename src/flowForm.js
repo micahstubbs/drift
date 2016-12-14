@@ -6,7 +6,7 @@ export function flowForm(_, _form, _go) {
     template: 'flow-form',
     templateOf(control) {
       return control.template;
-    }
+    },
   };
 }
 

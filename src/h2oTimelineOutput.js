@@ -11,7 +11,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
     'I/O Type',
     'Event',
     'Type',
-    'Bytes'
+    'Bytes',
   ];
   const _data = Flow.Dataflow.signal(null);
   const _timestamp = Flow.Dataflow.signal(Date.now());
@@ -25,7 +25,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
           event.io_flavor || '-',
           'I/O',
           '-',
-          event.data
+          event.data,
         ];
       case 'heartbeat':
         return [
@@ -35,7 +35,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
           'UDP',
           event.type,
           '-',
-          `${event.sends} sent ${event.recvs} received'`
+          `${event.sends} sent ${event.recvs} received'`,
         ];
       case 'network_msg':
         return [
@@ -45,7 +45,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
           event.protocol,
           event.msg_type,
           event.is_send ? 'send' : 'receive',
-          event.data
+          event.data,
         ];
       default:
     }
@@ -95,7 +95,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
     })());
     return _data(Flow.HTML.render('div', grid([table([
       thead(tr(ths)),
-      tbody(trs)
+      tbody(trs),
     ])])));
   };
   const toggleRefresh = () => _isLive(!_isLive());
@@ -126,7 +126,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
     isBusy: _isBusy,
     toggleRefresh,
     refresh,
-    template: 'flow-timeline-output'
+    template: 'flow-timeline-output',
   };
 }
 

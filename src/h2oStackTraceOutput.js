@@ -7,7 +7,7 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
     const lines = thread.split('\n');
     return {
       title: lodash.head(lines),
-      stackTrace: lodash.tail(lines).join('\n')
+      stackTrace: lodash.tail(lines).join('\n'),
     };
   };
   const createNode = node => {
@@ -28,7 +28,7 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
         }
         return _results;
       })()),
-      display
+      display,
     };
   };
   const _nodes = ((() => {
@@ -47,7 +47,7 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
   return {
     nodes: _nodes,
     activeNode: _activeNode,
-    template: 'flow-stacktrace-output'
+    template: 'flow-stacktrace-output',
   };
 }
 

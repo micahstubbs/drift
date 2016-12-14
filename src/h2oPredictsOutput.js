@@ -72,7 +72,7 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
       isChecked: _isChecked,
       hasFrame: _hasFrame,
       view,
-      inspect
+      inspect,
     };
   };
   const _predictionsTable = _.inspect('predictions', _predictions);
@@ -90,7 +90,7 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
         if (view.isChecked()) {
           _results.push({
             model: view.modelKey,
-            frame: view.frameKey
+            frame: view.frameKey,
           });
         }
       }
@@ -120,7 +120,7 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
     inspect: inspectAll,
     predict,
     rocCurve: _rocCurve,
-    template: 'flow-predicts-output'
+    template: 'flow-predicts-output',
   };
 }
 

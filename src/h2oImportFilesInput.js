@@ -71,7 +71,7 @@ export function h2oImportFilesInput(_, _go) {
             file.isSelected(false);
           }
         }
-      }
+      },
     };
   };
   const createFileItem = (path, isSelected) => {
@@ -81,7 +81,7 @@ export function h2oImportFilesInput(_, _go) {
       select() {
         _selectedFiles.push(createSelectedFileItem(self.path));
         return self.isSelected(true);
-      }
+      },
     };
     Flow.Dataflow.act(self.isSelected, isSelected => _hasUnselectedFiles(lodash.some(_importedFiles(), file => !file.isSelected())));
     return self;
@@ -90,7 +90,7 @@ export function h2oImportFilesInput(_, _go) {
   const listPathHints = (query, process) => _.requestFileGlob(query, 10, (error, result) => {
     if (!error) {
       return process(lodash.map(result.matches, value => ({
-        value
+        value,
       })));
     }
   });
@@ -146,7 +146,7 @@ export function h2oImportFilesInput(_, _go) {
     hasSelectedFiles: _hasSelectedFiles,
     selectedFileCount: _selectedFileCount,
     importSelectedFiles,
-    template: 'flow-import-files'
+    template: 'flow-import-files',
   };
 }
 

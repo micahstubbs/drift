@@ -22,7 +22,7 @@ export function coreUtils() {
       'KB',
       'MB',
       'GB',
-      'TB'
+      'TB',
     ];
     if (bytes === 0) {
       return '0 Byte';
@@ -42,7 +42,7 @@ export function coreUtils() {
       hrs,
       mins,
       secs,
-      ms
+      ms,
     ];
   };
   const formatMilliseconds = s => {
@@ -91,6 +91,6 @@ export function coreUtils() {
     multilineTextToHTML,
     uuid: (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null,
     sanitizeName,
-    highlight
+    highlight,
   };
 }

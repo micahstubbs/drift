@@ -57,7 +57,7 @@ export function h2oModelsOutput(_, _go, _models) {
       predict,
       clone: cloneModel,
       inspect,
-      view
+      view,
     };
   };
   const buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
@@ -79,7 +79,7 @@ export function h2oModelsOutput(_, _go, _models) {
   const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${flowPrelude.stringify(collectSelectedKeys())}`);
   const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
     acceptCaption: 'Delete Models',
-    declineCaption: 'Cancel'
+    declineCaption: 'Cancel',
   }, accept => {
     if (accept) {
       return _.insertAndExecuteCell('cs', `deleteModels ${flowPrelude.stringify(collectSelectedKeys())}`);
@@ -117,7 +117,7 @@ export function h2oModelsOutput(_, _go, _models) {
     hasSelectedModels: _hasSelectedModels,
     checkAllModels: _checkAllModels,
     inspect: inspectAll,
-    template: 'flow-models-output'
+    template: 'flow-models-output',
   };
 }
 

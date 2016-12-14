@@ -10,7 +10,7 @@ export function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
   return {
     frameKey: _frameKey,
     viewFrame: _viewFrame,
-    template: 'flow-merge-frames-output'
+    template: 'flow-merge-frames-output',
   };
 }
 

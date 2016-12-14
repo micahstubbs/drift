@@ -14,12 +14,12 @@ export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile
     'fatal',
     'httpd',
     'stdout',
-    'stderr'
+    'stderr',
   ]);
   const _activeFileType = Flow.Dataflow.signal(null);
   const createNode = (node, index) => ({
     name: node.ip_port,
-    index
+    index,
   });
   const refreshActiveView = (node, fileType) => {
     if (node) {
@@ -68,7 +68,7 @@ export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile
     activeFileType: _activeFileType,
     contents: _contents,
     refresh,
-    template: 'flow-log-file-output'
+    template: 'flow-log-file-output',
   };
 }
 

@@ -70,7 +70,7 @@ import { flow } from './flow/flow';
           return window.hljs.highlightAuto(code, [lang]).value;
         }
         return code;
-      }
+      },
     });
   }.call(this));
   coreUtils();

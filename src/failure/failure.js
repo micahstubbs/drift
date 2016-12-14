@@ -19,7 +19,7 @@ export function failure() {
       causes,
       isStackVisible: _isStackVisible,
       toggleStack,
-      template: 'flow-failure'
+      template: 'flow-failure',
     };
   };
 }

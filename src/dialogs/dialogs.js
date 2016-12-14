@@ -43,17 +43,17 @@ export function dialogs() {
     });
     Flow.Dataflow.link(_.confirm, (message, opts, go) => showDialog(flowConfirmDialog, [
       message,
-      opts
+      opts,
     ], go));
     Flow.Dataflow.link(_.alert, (message, opts, go) => showDialog(flowAlertDialog, [
       message,
-      opts
+      opts,
     ], go));
     return {
       dialog: _dialog,
       template(dialog) {
         return `flow-${dialog.template}`;
-      }
+      },
     };
   };
 }

@@ -119,14 +119,14 @@ export function objectBrowser() {
       toggle,
       expansions: _expansions,
       isExpanded: _isExpanded,
-      canExpand: _canExpand
+      canExpand: _canExpand,
     };
   };
   Flow.ObjectBrowser = (_, _go, key, object) => {
     lodash.defer(_go);
     return {
       object: Flow.ObjectBrowserElement(key, object),
-      template: 'flow-object'
+      template: 'flow-object',
     };
   };
 }

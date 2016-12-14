@@ -181,7 +181,7 @@ export function h2oPredictInput(_, _go, opt) {
     computeLeafNodeAssignment: _computeLeafNodeAssignment,
     deepFeaturesHiddenLayer: _deepFeaturesHiddenLayer,
     exemplarIndex: _exemplarIndex,
-    template: 'flow-predict-input'
+    template: 'flow-predict-input',
   };
 }
 

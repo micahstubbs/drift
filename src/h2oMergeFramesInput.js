@@ -20,7 +20,7 @@ export function h2oMergeFramesInput(_, _go) {
     if (frameKey) {
       return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _leftColumns(lodash.map(frame.columns, (column, i) => ({
         label: column.label,
-        index: i
+        index: i,
       }))));
     }
     _selectedLeftColumn(null);
@@ -30,7 +30,7 @@ export function h2oMergeFramesInput(_, _go) {
     if (frameKey) {
       return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _rightColumns(lodash.map(frame.columns, (column, i) => ({
         label: column.label,
-        index: i
+        index: i,
       }))));
     }
     _selectedRightColumn(null);
@@ -75,7 +75,7 @@ export function h2oMergeFramesInput(_, _go) {
     includeAllRightRows: _includeAllRightRows,
     merge: _merge,
     canMerge: _canMerge,
-    template: 'flow-merge-frames-input'
+    template: 'flow-merge-frames-input',
   };
 }
 

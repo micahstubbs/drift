@@ -16,7 +16,7 @@ export function flowApplication(_, routines) {
   return {
     context: _,
     sandbox: _sandbox,
-    view: _notebook
+    view: _notebook,
   };
 }
 

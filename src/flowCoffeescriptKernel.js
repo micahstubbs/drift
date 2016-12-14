@@ -45,7 +45,7 @@ export function flowCoffeescriptKernel() {
             if (declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier') {
               _results.push({
                 name: declaration.id.name,
-                object: '_h2o_context_'
+                object: '_h2o_context_',
               });
             }
           }
@@ -55,7 +55,7 @@ export function flowCoffeescriptKernel() {
         if (node.id.type === 'Identifier') {
           return [{
             name: node.id.name,
-            object: '_h2o_context_'
+            object: '_h2o_context_',
           }];
         }
         break;
@@ -131,7 +131,7 @@ export function flowCoffeescriptKernel() {
       if (param.type === 'Identifier') {
         localScope[param.name] = {
           name: param.name,
-          object: 'local'
+          object: 'local',
         };
       }
     }
@@ -198,7 +198,7 @@ export function flowCoffeescriptKernel() {
         if ({}.hasOwnProperty.call(sandbox.context, name)) {
           rootScope[name] = {
             name,
-            object: '_h2o_context_'
+            object: '_h2o_context_',
           };
         }
       }
@@ -241,7 +241,7 @@ export function flowCoffeescriptKernel() {
       if ({}.hasOwnProperty.call(routines, name)) {
         globalScope[name] = {
           name,
-          object: 'h2o'
+          object: 'h2o',
         };
       }
     }
@@ -269,12 +269,12 @@ export function flowCoffeescriptKernel() {
             computed: false,
             object: {
               type: 'Identifier',
-              name: identifier.object
+              name: identifier.object,
             },
             property: {
               type: 'Identifier',
-              name: identifier.name
-            }
+              name: identifier.name,
+            },
           };
         }
       });
@@ -322,6 +322,6 @@ export function flowCoffeescriptKernel() {
     rewriteJavascript,
     generateJavascript,
     compileJavascript,
-    executeJavascript
+    executeJavascript,
   };
 }

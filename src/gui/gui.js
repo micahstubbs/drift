@@ -39,7 +39,7 @@ export function gui() {
       template: `flow-form-${type}`,
       templateOf(control) {
         return control.template;
-      }
+      },
     };
   };
   const content = (type, opts) => {
@@ -95,6 +95,6 @@ export function gui() {
     listbox,
     textbox,
     textarea,
-    button
+    button,
   };
 }

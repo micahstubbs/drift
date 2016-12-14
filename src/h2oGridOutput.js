@@ -60,7 +60,7 @@ export function h2oGridOutput(_, _go, _grid) {
       predict,
       clone: cloneModel,
       inspect,
-      view
+      view,
     };
   };
   const buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
@@ -82,7 +82,7 @@ export function h2oGridOutput(_, _go, _grid) {
   const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${flowPrelude.stringify(collectSelectedKeys())}`);
   const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
     acceptCaption: 'Delete Models',
-    declineCaption: 'Cancel'
+    declineCaption: 'Cancel',
   }, accept => {
     if (accept) {
       return _.insertAndExecuteCell('cs', `deleteModels ${flowPrelude.stringify(collectSelectedKeys())}`);
@@ -123,7 +123,7 @@ export function h2oGridOutput(_, _go, _grid) {
           title: `Error ${(i + 1)}`,
           detail: grid.failure_details[i],
           params: `Parameters: [ ${grid.failed_raw_params[i].join(', ')} ]`,
-          stacktrace: grid.failure_stack_traces[i]
+          stacktrace: grid.failure_stack_traces[i],
         });
       }
       return _results;
@@ -148,7 +148,7 @@ export function h2oGridOutput(_, _go, _grid) {
     inspect,
     inspectHistory,
     inspectAll,
-    template: 'flow-grid-output'
+    template: 'flow-grid-output',
   };
 }
 

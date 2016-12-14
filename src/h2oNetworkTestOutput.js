@@ -12,7 +12,7 @@ export function h2oNetworkTestOutput(_, _go, _testResult) {
   lodash.defer(_go);
   return {
     result: _result,
-    template: 'flow-network-test-output'
+    template: 'flow-network-test-output',
   };
 }
 

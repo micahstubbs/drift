@@ -43,7 +43,7 @@ export function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
     domainPlot: _domainPlot,
     impute,
     inspect,
-    template: 'flow-column-summary-output'
+    template: 'flow-column-summary-output',
   };
 }
 

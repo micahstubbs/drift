@@ -111,7 +111,7 @@ export function async() {
       if (arg != null ? arg.isFuture : void 0) {
         _tasks.push({
           future: arg,
-          resultIndex: i
+          resultIndex: i,
         });
       } else {
         _results[i] = arg;
@@ -285,6 +285,6 @@ export function async() {
     iterate,
     async: _async,
     find: _find,
-    get: _get
+    get: _get,
   };
 }

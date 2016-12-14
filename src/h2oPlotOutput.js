@@ -3,7 +3,7 @@ export function h2oPlotOutput(_, _go, _plot) {
   lodash.defer(_go);
   return {
     plot: _plot,
-    template: 'flow-plot-output'
+    template: 'flow-plot-output',
   };
 }
 

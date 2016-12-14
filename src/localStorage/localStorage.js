@@ -22,7 +22,7 @@ export function localStorage() {
         objs.push([
           type,
           id,
-          JSON.parse(_ls.getItem(key))
+          JSON.parse(_ls.getItem(key)),
         ]);
       }
     }
@@ -67,6 +67,6 @@ export function localStorage() {
     list,
     read,
     write,
-    purge
+    purge,
   };
 }

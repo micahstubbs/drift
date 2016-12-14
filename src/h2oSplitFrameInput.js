@@ -126,7 +126,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
       key: _key,
       ratioText: _ratioText,
       ratio: _ratio,
-      remove: flowPrelude.remove
+      remove: flowPrelude.remove,
     };
   };
   const addSplitRatio = ratio => _splits.push(createSplit(ratio));
@@ -176,7 +176,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     addSplit,
     splitFrame,
     validationMessage: _validationMessage,
-    template: 'flow-split-frame-input'
+    template: 'flow-split-frame-input',
   };
 }
 

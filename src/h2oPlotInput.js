@@ -8,7 +8,7 @@ export function h2oPlotInput(_, _go, _frame) {
   const _types = [
     'point',
     'path',
-    'rect'
+    'rect',
   ];
   const _vectors = (() => {
     let _i;
@@ -43,7 +43,7 @@ export function h2oPlotInput(_, _go, _frame) {
     color: _color,
     plot,
     canPlot: _canPlot,
-    template: 'flow-plot-input'
+    template: 'flow-plot-input',
   };
 }
 

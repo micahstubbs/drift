@@ -33,7 +33,7 @@ export function h2oJobsOutput(_, _go, jobs) {
       endTime: Flow.Format.Time(new Date(job.start_time + job.msec)),
       elapsedTime: Flow.Util.formatMilliseconds(job.msec),
       status: job.status,
-      view
+      view,
     };
   };
   const toggleRefresh = () => _isLive(!_isLive());
@@ -69,7 +69,7 @@ export function h2oJobsOutput(_, _go, jobs) {
     toggleRefresh,
     refresh,
     exception: _exception,
-    template: 'flow-jobs-output'
+    template: 'flow-jobs-output',
   };
 }
 

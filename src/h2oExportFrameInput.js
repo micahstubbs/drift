@@ -36,7 +36,7 @@ export function h2oExportFrameInput(_, _go, frameKey, path, opt) {
     overwrite: _overwrite,
     canExportFrame: _canExportFrame,
     exportFrame,
-    template: 'flow-export-frame-input'
+    template: 'flow-export-frame-input',
   };
 }
 

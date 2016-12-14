@@ -43,7 +43,7 @@ export function h2oCreateFrameInput(_, _go) {
       integer_range: _integerRange(),
       missing_fraction: _missingFraction(),
       response_factors: _responseFactors(),
-      has_response: _hasResponse()
+      has_response: _hasResponse(),
     };
     return _.insertAndExecuteCell('cs', `createFrame ${flowPrelude.stringify(opts)}`);
   };
@@ -69,7 +69,7 @@ export function h2oCreateFrameInput(_, _go) {
     responseFactors: _responseFactors,
     hasResponse: _hasResponse,
     createFrame,
-    template: 'flow-create-frame-input'
+    template: 'flow-create-frame-input',
   };
 }
 

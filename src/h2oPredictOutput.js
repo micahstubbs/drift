@@ -44,7 +44,7 @@ export function h2oPredictOutput(_, _go, prediction) {
       title,
       plot: container,
       combineWithFrame,
-      canCombineWithFrame: title === 'Prediction'
+      canCombineWithFrame: title === 'Prediction',
     });
   };
   if (prediction) {
@@ -75,7 +75,7 @@ export function h2oPredictOutput(_, _go, prediction) {
     plots: _plots,
     inspect,
     canInspect: _canInspect,
-    template: 'flow-predict-output'
+    template: 'flow-predict-output',
   };
 }
 

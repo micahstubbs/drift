@@ -39,7 +39,7 @@ export function h2oExportModelInput(_, _go, modelKey, path, opt) {
     overwrite: _overwrite,
     canExportModel: _canExportModel,
     exportModel,
-    template: 'flow-export-model-input'
+    template: 'flow-export-model-input',
   };
 }
 

@@ -8,7 +8,7 @@ export function jobOutput() {
   const jobOutputStatusColors = {
     failed: '#d9534f',
     done: '#ccc',
-    running: '#f0ad4e'
+    running: '#f0ad4e',
   };
   const getJobOutputStatusColor = status => {
     switch (status) {
@@ -60,7 +60,7 @@ export function jobOutput() {
     const messageIcons = {
       ERROR: 'fa-times-circle red',
       WARN: 'fa-warning orange',
-      INFO: 'fa-info-circle'
+      INFO: 'fa-info-circle',
     };
     const canView = job => {
       switch (_destinationType) {
@@ -92,7 +92,7 @@ export function jobOutput() {
             if (message.message_type !== 'HIDE') {
               _results.push({
                 icon: messageIcons[message.message_type],
-                message: `${message.field_name}: ${message.message}`
+                message: `${message.field_name}: ${message.message}`,
               });
             }
           }
@@ -188,7 +188,7 @@ export function jobOutput() {
       canCancel: _canCancel,
       cancel,
       view,
-      template: 'flow-job-output'
+      template: 'flow-job-output',
     };
   };
 }

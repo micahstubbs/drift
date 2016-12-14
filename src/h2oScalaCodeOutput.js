@@ -17,13 +17,13 @@ export function h2oScalaCodeOutput(_, _go, _result) {
         return _scalaLinkText('Hide Scala Response');
       }
       return _scalaLinkText('Show Scala Response');
-    }
+    },
   });
   _scalaCodeView(createScalaCodeView(_result));
   lodash.defer(_go);
   return {
     scalaCodeView: _scalaCodeView,
-    template: 'flow-scala-code-output'
+    template: 'flow-scala-code-output',
   };
 }
 

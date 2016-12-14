@@ -7,7 +7,7 @@ export function flowConfirmDialog(_, _message, _opts, _go) {
   lodash.defaults(_opts, {
     title: 'Confirm',
     acceptCaption: 'Yes',
-    declineCaption: 'No'
+    declineCaption: 'No',
   });
   const accept = () => _go(true);
   const decline = () => _go(false);
@@ -18,7 +18,7 @@ export function flowConfirmDialog(_, _message, _opts, _go) {
     message: Flow.Util.multilineTextToHTML(_message),
     accept,
     decline,
-    template: 'confirm-dialog'
+    template: 'confirm-dialog',
   };
 }
 

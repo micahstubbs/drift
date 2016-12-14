@@ -15,10 +15,10 @@ export function parseInput() {
     'SVMLight',
     'ORC',
     'AVRO',
-    'PARQUET'
+    'PARQUET',
   ], type => ({
     type,
-    caption: type
+    caption: type,
   }));
   const parseDelimiters = (() => {
     const whitespaceSeparators = [
@@ -54,11 +54,11 @@ export function parseInput() {
       'GS  (group separator)',
       'RS  (record separator)',
       'US  (unit separator)',
-      '\' \' SPACE'
+      '\' \' SPACE',
     ];
     const createDelimiter = (caption, charCode) => ({
       charCode,
-      caption: `${caption}: \'${(`00${charCode}`).slice(-2)}\'`
+      caption: `${caption}: \'${(`00${charCode}`).slice(-2)}\'`,
     });
     const whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
     const characterDelimiters = lodash.times(126 - whitespaceSeparators.length, i => {
@@ -67,7 +67,7 @@ export function parseInput() {
     });
     const otherDelimiters = [{
       charCode: -1,
-      caption: 'AUTO'
+      caption: 'AUTO',
     }];
     return whitespaceDelimiters.concat(characterDelimiters, otherDelimiters);
   })();
@@ -78,7 +78,7 @@ export function parseInput() {
     'Time',
     'UUID',
     'String',
-    'Invalid'
+    'Invalid',
   ];
   H2O.SetupParseOutput = (_, _go, _inputs, _result) => {
     let _currentPage;
@@ -92,7 +92,7 @@ export function parseInput() {
     const _headerOptions = {
       auto: 0,
       header: 1,
-      data: -1
+      data: -1,
     };
     const _headerOption = Flow.Dataflow.signal(_result.check_header === 0 ? 'auto' : _result.check_header === -1 ? 'data' : 'header');
     const _deleteOnDone = Flow.Dataflow.signal(true);
@@ -140,7 +140,7 @@ export function parseInput() {
           index: `${(j + 1)}`,
           name: Flow.Dataflow.signal(columnNames ? columnNames[j] : ''),
           type: Flow.Dataflow.signal(columnTypes[j]),
-          data
+          data,
         };
       }
       return rows;
@@ -158,7 +158,7 @@ export function parseInput() {
     const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
     const makePage = (index, columns) => ({
       index,
-      columns
+      columns,
     });
     const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
     const filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
@@ -232,7 +232,7 @@ export function parseInput() {
       canGoToPreviousPage: _canGoToPreviousPage,
       goToNextPage,
       goToPreviousPage,
-      template: 'flow-parse-raw-input'
+      template: 'flow-parse-raw-input',
     };
   };
 }

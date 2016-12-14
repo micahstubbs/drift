@@ -26,7 +26,7 @@ export function h2oAutoModelInput(_, _go, opts) {
     const arg = {
       frame: _frame(),
       column: _column(),
-      maxRunTime
+      maxRunTime,
     };
     return _.insertAndExecuteCell('cs', `buildAutoModel ${JSON.stringify(arg)}`);
   };
@@ -89,7 +89,7 @@ export function h2oAutoModelInput(_, _go, opts) {
     maxRunTime: _maxRunTime,
     canBuildModel: _canBuildModel,
     buildModel,
-    template: 'flow-automodel-input'
+    template: 'flow-automodel-input',
   };
 }
 

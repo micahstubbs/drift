@@ -67,7 +67,7 @@ export function help() {
             const contents = [
               mark('Help'),
               h5(topic.title),
-              fixImageSources(div(html))
+              fixImageSources(div(html)),
             ];
             if (topic.children.length) {
               contents.push(h6('Topics'));
@@ -97,7 +97,7 @@ export function help() {
         case 'get-flow':
           _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
             acceptCaption: 'Load Notebook',
-            declineCaption: 'Cancel'
+            declineCaption: 'Cancel',
           }, accept => {
             let flowName;
             if (accept) {
@@ -178,8 +178,8 @@ export function help() {
         h5('Installed Packs'),
         div(lodash.map(packNames, packName => p([
           i(),
-          a(packName, packName)
-        ])))
+          a(packName, packName),
+        ]))),
       ])));
     }
     function displayFlows(packName, flowNames) {
@@ -196,8 +196,8 @@ export function help() {
         h5(packName),
         div(lodash.map(flowNames, flowName => p([
           i(),
-          a(flowName, flowName)
-        ])))
+          a(flowName, flowName),
+        ]))),
       ])));
     }
     function displayEndpoints(routes) {
@@ -215,7 +215,7 @@ export function help() {
       _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'a href=\'#\' data-action=\'endpoint\' data-index=\'$1\'', 'code'), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], action = _ref[4], code = _ref[5];
       const els = [
         mark('API'),
-        h5('List of Routes')
+        h5('List of Routes'),
       ];
       for (routeIndex = _i = 0, _len = routes.length; _i < _len; routeIndex = ++_i) {
         route = routes[routeIndex];
@@ -246,7 +246,7 @@ export function help() {
         h6('Input Schema'),
         p(action(code(route.input_schema), route.input_schema)),
         h6('Output Schema'),
-        p(action(code(route.output_schema), route.output_schema))
+        p(action(code(route.output_schema), route.output_schema)),
       ])));
     }
     function displaySchemas(schemas) {
@@ -272,7 +272,7 @@ export function help() {
             _results.push(li(`${action(code(schema.name), schema.name)} ${variable(lodash.escape(schema.type))}`));
           }
           return _results;
-        })())
+        })()),
       ];
       return displayHtml(Flow.HTML.render('div', div(els)));
     }
@@ -292,7 +292,7 @@ export function help() {
       const content = [
         mark('Schema'),
         h5(`${schema.name} (${lodash.escape(schema.type)})`),
-        h6('Fields')
+        h6('Fields'),
       ];
       const _ref1 = schema.fields;
       for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -320,7 +320,7 @@ export function help() {
       goBack,
       canGoBack: _canGoBack,
       goForward,
-      canGoForward: _canGoForward
+      canGoForward: _canGoForward,
     };
   };
 }

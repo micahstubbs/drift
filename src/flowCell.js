@@ -95,7 +95,7 @@ export function flowCell(_, _renderers, type, input) {
         } else {
           _outputs.push({
             text: JSON.stringify(error, null, 2),
-            template: 'flow-raw'
+            template: 'flow-raw',
           });
         }
         return _errors.push(error);
@@ -107,7 +107,7 @@ export function flowCell(_, _renderers, type, input) {
         if (go) {
           go(_hasError() ? _errors.slice(0) : null);
         }
-      }
+      },
     });
     return _isActive(false);
   };
@@ -149,7 +149,7 @@ export function flowCell(_, _renderers, type, input) {
     templateOf(view) {
       return view.template;
     },
-    template: 'flow-cell'
+    template: 'flow-cell',
   };
 }
 

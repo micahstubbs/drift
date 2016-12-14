@@ -47,7 +47,7 @@ export function h2oFrameOutput(_, _go, _frame) {
   const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
   const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
     acceptCaption: 'Delete Frame',
-    declineCaption: 'Cancel'
+    declineCaption: 'Cancel',
   }, accept => {
     if (accept) {
       return _.insertAndExecuteCell('cs', `deleteFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);
@@ -112,7 +112,7 @@ export function h2oFrameOutput(_, _go, _frame) {
     goToPreviousPage,
     goToNextPage,
     deleteFrame,
-    template: 'flow-frame-output'
+    template: 'flow-frame-output',
   };
 }
 

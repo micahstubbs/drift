@@ -27,7 +27,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     'PB',
     'EB',
     'ZB',
-    'YB'
+    'YB',
   ];
   const prettyPrintBytes = bytes => {
     if (bytes === 0) {
@@ -79,88 +79,88 @@ export function h2oCloudOutput(_, _go, _cloud) {
   const _headers = [
     [
       '&nbsp;',
-      true
+      true,
     ],
     [
       'Name',
-      true
+      true,
     ],
     [
       'Ping',
-      true
+      true,
     ],
     [
       'Cores',
-      true
+      true,
     ],
     [
       'Load',
-      true
+      true,
     ],
     [
       'My CPU %',
-      true
+      true,
     ],
     [
       'Sys CPU %',
-      true
+      true,
     ],
     [
       'GFLOPS',
-      true
+      true,
     ],
     [
       'Memory Bandwidth',
-      true
+      true,
     ],
     [
       'Data (Used/Total)',
-      true
+      true,
     ],
     [
       'Data (% Cached)',
-      true
+      true,
     ],
     [
       'GC (Free / Total / Max)',
-      true
+      true,
     ],
     [
       'Disk (Free / Max)',
-      true
+      true,
     ],
     [
       'Disk (% Free)',
-      true
+      true,
     ],
     [
       'PID',
-      false
+      false,
     ],
     [
       'Keys',
-      false
+      false,
     ],
     [
       'TCP',
-      false
+      false,
     ],
     [
       'FD',
-      false
+      false,
     ],
     [
       'RPCs',
-      false
+      false,
     ],
     [
       'Threads',
-      false
+      false,
     ],
     [
       'Tasks',
-      false
-    ]
+      false,
+    ],
   ];
   const createNodeRow = node => [
     node.healthy,
@@ -183,7 +183,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     node.open_fds,
     node.rpcs_active,
     formatThreads(node.fjthrds),
-    formatThreads(node.fjqueue)
+    formatThreads(node.fjqueue),
   ];
   const createTotalRow = cloud => {
     const nodes = cloud.nodes;
@@ -208,7 +208,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
       sum(nodes, node => node.open_fds),
       sum(nodes, node => node.rpcs_active),
       '-',
-      '-'
+      '-',
     ];
   };
   const createGrid = (cloud, isExpanded) => {
@@ -272,7 +272,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     })();
     return Flow.HTML.render('div', grid([table([
       thead(tr(ths)),
-      tbody(trs)
+      tbody(trs),
     ])]));
   };
   const updateCloud = (cloud, isExpanded) => {
@@ -325,7 +325,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     refresh,
     isExpanded: _isExpanded,
     toggleExpansion,
-    template: 'flow-cloud-output'
+    template: 'flow-cloud-output',
   };
 }
 

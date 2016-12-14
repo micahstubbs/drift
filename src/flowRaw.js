@@ -2,7 +2,7 @@ export function flowRaw(_) {
   const render = (input, output) => {
     output.data({
       text: input,
-      template: 'flow-raw'
+      template: 'flow-raw',
     });
     return output.end();
   };

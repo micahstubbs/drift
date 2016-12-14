@@ -107,7 +107,7 @@ export function data() {
       meta,
       fill,
       expand,
-      _is_table_: true
+      _is_table_: true,
     };
   };
   const includeZeroInRange = range => {
@@ -117,12 +117,12 @@ export function data() {
     if (lo > 0 && hi > 0) {
       return [
         0,
-        hi
+        hi,
       ];
     } else if (lo < 0 && hi < 0) {
       return [
         lo,
-        0
+        0,
       ];
     }
     return range;
@@ -150,7 +150,7 @@ export function data() {
     }
     return [
       lo,
-      hi
+      hi,
     ];
   };
   const computeRange = (rows, attr) => {
@@ -175,12 +175,12 @@ export function data() {
       }
       return [
         lo,
-        hi
+        hi,
       ];
     }
     return [
       -1,
-      1
+      1,
     ];
   };
   const permute = (array, indices) => {
@@ -200,12 +200,12 @@ export function data() {
     type: _type,
     domain: _domain || [],
     format: _format || lodash.identity,
-    read: _read
+    read: _read,
   });
   function createNumericVariable(_label, _domain, _format, _read) {
     const self = createAbstractVariable(_label, 'Number', _domain || [
       Number.POSITIVE_INFINITY,
-      Number.NEGATIVE_INFINITY
+      Number.NEGATIVE_INFINITY,
     ], _format, _read);
     if (!self.read) {
       self.read = datum => {
@@ -278,7 +278,7 @@ export function data() {
     }
     return [
       domain,
-      data
+      data,
     ];
   };
   Flow.Data = {
@@ -298,6 +298,6 @@ export function data() {
     combineRanges,
     includeZeroInRange,
     factor,
-    permute
+    permute,
   };
 }

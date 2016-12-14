@@ -6,7 +6,6 @@
     "no-throw-literal": "off",
     "no-use-before-define": "off",
     "no-new-func": "off",
-    "comma-dangle": "off",
     "no-param-reassign": "off",
     "no-restricted-syntax": "off",
     "no-console": "off",

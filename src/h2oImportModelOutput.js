@@ -8,7 +8,7 @@ export function h2oImportModelOutput(_, _go, result) {
   lodash.defer(_go);
   return {
     viewModel,
-    template: 'flow-import-model-output'
+    template: 'flow-import-model-output',
   };
 }
 

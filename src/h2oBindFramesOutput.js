@@ -8,7 +8,7 @@ export function h2oBindFramesOutput(_, _go, key, result) {
   lodash.defer(_go);
   return {
     viewFrame,
-    template: 'flow-bind-frames-output'
+    template: 'flow-bind-frames-output',
   };
 }
 

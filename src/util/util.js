@@ -5,6 +5,6 @@ export function util() {
   const getFileBaseName = (filename, extension) => Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
   H2O.Util = {
     validateFileExtension,
-    getFileBaseName
+    getFileBaseName,
   };
 }

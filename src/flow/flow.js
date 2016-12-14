@@ -16,7 +16,7 @@ export function flow() {
           return window.Flow.ContextPath = xhr.getResponseHeader('X-h2o-context-path');
         }
       },
-      async: false
+      async: false,
     });
   };
   const checkSparklingWater = context => {
@@ -41,7 +41,7 @@ export function flow() {
         }
         return _results;
       },
-      async: false
+      async: false,
     });
   };
   if ((typeof window !== 'undefined' && window !== null ? window.$ : void 0) != null) {

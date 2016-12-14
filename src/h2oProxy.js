@@ -21,7 +21,7 @@ export function h2oProxy(_) {
       },
       error(xhr, status, error) {
         return go(new Flow.Error(error));
-      }
+      },
     });
   };
   const optsToString = opts => {
@@ -53,18 +53,18 @@ export function h2oProxy(_) {
             type: 'POST',
             contentType: 'application/json',
             cache: false,
-            data: JSON.stringify(opts)
+            data: JSON.stringify(opts),
           });
         case 'PUT':
           return $.ajax({
             url: path,
             type: method,
-            data: opts
+            data: opts,
           });
         case 'DELETE':
           return $.ajax({
             url: path,
-            type: method
+            type: method,
           });
         case 'UPLOAD':
           return $.ajax({
@@ -73,7 +73,7 @@ export function h2oProxy(_) {
             data: opts,
             cache: false,
             contentType: false,
-            processData: false
+            processData: false,
           });
       }
     })();
@@ -199,7 +199,7 @@ export function h2oProxy(_) {
     const opts = {
       dataset: frameKey,
       ratios: encodeArrayForPost(splitRatios),
-      dest_keys: encodeArrayForPost(splitKeys)
+      dest_keys: encodeArrayForPost(splitKeys),
     };
     return doPost('/3/SplitFrame', opts, go);
   };
@@ -223,7 +223,7 @@ export function h2oProxy(_) {
   const requestExportFrame = (key, path, overwrite, go) => {
     const params = {
       path,
-      force: overwrite ? 'true' : 'false'
+      force: overwrite ? 'true' : 'false',
     };
     return doPost(`/3/Frames/${encodeURIComponent(key)}/export`, params, go);
   };
@@ -249,7 +249,7 @@ export function h2oProxy(_) {
   const requestFileGlob = (path, limit, go) => {
     const opts = {
       src: encodeURIComponent(path),
-      limit
+      limit,
     };
     return requestWithOpts('/3/Typeahead/files', opts, go);
   };
@@ -280,7 +280,7 @@ export function h2oProxy(_) {
       separator,
       single_quotes: useSingleQuotes,
       check_header: checkHeader,
-      column_types: encodeArrayForPost(columnTypes)
+      column_types: encodeArrayForPost(columnTypes),
     };
     return doPost('/3/ParseSetup', opts, go);
   };
@@ -309,7 +309,7 @@ export function h2oProxy(_) {
       column_types: encodeArrayForPost(columnTypes),
       check_header: checkHeader,
       delete_on_done: deleteOnDone,
-      chunk_size: chunkSize
+      chunk_size: chunkSize,
     };
     return doPost('/3/Parse', opts, go);
   };
@@ -357,7 +357,7 @@ export function h2oProxy(_) {
   const requestImportModel = (path, overwrite, go) => {
     const opts = {
       dir: path,
-      force: overwrite
+      force: overwrite,
     };
     return doPost('/99/Models.bin/not_in_use', opts, go);
   };

@@ -4,7 +4,7 @@ export function flowFileUploadDialog(_, _go) {
   const _file = Flow.Dataflow.signal(null);
   const uploadFile = key => _.requestUploadFile(key, new FormData(_form()), (error, result) => _go({
     error,
-    result
+    result,
   }));
   const accept = () => {
     const file = _file();
@@ -18,7 +18,7 @@ export function flowFileUploadDialog(_, _go) {
     file: _file,
     accept,
     decline,
-    template: 'file-upload-dialog'
+    template: 'file-upload-dialog',
   };
 }
 

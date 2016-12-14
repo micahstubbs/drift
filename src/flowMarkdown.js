@@ -5,7 +5,7 @@ export function flowMarkdown(_) {
     try {
       return output.data({
         html: marked(input.trim() || '(No content)'),
-        template: 'flow-html'
+        template: 'flow-html',
       });
     } catch (_error) {
       error = _error;

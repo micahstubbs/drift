@@ -34,7 +34,7 @@ export function flowSidebar(_, cells) {
     switchToClipboard,
     help: _help,
     isHelpMode: _isHelpMode,
-    switchToHelp
+    switchToHelp,
   };
 }
 

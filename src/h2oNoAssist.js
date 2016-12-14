@@ -5,7 +5,7 @@ export function h2oNoAssist(_, _go) {
     showAssist() {
       return _.insertAndExecuteCell('cs', 'assist');
     },
-    template: 'flow-no-assist'
+    template: 'flow-no-assist',
   };
 }
 

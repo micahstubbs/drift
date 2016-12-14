@@ -21,13 +21,13 @@ export function about() {
             _ref1 = _ref[_i], name = _ref1.name, value = _ref1.value;
             properties.push({
               caption: `H2O ${name}`,
-              value
+              value,
             });
           }
         }
         properties.push({
           caption: 'Flow version',
-          value: Flow.Version
+          value: Flow.Version,
         });
         return _properties(Flow.BuildProperties = properties);
       });

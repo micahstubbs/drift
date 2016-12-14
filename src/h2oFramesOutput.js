@@ -64,7 +64,7 @@ export function h2oFramesOutput(_, _go, _frames) {
       view,
       predict,
       inspect,
-      createModel
+      createModel,
     };
   };
   const importFiles = () => _.insertAndExecuteCell('cs', 'importFiles');
@@ -85,7 +85,7 @@ export function h2oFramesOutput(_, _go, _frames) {
   const predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${flowPrelude.stringify(collectSelectedKeys())}`);
   const deleteFrames = () => _.confirm('Are you sure you want to delete these frames?', {
     acceptCaption: 'Delete Frames',
-    declineCaption: 'Cancel'
+    declineCaption: 'Cancel',
   }, accept => {
     if (accept) {
       return _.insertAndExecuteCell('cs', `deleteFrames ${flowPrelude.stringify(collectSelectedKeys())}`);
@@ -101,7 +101,7 @@ export function h2oFramesOutput(_, _go, _frames) {
     deleteFrames,
     hasSelectedFrames: _hasSelectedFrames,
     checkAllFrames: _checkAllFrames,
-    template: 'flow-frames-output'
+    template: 'flow-frames-output',
   };
 }
 

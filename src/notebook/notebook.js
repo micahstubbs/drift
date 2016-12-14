@@ -55,7 +55,7 @@ export function notebook() {
 
     raw() {
       return flowRaw(_);
-    }
+    },
   });
   Flow.Notebook = (_, _renderers) => {
     let menuCell;
@@ -102,14 +102,14 @@ export function notebook() {
           cell = _ref[_i];
           _results.push({
             type: cell.type(),
-            input: cell.input()
+            input: cell.input(),
           });
         }
         return _results;
       })();
       return {
         version: '1.0.0',
-        cells
+        cells,
       };
     };
     const deserialize = (localName, remoteName, doc) => {
@@ -374,7 +374,7 @@ export function notebook() {
         if (isNameInUse) {
           return _.confirm('A notebook with that name already exists.\nDo you want to replace it with the one you\'re saving?', {
             acceptCaption: 'Replace',
-            declineCaption: 'Cancel'
+            declineCaption: 'Cancel',
           }, accept => {
             if (accept) {
               return storeNotebook(localName, remoteName);
@@ -475,7 +475,7 @@ export function notebook() {
         findBuildProperty('H2O Build git branch'),
         projectVersion,
         projectVersion ? lodash.last(projectVersion.split('.')) : void 0,
-        findBuildProperty('H2O Build git hash') || 'master'
+        findBuildProperty('H2O Build git hash') || 'master',
       ];
     };
     const displayDocumentation = () => {
@@ -516,7 +516,7 @@ export function notebook() {
     };
     const createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
       acceptCaption: 'Create New Notebook',
-      declineCaption: 'Cancel'
+      declineCaption: 'Cancel',
     }, accept => {
       let currentTime;
       if (accept) {
@@ -524,8 +524,8 @@ export function notebook() {
         return deserialize('Untitled Flow', null, {
           cells: [{
             type: 'cs',
-            input: ''
-          }]
+            input: '',
+          }],
         });
       }
     });
@@ -625,51 +625,51 @@ export function notebook() {
     const startTour = notImplemented;
     const createMenu = (label, items) => ({
       label,
-      items
+      items,
     });
     const createMenuHeader = label => ({
       label,
-      action: null
+      action: null,
     });
     const createShortcutHint = shortcut => `<span style=\'float:right\'>${lodash.map(shortcut, key => `<kbd>${key}</kbd>`).join(' ')}</span>`;
     const createMenuItem = (label, action, shortcut) => {
       const kbds = shortcut ? createShortcutHint(shortcut) : '';
       return {
         label: `${lodash.escape(label)}${kbds}`,
-        action
+        action,
       };
     };
     const menuDivider = {
       label: null,
-      action: null
+      action: null,
     };
     const _menus = Flow.Dataflow.signal(null);
     menuCell = [
       createMenuItem('Run Cell', runCell, [
         'ctrl',
-        'enter'
+        'enter',
       ]),
       menuDivider,
       createMenuItem('Cut Cell', cutCell, ['x']),
       createMenuItem('Copy Cell', copyCell, ['c']),
       createMenuItem('Paste Cell Above', pasteCellAbove, [
         'shift',
-        'v'
+        'v',
       ]),
       createMenuItem('Paste Cell Below', pasteCellBelow, ['v']),
       createMenuItem('Delete Cell', deleteCell, [
         'd',
-        'd'
+        'd',
       ]),
       createMenuItem('Undo Delete Cell', undoLastDelete, ['z']),
       menuDivider,
       createMenuItem('Move Cell Up', moveCellUp, [
         'ctrl',
-        'k'
+        'k',
       ]),
       createMenuItem('Move Cell Down', moveCellDown, [
         'ctrl',
-        'j'
+        'j',
       ]),
       menuDivider,
       createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']),
@@ -677,12 +677,12 @@ export function notebook() {
       menuDivider,
       createMenuItem('Toggle Cell Input', toggleInput),
       createMenuItem('Toggle Cell Output', toggleOutput, ['o']),
-      createMenuItem('Clear Cell Output', clearCell)
+      createMenuItem('Clear Cell Output', clearCell),
     ];
     const menuCellSW = [
       menuDivider,
       createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove),
-      createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow)
+      createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow),
     ];
     if (_.onSparklingWater) {
       menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
@@ -693,7 +693,7 @@ export function notebook() {
         createMenuItem('List All Models', executeCommand('getModels')),
         createMenuItem('List Grid Search Results', executeCommand('getGrids')),
         createMenuItem('Import Model...', executeCommand('importModel')),
-        createMenuItem('Export Model...', executeCommand('exportModel'))
+        createMenuItem('Export Model...', executeCommand('exportModel')),
       ]);
       return [
         createMenu('Flow', [
@@ -709,7 +709,7 @@ export function notebook() {
           createMenuItem('Toggle All Cell Outputs', toggleAllOutputs),
           createMenuItem('Clear All Cell Outputs', clearAllCells),
           menuDivider,
-          createMenuItem('Download this Flow...', exportNotebook)
+          createMenuItem('Download this Flow...', exportNotebook),
         ]),
         createMenu('Cell', menuCell),
         createMenu('Data', [
@@ -720,14 +720,14 @@ export function notebook() {
           menuDivider,
           createMenuItem('List All Frames', executeCommand('getFrames')),
           menuDivider,
-          createMenuItem('Impute...', executeCommand('imputeColumn'))
+          createMenuItem('Impute...', executeCommand('imputeColumn')),
         ]),
         createMenu('Model', modelMenuItems),
         createMenu('Score', [
           createMenuItem('Predict...', executeCommand('predict')),
           createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')),
           menuDivider,
-          createMenuItem('List All Predictions', executeCommand('getPredictions'))
+          createMenuItem('List All Predictions', executeCommand('getPredictions')),
         ]),
         createMenu('Admin', [
           createMenuItem('Jobs', executeCommand('getJobs')),
@@ -744,7 +744,7 @@ export function notebook() {
           createMenuItem('Network Test', executeCommand('testNetwork')),
           createMenuItem('Profiler', executeCommand('getProfile depth: 10')),
           createMenuItem('Timeline', executeCommand('getTimeline')),
-          createMenuItem('Shut Down', shutdown)
+          createMenuItem('Shut Down', shutdown),
         ]),
         createMenu('Help', [
           createMenuItem('Assist Me', executeCommand('assist')),
@@ -759,8 +759,8 @@ export function notebook() {
           createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')),
           createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')),
           menuDivider,
-          createMenuItem('About', displayAbout)
-        ])
+          createMenuItem('About', displayAbout),
+        ]),
       ];
     };
     const setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
@@ -772,219 +772,219 @@ export function notebook() {
         label,
         action,
         isDisabled,
-        icon: `fa fa-${icon}`
+        icon: `fa fa-${icon}`,
       };
     };
     const _toolbar = [
       [
         createTool('file-o', 'New', createNotebook),
         createTool('folder-open-o', 'Open', promptForNotebook),
-        createTool('save', 'Save (s)', saveNotebook)
+        createTool('save', 'Save (s)', saveNotebook),
       ],
       [
         createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow),
         createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp),
-        createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown)
+        createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown),
       ],
       [
         createTool('cut', 'Cut Cell (x)', cutCell),
         createTool('copy', 'Copy Cell (c)', copyCell),
         createTool('paste', 'Paste Cell Below (v)', pasteCellBelow),
         createTool('eraser', 'Clear Cell', clearCell),
-        createTool('trash-o', 'Delete Cell (d d)', deleteCell)
+        createTool('trash-o', 'Delete Cell (d d)', deleteCell),
       ],
       [
         createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow),
         createTool('play', 'Run (ctrl+enter)', runCell),
-        createTool('forward', 'Run All', runAllCells)
+        createTool('forward', 'Run All', runAllCells),
       ],
-          [createTool('question-circle', 'Assist Me', executeCommand('assist'))]
+          [createTool('question-circle', 'Assist Me', executeCommand('assist'))],
     ];
     const normalModeKeyboardShortcuts = [
       [
         'enter',
         'edit mode',
-        switchToEditMode
+        switchToEditMode,
       ],
       [
         'y',
         'to code',
-        convertCellToCode
+        convertCellToCode,
       ],
       [
         'm',
         'to markdown',
-        convertCellToMarkdown
+        convertCellToMarkdown,
       ],
       [
         'r',
         'to raw',
-        convertCellToRaw
+        convertCellToRaw,
       ],
       [
         '1',
         'to heading 1',
-        convertCellToHeading(1)
+        convertCellToHeading(1),
       ],
       [
         '2',
         'to heading 2',
-        convertCellToHeading(2)
+        convertCellToHeading(2),
       ],
       [
         '3',
         'to heading 3',
-        convertCellToHeading(3)
+        convertCellToHeading(3),
       ],
       [
         '4',
         'to heading 4',
-        convertCellToHeading(4)
+        convertCellToHeading(4),
       ],
       [
         '5',
         'to heading 5',
-        convertCellToHeading(5)
+        convertCellToHeading(5),
       ],
       [
         '6',
         'to heading 6',
-        convertCellToHeading(6)
+        convertCellToHeading(6),
       ],
       [
         'up',
         'select previous cell',
-        selectPreviousCell
+        selectPreviousCell,
       ],
       [
         'down',
         'select next cell',
-        selectNextCell
+        selectNextCell,
       ],
       [
         'k',
         'select previous cell',
-        selectPreviousCell
+        selectPreviousCell,
       ],
       [
         'j',
         'select next cell',
-        selectNextCell
+        selectNextCell,
       ],
       [
         'ctrl+k',
         'move cell up',
-        moveCellUp
+        moveCellUp,
       ],
       [
         'ctrl+j',
         'move cell down',
-        moveCellDown
+        moveCellDown,
       ],
       [
         'a',
         'insert cell above',
-        insertNewCellAbove
+        insertNewCellAbove,
       ],
       [
         'b',
         'insert cell below',
-        insertNewCellBelow
+        insertNewCellBelow,
       ],
       [
         'x',
         'cut cell',
-        cutCell
+        cutCell,
       ],
       [
         'c',
         'copy cell',
-        copyCell
+        copyCell,
       ],
       [
         'shift+v',
         'paste cell above',
-        pasteCellAbove
+        pasteCellAbove,
       ],
       [
         'v',
         'paste cell below',
-        pasteCellBelow
+        pasteCellBelow,
       ],
       [
         'z',
         'undo last delete',
-        undoLastDelete
+        undoLastDelete,
       ],
       [
         'd d',
         'delete cell (press twice)',
-        deleteCell
+        deleteCell,
       ],
       [
         'shift+m',
         'merge cell below',
-        mergeCellBelow
+        mergeCellBelow,
       ],
       [
         's',
         'save notebook',
-        saveNotebook
+        saveNotebook,
       ],
       [
         'o',
         'toggle output',
-        toggleOutput
+        toggleOutput,
       ],
       [
         'h',
         'keyboard shortcuts',
-        displayKeyboardShortcuts
-      ]
+        displayKeyboardShortcuts,
+      ],
     ];
     if (_.onSparklingWater) {
       normalModeKeyboardShortcuts.push([
         'q',
         'to Scala',
-        convertCellToScala
+        convertCellToScala,
       ]);
     }
     const editModeKeyboardShortcuts = [
       [
         'esc',
         'command mode',
-        switchToCommandMode
+        switchToCommandMode,
       ],
       [
         'ctrl+m',
         'command mode',
-        switchToCommandMode
+        switchToCommandMode,
       ],
       [
         'shift+enter',
         'run cell, select below',
-        runCellAndSelectBelow
+        runCellAndSelectBelow,
       ],
       [
         'ctrl+enter',
         'run cell',
-        runCell
+        runCell,
       ],
       [
         'alt+enter',
         'run cell, insert below',
-        runCellAndInsertBelow
+        runCellAndInsertBelow,
       ],
       [
         'ctrl+shift+-',
         'split cell',
-        splitCell
+        splitCell,
       ],
       [
         'mod+s',
         'save notebook',
-        saveNotebook
-      ]
+        saveNotebook,
+      ],
     ];
     const toKeyboardHelp = shortcut => {
       let caption;
@@ -993,7 +993,7 @@ export function notebook() {
       const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${key}</kbd>`).join(' ');
       return {
         keystrokes,
-        caption
+        caption,
       };
     };
     const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
@@ -1056,13 +1056,13 @@ export function notebook() {
       toggleSidebar,
       shortcutsHelp: {
         normalMode: normalModeKeyboardShortcutsHelp,
-        editMode: editModeKeyboardShortcutsHelp
+        editMode: editModeKeyboardShortcutsHelp,
       },
       about: _about,
       dialogs: _dialogs,
       templateOf(view) {
         return view.template;
-      }
+      },
     };
   };
 }

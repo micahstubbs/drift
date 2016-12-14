@@ -9,7 +9,7 @@ export function h2oAssist(_, _go, _items) {
 
     execute() {
       return _.insertAndExecuteCell('cs', name);
-    }
+    },
   });
   lodash.defer(_go);
   return {
@@ -23,7 +23,7 @@ export function h2oAssist(_, _go, _items) {
       }
       return _results;
     })(),
-    template: 'flow-assist'
+    template: 'flow-assist',
   };
 }
 

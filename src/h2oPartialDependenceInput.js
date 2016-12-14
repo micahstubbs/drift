@@ -20,7 +20,7 @@ export function h2oPartialDependenceInput(_, _go) {
       destination_key: _destinationKey(),
       model_id: _selectedModel(),
       frame_id: _selectedFrame(),
-      nbins: _nbins()
+      nbins: _nbins(),
     };
     const cs = `buildPartialDependence ${flowPrelude.stringify(opts)}`;
     return _.insertAndExecuteCell('cs', cs);
@@ -69,7 +69,7 @@ export function h2oPartialDependenceInput(_, _go) {
     nbins: _nbins,
     compute: _compute,
     canCompute: _canCompute,
-    template: 'flow-partial-dependence-input'
+    template: 'flow-partial-dependence-input',
   };
 }
 

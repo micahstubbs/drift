@@ -11,7 +11,7 @@ export function flowBrowser(_) {
     const _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
     const load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
       acceptCaption: 'Load Notebook',
-      declineCaption: 'Cancel'
+      declineCaption: 'Cancel',
     }, accept => {
       if (accept) {
         return _.load(_name);
@@ -19,7 +19,7 @@ export function flowBrowser(_) {
     });
     const purge = () => _.confirm(`Are you sure you want to delete this notebook?\n"${_name}"`, {
       acceptCaption: 'Delete',
-      declineCaption: 'Keep'
+      declineCaption: 'Keep',
     }, accept => {
       if (accept) {
         return _.requestDeleteObject('notebook', _name, error => {
@@ -38,7 +38,7 @@ export function flowBrowser(_) {
       date: _date,
       fromNow: _fromNow,
       load,
-      purge
+      purge,
     };
   };
   const loadNotebooks = () => _.requestObjects('notebook', (error, notebooks) => {
@@ -55,7 +55,7 @@ export function flowBrowser(_) {
   return {
     docs: _sortedDocs,
     hasDocs: _hasDocs,
-    loadNotebooks
+    loadNotebooks,
   };
 }
 

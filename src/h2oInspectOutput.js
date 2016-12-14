@@ -13,6 +13,6 @@ export function h2oInspectOutput(_, _go, _frame) {
     view,
     canPlot: _frame.metadata.plot,
     plot,
-    template: 'flow-inspect-output'
+    template: 'flow-inspect-output',
   };
 }

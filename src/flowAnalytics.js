@@ -9,7 +9,7 @@ export function flowAnalytics(_) {
       exDescription: description,
       exFatal: false,
       appName: 'Flow',
-      appVersion: Flow.Version
+      appVersion: Flow.Version,
     });
   }));
 }

@@ -17,7 +17,7 @@ export function h2oProfileOutput(_, _go, _profile) {
         entry = _ref[_i];
         _results.push({
           stacktrace: entry.stacktrace,
-          caption: `Count: ${entry.count}`
+          caption: `Count: ${entry.count}`,
         });
       }
       return _results;
@@ -26,7 +26,7 @@ export function h2oProfileOutput(_, _go, _profile) {
       name: node.node_name,
       caption: `${node.node_name} at ${new Date(node.timestamp)}`,
       entries,
-      display
+      display,
     };
   };
   const _nodes = ((() => {
@@ -45,7 +45,7 @@ export function h2oProfileOutput(_, _go, _profile) {
   return {
     nodes: _nodes,
     activeNode: _activeNode,
-    template: 'flow-profile-output'
+    template: 'flow-profile-output',
   };
 }
 

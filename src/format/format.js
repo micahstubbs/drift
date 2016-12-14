@@ -51,6 +51,6 @@ export function format() {
     Digits,
     Real: formatReal,
     Date: formatDate,
-    Time: formatTime
+    Time: formatTime,
   };
 }

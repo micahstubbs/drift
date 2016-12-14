@@ -29,7 +29,7 @@ export function flowCoffeescript(_, guid, sandbox) {
     let outputBuffer;
     sandbox.results[guid] = cellResult = {
       result: Flow.Dataflow.signal(null),
-      outputs: outputBuffer = Flow.Async.createBuffer([])
+      outputs: outputBuffer = Flow.Async.createBuffer([]),
     };
     const evaluate = ft => {
       if (ft != null ? ft.isFuture : void 0) {
@@ -57,7 +57,7 @@ export function flowCoffeescript(_, guid, sandbox) {
       _kernel.rewriteJavascript(sandbox),
       _kernel.generateJavascript,
       _kernel.compileJavascript,
-      _kernel.executeJavascript(sandbox, print)
+      _kernel.executeJavascript(sandbox, print),
     ];
     return Flow.Async.pipe(tasks)(input, error => {
       if (error) {

@@ -17,6 +17,6 @@ export function h2oImportModelInput(_, _go, path, opt) {
     overwrite: _overwrite,
     canImportModel: _canImportModel,
     importModel,
-    template: 'flow-import-model-input'
+    template: 'flow-import-model-input',
   };
 }

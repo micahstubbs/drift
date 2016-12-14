@@ -32,7 +32,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
       _plots.push(section = {
         title: `${x} vs ${y}`,
         plot: Flow.Dataflow.signal(null),
-        frame: Flow.Dataflow.signal(null)
+        frame: Flow.Dataflow.signal(null),
       });
       renderPlot(section.plot, _.plot(g => g(g.path(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.point(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
       renderPlot(section.frame, _.plot(g => g(g.select(), g.from(table))));
@@ -46,7 +46,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
     frameId: _frameId,
     plots: _plots,
     viewFrame: _viewFrame,
-    template: 'flow-partial-dependence-output'
+    template: 'flow-partial-dependence-output',
   };
 }
 

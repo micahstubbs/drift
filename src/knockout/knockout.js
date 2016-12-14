@@ -16,7 +16,7 @@ export function knockout() {
         $element.empty();
         $element.append(arg);
       }
-    }
+    },
   };
   ko.bindingHandlers.markdown = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -30,13 +30,13 @@ export function knockout() {
         html = error.message || 'Error rendering markdown.';
       }
       return $(element).html(html);
-    }
+    },
   };
   ko.bindingHandlers.stringify = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
       const data = ko.unwrap(valueAccessor());
       return $(element).text(JSON.stringify(data, null, 2));
-    }
+    },
   };
   ko.bindingHandlers.enterKey = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -54,7 +54,7 @@ export function knockout() {
           throw 'Enter key action is not a function';
         }
       }
-    }
+    },
   };
   ko.bindingHandlers.typeahead = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -65,13 +65,13 @@ export function knockout() {
           $element = $(element);
           $element.typeahead(null, {
             displayKey: 'value',
-            source: action
+            source: action,
           });
         } else {
           throw 'Typeahead action is not a function';
         }
       }
-    }
+    },
   };
   ko.bindingHandlers.cursorPosition = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -79,7 +79,7 @@ export function knockout() {
       if (arg) {
         arg.getCursorPosition = () => $(element).textrange('get', 'position');
       }
-    }
+    },
   };
   ko.bindingHandlers.autoResize = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -91,7 +91,7 @@ export function knockout() {
         $el = $(element).on('input', resize);
         resize();
       }
-    }
+    },
   };
   ko.bindingHandlers.scrollIntoView = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -116,7 +116,7 @@ export function knockout() {
           }
         };
       }
-    }
+    },
   };
   ko.bindingHandlers.collapse = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -149,7 +149,7 @@ export function knockout() {
       $el.on('click', toggle);
       toggle();
       ko.utils.domNodeDisposal.addDisposeCallback(element, () => $el.off('click'));
-    }
+    },
   };
   ko.bindingHandlers.dom = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -160,18 +160,18 @@ export function knockout() {
         $element.empty();
         $element.append(arg);
       }
-    }
+    },
   };
   ko.bindingHandlers.dump = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
       let object;
       return object = ko.unwrap(valueAccessor());
-    }
+    },
   };
   ko.bindingHandlers.element = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
       return valueAccessor()(element);
-    }
+    },
   };
   ko.bindingHandlers.file = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -183,7 +183,7 @@ export function knockout() {
           return file(this.files[0]);
         });
       }
-    }
+    },
   };
   ko.bindingHandlers.codemirror = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
@@ -204,6 +204,6 @@ export function knockout() {
       if (element.editor) {
         return element.editor.refresh();
       }
-    }
+    },
   };
 }

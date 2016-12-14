@@ -29,7 +29,7 @@ export function dataflow() {
             func,
             dispose() {
               return arrow = null;
-            }
+            },
           };
         }
       };
@@ -53,7 +53,7 @@ export function dataflow() {
           func,
           dispose() {
             return flowPrelude.remove(arrows, arrow);
-          }
+          },
         });
         return arrow;
       };
@@ -95,7 +95,7 @@ export function dataflow() {
             func,
             dispose() {
               return flowPrelude.remove(arrows, arrow);
-            }
+            },
           });
           return arrow;
         };
@@ -192,7 +192,7 @@ export function dataflow() {
       act: _act,
       react: _react,
       lift: _lift,
-      merge: _merge
+      merge: _merge,
     };
   })();
 }

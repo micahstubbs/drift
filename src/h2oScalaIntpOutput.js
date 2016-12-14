@@ -3,13 +3,13 @@ export function h2oScalaIntpOutput(_, _go, _result) {
   const Flow = window.Flow;
   const _scalaIntpView = Flow.Dataflow.signal(null);
   const createScalaIntpView = result => ({
-    session_id: result.session_id
+    session_id: result.session_id,
   });
   _scalaIntpView(createScalaIntpView(_result));
   lodash.defer(_go);
   return {
     scalaIntpView: _scalaIntpView,
-    template: 'flow-scala-intp-output'
+    template: 'flow-scala-intp-output',
   };
 }
 

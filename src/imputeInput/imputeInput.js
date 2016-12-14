@@ -11,7 +11,7 @@ export function imputeInput() {
       option = options[_i];
       _results.push({
         caption: option,
-        value: option.toLowerCase()
+        value: option.toLowerCase(),
       });
     }
     return _results;
@@ -19,13 +19,13 @@ export function imputeInput() {
   const _allMethods = createOptions([
     'Mean',
     'Median',
-    'Mode'
+    'Mode',
   ]);
   const _allCombineMethods = createOptions([
     'Interpolate',
     'Average',
     'Low',
-    'High'
+    'High',
   ]);
   H2O.ImputeInput = (_, _go, opts) => {
     if (opts == null) {
@@ -56,7 +56,7 @@ export function imputeInput() {
       const arg = {
         frame: _frame(),
         column: _column(),
-        method: method.value
+        method: method.value,
       };
       if (method.value === 'median') {
         if (combineMethod) {
@@ -135,7 +135,7 @@ export function imputeInput() {
       groupByColumns: _groupByColumns,
       canImpute: _canImpute,
       impute,
-      template: 'flow-impute-input'
+      template: 'flow-impute-input',
     };
   };
 }

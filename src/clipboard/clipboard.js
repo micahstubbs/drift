@@ -12,7 +12,7 @@ export function clipboard() {
     'getPredictions',
     'getJobs',
     'buildModel',
-    'predict'
+    'predict',
   ];
   Flow.Clipboard = _ => {
     const lengthOf = array => {
@@ -47,7 +47,7 @@ export function clipboard() {
         execute,
         insert,
         remove: flowPrelude.remove,
-        canRemove: _canRemove
+        canRemove: _canRemove,
       };
     };
     const addClip = (list, type, input) => list.push(createClip(list, type, input));
@@ -74,8 +74,8 @@ export function clipboard() {
 
       clips: lodash.map(_userClips(), clip => ({
         type: clip.type,
-        input: clip.input
-      }))
+        input: clip.input,
+      })),
     });
     function saveUserClips() {
       return _.requestPutObject('environment', 'clips', serializeUserClips(), error => {
@@ -110,7 +110,7 @@ export function clipboard() {
       trashClips: _trashClips,
       trashClipCount: _trashClipCount,
       hasTrashClips: _hasTrashClips,
-      emptyTrash
+      emptyTrash,
     };
   };
 }
