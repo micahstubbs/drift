@@ -7442,7 +7442,7 @@
           result = {};
         }
         console.debug(result);
-        return go(null, render_(result, Flow.ObjectBrowser, 'dump', result));
+        return go(null, render_(result, Flow.objectBrowser, 'dump', result));
       };
       dump = f => {
         if (f != null ? f.isFuture : void 0) {
@@ -9080,7 +9080,7 @@
         canExpand: _canExpand
       };
     };
-    Flow.ObjectBrowser = (_, _go, key, object) => {
+    Flow.objectBrowser = (_, _go, key, object) => {
       lodash.defer(_go);
       return {
         object: Flow.objectBrowserElement(key, object),
@@ -9758,10 +9758,10 @@
             if (result != null ? _ref != null ? _ref.render : void 0 : void 0) {
               return output.data(result._flow_.render(() => output.end()));
             }
-            return output.data(Flow.ObjectBrowser(_, (() => output.end())('output', result)));
+            return output.data(Flow.objectBrowser(_, (() => output.end())('output', result)));
           });
         }
-        return output.data(Flow.ObjectBrowser(_, () => output.end(), 'output', ft));
+        return output.data(Flow.objectBrowser(_, () => output.end(), 'output', ft));
       };
       outputBuffer.subscribe(evaluate);
       const tasks = [_kernel.safetyWrapCoffeescript(guid), _kernel.compileCoffeescript, _kernel.parseJavascript, _kernel.createRootScope(sandbox), _kernel.removeHoistedDeclarations, _kernel.rewriteJavascript(sandbox), _kernel.generateJavascript, _kernel.compileJavascript, _kernel.executeJavascript(sandbox, print)];
@@ -9776,7 +9776,7 @@
           }
           return evaluate(result);
         }
-        return output.close(Flow.ObjectBrowser(_, () => output.end(), 'result', result));
+        return output.close(Flow.objectBrowser(_, () => output.end(), 'result', result));
       });
     };
     render.isCode = true;

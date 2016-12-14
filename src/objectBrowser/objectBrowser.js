@@ -122,7 +122,7 @@ export function objectBrowser() {
       canExpand: _canExpand,
     };
   };
-  Flow.ObjectBrowser = (_, _go, key, object) => {
+  Flow.objectBrowser = (_, _go, key, object) => {
     lodash.defer(_go);
     return {
       object: Flow.objectBrowserElement(key, object),

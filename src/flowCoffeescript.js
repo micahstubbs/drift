@@ -42,10 +42,10 @@ export function flowCoffeescript(_, guid, sandbox) {
           if (result != null ? _ref != null ? _ref.render : void 0 : void 0) {
             return output.data(result._flow_.render(() => output.end()));
           }
-          return output.data(Flow.ObjectBrowser(_, (() => output.end())('output', result)));
+          return output.data(Flow.objectBrowser(_, (() => output.end())('output', result)));
         });
       }
-      return output.data(Flow.ObjectBrowser(_, () => output.end(), 'output', ft));
+      return output.data(Flow.objectBrowser(_, () => output.end(), 'output', ft));
     };
     outputBuffer.subscribe(evaluate);
     const tasks = [
@@ -70,7 +70,7 @@ export function flowCoffeescript(_, guid, sandbox) {
         }
         return evaluate(result);
       }
-      return output.close(Flow.ObjectBrowser(_, () => output.end(), 'result', result));
+      return output.close(Flow.objectBrowser(_, () => output.end(), 'result', result));
     });
   };
   render.isCode = true;

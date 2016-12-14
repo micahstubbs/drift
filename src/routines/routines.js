@@ -2908,7 +2908,7 @@ export function routines() {
         result = {};
       }
       console.debug(result);
-      return go(null, render_(result, Flow.ObjectBrowser, 'dump', result));
+      return go(null, render_(result, Flow.objectBrowser, 'dump', result));
     };
     dump = f => {
       if (f != null ? f.isFuture : void 0) {
