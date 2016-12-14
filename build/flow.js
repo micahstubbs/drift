@@ -2236,8 +2236,8 @@
         destination: job.dest.name,
         type,
         description: job.description,
-        startTime: Flow.Format.Time(new Date(job.start_time)),
-        endTime: Flow.Format.Time(new Date(job.start_time + job.msec)),
+        startTime: Flow.Format.time(new Date(job.start_time)),
+        endTime: Flow.Format.time(new Date(job.start_time + job.msec)),
         elapsedTime: Flow.Util.formatMilliseconds(job.msec),
         status: job.status,
         view
@@ -8037,7 +8037,7 @@
       Digits,
       Real: formatReal,
       Date: formatDate,
-      Time: formatTime
+      time: formatTime
     };
   }
 
