@@ -151,7 +151,7 @@ export function modelInput() {
     const blockSelectionUpdates = f => {
       _isUpdatingSelectionCount = true;
       f();
-      return _isUpdatingSelectionCount = false;
+      return (_isUpdatingSelectionCount = false);
     };
     const incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
     const createEntry = value => {
