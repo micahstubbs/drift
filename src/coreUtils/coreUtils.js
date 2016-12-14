@@ -46,22 +46,20 @@ export function coreUtils() {
     ];
   };
   const formatMilliseconds = s => {
-    let hrs;
-    let mins;
-    let ms;
-    let secs;
-    let _ref;
-    _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
+    const _ref = splitTime(s);
+    const hrs = _ref[0];
+    const mins = _ref[1];
+    const secs = _ref[2];
+    const ms = _ref[3];
     return `${padTime(hrs)}:${padTime(mins)}:${padTime(secs)}.${ms}`;
   };
   const format1d0 = n => Math.round(n * 10) / 10;
   const formatElapsedTime = s => {
-    let hrs;
-    let mins;
-    let ms;
-    let secs;
-    let _ref;
-    _ref = splitTime(s), hrs = _ref[0], mins = _ref[1], secs = _ref[2], ms = _ref[3];
+    const _ref = splitTime(s);
+    const hrs = _ref[0];
+    const mins = _ref[1];
+    const secs = _ref[2];
+    const ms = _ref[3];
     if (hrs !== 0) {
       return `${format1d0((hrs * 60 + mins) / 60)}h`;
     } else if (mins !== 0) {
