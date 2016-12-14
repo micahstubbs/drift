@@ -1,6 +1,7 @@
 {
   "extends": "airbnb",
   "rules": {
+    no-return-assign: ["error", "always"],
     "max-len":"off",
     "no-alert": "off",
     "no-nested-ternary": "off",
