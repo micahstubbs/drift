@@ -152,6 +152,8 @@ export function jobOutput() {
           return _.insertAndExecuteCell('cs', 'getGrids');
         case 'Void':
           return alert(`This frame was exported to\n${_job.dest.name}`);
+        default:
+          // do nothing
       }
     };
     const cancel = () => _.requestCancelJob(_key, (error, result) => {
