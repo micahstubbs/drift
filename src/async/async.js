@@ -19,7 +19,10 @@ export function async() {
       }
       return element;
     };
-    buffer.subscribe = go => _go = go;
+    buffer.subscribe = go => {
+      _go = go;
+      return _go;
+    };
     buffer.buffer = _array;
     buffer.isBuffer = true;
     return buffer;
@@ -73,7 +76,8 @@ export function async() {
                 }
               }
               self.settled = true;
-              return self.pending = false;
+              self.pending = false;
+              return self.pending;
             }));
           }
         });
