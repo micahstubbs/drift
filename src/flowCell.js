@@ -1,7 +1,6 @@
 export function flowCell(_, _renderers, type, input) {
   const lodash = window._;
   const Flow = window.Flow;
-  let self;
   if (type == null) {
     type = 'cs';
   }
@@ -111,7 +110,7 @@ export function flowCell(_, _renderers, type, input) {
     });
     return _isActive(false);
   };
-  return self = {
+  const self = {
     guid: _guid,
     type: _type,
     isCode: _isCode,
@@ -151,5 +150,6 @@ export function flowCell(_, _renderers, type, input) {
     },
     template: 'flow-cell',
   };
+  return self;
 }
 

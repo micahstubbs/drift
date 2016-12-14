@@ -9931,7 +9931,6 @@
   function flowCell(_, _renderers, type, input) {
     const lodash = window._;
     const Flow = window.Flow;
-    let self;
     if (type == null) {
       type = 'cs';
     }
@@ -10041,7 +10040,7 @@
       });
       return _isActive(false);
     };
-    return self = {
+    const self = {
       guid: _guid,
       type: _type,
       isCode: _isCode,
@@ -10081,6 +10080,7 @@
       },
       template: 'flow-cell'
     };
+    return self;
   }
 
   function flowFileOpenDialog(_, _go) {
