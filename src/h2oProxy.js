@@ -386,7 +386,8 @@ export function h2oProxy(_) {
     }
     __modelBuilderEndpoints = modelBuilderEndpoints;
     __gridModelBuilderEndpoints = gridModelBuilderEndpoints;
-    return __modelBuilders = modelBuilders;
+    __modelBuilders = modelBuilders;
+    return __modelBuilders;
   };
   const getModelBuilders = () => __modelBuilders;
   const getModelBuilderEndpoint = algo => __modelBuilderEndpoints[algo];
