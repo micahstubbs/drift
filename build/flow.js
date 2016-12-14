@@ -8044,11 +8044,11 @@
       __extends(FlowError, _super);
       function FlowError(message, cause) {
         let error;
-        let _ref;
+        const _ref = this.cause;
         this.message = message;
         this.cause = cause;
         this.name = 'FlowError';
-        if ((_ref = this.cause) != null ? _ref.stack : void 0) {
+        if (_ref != null ? _ref.stack : void 0) {
           this.stack = this.cause.stack;
         } else {
           error = new Error();
