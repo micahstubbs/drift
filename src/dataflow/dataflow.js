@@ -25,12 +25,14 @@ export function dataflow() {
         if (arrow) {
           throw new Error('Cannot re-attach slot');
         } else {
-          return arrow = {
+          arrow = {
             func,
             dispose() {
-              return arrow = null;
+              arrow = null;
+              return arrow;
             },
           };
+          return arrow;
         }
       };
       self.dispose = () => {
