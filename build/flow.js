@@ -9204,6 +9204,9 @@
                 return displaySchema(lodash.head(response.schemas));
               }
             });
+            break;
+          default:
+          // do nothing
         }
       }
       function buildToc(nodes) {
