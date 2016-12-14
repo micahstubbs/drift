@@ -1938,7 +1938,6 @@
     const _activeNode = Flow.Dataflow.signal(null);
     const createNode = node => {
       let entry;
-      let self;
       const display = () => _activeNode(self);
       const entries = (() => {
         let _i;
@@ -1954,12 +1953,13 @@
         }
         return _results;
       })();
-      return self = {
+      const self = {
         name: node.node_name,
         caption: `${ node.node_name } at ${ new Date(node.timestamp) }`,
         entries,
         display
       };
+      return self;
     };
     const _nodes = (() => {
       let _i;
