@@ -30,7 +30,6 @@ export function clipboard() {
     const _trashClipCount = Flow.Dataflow.lift(_trashClips, lengthOf);
     const _hasTrashClips = Flow.Dataflow.lift(_trashClips, clips => clips.length > 0);
     const createClip = (_list, _type, _input, _canRemove) => {
-      let self;
       if (_canRemove == null) {
         _canRemove = true;
       }
@@ -41,7 +40,7 @@ export function clipboard() {
           return removeClip(_list, self);
         }
       };
-      return self = {
+      const self = {
         type: _type,
         input: _input,
         execute,
@@ -49,6 +48,7 @@ export function clipboard() {
         remove: flowPrelude.remove,
         canRemove: _canRemove,
       };
+      return self;
     };
     const addClip = (list, type, input) => list.push(createClip(list, type, input));
     function removeClip(list, clip) {
