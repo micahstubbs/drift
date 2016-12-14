@@ -7893,7 +7893,8 @@
             $caretEl.removeClass(caretRight).addClass(caretDown);
             $nextEl.show();
           }
-          return isCollapsed = !isCollapsed;
+          isCollapsed = !isCollapsed;
+          return isCollapsed;
         };
         $el.css('cursor', 'pointer');
         $el.attr('title', 'Click to expand/collapse');
@@ -7915,8 +7916,8 @@
     };
     ko.bindingHandlers.dump = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let object;
-        return object = ko.unwrap(valueAccessor());
+        const object = ko.unwrap(valueAccessor());
+        return object;
       }
     };
     ko.bindingHandlers.element = {
