@@ -17,7 +17,9 @@ export function localStorage() {
     const objs = [];
     for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
       key = _ls.key(i);
-      _ref1 = key.split(':'), t = _ref1[0], id = _ref1[1];
+      _ref1 = key.split(':');
+      t = _ref1[0];
+      id = _ref1[1];
       if (type === t) {
         objs.push([
           type,
