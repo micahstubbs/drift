@@ -8134,7 +8134,7 @@
     const Flow = window.Flow;
     const $ = window.jQuery;
     const __slice = [].slice;
-    Flow.Dialogs = _ => {
+    Flow.dialogs = _ => {
       const _dialog = Flow.Dataflow.signal(null);
       const showDialog = (ctor, args, _go) => {
         let dialog;
@@ -10258,8 +10258,8 @@
       const _runningCellInput = Flow.Dataflow.signal('');
       const _status = flowStatus(_);
       const _sidebar = flowSidebar(_, _cells);
-      const _about = Flow.About(_);
-      const _dialogs = Flow.Dialogs(_);
+      const _about = Flow.about(_);
+      const _dialogs = Flow.dialogs(_);
       const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
         if (error) {
           return _.scalaIntpId(-1);
@@ -11062,7 +11062,7 @@
   function about() {
     const Flow = window.Flow;
     Flow.Version = '0.4.54';
-    Flow.About = _ => {
+    Flow.about = _ => {
       const _properties = Flow.Dataflow.signals([]);
       Flow.Dataflow.link(_.ready, () => {
         if (Flow.BuildProperties) {

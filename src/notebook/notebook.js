@@ -86,8 +86,8 @@ export function notebook() {
     const _runningCellInput = Flow.Dataflow.signal('');
     const _status = flowStatus(_);
     const _sidebar = flowSidebar(_, _cells);
-    const _about = Flow.About(_);
-    const _dialogs = Flow.Dialogs(_);
+    const _about = Flow.about(_);
+    const _dialogs = Flow.dialogs(_);
     const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
       if (error) {
         return _.scalaIntpId(-1);

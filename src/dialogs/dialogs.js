@@ -5,7 +5,7 @@ export function dialogs() {
   const Flow = window.Flow;
   const $ = window.jQuery;
   const __slice = [].slice;
-  Flow.Dialogs = _ => {
+  Flow.dialogs = _ => {
     const _dialog = Flow.Dataflow.signal(null);
     const showDialog = (ctor, args, _go) => {
       let dialog;
