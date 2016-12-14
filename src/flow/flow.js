@@ -13,7 +13,8 @@ export function flow() {
       type: 'GET',
       success(data, status, xhr) {
         if (xhr.getAllResponseHeaders().indexOf('X-h2o-context-path') !== -1) {
-          return window.Flow.ContextPath = xhr.getResponseHeader('X-h2o-context-path');
+          window.Flow.ContextPath = xhr.getResponseHeader('X-h2o-context-path');
+          return window.Flow.ContextPath;
         }
       },
       async: false,
