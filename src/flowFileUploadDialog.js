@@ -7,8 +7,8 @@ export function flowFileUploadDialog(_, _go) {
     result
   }));
   const accept = () => {
-    let file;
-    if (file = _file()) {
+    const file = _file();
+    if (file) {
       return uploadFile(file.name);
     }
   };
