@@ -3479,6 +3479,8 @@
             return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$20.stringify($a.attr('data-key')) }, type: \'enum\'`);
           case 'as-numeric-link':
             return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$20.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$20.stringify($a.attr('data-key')) }, type: \'int\'`);
+          default:
+          // do nothing
         }
       });
       return _grid(vis.element);

@@ -34,6 +34,8 @@ export function h2oFrameOutput(_, _go, _frame) {
           return _.insertAndExecuteCell('cs', `changeColumnType frame: ${flowPrelude.stringify(_frame.frame_id.name)}, column: ${flowPrelude.stringify($a.attr('data-key'))}, type: \'enum\'`);
         case 'as-numeric-link':
           return _.insertAndExecuteCell('cs', `changeColumnType frame: ${flowPrelude.stringify(_frame.frame_id.name)}, column: ${flowPrelude.stringify($a.attr('data-key'))}, type: \'int\'`);
+        default:
+          // do nothing
       }
     });
     return _grid(vis.element);
