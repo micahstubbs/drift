@@ -389,7 +389,8 @@ export function notebook() {
       let filename;
       let _ref;
       if (result) {
-        error = result.error, filename = result.filename;
+        error = result.error;
+        filename = result.filename;
         if (error) {
           _ref = error.message;
           return _.growl(_ref != null ? _ref : error);
@@ -479,24 +480,22 @@ export function notebook() {
       ];
     };
     const displayDocumentation = () => {
-      let buildVersion;
-      let gitBranch;
-      let gitHash;
-      let projectVersion;
-      let _ref;
-      _ref = getBuildProperties(), gitBranch = _ref[0], projectVersion = _ref[1], buildVersion = _ref[2], gitHash = _ref[3];
+      const _ref = getBuildProperties();
+      const gitBranch = _ref[0];
+      const projectVersion = _ref[1];
+      const buildVersion = _ref[2];
+      const gitHash = _ref[3];
       if (buildVersion && buildVersion !== '99999') {
         return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${gitBranch}/${buildVersion}/docs-website/h2o-docs/index.html`, '_blank');
       }
       return window.open(`https://github.com/h2oai/h2o-3/blob/${gitHash}/h2o-docs/src/product/flow/README.md`, '_blank');
     };
     const displayFAQ = () => {
-      let buildVersion;
-      let gitBranch;
-      let gitHash;
-      let projectVersion;
-      let _ref;
-      _ref = getBuildProperties(), gitBranch = _ref[0], projectVersion = _ref[1], buildVersion = _ref[2], gitHash = _ref[3];
+      const _ref = getBuildProperties();
+      const gitBranch = _ref[0];
+      const projectVersion = _ref[1];
+      const buildVersion = _ref[2];
+      const gitHash = _ref[3];
       if (buildVersion && buildVersion !== '99999') {
         return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${gitBranch}/${buildVersion}/docs-website/h2o-docs/index.html`, '_blank');
       }
@@ -987,9 +986,8 @@ export function notebook() {
       ],
     ];
     const toKeyboardHelp = shortcut => {
-      let caption;
-      let seq;
-      seq = shortcut[0], caption = shortcut[1];
+      const seq = shortcut[0];
+      const caption = shortcut[1];
       const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${key}</kbd>`).join(' ');
       return {
         keystrokes,
@@ -1009,11 +1007,17 @@ export function notebook() {
       let _ref;
       let _ref1;
       for (_i = 0, _len = normalModeKeyboardShortcuts.length; _i < _len; _i++) {
-        _ref = normalModeKeyboardShortcuts[_i], shortcut = _ref[0], caption = _ref[1], f = _ref[2];
+        _ref = normalModeKeyboardShortcuts[_i];
+        shortcut = _ref[0];
+        caption = _ref[1];
+        f = _ref[2];
         Mousetrap.bind(shortcut, f);
       }
       for (_j = 0, _len1 = editModeKeyboardShortcuts.length; _j < _len1; _j++) {
-        _ref1 = editModeKeyboardShortcuts[_j], shortcut = _ref1[0], caption = _ref1[1], f = _ref1[2];
+        _ref1 = editModeKeyboardShortcuts[_j];
+        shortcut = _ref1[0];
+        caption = _ref1[1];
+        f = _ref1[2];
         Mousetrap.bindGlobal(shortcut, f);
       }
     };
