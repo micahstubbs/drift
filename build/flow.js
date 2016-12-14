@@ -11321,6 +11321,8 @@
               contentType: false,
               processData: false
             });
+          default:
+          // do nothing
         }
       })();
       req.done((data, status, xhr) => {

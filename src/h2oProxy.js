@@ -75,6 +75,8 @@ export function h2oProxy(_) {
             contentType: false,
             processData: false,
           });
+        default:
+          // do nothing
       }
     })();
     req.done((data, status, xhr) => {
