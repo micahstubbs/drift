@@ -8305,36 +8305,32 @@
       };
       const _apply = (sources, func) => func(...lodash.map(sources, source => source()));
       const _act = (...args) => {
-        let func;
-        let sources;
         let _i;
-        sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
+        const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
+        const func = args[_i++];
         _apply(sources, func);
         return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
       };
       const _react = (...args) => {
-        let func;
-        let sources;
         let _i;
-        sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
+        const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
+        const func = args[_i++];
         return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
       };
       const _lift = (...args) => {
-        let func;
-        let sources;
         let _i;
-        sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []), func = args[_i++];
+        const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
+        const func = args[_i++];
         const evaluate = () => _apply(sources, func);
         const target = createSignal(evaluate());
         lodash.map(sources, source => _link(source, () => target(evaluate())));
         return target;
       };
       const _merge = (...args) => {
-        let func;
-        let sources;
-        let target;
         let _i;
-        sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []), target = args[_i++], func = args[_i++];
+        const sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []);
+        const target = args[_i++];
+        const func = args[_i++];
         const evaluate = () => _apply(sources, func);
         target(evaluate());
         return lodash.map(sources, source => _link(source, () => target(evaluate())));
