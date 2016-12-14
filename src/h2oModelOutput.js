@@ -37,8 +37,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     let _ref4;
     let _ref5;
     let _ref6;
-    let _ref7;
-    let _ref8;
+    let _ref7; let _ref8;
     let _ref9;
     const _isExpanded = Flow.Dataflow.signal(false);
     const _plots = Flow.Dataflow.signals([]);
@@ -104,21 +103,21 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       return number;
     };
     const getAucAsLabel = (model, tableName) => {
-      let metrics;
-      if (metrics = _.inspect(tableName, model)) {
+      const metrics = _.inspect(tableName, model);
+      if (metrics) {
         return ` , AUC = ${metrics.schema.AUC.at(0)}`;
       }
       return '';
     };
     const getThresholdsAndCriteria = (model, tableName) => {
       let criteria;
-      let criterionTable;
       let i;
       let idxVector;
       let metricVector;
       let thresholdVector;
       let thresholds;
-      if (criterionTable = _.inspect(tableName, _model)) {
+      const criterionTable = _.inspect(tableName, _model);
+      if (criterionTable) {
         thresholdVector = table.schema.threshold;
         thresholds = (() => {
           let _i;
@@ -288,12 +287,14 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     };
     switch (_model.algo) {
       case 'kmeans':
-        if (table = _.inspect('output - Scoring History', _model)) {
+        table = _.inspect('output - Scoring History', _model);
+        if (table) {
           renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
         }
         break;
       case 'glm':
-        if (table = _.inspect('output - Scoring History', _model)) {
+        table = _.inspect('output - Scoring History', _model);
+        if (table) {
           lambdaSearchParameter = lodash.find(_model.parameters, parameter => parameter.name === 'lambda_search');
           if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
             renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
@@ -301,30 +302,44 @@ export function h2oModelOutput(_, _go, _model, refresh) {
             renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
           }
         }
-        if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Validation Metrics${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - Standardized Coefficient Magnitudes', _model)) {
+        table = _.inspect('output - Standardized Coefficient Magnitudes', _model);
+        if (table) {
           renderPlot('Standardized Coefficient Magnitudes', false, _.plot(g => g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25))));
         }
-        if (output = _model.output) {
+        output = _model.output;
+        if (output) {
           if (output.model_category === 'Multinomial') {
-            if (confusionMatrix = (_ref = output.training_metrics) != null ? (_ref1 = _ref.cm) != null ? _ref1.table : void 0 : void 0) {
+            _ref = output.training_metrics;
+            _ref1 = _ref.cm;
+            confusionMatrix = _ref != null ? _ref1 != null ? _ref1.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
             }
-            if (confusionMatrix = (_ref2 = output.validation_metrics) != null ? (_ref3 = _ref2.cm) != null ? _ref3.table : void 0 : void 0) {
+            _ref2 = output.validation_metrics;
+            _ref3 = _ref2.cm;
+            confusionMatrix = _ref2 != null ? _ref3 != null ? _ref3.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
             }
-            if (confusionMatrix = (_ref4 = output.cross_validation_metrics) != null ? (_ref5 = _ref4.cm) != null ? _ref5.table : void 0 : void 0) {
+            _ref4 = output.cross_validation_metrics;
+            _ref5 = _ref4.cm;
+            confusionMatrix = _ref4 != null ? _ref5 != null ? _ref5.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
             }
           }
@@ -332,7 +347,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         break;
       case 'deeplearning':
       case 'deepwater':
-        if (table = _.inspect('output - Scoring History', _model)) {
+        table = _.inspect('output - Scoring History', _model);
+        if (table) {
           if (table.schema.validation_logloss && table.schema.training_logloss) {
             renderPlot('Scoring History - logloss', false, _.plot(g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
           } else if (table.schema.training_logloss) {
@@ -352,30 +368,44 @@ export function h2oModelOutput(_, _go, _model, refresh) {
             }
           }
         }
-        if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`'ROC Curve - Validation Metrics' + ${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`'ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - Variable Importances', _model)) {
+        table = _.inspect('output - Variable Importances', _model);
+        if (table) {
           renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
         }
-        if (output = _model.output) {
+        output = _model.output;
+        if (output) {
           if (output.model_category === 'Multinomial') {
-            if (confusionMatrix = (_ref6 = output.training_metrics) != null ? (_ref7 = _ref6.cm) != null ? _ref7.table : void 0 : void 0) {
+            _ref6 = output.training_metrics;
+            _ref7 = _ref6.cm;
+            confusionMatrix = _ref6 != null ? _ref7 != null ? _ref7.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
             }
-            if (confusionMatrix = (_ref8 = output.validation_metrics) != null ? (_ref9 = _ref8.cm) != null ? _ref9.table : void 0 : void 0) {
+            _ref8 = output.validation_metrics;
+            _ref9 = _ref8.cm;
+            confusionMatrix = _ref8 != null ? _ref9 != null ? _ref9.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
             }
-            if (confusionMatrix = (_ref10 = output.cross_validation_metrics) != null ? (_ref11 = _ref10.cm) != null ? _ref11.table : void 0 : void 0) {
+            _ref10 = output.cross_validation_metrics;
+            _ref11 = _ref10.cm;
+            confusionMatrix = _ref10 != null ? _ref11 != null ? _ref11.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
             }
           }
@@ -384,7 +414,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       case 'gbm':
       case 'drf':
       case 'svm':
-        if (table = _.inspect('output - Scoring History', _model)) {
+        table = _.inspect('output - Scoring History', _model);
+        if (table) {
           if (table.schema.validation_logloss && table.schema.training_logloss) {
             renderPlot('Scoring History - logloss', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
           } else if (table.schema.training_logloss) {
@@ -398,72 +429,103 @@ export function h2oModelOutput(_, _go, _model, refresh) {
             }
           }
         }
-        if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Validation Metrics${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Cross Validation Metrics${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - Variable Importances', _model)) {
+        table = _.inspect('output - Variable Importances', _model);
+        if (table) {
           renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
         }
-        if (output = _model.output) {
+        output = _model.output;
+        if (output) {
           if (output.model_category === 'Multinomial') {
-            if (confusionMatrix = (_ref12 = output.training_metrics) != null ? (_ref13 = _ref12.cm) != null ? _ref13.table : void 0 : void 0) {
+            _ref12 = output.training_metrics;
+            _ref13 = _ref12.cm;
+            confusionMatrix = _ref12 != null ? _ref13 != null ? _ref13.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
             }
-            if (confusionMatrix = (_ref14 = output.validation_metrics) != null ? (_ref15 = _ref14.cm) != null ? _ref15.table : void 0 : void 0) {
+            _ref14 = output.validation_metrics;
+            _ref15 = _ref14.cm;
+            confusionMatrix = _ref14 != null ? _ref15 != null ? _ref15.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
             }
-            if (confusionMatrix = (_ref16 = output.cross_validation_metrics) != null ? (_ref17 = _ref16.cm) != null ? _ref17.table : void 0 : void 0) {
+            _ref16 = output.cross_validation_metrics;
+            _ref17 = _ref16.cm;
+            confusionMatrix = _ref16 != null ? _ref17 != null ? _ref17.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
             }
           }
         }
         break;
       case 'stackedensemble':
-        if (table = _.inspect('output - training_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`'ROC Curve - Validation Metrics${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model)) {
+        table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
+        if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
           renderPlot(`ROC Curve - Cross Validation Metrics${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
         }
-        if (table = _.inspect('output - Variable Importances', _model)) {
+        table = _.inspect('output - Variable Importances', _model);
+        if (table) {
           renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
         }
-        if (output = _model.output) {
+        output = _model.output;
+        if (output) {
           if (output.model_category === 'Multinomial') {
-            if (confusionMatrix = (_ref18 = output.training_metrics) != null ? (_ref19 = _ref18.cm) != null ? _ref19.table : void 0 : void 0) {
+            _ref18 = output.training_metrics;
+            _ref19 = _ref18.cm;
+            confusionMatrix = _ref18 != null ? _ref19 != null ? _ref19.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
             }
-            if (confusionMatrix = (_ref20 = output.validation_metrics) != null ? (_ref21 = _ref20.cm) != null ? _ref21.table : void 0 : void 0) {
+            _ref20 = output.validation_metrics;
+            _ref21 = _ref20.cm;
+            confusionMatrix = _ref20 != null ? _ref21 != null ? _ref21.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
             }
-            if (confusionMatrix = (_ref22 = output.cross_validation_metrics) != null ? (_ref23 = _ref22.cm) != null ? _ref23.table : void 0 : void 0) {
+            _ref22 = output.cross_validation_metrics;
+            _ref23 = _ref22.cm;
+            confusionMatrix = _ref22 != null ? _ref23 != null ? _ref23.table : void 0 : void 0;
+            if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
             }
           }
         }
     }
-    if (table = _.inspect('output - training_metrics - Gains/Lift Table', _model)) {
+    table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
+    if (table) {
       renderPlot('Training Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
     }
-    if (table = _.inspect('output - validation_metrics - Gains/Lift Table', _model)) {
+    table = _.inspect('output - validation_metrics - Gains/Lift Table', _model);
+    if (table) {
       renderPlot('Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
     }
-    if (table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _model)) {
+    table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _model);
+    if (table) {
       renderPlot('Cross Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
     }
     const _ref24 = _.ls(_model);
@@ -472,7 +534,9 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       if (!(tableName !== 'parameters')) {
         continue;
       }
-      if (output = ((_ref25 = _model.output) != null ? _ref25.model_category : void 0) === 'Multinomial') {
+      _ref25 = _model.output;
+      output = (_ref25 != null ? _ref25.model_category : void 0) === 'Multinomial';
+      if (output) {
         if (tableName.indexOf('output - training_metrics - cm') === 0) {
           continue;
         } else if (tableName.indexOf('output - validation_metrics - cm') === 0) {
@@ -481,7 +545,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           continue;
         }
       }
-      if (table = _.inspect(tableName, _model)) {
+      table = _.inspect(tableName, _model);
+      if (table) {
         renderPlot(tableName + (table.metadata.description ? ` (${table.metadata.description})` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
       }
     }
