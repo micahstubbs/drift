@@ -58,12 +58,11 @@ export function help() {
         case 'help':
           topic = _index[$el.attr('data-topic')];
           _.requestHelpContent(topic.name, (error, html) => {
-            let div;
-            let h5;
-            let h6;
-            let mark;
-            let _ref;
-            _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6'), div = _ref[0], mark = _ref[1], h5 = _ref[2], h6 = _ref[3];
+            const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6');
+            const div = _ref[0];
+            const mark = _ref[1];
+            const h5 = _ref[2];
+            const h6 = _ref[3];
             const contents = [
               mark('Help'),
               h5(topic.title),
@@ -145,11 +144,10 @@ export function help() {
       }
     }
     function buildToc(nodes) {
-      let a;
-      let li;
-      let ul;
-      let _ref;
-      _ref = Flow.HTML.template('ul', 'li', 'a href=\'#\' data-action=\'help\' data-topic=\'$1\''), ul = _ref[0], li = _ref[1], a = _ref[2];
+      const _ref = Flow.HTML.template('ul', 'li', 'a href=\'#\' data-action=\'help\' data-topic=\'$1\'');
+      const ul = _ref[0];
+      const li = _ref[1];
+      const a = _ref[2];
       return ul(lodash.map(nodes, node => li(a(node.title, node.name))));
     }
     const buildTopics = (index, topics) => {
@@ -165,14 +163,13 @@ export function help() {
       }
     };
     function displayPacks(packNames) {
-      let a;
-      let div;
-      let h5;
-      let i;
-      let mark;
-      let p;
-      let _ref;
-      _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-folder-o', 'a href=\'#\' data-action=\'get-pack\' data-pack-name=\'$1\''), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], i = _ref[4], a = _ref[5];
+      const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-folder-o', 'a href=\'#\' data-action=\'get-pack\' data-pack-name=\'$1\'');
+      const div = _ref[0];
+      const mark = _ref[1];
+      const h5 = _ref[2];
+      const p = _ref[3];
+      const i = _ref[4];
+      const a = _ref[5];
       displayHtml(Flow.HTML.render('div', div([
         mark('Packs'),
         h5('Installed Packs'),
@@ -183,14 +180,13 @@ export function help() {
       ])));
     }
     function displayFlows(packName, flowNames) {
-      let a;
-      let div;
-      let h5;
-      let i;
-      let mark;
-      let p;
-      let _ref;
-      _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-file-text-o', `a href=\'#\' data-action=\'get-flow\' data-pack-name=\'${packName}\' data-flow-name=\'$1\'`), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], i = _ref[4], a = _ref[5];
+      const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-file-text-o', `a href=\'#\' data-action=\'get-flow\' data-pack-name=\'${packName}\' data-flow-name=\'$1\'`);
+      const div = _ref[0];
+      const mark = _ref[1];
+      const h5 = _ref[2];
+      const p = _ref[3];
+      const i = _ref[4];
+      const a = _ref[5];
       displayHtml(Flow.HTML.render('div', div([
         mark('Pack'),
         h5(packName),
@@ -201,18 +197,17 @@ export function help() {
       ])));
     }
     function displayEndpoints(routes) {
-      let action;
-      let code;
-      let div;
-      let h5;
-      let mark;
-      let p;
       let route;
       let routeIndex;
       let _i;
       let _len;
-      let _ref;
-      _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'a href=\'#\' data-action=\'endpoint\' data-index=\'$1\'', 'code'), div = _ref[0], mark = _ref[1], h5 = _ref[2], p = _ref[3], action = _ref[4], code = _ref[5];
+      const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'a href=\'#\' data-action=\'endpoint\' data-index=\'$1\'', 'code');
+      const div = _ref[0];
+      const mark = _ref[1];
+      const h5 = _ref[2];
+      const p = _ref[3];
+      const action = _ref[4];
+      const code = _ref[5];
       const els = [
         mark('API'),
         h5('List of Routes'),
