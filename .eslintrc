@@ -17,7 +17,6 @@
     "no-throw-literal": "off",
     "no-restricted-syntax": "off",
     "func-names": "off",
-    "consistent-return": "off",
-    "new-cap": "off"
+    "consistent-return": "off"
   }
 }
