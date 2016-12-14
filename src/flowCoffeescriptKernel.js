@@ -220,7 +220,8 @@ export function flowCoffeescriptKernel() {
           if (declarations.length === 0) {
             return deleteAstNode(parent, key);
           }
-          return node.declarations = declarations;
+          node.declarations = declarations;
+          return node.declarations;
         }
       });
       return go(null, rootScope, program);
@@ -266,7 +267,7 @@ export function flowCoffeescriptKernel() {
           if (!identifier) {
             return;
           }
-          return parent[key] = {
+          parent[key] = {
             type: 'MemberExpression',
             computed: false,
             object: {
@@ -278,6 +279,7 @@ export function flowCoffeescriptKernel() {
               name: identifier.name,
             },
           };
+          return parent[key];
         }
       });
       return go(null, program);

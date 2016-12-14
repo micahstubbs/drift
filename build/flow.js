@@ -9598,7 +9598,8 @@
             if (declarations.length === 0) {
               return deleteAstNode(parent, key);
             }
-            return node.declarations = declarations;
+            node.declarations = declarations;
+            return node.declarations;
           }
         });
         return go(null, rootScope, program);
@@ -9644,7 +9645,7 @@
             if (!identifier) {
               return;
             }
-            return parent[key] = {
+            parent[key] = {
               type: 'MemberExpression',
               computed: false,
               object: {
@@ -9656,6 +9657,7 @@
                 name: identifier.name
               }
             };
+            return parent[key];
           }
         });
         return go(null, program);
@@ -11265,7 +11267,8 @@
     _.requestScalaCode = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
-    return _.requestAsDataFrame = Flow.Dataflow.slot();
+    _.requestAsDataFrame = Flow.Dataflow.slot();
+    return _.requestAsDataFrame;
   }
 
   const flowPrelude$38 = flowPreludeFunction();
