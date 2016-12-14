@@ -23,6 +23,7 @@ export function flowApplicationContext(_) {
   _.growl = Flow.Dataflow.slot();
   _.confirm = Flow.Dataflow.slot();
   _.alert = Flow.Dataflow.slot();
-  return _.dialog = Flow.Dataflow.slot();
+  _.dialog = Flow.Dataflow.slot();
+  return _.dialog;
 }
 
