@@ -1,8 +1,10 @@
 {
   "extends": "airbnb",
   "rules": {
+    "no-alert": "off",
     "no-nested-ternary": "off",
     "prefer-rest-params": "off",
+    "camelcase": "off",
     "no-throw-literal": "off",
     "no-use-before-define": "off",
     "no-new-func": "off",
@@ -19,9 +21,6 @@
     "no-return-assign": "off",
     "max-len":"off",
     "default-case": "off",
-    "no-sequences": "off",
-    "no-unused-expressions": "off",
-    "no-alert": "off",
-    "camelcase": "off"
+    "no-sequences": "off"
   }
 }
