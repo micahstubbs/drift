@@ -9437,7 +9437,8 @@
       const _ref = block.body;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         node = _ref[_i];
-        if (declarations = identifyDeclarations(node)) {
+        declarations = identifyDeclarations(node);
+        if (declarations) {
           for (_j = 0, _len1 = declarations.length; _j < _len1; _j++) {
             declaration = declarations[_j];
             identifiers.push(declaration);
@@ -9617,7 +9618,8 @@
             if (key === 'property') {
               return;
             }
-            if (!(identifier = globalScope[node.name])) {
+            identifier = globalScope[node.name];
+            if (!identifier) {
               return;
             }
             return parent[key] = {
