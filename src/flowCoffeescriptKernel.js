@@ -301,7 +301,7 @@ export function flowCoffeescriptKernel() {
     let closure;
     let error;
     try {
-      closure = new Function('h2o', '_h2o_context_', '_h2o_results_', 'print', js);
+      closure = new Function('h2o', '_h2o_context_', '_h2o_results_', 'print', js); // eslint-disable-line
       return go(null, closure);
     } catch (_error) {
       error = _error;
