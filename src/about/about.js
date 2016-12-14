@@ -18,7 +18,9 @@ export function about() {
         if (!error) {
           _ref = response.entries;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            _ref1 = _ref[_i], name = _ref1.name, value = _ref1.value;
+            _ref1 = _ref[_i];
+            name = _ref1.name;
+            value = _ref1.value;
             properties.push({
               caption: `H2O ${name}`,
               value,
