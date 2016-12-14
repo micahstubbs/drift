@@ -2170,7 +2170,8 @@
     const _ref = _result.partial_dependence_data;
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       data = _ref[i];
-      if (table = _.inspect(`plot${ i + 1 }`, _result)) {
+      table = _.inspect(`plot${ i + 1 }`, _result);
+      if (table) {
         x = data.columns[0].name;
         y = data.columns[1].name;
         _plots.push(section = {
