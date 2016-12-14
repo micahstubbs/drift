@@ -175,6 +175,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
               return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify($a.attr('data-key'))}`);
             case 'model':
               return _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify($a.attr('data-key'))}`);
+            default:
+              // do nothing
           }
         });
         container(vis.element);
@@ -512,6 +514,9 @@ export function h2oModelOutput(_, _go, _model, refresh) {
             }
           }
         }
+        break;
+      default:
+        // do nothing
     }
     table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
     if (table) {

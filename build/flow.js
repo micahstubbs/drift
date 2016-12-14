@@ -2471,6 +2471,8 @@
                 return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
               case 'model':
                 return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
+              default:
+              // do nothing
             }
           });
           container(vis.element);
@@ -2808,6 +2810,9 @@
               }
             }
           }
+          break;
+        default:
+        // do nothing
       }
       table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
       if (table) {
