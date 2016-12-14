@@ -10,10 +10,10 @@ export function flowSidebar(_, cells) {
   const _browser = flowBrowser(_);
   const _isBrowserMode = Flow.Dataflow.lift(_mode, mode => mode === 'browser');
   const switchToBrowser = () => _mode('browser');
-  const _clipboard = Flow.Clipboard(_);
+  const _clipboard = Flow.clipboard(_);
   const _isClipboardMode = Flow.Dataflow.lift(_mode, mode => mode === 'clipboard');
   const switchToClipboard = () => _mode('clipboard');
-  const _help = Flow.Help(_);
+  const _help = Flow.help(_);
   const _isHelpMode = Flow.Dataflow.lift(_mode, mode => mode === 'help');
   const switchToHelp = () => _mode('help');
   Flow.Dataflow.link(_.ready, () => {

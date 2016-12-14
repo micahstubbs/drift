@@ -9101,7 +9101,7 @@
     const _index = {};
     _homeContent = null;
     const _homeMarkdown = '<blockquote>\nUsing Flow for the first time?\n<br/>\n<div style=\'margin-top:10px\'>\n  <button type=\'button\' data-action=\'get-flow\' data-pack-name=\'examples\' data-flow-name=\'QuickStartVideos.flow\' class=\'flow-button\'><i class=\'fa fa-file-movie-o\'></i><span>Quickstart Videos</span>\n  </button>\n</div>\n</blockquote>\n\nOr, <a href=\'#\' data-action=\'get-pack\' data-pack-name=\'examples\'>view example Flows</a> to explore and learn H<sub>2</sub>O.\n\n###### Star H2O on Github!\n\n<iframe src="https://ghbtns.com/github-btn.html?user=h2oai&repo=h2o-3&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>\n\n###### General\n\n%HELP_TOPICS%\n\n###### Examples\n\nFlow packs are a great way to explore and learn H<sub>2</sub>O. Try out these Flows and run them in your browser.<br/><a href=\'#\' data-action=\'get-packs\'>Browse installed packs...</a>\n\n###### H<sub>2</sub>O REST API\n\n- <a href=\'#\' data-action=\'endpoints\'>Routes</a>\n- <a href=\'#\' data-action=\'schemas\'>Schemas</a>\n';
-    Flow.Help = _ => {
+    Flow.help = _ => {
       let _historyIndex;
       const _content = Flow.Dataflow.signal(null);
       const _history = [];
@@ -9908,10 +9908,10 @@
     const _browser = flowBrowser(_);
     const _isBrowserMode = Flow.Dataflow.lift(_mode, mode => mode === 'browser');
     const switchToBrowser = () => _mode('browser');
-    const _clipboard = Flow.Clipboard(_);
+    const _clipboard = Flow.clipboard(_);
     const _isClipboardMode = Flow.Dataflow.lift(_mode, mode => mode === 'clipboard');
     const switchToClipboard = () => _mode('clipboard');
-    const _help = Flow.Help(_);
+    const _help = Flow.help(_);
     const _isHelpMode = Flow.Dataflow.lift(_mode, mode => mode === 'help');
     const switchToHelp = () => _mode('help');
     Flow.Dataflow.link(_.ready, () => {
@@ -10958,7 +10958,7 @@
     const lodash = window._;
     const Flow = window.Flow;
     const SystemClips = ['assist', 'importFiles', 'getFrames', 'getModels', 'getPredictions', 'getJobs', 'buildModel', 'predict'];
-    Flow.Clipboard = _ => {
+    Flow.clipboard = _ => {
       const lengthOf = array => {
         if (array.length) {
           return `(${ array.length })`;

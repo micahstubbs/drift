@@ -14,7 +14,7 @@ export function clipboard() {
     'buildModel',
     'predict',
   ];
-  Flow.Clipboard = _ => {
+  Flow.clipboard = _ => {
     const lengthOf = array => {
       if (array.length) {
         return `(${array.length})`;
