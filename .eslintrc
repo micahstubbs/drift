@@ -1,7 +1,7 @@
 {
   "extends": "airbnb",
   "rules": {
-    "max-len":"off"
+    "max-len":"off",
     "no-alert": "off",
     "no-nested-ternary": "off",
     "prefer-rest-params": "off",

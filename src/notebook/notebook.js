@@ -64,7 +64,7 @@ export function notebook() {
     let _selectedCell;
     let _selectedCellIndex;
     const _localName = Flow.Dataflow.signal('Untitled Flow');
-    Flow.Dataflow.react(_localName, name => document.title = `H2O${(name && name.trim() ? `- ${name}` : '')}`);
+    Flow.Dataflow.react(_localName, name => (document.title = `H2O${(name && name.trim() ? `- ${name}` : '')}`));
     const _remoteName = Flow.Dataflow.signal(null);
     const _isEditingName = Flow.Dataflow.signal(false);
     const editName = () => _isEditingName(true);
@@ -212,7 +212,7 @@ export function notebook() {
       return _selectedCell.execute();
     };
     const convertCellToScala = () => _selectedCell.type('sca');
-    const copyCell = () => _clipboardCell = _selectedCell;
+    const copyCell = () => (_clipboardCell = _selectedCell);
     const cutCell = () => {
       copyCell();
       return removeCell();
@@ -330,7 +330,7 @@ export function notebook() {
       if (_lastDeletedCell) {
         insertCell(_selectedCellIndex + 1, _lastDeletedCell);
       }
-      return _lastDeletedCell = null;
+      return (_lastDeletedCell = null);
     };
     const runCell = () => {
       _selectedCell.execute();
