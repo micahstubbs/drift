@@ -10070,8 +10070,8 @@
     }));
     const accept = () => {
       let basename;
-      let file;
-      if (file = _file()) {
+      const file = _file();
+      if (file) {
         basename = H2O.Util.getFileBaseName(file.name, '.flow');
         if (_overwrite()) {
           return uploadFile(basename);
