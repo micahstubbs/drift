@@ -34,7 +34,7 @@ export function data() {
       return _results;
     })();
     const prototypeName = nextPrototypeName();
-    _prototypeCache[cacheKey] = new Function(`function ${prototypeName}(${params.join(',')}){${inits.join('')}} return ${prototypeName};`)();
+    _prototypeCache[cacheKey] = new Function(`function ${prototypeName}(${params.join(',')}){${inits.join('')}} return ${prototypeName};`)(); // eslint-disable-line
     return _prototypeCache[cacheKey];
   };
   const createRecordConstructor = variables => {
