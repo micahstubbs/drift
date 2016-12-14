@@ -8918,6 +8918,9 @@
           } else if (lodash.isString(a)) {
             return _find$2(a, b);
           }
+          break;
+        default:
+        // do nothing
       }
     };
     const _get = (attr, obj) => {
