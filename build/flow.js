@@ -3344,7 +3344,8 @@
     let _ref;
     let _ref1;
     if (prediction) {
-      frame = prediction.frame, model = prediction.model;
+      frame = prediction.frame;
+      model = prediction.model;
     }
     const _plots = Flow.Dataflow.signals([]);
     const _canInspect = prediction.__meta;
