@@ -9438,6 +9438,8 @@
         case 'ForInStatement':
         case 'ForOfStatement':
           return identifyDeclarations(node.left);
+        default:
+        // do nothing
       }
       return null;
     };
