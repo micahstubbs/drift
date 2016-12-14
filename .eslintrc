@@ -1,6 +1,7 @@
 {
   "extends": "airbnb",
   "rules": {
+    "no-loop-func": "off",
     "no-console": "off",
     "no-underscore-dangle": "off",
     "no-shadow": "off", 

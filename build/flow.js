@@ -8412,7 +8412,7 @@
         return _results;
       })();
       const prototypeName = nextPrototypeName();
-      _prototypeCache[cacheKey] = new Function(`function ${ prototypeName }(${ params.join(',') }){${ inits.join('') }} return ${ prototypeName };`)();
+      _prototypeCache[cacheKey] = new Function(`function ${ prototypeName }(${ params.join(',') }){${ inits.join('') }} return ${ prototypeName };`)(); // eslint-disable-line
       return _prototypeCache[cacheKey];
     };
     const createRecordConstructor = variables => {
@@ -9687,7 +9687,7 @@
       let closure;
       let error;
       try {
-        closure = new Function('h2o', '_h2o_context_', '_h2o_results_', 'print', js);
+        closure = new Function('h2o', '_h2o_context_', '_h2o_results_', 'print', js); // eslint-disable-line
         return go(null, closure);
       } catch (_error) {
         error = _error;
