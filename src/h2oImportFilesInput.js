@@ -56,8 +56,7 @@ export function h2oImportFilesInput(_, _go) {
   };
   const importSelectedFiles = () => importFiles(_selectedFiles());
   const createSelectedFileItem = path => {
-    let self;
-    return self = {
+    const self = {
       path,
       deselect() {
         let file;
@@ -73,6 +72,7 @@ export function h2oImportFilesInput(_, _go) {
         }
       },
     };
+    return self;
   };
   const createFileItem = (path, isSelected) => {
     const self = {

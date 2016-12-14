@@ -3831,8 +3831,7 @@
     };
     const importSelectedFiles = () => importFiles(_selectedFiles());
     const createSelectedFileItem = path => {
-      let self;
-      return self = {
+      const self = {
         path,
         deselect() {
           let file;
@@ -3848,6 +3847,7 @@
           }
         }
       };
+      return self;
     };
     const createFileItem = (path, isSelected) => {
       const self = {
