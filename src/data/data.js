@@ -52,13 +52,14 @@ export function data() {
   const createTable = opts => {
     let description;
     let label;
-    let meta;
-    let rows;
     let variable;
-    let variables;
     let _i;
     let _len;
-    label = opts.label, description = opts.description, variables = opts.variables, rows = opts.rows, meta = opts.meta;
+    label = opts.label;
+    description = opts.description;
+    const variables = opts.variables;
+    const rows = opts.rows;
+    const meta = opts.meta;
     if (!description) {
       description = 'No description available.';
     }
@@ -70,14 +71,14 @@ export function data() {
     const fill = (i, go) => {
       _fill(i, (error, result) => { // eslint-disable-line
         let index;
-        let startIndex;
         let value;
         let _j;
         let _len1;
         if (error) {
           return go(error);
         }
-        startIndex = result.index, lodash.values = result.values;
+        const startIndex = result.index;
+        lodash.values = result.values;
         for (index = _j = 0, _len1 = lodash.values.length; _j < _len1; index = ++_j) {
           value = lodash.values[index];
           rows[startIndex + index] = lodash.values[index];
@@ -111,9 +112,8 @@ export function data() {
     };
   };
   const includeZeroInRange = range => {
-    let hi;
-    let lo;
-    lo = range[0], hi = range[1];
+    const lo = range[0];
+    const hi = range[1];
     if (lo > 0 && hi > 0) {
       return [
         0,
