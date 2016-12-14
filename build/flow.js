@@ -3936,8 +3936,8 @@
   function h2oPredictInput(_, _go, opt) {
     const lodash = window._;
     const Flow = window.Flow;
-    let _ref;
-    const _destinationKey = Flow.Dataflow.signal((_ref = opt.predictions_frame) != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
+    const _ref = opt.predictions_frame;
+    const _destinationKey = Flow.Dataflow.signal(_ref != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
     const _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
     const _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
     const _selectedModelsCaption = _selectedModels.join(', ');
