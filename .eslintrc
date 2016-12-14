@@ -20,7 +20,6 @@
     "no-unused-vars": "off",
     "no-return-assign": "off",
     "max-len":"off",
-    "default-case": "off",
-    "no-sequences": "off"
+    "default-case": "off"
   }
 }
