@@ -11976,7 +11976,8 @@
     const Flow = window.Flow;
     const warnOnExit = e => {
       const message = 'Warning: you are about to exit Flow.';
-      if (e = e != null ? e : window.event) {
+      e = e != null ? e : window.event;
+      if (e) {
         e.returnValue = message;
       }
       return message;
