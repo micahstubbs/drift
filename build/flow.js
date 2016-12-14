@@ -8053,11 +8053,11 @@
           child[key] = parent[key];
         }
       }
-      function ctor() {
+      function Ctor() {
         this.constructor = child;
       }
-      ctor.prototype = parent.prototype;
-      child.prototype = new ctor();
+      Ctor.prototype = parent.prototype;
+      child.prototype = new Ctor();
       child.__super__ = parent.prototype;
       return child;
     };
@@ -10188,7 +10188,7 @@
     const Mousetrap = window.Mousetrap;
     const $ = window.jQuery;
     const __slice = [].slice;
-    Flow.Renderers = (_, _sandbox) => ({
+    Flow.renderers = (_, _sandbox) => ({
       h1() {
         return flowHeading(_, 'h1');
       },
@@ -10229,7 +10229,7 @@
         return flowRaw(_);
       }
     });
-    Flow.Notebook = (_, _renderers) => {
+    Flow.notebook = (_, _renderers) => {
       let menuCell;
       let _clipboardCell;
       let _lastDeletedCell;
@@ -12061,11 +12061,11 @@
     const Flow = window.Flow;
     flowApplicationContext(_);
     const _sandbox = flowSandbox(_, routines(_));
-    const _renderers = Flow.Renderers(_, _sandbox);
+    const _renderers = Flow.renderers(_, _sandbox);
     flowAnalytics(_);
     flowGrowl(_);
     flowAutosave(_);
-    const _notebook = Flow.Notebook(_, _renderers);
+    const _notebook = Flow.notebook(_, _renderers);
     return {
       context: _,
       sandbox: _sandbox,

@@ -16,7 +16,7 @@ export function notebook() {
   const Mousetrap = window.Mousetrap;
   const $ = window.jQuery;
   const __slice = [].slice;
-  Flow.Renderers = (_, _sandbox) => ({
+  Flow.renderers = (_, _sandbox) => ({
     h1() {
       return flowHeading(_, 'h1');
     },
@@ -57,7 +57,7 @@ export function notebook() {
       return flowRaw(_);
     },
   });
-  Flow.Notebook = (_, _renderers) => {
+  Flow.notebook = (_, _renderers) => {
     let menuCell;
     let _clipboardCell;
     let _lastDeletedCell;

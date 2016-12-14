@@ -10,11 +10,11 @@ export function error() {
         child[key] = parent[key];
       }
     }
-    function ctor() {
+    function Ctor() {
       this.constructor = child;
     }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
+    Ctor.prototype = parent.prototype;
+    child.prototype = new Ctor();
     child.__super__ = parent.prototype;
     return child;
   };
