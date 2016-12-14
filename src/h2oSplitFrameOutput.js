@@ -24,13 +24,13 @@ export function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     return ratios;
   };
   const createFrameView = (key, ratio) => {
-    let self;
     const view = () => _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(key)}`);
-    return self = {
+    const self = {
       key,
       ratio,
       view,
     };
+    return self;
   };
   const _ratios = computeRatios(_splitFrameResult.ratios);
   const _frames = ((() => {
