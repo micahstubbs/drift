@@ -9837,7 +9837,6 @@
     const _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
     const _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
     const createNotebookView = notebook => {
-      let self;
       const _name = notebook.name;
       const _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
       const _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
@@ -9865,13 +9864,14 @@
           });
         }
       });
-      return self = {
+      const self = {
         name: _name,
         date: _date,
         fromNow: _fromNow,
         load,
         purge
       };
+      return self;
     };
     const loadNotebooks = () => _.requestObjects('notebook', (error, notebooks) => {
       if (error) {
