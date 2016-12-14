@@ -34,12 +34,12 @@ export function flowCoffeescript(_, guid, sandbox) {
     const evaluate = ft => {
       if (ft != null ? ft.isFuture : void 0) {
         return ft((error, result) => {
-          let _ref;
+          const _ref = result._flow_;
           if (error) {
             output.error(new Flow.Error('Error evaluating cell', error));
             return output.end();
           }
-          if (result != null ? (_ref = result._flow_) != null ? _ref.render : void 0 : void 0) {
+          if (result != null ? _ref != null ? _ref.render : void 0 : void 0) {
             return output.data(result._flow_.render(() => output.end()));
           }
           return output.data(Flow.ObjectBrowser(_, (() => output.end())('output', result)));
