@@ -9,9 +9,9 @@ export function data() {
   const createCompiledPrototype = attrs => {
     let attr;
     let i;
-    let proto;
+    const proto = _prototypeCache[cacheKey];
     const cacheKey = attrs.join('\0');
-    if (proto = _prototypeCache[cacheKey]) {
+    if (proto) {
       return proto;
     }
     const params = (() => {
@@ -139,10 +139,12 @@ export function data() {
     hi = Number.NEGATIVE_INFINITY;
     for (_i = 0, _len = ranges.length; _i < _len; _i++) {
       range = ranges[_i];
-      if (lo > (value = range[0])) {
+      value = range[0];
+      if (lo > value) {
         lo = value;
       }
-      if (hi < (value = range[1])) {
+      value = range[1];
+      if (hi < value) {
         hi = value;
       }
     }
@@ -244,7 +246,8 @@ export function data() {
       self.read = datum => {
         let id;
         level = datum === void 0 || datum === null ? 'null' : datum;
-        if (void 0 === (id = _levels[level])) {
+        id = _levels[level];
+        if (void 0 === id) {
           _levels[level] = id = _id++;
           self.domain.push(level);
         }
@@ -266,7 +269,8 @@ export function data() {
     const data = new Array(array.length);
     for (i = _i = 0, _len = array.length; _i < _len; i = ++_i) {
       level = array[i];
-      if (void 0 === (id = levels[level])) {
+      id = levels[level];
+      if (void 0 === id) {
         levels[level] = id = _id++;
         domain.push(level);
       }
