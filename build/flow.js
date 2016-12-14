@@ -9046,7 +9046,7 @@
           return type;
       }
     };
-    Flow.ObjectBrowserElement = (key, object) => {
+    Flow.objectBrowserElement = (key, object) => {
       const _expansions = Flow.Dataflow.signal(null);
       const _isExpanded = Flow.Dataflow.signal(false);
       const _type = flowPrelude$35.typeOf(object);
@@ -9063,7 +9063,7 @@
             if ({}.hasOwnProperty.call(object, key)) {
               value = object[key];
               if (key !== '_flow_') {
-                expansions.push(Flow.ObjectBrowserElement(key, value));
+                expansions.push(Flow.objectBrowserElement(key, value));
               }
             }
           }
@@ -9083,7 +9083,7 @@
     Flow.ObjectBrowser = (_, _go, key, object) => {
       lodash.defer(_go);
       return {
-        object: Flow.ObjectBrowserElement(key, object),
+        object: Flow.objectBrowserElement(key, object),
         template: 'flow-object'
       };
     };
