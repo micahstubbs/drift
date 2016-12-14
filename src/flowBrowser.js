@@ -25,7 +25,8 @@ export function flowBrowser(_) {
         return _.requestDeleteObject('notebook', _name, error => {
           let _ref;
           if (error) {
-            return _.alert((_ref = error.message) != null ? _ref : error);
+            _ref = error.message;
+            return _.alert(_ref != null ? _ref : error);
           }
           _docs.remove(self);
           return _.growl('Notebook deleted.');
