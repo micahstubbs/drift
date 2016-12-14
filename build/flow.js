@@ -3925,10 +3925,9 @@
     const defaultMaxRunTime = 3600;
     const _maxRunTime = Flow.Dataflow.signal(defaultMaxRunTime);
     const buildModel = () => {
-      let maxRunTime;
-      let parsed;
-      maxRunTime = defaultMaxRunTime;
-      if (!lodash.isNaN(parsed = parseInt(_maxRunTime(), 10))) {
+      let maxRunTime = defaultMaxRunTime;
+      const parsed = parseInt(_maxRunTime(), 10);
+      if (!lodash.isNaN(parsed)) {
         maxRunTime = parsed;
       }
       const arg = {
