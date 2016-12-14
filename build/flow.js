@@ -8779,9 +8779,8 @@
         const task = _tasks.shift();
         if (task) {
           return task(...args.concat(function () {
-            let error;
-            let results;
-            error = arguments[0], results = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
+            const error = arguments[0];
+            const results = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
             if (error) {
               return go(error);
             }
@@ -8791,10 +8790,9 @@
         return go(...[null].concat(args));
       };
       return function () {
-        let args;
-        let go;
         let _i;
-        args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
+        const args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []);
+        const go = arguments[_i++];
         return next(args, go);
       };
     };
@@ -8817,16 +8815,14 @@
       return go => next(go);
     };
     const _async = function () {
-      let args;
-      let f;
-      f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
+      const f = arguments[0];
+      const args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
       const later = function () {
-        let args;
         let error;
-        let go;
         let result;
         let _i;
-        args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
+        const args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []);
+        const go = arguments[_i++];
         try {
           result = f(...args);
           return go(null, result);
@@ -8873,7 +8869,9 @@
       const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
       switch (args.length) {
         case 3:
-          a = args[0], b = args[1], c = args[2];
+          a = args[0];
+          b = args[1];
+          c = args[2];
           ta = flowPrelude$34.typeOf(a);
           tb = flowPrelude$34.typeOf(b);
           tc = flowPrelude$34.typeOf(c);
@@ -8884,7 +8882,8 @@
           }
           break;
         case 2:
-          a = args[0], b = args[1];
+          a = args[0];
+          b = args[1];
           if (!a) {
             return;
           }
