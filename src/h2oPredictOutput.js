@@ -37,6 +37,8 @@ export function h2oPredictOutput(_, _go, prediction) {
             return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify($a.attr('data-key'))}`);
           case 'model':
             return _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify($a.attr('data-key'))}`);
+          default:
+            // do nothing
         }
       });
       return container(vis.element);
@@ -56,6 +58,9 @@ export function h2oPredictOutput(_, _go, prediction) {
         if (table) {
           renderPlot('ROC Curve', prediction, _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1))));
         }
+        break;
+      default:
+        // do nothing
     }
     _ref1 = _.ls(prediction);
     for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
