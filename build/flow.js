@@ -4385,18 +4385,18 @@
       return go(null, splitRatios, splitKeys);
     };
     const createSplit = ratio => {
-      let self;
       const _ratioText = Flow.Dataflow.signal(`${ ratio }`);
       const _key = Flow.Dataflow.signal('');
       const _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
       Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
       flowPrelude$27.remove = () => _splits.remove(self);
-      return self = {
+      const self = {
         key: _key,
         ratioText: _ratioText,
         ratio: _ratio,
         remove: flowPrelude$27.remove
       };
+      return self;
     };
     const addSplitRatio = ratio => _splits.push(createSplit(ratio));
     const addSplit = () => addSplitRatio(0);

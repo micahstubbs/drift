@@ -116,18 +116,18 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
     return go(null, splitRatios, splitKeys);
   };
   const createSplit = ratio => {
-    let self;
     const _ratioText = Flow.Dataflow.signal(`${ratio}`);
     const _key = Flow.Dataflow.signal('');
     const _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
     Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
     flowPrelude.remove = () => _splits.remove(self);
-    return self = {
+    const self = {
       key: _key,
       ratioText: _ratioText,
       ratio: _ratio,
       remove: flowPrelude.remove,
     };
+    return self;
   };
   const addSplitRatio = ratio => _splits.push(createSplit(ratio));
   const addSplit = () => addSplitRatio(0);
