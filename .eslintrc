@@ -1,6 +1,8 @@
 {
   "extends": "airbnb",
   "rules": {
+    "no-underscore-dangle": "off",
+    "no-shadow": "off",
     "no-unused-vars": "off",
     "max-len":"off",
     "no-alert": "off",
@@ -10,15 +12,12 @@
     "camelcase": "off",
     "no-throw-literal": "off",
     "no-use-before-define": "off",
-    "no-new-func": "off",
     "no-param-reassign": "off",
     "no-restricted-syntax": "off",
     "no-console": "off",
     "func-names": "off",
     "consistent-return": "off",
     "new-cap": "off",
-    "no-underscore-dangle": "off",
-    "no-loop-func": "off",
-    "no-shadow": "off"
+    "no-loop-func": "off"
   }
 }
