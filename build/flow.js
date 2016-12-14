@@ -9802,7 +9802,12 @@
                 return lodash.defer(_message, `Waiting for ${ connections } responses...`);
               }
               return lodash.defer(_message, defaultMessage);
+            default:
+            // do nothing
           }
+          break;
+        default:
+        // do nothing
       }
     };
     Flow.Dataflow.link(_.ready, () => Flow.Dataflow.link(_.status, onStatus));
