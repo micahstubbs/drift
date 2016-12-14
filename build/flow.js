@@ -10235,7 +10235,10 @@
       let _selectedCell;
       let _selectedCellIndex;
       const _localName = Flow.Dataflow.signal('Untitled Flow');
-      Flow.Dataflow.react(_localName, name => document.title = `H2O${ name && name.trim() ? `- ${ name }` : '' }`);
+      Flow.Dataflow.react(_localName, name => {
+        document.title = `H2O${ name && name.trim() ? `- ${ name }` : '' }`;
+        return document.title;
+      });
       const _remoteName = Flow.Dataflow.signal(null);
       const _isEditingName = Flow.Dataflow.signal(false);
       const editName = () => _isEditingName(true);
@@ -10383,7 +10386,10 @@
         return _selectedCell.execute();
       };
       const convertCellToScala = () => _selectedCell.type('sca');
-      const copyCell = () => _clipboardCell = _selectedCell;
+      const copyCell = () => {
+        _clipboardCell = _selectedCell;
+        return _clipboardCell;
+      };
       const cutCell = () => {
         copyCell();
         return removeCell();
@@ -10498,7 +10504,8 @@
         if (_lastDeletedCell) {
           insertCell(_selectedCellIndex + 1, _lastDeletedCell);
         }
-        return _lastDeletedCell = null;
+        _lastDeletedCell = null;
+        return _lastDeletedCell;
       };
       const runCell = () => {
         _selectedCell.execute();
