@@ -8,8 +8,14 @@ export function flowAutosave(_) {
     }
     return message;
   };
-  const setDirty = () => window.onbeforeunload = warnOnExit;
-  const setPristine = () => window.onbeforeunload = null;
+  const setDirty = () => {
+    window.onbeforeunload = warnOnExit;
+    return window.onbeforeunload;
+  };
+  const setPristine = () => {
+    window.onbeforeunload = null;
+    return window.onbeforeunload;
+  };
   return Flow.Dataflow.link(_.ready, () => {
     Flow.Dataflow.link(_.setDirty, setDirty);
     return Flow.Dataflow.link(_.setPristine, setPristine);
