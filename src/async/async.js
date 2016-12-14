@@ -245,7 +245,7 @@ export function async() {
         tc = flowPrelude.typeOf(c);
         if (ta === 'Array' && tb === 'String') {
           return _find$3(b, c, a);
-        } else if (ta === 'String' && (tc = 'Array')) {
+        } else if (ta === 'String' && (tc === 'Array')) {
           return _find$3(a, b, c);
         }
         break;
