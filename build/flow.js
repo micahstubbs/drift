@@ -8140,11 +8140,10 @@
         }
       };
       Flow.Dataflow.link(_.dialog, function () {
-        let args;
-        let ctor;
-        let go;
         let _i;
-        ctor = arguments[0], args = arguments.length >= 3 ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), go = arguments[_i++];
+        const ctor = arguments[0];
+        const args = arguments.length >= 3 ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []);
+        const go = arguments[_i++];
         return showDialog(ctor, args, go);
       });
       Flow.Dataflow.link(_.confirm, (message, opts, go) => showDialog(flowConfirmDialog, [message, opts], go));
