@@ -413,9 +413,6 @@
     };
     H2O.ModelBuilderForm = (_, _algorithm, _parameters) => {
       let control;
-      let criticalControls;
-      let expertControls;
-      let secondaryControls;
       let _i;
       let _j;
       let _k;
@@ -462,7 +459,9 @@
         }));
         return controls;
       });
-      criticalControls = _controlGroups[0], secondaryControls = _controlGroups[1], expertControls = _controlGroups[2];
+      const criticalControls = _controlGroups[0];
+      const secondaryControls = _controlGroups[1];
+      const expertControls = _controlGroups[2];
       const _form = [];
       if (criticalControls.length) {
         _form.push({
@@ -513,15 +512,14 @@
       const parameterTemplateOf = control => `flow-${ control.kind }-model-parameter`;
       const findFormField = name => lodash.find(_form, field => field.name === name);
       (() => {
-        let foldColumnParameter;
-        let ignoredColumnsParameter;
-        let offsetColumnsParameter;
-        let responseColumnParameter;
-        let trainingFrameParameter;
-        let validationFrameParameter;
-        let weightsColumnParameter;
-        let _ref;
-        _ref = lodash.map(['training_frame', 'validation_frame', 'response_column', 'ignored_columns', 'offset_column', 'weights_column', 'fold_column'], findFormField), trainingFrameParameter = _ref[0], validationFrameParameter = _ref[1], responseColumnParameter = _ref[2], ignoredColumnsParameter = _ref[3], offsetColumnsParameter = _ref[4], weightsColumnParameter = _ref[5], foldColumnParameter = _ref[6];
+        const _ref = lodash.map(['training_frame', 'validation_frame', 'response_column', 'ignored_columns', 'offset_column', 'weights_column', 'fold_column'], findFormField);
+        const trainingFrameParameter = _ref[0];
+        const validationFrameParameter = _ref[1];
+        const responseColumnParameter = _ref[2];
+        const ignoredColumnsParameter = _ref[3];
+        const offsetColumnsParameter = _ref[4];
+        const weightsColumnParameter = _ref[5];
+        const foldColumnParameter = _ref[6];
         if (trainingFrameParameter) {
           if (responseColumnParameter || ignoredColumnsParameter) {
             return Flow.Dataflow.act(trainingFrameParameter.value, frameKey => {
