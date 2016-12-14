@@ -19,7 +19,6 @@
     "no-shadow": "off",
     "no-unused-vars": "off",
     "no-return-assign": "off",
-    "max-len":"off",
-    "default-case": "off"
+    "max-len":"off"
   }
 }
