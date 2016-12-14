@@ -11,10 +11,9 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
     };
   };
   const createNode = node => {
-    let self;
     let thread;
     const display = () => _activeNode(self);
-    return self = {
+    const self = {
       name: node.node,
       timestamp: new Date(node.time),
       threads: ((() => {
@@ -30,6 +29,7 @@ export function h2oStackTraceOutput(_, _go, _stackTrace) {
       })()),
       display,
     };
+    return self;
   };
   const _nodes = ((() => {
     let _i;

@@ -1808,10 +1808,9 @@
       };
     };
     const createNode = node => {
-      let self;
       let thread;
       const display = () => _activeNode(self);
-      return self = {
+      const self = {
         name: node.node,
         timestamp: new Date(node.time),
         threads: (() => {
@@ -1827,6 +1826,7 @@
         })(),
         display
       };
+      return self;
     };
     const _nodes = (() => {
       let _i;
