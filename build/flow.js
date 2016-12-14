@@ -8411,7 +8411,8 @@
         return _results;
       })();
       const prototypeName = nextPrototypeName();
-      return _prototypeCache[cacheKey] = new Function(`function ${ prototypeName }(${ params.join(',') }){${ inits.join('') }} return ${ prototypeName };`)();
+      _prototypeCache[cacheKey] = new Function(`function ${ prototypeName }(${ params.join(',') }){${ inits.join('') }} return ${ prototypeName };`)();
+      return _prototypeCache[cacheKey];
     };
     const createRecordConstructor = variables => {
       let variable;
