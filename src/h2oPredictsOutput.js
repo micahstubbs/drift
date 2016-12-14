@@ -30,9 +30,9 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
     _isCheckingAll = false;
   });
   const createPredictionView = prediction => {
-    let _ref;
+    const _ref = prediction.frame;
     const _modelKey = prediction.model.name;
-    const _frameKey = (_ref = prediction.frame) != null ? _ref.name : void 0;
+    const _frameKey = _ref != null ? _ref.name : void 0;
     const _hasFrame = _frameKey;
     const _isChecked = Flow.Dataflow.signal(false);
     Flow.Dataflow.react(_isChecked, () => {
