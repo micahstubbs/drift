@@ -3560,16 +3560,20 @@
       }
       return target(vis.element);
     });
-    if (table = _.inspect('characteristics', frame)) {
+    table = _.inspect('characteristics', frame);
+    if (table) {
       renderPlot(_characteristicsPlot, _.plot(g => g(g.rect(g.position(g.stack(g.avg('percent'), 0), 'All'), g.fillColor('characteristic')), g.groupBy(g.factor(g.value('All')), 'characteristic'), g.from(table))));
     }
-    if (table = _.inspect('distribution', frame)) {
+    table = _.inspect('distribution', frame);
+    if (table) {
       renderPlot(_distributionPlot, _.plot(g => g(g.rect(g.position('interval', 'count'), g.width(g.value(1))), g.from(table))));
     }
-    if (table = _.inspect('summary', frame)) {
+    table = _.inspect('summary', frame);
+    if (table) {
       renderPlot(_summaryPlot, _.plot(g => g(g.schema(g.position('min', 'q1', 'q2', 'q3', 'max', 'column')), g.from(table))));
     }
-    if (table = _.inspect('domain', frame)) {
+    table = _.inspect('domain', frame);
+    if (table) {
       renderPlot(_domainPlot, _.plot(g => g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000))));
     }
     const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$21.stringify(frameKey) }, column: ${ flowPrelude$21.stringify(columnName) }`);
