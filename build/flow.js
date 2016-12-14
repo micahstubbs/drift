@@ -25,8 +25,8 @@
     const _never = () => false;
     const _copy = array => array.slice(0);
     const _remove = (array, element) => {
-      let index;
-      if ((index = lodash.indexOf(array, element)) > -1) {
+      const index = lodash.indexOf(array, element);
+      if (index > -1) {
         return lodash.head(array.splice(index, 1));
       }
       return void 0;
