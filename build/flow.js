@@ -7990,8 +7990,25 @@
     };
     const __formatReal = {};
     const formatReal = precision => {
-      let cached;
-      const format = (cached = __formatReal[precision]) ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${ precision }f`);
+      const cached = __formatReal[precision];
+      //
+      // will leave the nested ternary statement commented for now
+      // may be useful to confirm later that the translation to an if else block
+      // was an accurate translation
+      //
+      // const format = cached ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${precision}f`);
+      let format;
+      if (cached) {
+        format = cached;
+      } else {
+        __formatReal[precision] = precision;
+        // __formatReal[precision] === -1 ? lodash.identity : d3.format(`.${precision}f`);
+        if (__formatReal[precision] === -1) {
+          format = lodash.identity;
+        } else {
+          format = d3.format(`.${ precision }f`);
+        }
+      }
       return value => format(value);
     };
     Flow.Format = {
