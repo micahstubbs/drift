@@ -104,7 +104,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
     return _.requestTimeline((error, timeline) => {
       _isBusy(false);
       if (error) {
-        _exception(Flow.Failure(_, new Flow.Error('Error fetching timeline', error)));
+        _exception(Flow.failure(_, new Flow.Error('Error fetching timeline', error)));
         return _isLive(false);
       }
       updateTimeline(timeline);

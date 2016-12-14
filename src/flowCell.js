@@ -90,7 +90,7 @@ export function flowCell(_, _renderers, type, input) {
       error(error) {
         _hasError(true);
         if (error.name === 'FlowError') {
-          _outputs.push(Flow.Failure(_, error));
+          _outputs.push(Flow.failure(_, error));
         } else {
           _outputs.push({
             text: JSON.stringify(error, null, 2),

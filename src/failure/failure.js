@@ -7,7 +7,7 @@ export function failure() {
     }
     return causes;
   };
-  Flow.Failure = (_, error) => {
+  Flow.failure = (_, error) => {
     const causes = traceCauses(error, []);
     const message = causes.shift();
     const _isStackVisible = Flow.Dataflow.signal(false);

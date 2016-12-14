@@ -321,7 +321,7 @@ export function modelInput() {
         return null;
     }
   };
-  H2O.ModelBuilderForm = (_, _algorithm, _parameters) => {
+  H2O.modelBuilderForm = (_, _algorithm, _parameters) => {
     let control;
     let _i;
     let _j;
@@ -633,7 +633,7 @@ export function modelInput() {
         let _m;
         let _n;
         if (error) {
-          return _exception(Flow.Failure(_, new Flow.Error('Error fetching initial model builder state', error)));
+          return _exception(Flow.failure(_, new Flow.Error('Error fetching initial model builder state', error)));
         }
         hasErrors = false;
         if (modelBuilder.messages.length) {
@@ -802,7 +802,7 @@ export function modelInput() {
         if (builder) {
           algorithm = builder.algo;
           parameters = flowPrelude.deepClone(builder.parameters);
-          return populateFramesAndColumns(frameKey, algorithm, parameters, () => _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters)));
+          return populateFramesAndColumns(frameKey, algorithm, parameters, () => _modelForm(H2O.modelBuilderForm(_, algorithm, parameters)));
         }
         return _modelForm(null);
       });

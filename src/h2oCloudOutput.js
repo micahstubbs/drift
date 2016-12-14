@@ -292,7 +292,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
     return _.requestCloud((error, cloud) => {
       _isBusy(false);
       if (error) {
-        _exception(Flow.Failure(_, new Flow.Error('Error fetching cloud status', error)));
+        _exception(Flow.failure(_, new Flow.Error('Error fetching cloud status', error)));
         return _isLive(false);
       }
       updateCloud(_cloud = cloud, _isExpanded());

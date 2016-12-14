@@ -104,7 +104,7 @@ export function jobOutput() {
         if (job.stacktrace) {
           cause.stack = job.stacktrace;
         }
-        _exception(Flow.Failure(_, new Flow.Error('Job failure.', cause)));
+        _exception(Flow.failure(_, new Flow.Error('Job failure.', cause)));
       }
       _canView(canView(job));
       return _canCancel(isJobRunning(job));
@@ -114,7 +114,7 @@ export function jobOutput() {
       return _.requestJob(_key, (error, job) => {
         _isBusy(false);
         if (error) {
-          _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
+          _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
           return _isLive(false);
         }
         updateJob(job);

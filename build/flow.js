@@ -415,7 +415,7 @@
           return null;
       }
     };
-    H2O.ModelBuilderForm = (_, _algorithm, _parameters) => {
+    H2O.modelBuilderForm = (_, _algorithm, _parameters) => {
       let control;
       let _i;
       let _j;
@@ -699,7 +699,7 @@
           let _m;
           let _n;
           if (error) {
-            return _exception(Flow.Failure(_, new Flow.Error('Error fetching initial model builder state', error)));
+            return _exception(Flow.failure(_, new Flow.Error('Error fetching initial model builder state', error)));
           }
           hasErrors = false;
           if (modelBuilder.messages.length) {
@@ -867,7 +867,7 @@
           if (builder) {
             algorithm = builder.algo;
             parameters = flowPrelude$2.deepClone(builder.parameters);
-            return populateFramesAndColumns(frameKey, algorithm, parameters, () => _modelForm(H2O.ModelBuilderForm(_, algorithm, parameters)));
+            return populateFramesAndColumns(frameKey, algorithm, parameters, () => _modelForm(H2O.modelBuilderForm(_, algorithm, parameters)));
           }
           return _modelForm(null);
         });
@@ -1177,7 +1177,7 @@
           if (job.stacktrace) {
             cause.stack = job.stacktrace;
           }
-          _exception(Flow.Failure(_, new Flow.Error('Job failure.', cause)));
+          _exception(Flow.failure(_, new Flow.Error('Job failure.', cause)));
         }
         _canView(canView(job));
         return _canCancel(isJobRunning(job));
@@ -1187,7 +1187,7 @@
         return _.requestJob(_key, (error, job) => {
           _isBusy(false);
           if (error) {
-            _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
+            _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
             return _isLive(false);
           }
           updateJob(job);
@@ -1661,7 +1661,7 @@
       return _.requestCloud((error, cloud) => {
         _isBusy(false);
         if (error) {
-          _exception(Flow.Failure(_, new Flow.Error('Error fetching cloud status', error)));
+          _exception(Flow.failure(_, new Flow.Error('Error fetching cloud status', error)));
           return _isLive(false);
         }
         updateCloud(_cloud = cloud, _isExpanded());
@@ -1770,7 +1770,7 @@
       return _.requestTimeline((error, timeline) => {
         _isBusy(false);
         if (error) {
-          _exception(Flow.Failure(_, new Flow.Error('Error fetching timeline', error)));
+          _exception(Flow.failure(_, new Flow.Error('Error fetching timeline', error)));
           return _isLive(false);
         }
         updateTimeline(timeline);
@@ -2249,7 +2249,7 @@
       return _.requestJobs((error, jobs) => {
         _isBusy(false);
         if (error) {
-          _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
+          _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
           return _isLive(false);
         }
         _jobViews(lodash.map(jobs, createJobView));
@@ -10028,7 +10028,7 @@
         error(error) {
           _hasError(true);
           if (error.name === 'FlowError') {
-            _outputs.push(Flow.Failure(_, error));
+            _outputs.push(Flow.failure(_, error));
           } else {
             _outputs.push({
               text: JSON.stringify(error, null, 2),
@@ -10935,7 +10935,7 @@
       }
       return causes;
     };
-    Flow.Failure = (_, error) => {
+    Flow.failure = (_, error) => {
       const causes = traceCauses(error, []);
       const message = causes.shift();
       const _isStackVisible = Flow.Dataflow.signal(false);

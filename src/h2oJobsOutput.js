@@ -42,7 +42,7 @@ export function h2oJobsOutput(_, _go, jobs) {
     return _.requestJobs((error, jobs) => {
       _isBusy(false);
       if (error) {
-        _exception(Flow.Failure(_, new Flow.Error('Error fetching jobs', error)));
+        _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
         return _isLive(false);
       }
       _jobViews(lodash.map(jobs, createJobView));
