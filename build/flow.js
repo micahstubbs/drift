@@ -11092,7 +11092,8 @@
             caption: 'Flow version',
             value: Flow.Version
           });
-          return _properties(Flow.BuildProperties = properties);
+          Flow.BuildProperties = properties;
+          return _properties(Flow.BuildProperties);
         });
       });
       return { properties: _properties };
