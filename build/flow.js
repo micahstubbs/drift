@@ -1574,21 +1574,20 @@
     const createGrid = (cloud, isExpanded) => {
       let caption;
       let cell;
-      let danger;
-      let grid;
       let i;
       let row;
       let showAlways;
-      let success;
-      let table;
-      let tbody;
-      let td;
       let tds;
-      let th;
-      let thead;
-      let tr;
-      let _ref;
-      _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'i.fa.fa-check-circle.text-success', 'i.fa.fa-exclamation-circle.text-danger'), grid = _ref[0], table = _ref[1], thead = _ref[2], tbody = _ref[3], tr = _ref[4], th = _ref[5], td = _ref[6], success = _ref[7], danger = _ref[8];
+      const _ref = Flow.HTML.template('.grid', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'i.fa.fa-check-circle.text-success', 'i.fa.fa-exclamation-circle.text-danger');
+      const grid = _ref[0];
+      const table = _ref[1];
+      const thead = _ref[2];
+      const tbody = _ref[3];
+      const tr = _ref[4];
+      const th = _ref[5];
+      const td = _ref[6];
+      const success = _ref[7];
+      const danger = _ref[8];
       const nodeRows = lodash.map(cloud.nodes, createNodeRow);
       nodeRows.push(createTotalRow(cloud));
       const ths = (() => {
@@ -1597,7 +1596,9 @@
         let _ref1;
         const _results = [];
         for (_i = 0, _len = _headers.length; _i < _len; _i++) {
-          _ref1 = _headers[_i], caption = _ref1[0], showAlways = _ref1[1];
+          _ref1 = _headers[_i];
+          caption = _ref1[0];
+          showAlways = _ref1[1];
           if (showAlways || isExpanded) {
             _results.push(th(caption));
           }
