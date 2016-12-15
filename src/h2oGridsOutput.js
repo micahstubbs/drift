@@ -9,7 +9,7 @@ export function h2oGridsOutput(_, _go, _grids) {
     const view = () => _.insertAndExecuteCell('cs', `getGrid ${flowPrelude.stringify(grid.grid_id.name)}`);
     return {
       key: grid.grid_id.name,
-      size: grid.modelIds.length,
+      size: grid.model_ids.length,
       view,
     };
   };

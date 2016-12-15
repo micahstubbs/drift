@@ -897,7 +897,7 @@ export function routines() {
         _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
-          _results.push(model.modelId.name);
+          _results.push(model.model_id.name);
         }
         return _results;
       })();
@@ -941,8 +941,8 @@ export function routines() {
         return _results;
       })();
       return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-        description: `Parameters for model \'${model.modelId.name}\'`, // TODO frame model_id
-        origin: `getModel ${flowPrelude.stringify(model.modelId.name)}`
+        description: `Parameters for model \'${model.model_id.name}\'`, // TODO frame model_id
+        origin: `getModel ${flowPrelude.stringify(model.model_id.name)}`
       });
     };
     extendJob = job => render_(job, H2O.JobOutput, job);
@@ -1124,7 +1124,7 @@ export function routines() {
         let _ref1;
         inspections = {};
         inspections.parameters = inspectModelParameters(model);
-        origin = `getModel ${flowPrelude.stringify(model.modelId.name)}`;
+        origin = `getModel ${flowPrelude.stringify(model.model_id.name)}`;
         inspectObject(inspections, 'output', origin, model.output);
 
         // Obviously, an array of 2d tables calls for a megahack.
@@ -1141,7 +1141,7 @@ export function routines() {
         inspect_(model, inspections);
         return model;
       };
-      refresh = go => _.requestModel(model.modelId.name, (error, model) => {
+      refresh = go => _.requestModel(model.model_id.name, (error, model) => {
         if (error) {
           return go(error);
         }

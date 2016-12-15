@@ -111,7 +111,7 @@ export function h2oPredictInput(_, _go, opt) {
         // TODO use models directly
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
-          _results.push(model.modelId.name);
+          _results.push(model.model_id.name);
         }
         return _results;
       })());

@@ -13,7 +13,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
   let _i;
   let _len;
   const _destinationKey = _result.destination_key;
-  const _modelId = _result.modelId.name;
+  const _modelId = _result.model_id.name;
   const _frameId = _result.frame_id.name;
   const renderPlot = (target, render) => render((error, vis) => {
     if (error) {

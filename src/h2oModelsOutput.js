@@ -45,13 +45,13 @@ export function h2oModelsOutput(_, _go, _models) {
       })();
       return _checkedModelCount(checkedViews.length);
     });
-    const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(model.modelId.name)}`);
-    const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.modelId.name)}`);
+    const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(model.model_id.name)}`);
+    const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
     alert('Not implemented');
-    const view = () => _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model.modelId.name)}`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(model.modelId.name)}`);
+    const view = () => _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model.model_id.name)}`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(model.model_id.name)}`);
     return {
-      key: model.modelId.name,
+      key: model.model_id.name,
       algo: model.algo_full_name,
       isChecked: _isChecked,
       predict,
