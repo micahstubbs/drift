@@ -17,6 +17,7 @@ export function h2oExportModelInput(_, _go, modelKey, path, opt) {
     let model;
     if (error) {
       // empty
+      // TODO handle properly
     } else {
       _models((() => {
         let _i;
