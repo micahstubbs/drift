@@ -45,6 +45,7 @@ export function flowBrowser(_) {
     if (error) {
       return console.debug(error);
     }
+    // XXX sort
     return _docs(lodash.map(notebooks, notebook => createNotebookView(notebook)));
   });
   Flow.Dataflow.link(_.ready, () => {
