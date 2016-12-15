@@ -108,6 +108,7 @@ export function h2oPredictInput(_, _go, opt) {
         let _i;
         let _len;
         const _results = [];
+        // TODO use models directly
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
           _results.push(model.modelId.name);
