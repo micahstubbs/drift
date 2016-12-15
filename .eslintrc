@@ -15,7 +15,6 @@
     "no-unused-vars": "off",
     "no-alert": "off",
     "no-nested-ternary": "off",
-    no-return-assign: ["error", "always"],
-    "camelcase": "off"
+    "no-return-assign": ["error", "always"]
   }
 }
