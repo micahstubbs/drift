@@ -8,6 +8,8 @@ export function h2oImportFilesOutput(_, _go, _importResults) {
   const _canParse = _allFrames.length > 0;
   const _title = `${_allFrames.length} / ${_importResults.length} files imported.`;
   const createImportView = result => ({
+    // TODO dels?
+    // TODO fails?
     files: result.files,
     template: 'flow-import-file-output',
   });
