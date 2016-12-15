@@ -2,6 +2,9 @@ import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oImportFilesInput(_, _go) {
+  //
+  // Search files/directories
+  //
   const lodash = window._;
   const Flow = window.Flow;
   const _specifiedPath = Flow.Dataflow.signal('');
@@ -19,9 +22,14 @@ export function h2oImportFilesInput(_, _go) {
         return _exception(error.stack);
       }
       _exception('');
+      // _go 'confirm', result
       return processImportResult(result);
     });
   };
+
+  //
+  // File selection
+  //
   const _importedFiles = Flow.Dataflow.signals([]);
   const _importedFileCount = Flow.Dataflow.lift(_importedFiles, files => {
     if (files.length) {
@@ -132,7 +140,7 @@ export function h2oImportFilesInput(_, _go) {
   lodash.defer(_go);
   return {
     specifiedPath: _specifiedPath,
-    hasErrorMessage: _hasErrorMessage,
+    hasErrorMessage: _hasErrorMessage, // XXX obsolete
     exception: _exception,
     tryImportFiles,
     listPathHints: lodash.throttle(listPathHints, 100),
