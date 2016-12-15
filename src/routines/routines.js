@@ -1,4 +1,6 @@
 /* eslint-disable */
+import { parseNumbers } from './parseNumbers';
+
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
 import { h2oPlotOutput } from '../h2oPlotOutput';
@@ -133,20 +135,6 @@ export function routines() {
       description: 'Make a prediction',
       icon: 'bolt'
     }
-  };
-  parseNumbers = source => {
-    let i;
-    let target;
-    let value;
-    let _i;
-    let _len;
-    target = new Array(source.length);
-    for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-      value = source[i];
-      // TODO handle formatting
-      target[i] = value === 'NaN' ? void 0 : value === 'Infinity' ? Number.POSITIVE_INFINITY : value === '-Infinity' ? Number.NEGATIVE_INFINITY : value;
-    }
-    return target;
   };
   convertColumnToVector = (column, data) => {
     switch (column.type) {

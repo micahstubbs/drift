@@ -220,10 +220,10 @@ export function h2oProxy(_) {
     return go(null, result.frames);
   });
   const requestFrame = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}`, unwrap(go, result => lodash.head(result.frames)));
-  const requestFrameSlice = (key, searchTerm, offset, count, go) => {
+  const requestFrameSlice = (key, searchTerm, offset, count, go) => { // eslint-disable-line
     // TODO send search term
     return doGet(`/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, result => lodash.head(result.frames)));
-  }
+  };
   const requestFrameSummary = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary`, unwrap(go, result => lodash.head(result.frames)));
   const requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary?column_offset=${offset}&column_count=${count}&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
   const requestFrameSummaryWithoutData = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
@@ -327,20 +327,20 @@ export function h2oProxy(_) {
     return doPost('/3/Parse', opts, go);
   };
 
-  // Create data for partial dependence plot(s) 
+  // Create data for partial dependence plot(s)
   // for the specified model and frame.
   //
   // make a post request to h2o-3 to request
   // the data about the specified model and frame
   // subject to the other options `opts`
   //
-  // returns a job 
+  // returns a job
   const requestPartialDependence = (opts, go) => doPost('/3/PartialDependence/', opts, go);
 
   // make a post request to h2o-3 to do request
   // the data about the specified model and frame
   // subject to the other options `opts`
-  // 
+  //
   // returns a json response that contains the data
   const requestPartialDependenceData = (key, go) => doGet(`/3/PartialDependence/${encodeURIComponent(key)}`, (error, result) => {
     if (error) {
@@ -528,7 +528,7 @@ export function h2oProxy(_) {
       }
       //
       // TODO workaround for a filtering bug in the API
-      //    
+      //
       const predictions = (() => {
         let _i;
         let _len;

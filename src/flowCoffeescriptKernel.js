@@ -231,7 +231,7 @@ export function flowCoffeescriptKernel() {
   };
 
   // TODO DO NOT call this for raw javascript:
-  // Require alternate strategy: 
+  // Require alternate strategy:
   //  Declarations with 'var' need to be local to the cell.
   //  Undeclared identifiers are assumed to be global.
   //  'use strict' should be unsupported.
@@ -243,7 +243,7 @@ export function flowCoffeescriptKernel() {
         if (node.type === 'VariableDeclaration') {
           declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
           if (declarations.length === 0) {
-            // purge this node so that escodegen doesn't fail 
+            // purge this node so that escodegen doesn't fail
             return deleteAstNode(parent, key);
           }
           // replace with cleaned-up declarations

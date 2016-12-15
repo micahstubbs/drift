@@ -160,7 +160,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     };
 
     // TODO Mega-hack alert
-    // Last arg thresholdsAndCriteria applicable only to 
+    // Last arg thresholdsAndCriteria applicable only to
     // ROC charts for binomial models.
     const renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
       let rocPanel;
@@ -398,7 +398,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -407,7 +407,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -416,7 +416,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -471,7 +471,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -480,7 +480,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -489,7 +489,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-        
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -529,7 +529,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -538,7 +538,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -547,7 +547,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -584,7 +584,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       default:
         // do nothing
     }
-    // end of stackedensemble 
+    // end of stackedensemble
 
     table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
     if (table) {
@@ -623,10 +623,10 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       }
     }
     const toggle = () => _isExpanded(!_isExpanded());
-    const cloneModel = () => {
+    const cloneModel = () => { // eslint-disable-line
       // _.insertAndExecuteCell 'cs', 'assist buildModel,
       return alert('Not implemented');
-    }
+    };
     const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(_model.modelId.name)}`);
     const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_model.modelId.name)}`);
     const previewPojo = () => _.requestPojoPreview(_model.modelId.name, (error, result) => {

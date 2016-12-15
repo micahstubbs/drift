@@ -548,7 +548,7 @@ export function modelInput() {
                 }
                 break;
               default:
-                // checkbox 
+                // checkbox
                 hyperParameters[control.name] = [
                   true,
                   false,
@@ -620,15 +620,15 @@ export function modelInput() {
       return parameters;
     };
     //
-    // The 'checkForErrors' parameter exists so that we can conditionally choose 
-    // to ignore validation errors. This is because we need the show/hide states 
-    // for each field the first time around, but not the errors/warnings/info 
-    // messages. 
+    // The 'checkForErrors' parameter exists so that we can conditionally choose
+    // to ignore validation errors. This is because we need the show/hide states
+    // for each field the first time around, but not the errors/warnings/info
+    // messages.
     //
-    // Thus, when this function is called during form init, checkForErrors is 
-    //  passed in as 'false', and during form submission, checkForErrors is 
+    // Thus, when this function is called during form init, checkForErrors is
+    //  passed in as 'false', and during form submission, checkForErrors is
     //  passsed in as 'true'.
-    //  
+    //
     const performValidations = (checkForErrors, go) => {
       _exception(null);
       const parameters = collectParameters(true);
