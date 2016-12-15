@@ -94,6 +94,8 @@ export function h2oProxy(_) {
       _.status('server', 'error', path);
       const response = xhr.responseJSON;
       const meta = response;
+      // special-case net::ERR_CONNECTION_REFUSED
+      // if status is 'error' and xhr.status is 0
       const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
       return go(new Flow.Error(`Error calling ${method} ${path}${optsToString(opts)}`, cause));
     });
@@ -192,6 +194,7 @@ export function h2oProxy(_) {
     if (error) {
       return go(error);
     }
+    // TODO HACK - this api returns a 200 OK on failures
     if (result.error) {
       return go(new Flow.Error(result.error));
     }
@@ -217,7 +220,10 @@ export function h2oProxy(_) {
     return go(null, result.frames);
   });
   const requestFrame = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}`, unwrap(go, result => lodash.head(result.frames)));
-  const requestFrameSlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, result => lodash.head(result.frames)));
+  const requestFrameSlice = (key, searchTerm, offset, count, go) => {
+    // TODO send search term
+    return doGet(`/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, result => lodash.head(result.frames)));
+  }
   const requestFrameSummary = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary`, unwrap(go, result => lodash.head(result.frames)));
   const requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary?column_offset=${offset}&column_count=${count}&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
   const requestFrameSummaryWithoutData = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
@@ -320,7 +326,22 @@ export function h2oProxy(_) {
     };
     return doPost('/3/Parse', opts, go);
   };
+
+  // Create data for partial dependence plot(s) 
+  // for the specified model and frame.
+  //
+  // make a post request to h2o-3 to request
+  // the data about the specified model and frame
+  // subject to the other options `opts`
+  //
+  // returns a job 
   const requestPartialDependence = (opts, go) => doPost('/3/PartialDependence/', opts, go);
+
+  // make a post request to h2o-3 to do request
+  // the data about the specified model and frame
+  // subject to the other options `opts`
+  // 
+  // returns a json response that contains the data
   const requestPartialDependenceData = (key, go) => doGet(`/3/PartialDependence/${encodeURIComponent(key)}`, (error, result) => {
     if (error) {
       return go(error, result);
@@ -369,6 +390,8 @@ export function h2oProxy(_) {
     return doPost('/99/Models.bin/not_in_use', opts, go);
   };
   const requestExportModel = (key, path, overwrite, go) => doGet(`/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`, go);
+
+  // TODO Obsolete
   const requestModelBuildersVisibility = go => doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
   __modelBuilders = null;
   __modelBuilderEndpoints = null;
@@ -452,6 +475,7 @@ export function h2oProxy(_) {
   const requestModelBuild = (algo, parameters, go) => {
     _.trackEvent('model', algo);
     if (parameters.hyper_parameters) {
+      // super-hack: nest this object as stringified json
       parameters.hyper_parameters = flowPrelude.stringify(parameters.hyper_parameters);
       if (parameters.search_criteria) {
         parameters.search_criteria = flowPrelude.stringify(parameters.search_criteria);
@@ -502,6 +526,9 @@ export function h2oProxy(_) {
       if (error) {
         return _go(error);
       }
+      //
+      // TODO workaround for a filtering bug in the API
+      //    
       const predictions = (() => {
         let _i;
         let _len;
@@ -685,6 +712,9 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestHelpIndex, requestHelpIndex);
   Flow.Dataflow.link(_.requestHelpContent, requestHelpContent);
   Flow.Dataflow.link(_.requestExec, requestExec);
+  //
+  // Sparkling-Water
+  //
   Flow.Dataflow.link(_.requestRDDs, requestRDDs);
   Flow.Dataflow.link(_.requestDataFrames, requestDataFrames);
   Flow.Dataflow.link(_.requestScalaIntp, requestScalaIntp);
