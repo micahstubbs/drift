@@ -1,6 +1,7 @@
 {
   "extends": "airbnb",
   "rules": {
+    "prefer-rest-params": "off",
     "no-restricted-syntax": "off",
     "func-names": "off",
     "consistent-return": "off",
@@ -11,11 +12,9 @@
     "no-use-before-define": "off",
     "no-param-reassign": "off",
     "no-unused-vars": "off",
-    "max-len":"off",
     "no-alert": "off",
     "no-nested-ternary": "off",
     no-return-assign: ["error", "always"],
-    "prefer-rest-params": "off",
     "camelcase": "off"
   }
 }
