@@ -5,9 +5,17 @@ export function flowCoffeescriptKernel() {
   const esprima = window.esprima;
   const CoffeeScript = window.CoffeeScript;
   const safetyWrapCoffeescript = guid => (cs, go) => {
-    const lines = cs.replace(/[\n\r]/g, '\n').split('\n');
+    const lines = cs
+      .replace(/[\n\r]/g, '\n') // normalize CR/LF
+      .split('\n'); // split into lines
+
+    // indent once
     const block = lodash.map(lines, line => `  ${line}`);
+
+    // enclose in execute-immediate closure
     block.unshift(`_h2o_results_[\'${guid}\'].result do ->`);
+
+    // join and proceed
     return go(null, block.join('\n'));
   };
   const compileCoffeescript = (cs, go) => {
@@ -52,6 +60,9 @@ export function flowCoffeescriptKernel() {
           return _results;
         })();
       case 'FunctionDeclaration':
+        //
+        // XXX Not sure about the semantics here.
+        //
         if (node.id.type === 'Identifier') {
           return [{
             name: node.id.name,
@@ -96,6 +107,7 @@ export function flowCoffeescriptKernel() {
     let i;
     if (lodash.isArray(node)) {
       i = node.length;
+      // walk backwards to allow callers to delete nodes
       while (i--) {
         child = node[i];
         if (lodash.isObject(child)) {
@@ -126,7 +138,10 @@ export function flowCoffeescriptKernel() {
     let param;
     let _i;
     let _len;
+    // parse all declarations in this scope
     const localScope = parseDeclarations(node.body);
+
+    // include formal parameters
     const _ref = node.params;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       param = _ref[_i];
@@ -139,6 +154,8 @@ export function flowCoffeescriptKernel() {
     }
     return localScope;
   };
+
+  // redefine scope by coalescing down to non-local identifiers
   const coalesceScopes = scopes => {
     let i;
     let identifier;
@@ -172,6 +189,7 @@ export function flowCoffeescriptKernel() {
     let currentScope;
     const isNewScope = node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
     if (isNewScope) {
+      // create and push a new local scope onto scope stack
       scopes.push(createLocalScope(node));
       currentScope = coalesceScopes(scopes);
     } else {
@@ -187,6 +205,7 @@ export function flowCoffeescriptKernel() {
       }
     }
     if (isNewScope) {
+      // discard local scope
       scopes.pop();
     }
   };
@@ -210,6 +229,12 @@ export function flowCoffeescriptKernel() {
       return go(new Flow.Error('Error parsing root scope', error));
     }
   };
+
+  // TODO DO NOT call this for raw javascript:
+  // Require alternate strategy: 
+  //  Declarations with 'var' need to be local to the cell.
+  //  Undeclared identifiers are assumed to be global.
+  //  'use strict' should be unsupported.
   const removeHoistedDeclarations = (rootScope, program, go) => {
     let error;
     try {
@@ -218,8 +243,10 @@ export function flowCoffeescriptKernel() {
         if (node.type === 'VariableDeclaration') {
           declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
           if (declarations.length === 0) {
+            // purge this node so that escodegen doesn't fail 
             return deleteAstNode(parent, key);
           }
+          // replace with cleaned-up declarations
           node.declarations = declarations;
           return node.declarations;
         }
@@ -257,9 +284,11 @@ export function flowCoffeescriptKernel() {
       traverseJavascriptScoped([globalScope], globalScope, null, null, program, (globalScope, parent, key, node) => {
         let identifier;
         if (node.type === 'Identifier') {
+          // ignore var declarations
           if (parent.type === 'VariableDeclarator' && key === 'id') {
             return;
           }
+          // ignore members
           if (key === 'property') {
             return;
           }
@@ -267,6 +296,8 @@ export function flowCoffeescriptKernel() {
           if (!identifier) {
             return;
           }
+
+          // qualify identifier with '_h2o_context_'
           parent[key] = {
             type: 'MemberExpression',
             computed: false,
