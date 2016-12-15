@@ -3672,7 +3672,7 @@
     const Flow = window.Flow;
     const _rDDViews = Flow.Dataflow.signal([]);
     const createRDDView = rDD => ({
-      id: rDD.rdd_id,
+      id: rDD.rddId,
       name: rDD.name,
       partitions: rDD.partitions
     });
@@ -7353,17 +7353,17 @@
         render_(result, h2oH2OFrameOutput, result);
         return result;
       };
-      requestAsH2OFrameFromRDD = (rdd_id, name, go) => _.requestAsH2OFrameFromRDD(rdd_id, name, (error, h2oframe_id) => {
+      requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
         if (error) {
           return go(error);
         }
         return go(null, extendAsH2OFrame(h2oframe_id));
       });
-      asH2OFrameFromRDD = (rdd_id, name) => {
+      asH2OFrameFromRDD = (rddId, name) => {
         if (name == null) {
           name = void 0;
         }
-        return _fork(requestAsH2OFrameFromRDD, rdd_id, name);
+        return _fork(requestAsH2OFrameFromRDD, rddId, name);
       };
       requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
         if (error) {
@@ -11872,11 +11872,11 @@
     const requestDataFrames = go => doGet('/3/dataframes', go);
     const requestScalaIntp = go => doPost('/3/scalaint', {}, go);
     const requestScalaCode = (session_id, code, go) => doPost(`/3/scalaint/${ session_id }`, { code }, go);
-    const requestAsH2OFrameFromRDD = (rdd_id, name, go) => {
+    const requestAsH2OFrameFromRDD = (rddId, name, go) => {
       if (name === void 0) {
-        return doPost(`/3/RDDs/${ rdd_id }/h2oframe`, {}, go);
+        return doPost(`/3/RDDs/${ rddId }/h2oframe`, {}, go);
       }
-      return doPost(`/3/RDDs/${ rdd_id }/h2oframe`, { h2oframe_id: name }, go);
+      return doPost(`/3/RDDs/${ rddId }/h2oframe`, { h2oframe_id: name }, go);
     };
     const requestAsH2OFrameFromDF = (dfId, name, go) => {
       if (name === void 0) {

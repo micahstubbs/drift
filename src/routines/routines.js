@@ -2819,17 +2819,17 @@ export function routines() {
       render_(result, h2oH2OFrameOutput, result);
       return result;
     };
-    requestAsH2OFrameFromRDD = (rdd_id, name, go) => _.requestAsH2OFrameFromRDD(rdd_id, name, (error, h2oframe_id) => {
+    requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
       if (error) {
         return go(error);
       }
       return go(null, extendAsH2OFrame(h2oframe_id));
     });
-    asH2OFrameFromRDD = (rdd_id, name) => {
+    asH2OFrameFromRDD = (rddId, name) => {
       if (name == null) {
         name = void 0;
       }
-      return _fork(requestAsH2OFrameFromRDD, rdd_id, name);
+      return _fork(requestAsH2OFrameFromRDD, rddId, name);
     };
     requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
       if (error) {

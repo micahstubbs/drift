@@ -3,7 +3,7 @@ export function h2oRDDsOutput(_, _go, _rDDs) {
   const Flow = window.Flow;
   const _rDDViews = Flow.Dataflow.signal([]);
   const createRDDView = rDD => ({
-    id: rDD.rdd_id,
+    id: rDD.rddId,
     name: rDD.name,
     partitions: rDD.partitions,
   });

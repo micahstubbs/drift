@@ -601,11 +601,11 @@ export function h2oProxy(_) {
   const requestDataFrames = go => doGet('/3/dataframes', go);
   const requestScalaIntp = go => doPost('/3/scalaint', {}, go);
   const requestScalaCode = (session_id, code, go) => doPost(`/3/scalaint/${session_id}`, { code }, go);
-  const requestAsH2OFrameFromRDD = (rdd_id, name, go) => {
+  const requestAsH2OFrameFromRDD = (rddId, name, go) => {
     if (name === void 0) {
-      return doPost(`/3/RDDs/${rdd_id}/h2oframe`, {}, go);
+      return doPost(`/3/RDDs/${rddId}/h2oframe`, {}, go);
     }
-    return doPost(`/3/RDDs/${rdd_id}/h2oframe`, { h2oframe_id: name }, go);
+    return doPost(`/3/RDDs/${rddId}/h2oframe`, { h2oframe_id: name }, go);
   };
   const requestAsH2OFrameFromDF = (dfId, name, go) => {
     if (name === void 0) {
