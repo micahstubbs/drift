@@ -11,6 +11,7 @@ export function h2oInspectsOutput(_, _go, _tables) {
     return {
       label: table.label,
       description: table.metadata.description,
+      // variables: table.variables #XXX unused?
       inspect,
       grid,
       canPlot: table.metadata.plot,
