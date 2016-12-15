@@ -40,6 +40,7 @@ export function async() {
     const self = go => {
       const canGo = lodash.isFunction(go);
       if (self.settled) {
+        // proceed with cached error/result
         if (self.rejected) {
           if (canGo) {
             return go(self.error);
@@ -143,6 +144,8 @@ export function async() {
       }
     }));
   }
+  // Like _.compose, but async. 
+  // Equivalent to caolan/async.waterfall()
   const pipe = tasks => {
     const _tasks = tasks.slice(0);
     const next = (args, go) => {
@@ -180,10 +183,17 @@ export function async() {
           return next(go);
         });
       }
+      // XXX should errors be included in arg #1?
       return go(null, _results);
     };
     return go => next(go);
   };
+
+  //
+  // Gives a synchronous operation an asynchronous signature.
+  // Used to pass synchronous functions to callers that expect
+  // asynchronous signatures.
+  //
   const _async = function () {
     const f = arguments[0];
     const args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
@@ -203,6 +213,15 @@ export function async() {
     };
     return _fork(later, args);
   };
+
+  //
+  // Asynchronous find operation.
+  //
+  // find attr, prop, array
+  // find array, attr, prop
+  // find attr, obj
+  // find obj, attr
+  //
   const _find$3 = (attr, prop, obj) => {
     let v;
     let _i;
@@ -270,6 +289,8 @@ export function async() {
         // do nothing
     }
   };
+
+  // Duplicate of _find$2
   const _get = (attr, obj) => {
     if (_isFuture(obj)) {
       return _async(_get, attr, obj);
@@ -281,7 +302,7 @@ export function async() {
     }
   };
   Flow.Async = {
-    createBuffer,
+    createBuffer, // XXX rename
     noop: _noop,
     applicate: _applicate,
     isFuture: _isFuture,
