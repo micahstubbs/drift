@@ -836,7 +836,7 @@
       });
       const _modelForm = Flow.Dataflow.signal(null);
       const populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
-        const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'modelId');
+        const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
         if (destinationKeyParameter && !destinationKeyParameter.actualValue) {
           destinationKeyParameter.actualValue = `${ algorithm }-${ Flow.Util.uuid() }`;
         }
@@ -2319,7 +2319,7 @@
     let _i;
     let _len;
     const _destinationKey = _result.destination_key;
-    const _modelId = _result.modelId.name;
+    const _modelId = _result.model_id.name;
     const _frameId = _result.frame_id.name;
     const renderPlot = (target, render) => render((error, vis) => {
       if (error) {
@@ -3073,32 +3073,29 @@
         }
       }
       const toggle = () => _isExpanded(!_isExpanded());
-      const cloneModel = () => {
-        // eslint-disable-line
-        // _.insertAndExecuteCell 'cs', 'assist buildModel,
-        return alert('Not implemented');
-      };
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.modelId.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.modelId.name) }`);
-      const previewPojo = () => _.requestPojoPreview(_model.modelId.name, (error, result) => {
+
+      const cloneModel = () => alert('Not implemented');
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+      const previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
         }
         return _pojoPreview(`<pre>${ Flow.Util.highlight(result, 'java') }</pre>`);
       });
-      const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.modelId.name) }`, '_blank');
-      const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.modelId.name) }/mojo`, '_blank');
-      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$14.stringify(_model.modelId.name) }`);
+      const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
+      const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
+      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
       const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
         acceptCaption: 'Delete Model',
         declineCaption: 'Cancel'
       }, accept => {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$14.stringify(_model.modelId.name) }`);
+          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
         }
       });
       return {
-        key: _model.modelId,
+        key: _model.model_id,
         algo: _model.algo_full_name,
         plots: _plots,
         inputParameters: _inputParameters,
@@ -3150,7 +3147,7 @@
     const Flow = window.Flow;
     let _isCheckingAll;
     const _modelViews = Flow.Dataflow.signal([]);
-    const _hasModels = _grid.modelIds.length > 0;
+    const _hasModels = _grid.model_ids.length > 0;
     const _errorViews = Flow.Dataflow.signal([]);
     const _hasErrors = _grid.failure_details.length > 0;
     const _checkAllModels = Flow.Dataflow.signal(false);
@@ -3171,7 +3168,7 @@
       _checkedModelCount(checkAll ? views.length : 0);
       _isCheckingAll = false;
     });
-    const createModelView = modelId => {
+    const createModelView = model_id => {
       const _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
         let view;
@@ -3193,13 +3190,13 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$15.stringify(modelId.name) }`);
-      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(modelId.name)}`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$15.stringify(model_id.name) }`);
+      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
       alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$15.stringify(modelId.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$15.stringify(modelId.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$15.stringify(model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$15.stringify(model_id.name) }`);
       return {
-        key: modelId.name,
+        key: model_id.name,
         isChecked: _isChecked,
         predict,
         clone: cloneModel,
@@ -3258,7 +3255,7 @@
     };
     const initialize = grid => {
       let i;
-      _modelViews(lodash.map(grid.modelIds, createModelView));
+      _modelViews(lodash.map(grid.model_ids, createModelView));
       const errorViews = (() => {
         let _i;
         let _ref;
@@ -3307,7 +3304,7 @@
       const view = () => _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$16.stringify(grid.grid_id.name) }`);
       return {
         key: grid.grid_id.name,
-        size: grid.modelIds.length,
+        size: grid.model_ids.length,
         view
       };
     };
@@ -3371,13 +3368,13 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(model.modelId.name) }`);
-      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.modelId.name)}`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(model.model_id.name) }`);
+      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
       alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify(model.modelId.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(model.modelId.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
       return {
-        key: model.modelId.name,
+        key: model.model_id.name,
         algo: model.algo_full_name,
         isChecked: _isChecked,
         predict,
@@ -4383,7 +4380,7 @@
           // TODO use models directly
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
-            _results.push(model.modelId.name);
+            _results.push(model.model_id.name);
           }
           return _results;
         })());
@@ -4818,7 +4815,7 @@
       // form dropdown menus, text boxes, etc
       const opts = {
         destination_key: _destinationKey(),
-        modelId: _selectedModel(),
+        model_id: _selectedModel(),
         frame_id: _selectedFrame(),
         nbins: _nbins()
       };
@@ -4863,7 +4860,7 @@
         // TODO use models directly
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
-          _results.push(model.modelId.name);
+          _results.push(model.model_id.name);
         }
         return _results;
       })());
@@ -4971,7 +4968,7 @@
           const _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
-            _results.push(model.modelId.name);
+            _results.push(model.model_id.name);
           }
           return _results;
         })());
@@ -5833,7 +5830,7 @@
           _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
-            _results.push(model.modelId.name);
+            _results.push(model.model_id.name);
           }
           return _results;
         })();
@@ -5871,8 +5868,8 @@
           return _results;
         })();
         return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-          description: `Parameters for model \'${ model.modelId.name }\'`, // TODO frame model_id
-          origin: `getModel ${ flowPrelude$5.stringify(model.modelId.name) }`
+          description: `Parameters for model \'${ model.model_id.name }\'`, // TODO frame model_id
+          origin: `getModel ${ flowPrelude$5.stringify(model.model_id.name) }`
         });
       };
       extendJob = job => render_(job, H2O.JobOutput, job);
@@ -6054,7 +6051,7 @@
           let _ref1;
           inspections = {};
           inspections.parameters = inspectModelParameters(model);
-          origin = `getModel ${ flowPrelude$5.stringify(model.modelId.name) }`;
+          origin = `getModel ${ flowPrelude$5.stringify(model.model_id.name) }`;
           inspectObject(inspections, 'output', origin, model.output);
 
           // Obviously, an array of 2d tables calls for a megahack.
@@ -6071,7 +6068,7 @@
           inspect_(model, inspections);
           return model;
         };
-        refresh = go => _.requestModel(model.modelId.name, (error, model) => {
+        refresh = go => _.requestModel(model.model_id.name, (error, model) => {
           if (error) {
             return go(error);
           }
