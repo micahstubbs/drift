@@ -88,6 +88,7 @@ export function objectBrowser() {
         return type;
     }
   };
+  // TODO slice large arrays
   Flow.objectBrowserElement = (key, object) => {
     const _expansions = Flow.Dataflow.signal(null);
     const _isExpanded = Flow.Dataflow.signal(false);
