@@ -20,12 +20,19 @@ export function flowCell(_, _renderers, type, input) {
   const _hasInput = Flow.Dataflow.signal(true);
   const _input = Flow.Dataflow.signal(input);
   const _outputs = Flow.Dataflow.signals([]);
+  // Only for headless use.
   const _errors = [];
   const _result = Flow.Dataflow.signal(null);
   const _hasOutput = Flow.Dataflow.lift(_outputs, outputs => outputs.length > 0);
   const _isInputVisible = Flow.Dataflow.signal(true);
   const _isOutputHidden = Flow.Dataflow.signal(false);
+
+  // This is a shim for ko binding handlers to attach methods to
+  // The ko 'cursorPosition' custom binding attaches a getCursorPosition() method to this.
+  // The ko 'autoResize' custom binding attaches an autoResize() method to this.
   const _actions = {};
+
+  // select and display input when activated
   Flow.Dataflow.act(_isActive, isActive => {
     if (isActive) {
       _.selectCell(self);
@@ -35,19 +42,32 @@ export function flowCell(_, _renderers, type, input) {
       }
     }
   });
+
+  // deactivate when deselected
   Flow.Dataflow.act(_isSelected, isSelected => {
     if (!isSelected) {
       return _isActive(false);
     }
   });
+
+  // tied to mouse-clicks on the cell
   const select = () => {
+    // pass scrollIntoView=false, 
+    // otherwise mouse actions like clicking on a form field will cause scrolling.
     _.selectCell(self, false);
+    // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
     return true;
   };
+
+  // tied to mouse-clicks in the outline view
   const navigate = () => {
     _.selectCell(self);
+    // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
     return true;
   };
+
+  // tied to mouse-double-clicks on html content
+  // TODO
   const activate = () => _isActive(true);
   const clip = () => _.saveClip('user', _type(), _input());
   const toggleInput = () => _isInputVisible(!_isInputVisible());
@@ -55,6 +75,7 @@ export function flowCell(_, _renderers, type, input) {
   const clear = () => {
     _result(null);
     _outputs([]);
+    // Only for headless use
     _errors.length = 0;
     _hasError(false);
     if (!_isCode()) {
@@ -75,9 +96,13 @@ export function flowCell(_, _renderers, type, input) {
     _isBusy(true);
     clear();
     if (_type() === 'sca') {
+      // escape backslashes
       input = input.replace(/\\/g, '\\\\');
+      // escape quotes
       input = input.replace(/'/g, '\\\'');
+      // escape new-lines
       input = input.replace(/\n/g, '\\n');
+      // pass the cell body as an argument, representing the scala code, to the appropriate function
       input = `runScalaCode ${_.scalaIntpId()}, \'${input}\'`;
     }
     render(input, {
@@ -85,11 +110,13 @@ export function flowCell(_, _renderers, type, input) {
         return _outputs.push(result);
       },
       close(result) {
+        // XXX push to cell output
         return _result(result);
       },
       error(error) {
         _hasError(true);
         if (error.name === 'FlowError') {
+          // XXX review
           _outputs.push(Flow.failure(_, error));
         } else {
           _outputs.push({
@@ -97,6 +124,7 @@ export function flowCell(_, _renderers, type, input) {
             template: 'flow-raw',
           });
         }
+        // Only for headless use
         return _errors.push(error);
       },
       end() {
