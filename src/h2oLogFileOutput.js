@@ -1,6 +1,7 @@
 export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
   const lodash = window._;
   const Flow = window.Flow;
+  // TODO Display in .jade
   const _exception = Flow.Dataflow.signal(null);
   const _contents = Flow.Dataflow.signal('');
   const _nodes = Flow.Dataflow.signal([]);
