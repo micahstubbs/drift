@@ -7381,17 +7381,17 @@
         render_(result, h2oDataFrameOutput, result);
         return result;
       };
-      requestAsDataFrame = (hf_id, name, go) => _.requestAsDataFrame(hf_id, name, (error, result) => {
+      requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendAsDataFrame(result));
       });
-      asDataFrame = (hf_id, name) => {
+      asDataFrame = (hfId, name) => {
         if (name == null) {
           name = void 0;
         }
-        return _fork(requestAsDataFrame, hf_id, name);
+        return _fork(requestAsDataFrame, hfId, name);
       };
       requestScalaCode = (session_id, code, go) => _.requestScalaCode(session_id, code, (error, result) => {
         if (error) {
@@ -11884,11 +11884,11 @@
       }
       return doPost(`/3/dataframes/${ df_id }/h2oframe`, { h2oframe_id: name }, go);
     };
-    const requestAsDataFrame = (hf_id, name, go) => {
+    const requestAsDataFrame = (hfId, name, go) => {
       if (name === void 0) {
-        return doPost(`/3/h2oframes/${ hf_id }/dataframe`, {}, go);
+        return doPost(`/3/h2oframes/${ hfId }/dataframe`, {}, go);
       }
-      return doPost(`/3/h2oframes/${ hf_id }/dataframe`, { dataframe_id: name }, go);
+      return doPost(`/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
     };
     Flow.Dataflow.link(_.requestInspect, requestInspect);
     Flow.Dataflow.link(_.requestCreateFrame, requestCreateFrame);

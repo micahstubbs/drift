@@ -2847,17 +2847,17 @@ export function routines() {
       render_(result, h2oDataFrameOutput, result);
       return result;
     };
-    requestAsDataFrame = (hf_id, name, go) => _.requestAsDataFrame(hf_id, name, (error, result) => {
+    requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
       if (error) {
         return go(error);
       }
       return go(null, extendAsDataFrame(result));
     });
-    asDataFrame = (hf_id, name) => {
+    asDataFrame = (hfId, name) => {
       if (name == null) {
         name = void 0;
       }
-      return _fork(requestAsDataFrame, hf_id, name);
+      return _fork(requestAsDataFrame, hfId, name);
     };
     requestScalaCode = (session_id, code, go) => _.requestScalaCode(session_id, code, (error, result) => {
       if (error) {

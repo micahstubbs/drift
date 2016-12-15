@@ -613,11 +613,11 @@ export function h2oProxy(_) {
     }
     return doPost(`/3/dataframes/${df_id}/h2oframe`, { h2oframe_id: name }, go);
   };
-  const requestAsDataFrame = (hf_id, name, go) => {
+  const requestAsDataFrame = (hfId, name, go) => {
     if (name === void 0) {
-      return doPost(`/3/h2oframes/${hf_id}/dataframe`, {}, go);
+      return doPost(`/3/h2oframes/${hfId}/dataframe`, {}, go);
     }
-    return doPost(`/3/h2oframes/${hf_id}/dataframe`, { dataframe_id: name }, go);
+    return doPost(`/3/h2oframes/${hfId}/dataframe`, { dataframe_id: name }, go);
   };
   Flow.Dataflow.link(_.requestInspect, requestInspect);
   Flow.Dataflow.link(_.requestCreateFrame, requestCreateFrame);
