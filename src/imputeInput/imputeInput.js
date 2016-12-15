@@ -74,6 +74,7 @@ export function imputeInput() {
       let frame;
       if (error) {
         // empty
+        // TODO handle properly
       } else {
         _frames((() => {
           let _i;
@@ -98,6 +99,7 @@ export function imputeInput() {
           let column;
           if (error) {
             // empty
+            // TODO handle properly
           } else {
             _columns((() => {
               let _i;
@@ -112,7 +114,7 @@ export function imputeInput() {
             })());
             if (opts.column) {
               _column(opts.column);
-              return delete opts.column;
+              return delete opts.column; // HACK
             }
           }
         });

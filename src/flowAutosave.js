@@ -1,7 +1,10 @@
 export function flowAutosave(_) {
   const Flow = window.Flow;
   const warnOnExit = e => {
+    // message = 'You have unsaved changes to this notebook.'
     const message = 'Warning: you are about to exit Flow.';
+
+    // < IE8 and < FF4
     e = e != null ? e : window.event;
     if (e) {
       e.returnValue = message;

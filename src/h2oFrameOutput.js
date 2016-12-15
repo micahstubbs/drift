@@ -71,6 +71,7 @@ export function h2oFrameOutput(_, _go, _frame) {
     return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
       if (error) {
         // empty
+        // TODO
       } else {
         _lastUsedSearchTerm = searchTerm;
         _currentPage(pageIndex);

@@ -1,3 +1,39 @@
+//
+// Custom Knockout.js binding handlers
+//
+// init:
+//   This will be called when the binding is first applied to an element
+//   Set up any initial state, event handlers, etc. here
+//
+// update:
+//   This will be called once when the binding is first applied to an element,
+//    and again whenever the associated observable changes value.
+//   Update the DOM element based on the supplied values here.
+//
+// Registering a callback on the disposal of an element
+// 
+// To register a function to run when a node is removed, 
+// you can call ko.utils.domNodeDisposal.addDisposeCallback(node, callback). 
+// As an example, suppose you create a custom binding to instantiate a widget. 
+// When the element with the binding is removed, 
+// you may want to call the destroy method of the widget:
+// 
+// ko.bindingHandlers.myWidget = {
+//     init: function(element, valueAccessor) {
+//         var options = ko.unwrap(valueAccessor()),
+//             $el = $(element);
+//  
+//         $el.myWidget(options);
+//  
+//         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+//             // This will be called when the element is removed by Knockout or
+//             // if some other part of your code calls ko.removeNode(element)
+//             $el.myWidget("destroy");
+//         });
+//     }
+// };
+//
+
 export function knockout() {
   const lodash = window._;
   const $ = window.jQuery;
@@ -6,7 +42,7 @@ export function knockout() {
   const marked = window.marked;
   if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
     return;
-  }
+  } 
   ko.bindingHandlers.raw = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
       let $element;
@@ -77,6 +113,9 @@ export function knockout() {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
       const arg = ko.unwrap(valueAccessor());
       if (arg) {
+        // Bit of a hack. 
+        // Attaches a method to the bound object that returns the cursor position. 
+        // Uses dwieeb/jquery-textrange.
         arg.getCursorPosition = () => $(element).textrange('get', 'position');
       }
     },
@@ -87,6 +126,8 @@ export function knockout() {
       const arg = ko.unwrap(valueAccessor());
       let resize;
       if (arg) {
+        // Bit of a hack.
+        // Attaches a method to the bound object that resizes the element to fit its content.
         arg.autoResize = resize = () => lodash.defer(() => $el.css('height', 'auto').height(element.scrollHeight));
         $el = $(element).on('input', resize);
         resize();
@@ -99,6 +140,8 @@ export function knockout() {
       let $viewport;
       const arg = ko.unwrap(valueAccessor());
       if (arg) {
+        // Bit of a hack.
+        // Attaches a method to the bound object that scrolls the cell into view
         $el = $(element);
         $viewport = $el.closest('.flow-box-notebook');
         arg.scrollIntoView = immediate => {
@@ -108,6 +151,7 @@ export function knockout() {
           const position = $viewport.scrollTop();
           const top = $el.position().top + position;
           const height = $viewport.height();
+          // scroll if element is outside the viewport
           if (top - 20 < position || top + 20 > position + height) {
             if (immediate) {
               return $viewport.scrollTop(top);
@@ -188,7 +232,9 @@ export function knockout() {
   };
   ko.bindingHandlers.codemirror = {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // get the code mirror options
       const options = ko.unwrap(valueAccessor());
+      // created editor replaces the textarea on which it was created
       const editor = CodeMirror.fromTextArea(element, options);
       editor.on('change', cm => allBindings().value(cm.getValue()));
       element.editor = editor;

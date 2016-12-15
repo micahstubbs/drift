@@ -88,8 +88,12 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
+
+    // initialize the interpreter when the notebook is created
+    // one interpreter is shared by all scala cells  
     const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
       if (error) {
+        // Handle the error
         return _.scalaIntpId(-1);
       }
       return _.scalaIntpId(response.sessionId);
@@ -134,6 +138,8 @@ export function notebook() {
       })();
       _cells(cells);
       selectCell(lodash.head(cells));
+
+      // Execute all non-code cells (headings, markdown, etc.)
       const _ref = _cells();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cell = _ref[_i];
@@ -187,6 +193,7 @@ export function notebook() {
         _selectedCell.isSelected(false);
       }
       _selectedCell = target;
+      // TODO also set focus so that tabs don't jump to the first cell
       _selectedCell.isSelected(true);
       _selectedCellIndex = _cells.indexOf(_selectedCell);
       checkConsistency();
@@ -232,9 +239,11 @@ export function notebook() {
       const cells = _cells();
       if (cells.length > 1) {
         if (_selectedCellIndex === cells.length - 1) {
+          // TODO call dispose() on this cell
           removedCell = lodash.head(_cells.splice(_selectedCellIndex, 1));
           selectCell(cells[_selectedCellIndex - 1]);
         } else {
+          // TODO call dispose() on this cell
           removedCell = lodash.head(_cells.splice(_selectedCellIndex, 1));
           selectCell(cells[_selectedCellIndex]);
         }
@@ -347,6 +356,8 @@ export function notebook() {
       _selectedCell.execute(() => insertNewCellBelow());
       return false;
     };
+    // ipython has inconsistent behavior here. 
+    // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
     const runCellAndSelectBelow = () => {
       _selectedCell.execute(() => selectNextCell());
       return false;
@@ -358,6 +369,8 @@ export function notebook() {
       }
       _remoteName(localName);
       _localName(localName);
+
+      // renamed document
       if (remoteName !== localName) {
         return _.requestDeleteObject('notebook', remoteName, error => {
           if (error) {
@@ -373,10 +386,13 @@ export function notebook() {
       if (localName === '') {
         return _.alert('Invalid notebook name.');
       }
+
+      // saved document
       const remoteName = _remoteName();
       if (remoteName) {
         storeNotebook(localName, remoteName);
       }
+      // unsaved document
       checkIfNameIsInUse(localName, isNameInUse => {
         if (isNameInUse) {
           return _.confirm('A notebook with that name already exists.\nDo you want to replace it with the one you\'re saving?', {
@@ -428,6 +444,11 @@ export function notebook() {
       let _ref;
       const wereHidden = _areInputsHidden();
       _areInputsHidden(!wereHidden);
+      //
+      // If cells are generated while inputs are hidden, the input boxes
+      //   do not resize to fit contents. So explicitly ask all cells 
+      //   to resize themselves.
+      //
       if (wereHidden) {
         _ref = _cells();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -455,6 +476,7 @@ export function notebook() {
       if (_selectedCellIndex !== cells.length - 1) {
         selectCell(cells[_selectedCellIndex + 1]);
       }
+      // prevent arrow keys from scrolling the page
       return false;
     }
     const selectPreviousCell = () => {
@@ -463,6 +485,7 @@ export function notebook() {
         cells = _cells();
         selectCell(cells[_selectedCellIndex - 1]);
       }
+      // prevent arrow keys from scrolling the page
       return false;
     };
     const displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
@@ -570,14 +593,17 @@ export function notebook() {
       }
       const executeNextCell = () => {
         let cell;
+        // will be false if user-aborted
         if (_isRunningAll()) {
           cell = cells.shift();
           if (cell) {
+            // Scroll immediately without affecting selection state.
             cell.scrollIntoView(true);
             cellIndex++;
             _runningCaption(`Running cell ${cellIndex} of ${cellCount}`);
             _runningPercent(`${Math.floor(100 * cellIndex / cellCount)}%`);
             _runningCellInput(cell.input());
+            // TODO Continuation should be EFC, and passing an error should abort 'run all'
             return cell.execute(errors => {
               if (errors) {
                 return go('failed', errors);
@@ -603,6 +629,7 @@ export function notebook() {
           case 'failed':
             return _.growl('Failed running your flow.', 'danger');
           default:
+            // 'done'
             return _.growl('Finished running your flow!', 'success');
         }
       });
@@ -624,11 +651,15 @@ export function notebook() {
         cell.autoResize();
       }
     };
-    const notImplemented = () => {
-    };
+    // noop
+    const notImplemented = () => {};
     const pasteCellandReplace = notImplemented;
     const mergeCellAbove = notImplemented;
     const startTour = notImplemented;
+
+    //
+    // Top menu bar
+    //
     const createMenu = (label, items) => ({
       label,
       items,
@@ -663,6 +694,7 @@ export function notebook() {
         'v',
       ]),
       createMenuItem('Paste Cell Below', pasteCellBelow, ['v']),
+      // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
       createMenuItem('Delete Cell', deleteCell, [
         'd',
         'd',
@@ -680,6 +712,9 @@ export function notebook() {
       menuDivider,
       createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']),
       createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']),
+      // TODO createMenuItem('Split Cell', splitCell),
+      // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
+      // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
       menuDivider,
       createMenuItem('Toggle Cell Input', toggleInput),
       createMenuItem('Toggle Cell Output', toggleOutput, ['o']),
@@ -727,6 +762,8 @@ export function notebook() {
           createMenuItem('List All Frames', executeCommand('getFrames')),
           menuDivider,
           createMenuItem('Impute...', executeCommand('imputeColumn')),
+          // TODO Quantiles
+          // TODO Interaction
         ]),
         createMenu('Model', modelMenuItems),
         createMenu('Score', [
@@ -734,6 +771,12 @@ export function notebook() {
           createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')),
           menuDivider,
           createMenuItem('List All Predictions', executeCommand('getPredictions')),
+          // TODO Confusion Matrix
+          // TODO AUC
+          // TODO Hit Ratio
+          // TODO PCA Score
+          // TODO Gains/Lift Table
+          // TODO Multi-model Scoring
         ]),
         createMenu('Admin', [
           createMenuItem('Jobs', executeCommand('getJobs')),
@@ -748,11 +791,15 @@ export function notebook() {
           createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')),
           createMenuItem('Stack Trace', executeCommand('getStackTrace')),
           createMenuItem('Network Test', executeCommand('testNetwork')),
+          // TODO Cluster I/O
           createMenuItem('Profiler', executeCommand('getProfile depth: 10')),
           createMenuItem('Timeline', executeCommand('getTimeline')),
+          // TODO UDP Drop Test
+          // TODO Task Status
           createMenuItem('Shut Down', shutdown),
         ]),
         createMenu('Help', [
+          // TODO createMenuItem('Tour', startTour, true),
           createMenuItem('Assist Me', executeCommand('assist')),
           menuDivider,
           createMenuItem('Contents', showHelp),
@@ -765,6 +812,7 @@ export function notebook() {
           createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')),
           createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')),
           menuDivider,
+          // TODO Tutorial Flows
           createMenuItem('About', displayAbout),
         ]),
       ];
@@ -806,12 +854,27 @@ export function notebook() {
       ],
           [createTool('question-circle', 'Assist Me', executeCommand('assist'))],
     ];
+
+
+    // (From IPython Notebook keyboard shortcuts dialog)
+    //
+    // The IPython Notebook has two different keyboard input modes.
+    // Edit mode allows you to type code/text into a cell 
+    // and is indicated by a green cell border.
+    // Command mode binds the keyboard to notebook level 
+    // actions and is indicated by a grey cell border.
+    //
+    // Command Mode (press Esc to enable)
+    //   
     const normalModeKeyboardShortcuts = [
       [
         'enter',
         'edit mode',
         switchToEditMode,
       ],
+      // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
+      // [ 'ctrl+enter', 'run cell', runCell ]
+      // [ 'alt+enter', 'run cell, insert below', runCellAndInsertBelow ]
       [
         'y',
         'to code',
@@ -937,17 +1000,23 @@ export function notebook() {
         'save notebook',
         saveNotebook,
       ],
+      // [ 'mod+s', 'save notebook', saveNotebook ]
+      // [ 'l', 'toggle line numbers' ]
       [
         'o',
         'toggle output',
         toggleOutput,
       ],
+      // [ 'shift+o', 'toggle output scrolling' ]
       [
         'h',
         'keyboard shortcuts',
         displayKeyboardShortcuts,
       ],
+      // [ 'i', 'interrupt kernel (press twice)' ]
+      // [ '0', 'restart kernel (press twice)' ]
     ];
+
     if (_.onSparklingWater) {
       normalModeKeyboardShortcuts.push([
         'q',
@@ -955,7 +1024,25 @@ export function notebook() {
         convertCellToScala,
       ]);
     }
+
+    //
+    // Edit Mode (press Enter to enable) 
+    //
     const editModeKeyboardShortcuts = [
+      // Tab : code completion or indent
+      // Shift-Tab : tooltip
+      // Cmd-] : indent
+      // Cmd-[ : dedent
+      // Cmd-a : select all
+      // Cmd-z : undo
+      // Cmd-Shift-z : redo
+      // Cmd-y : redo
+      // Cmd-Up : go to cell start
+      // Cmd-Down : go to cell end
+      // Opt-Left : go one word left
+      // Opt-Right : go one word right
+      // Opt-Backspace : del word before
+      // Opt-Delete : del word after
       [
         'esc',
         'command mode',
@@ -1040,6 +1127,7 @@ export function notebook() {
       Flow.Dataflow.link(_.saved, () => _.growl('Notebook saved.'));
       Flow.Dataflow.link(_.loaded, () => _.growl('Notebook loaded.'));
       executeCommand('assist')();
+      // TODO setPristine() when autosave is implemented.
       _.setDirty();
       if (_.onSparklingWater) {
         return _initializeInterpreter();

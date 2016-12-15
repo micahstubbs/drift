@@ -24,6 +24,8 @@ export function flowCoffeescript(_, guid, sandbox) {
     }
     return false;
   };
+
+  // XXX special-case functions so that bodies are not printed with the raw renderer.
   const render = (input, output) => {
     let cellResult;
     let outputBuffer;

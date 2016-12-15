@@ -55,6 +55,8 @@ export function gui() {
     self.value = wrapValue(opts.value, opts.value);
     return self;
   };
+
+  // TODO ko supports array valued args for 'checked' - can provide a checkboxes function
   const dropdown = opts => {
     const self = control('dropdown', opts);
     self.options = opts.options || [];

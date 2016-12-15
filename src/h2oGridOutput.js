@@ -109,6 +109,7 @@ export function h2oGridOutput(_, _go, _grid) {
       }
       return _results;
     })();
+    // TODO use table origin
     return _.insertAndExecuteCell('cs', `inspect getModels ${flowPrelude.stringify(allKeys)}`);
   };
   const initialize = grid => {

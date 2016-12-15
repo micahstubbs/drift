@@ -1,6 +1,10 @@
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
+//
+// Reactive programming / Dataflow programming wrapper over ko
+//
+
 export function dataflow() {
   const lodash = window._;
   const Flow = window.Flow;
@@ -147,6 +151,9 @@ export function dataflow() {
       console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
       return arrows.dispose();
     };
+    //
+    // Combinators
+    //
     const _apply = (sources, func) => func(...lodash.map(sources, source => source()));
     const _act = (...args) => {
       let _i;

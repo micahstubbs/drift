@@ -48,6 +48,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       }
       return false;
     });
+
+    // TODO use _.enumerate()
     const _inputParameters = lodash.map(_model.parameters, parameter => {
       const type = parameter.type;
       const defaultValue = parameter.defaultValue;
@@ -92,6 +94,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         isModified: defaultValue === actualValue,
       };
     });
+
+    // TODO copied over from routines.coffee. replace post h2o.js integration.
     const format4f = number => {
       if (number) {
         if (number === 'NaN') {
@@ -117,6 +121,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       let thresholds;
       const criterionTable = _.inspect(tableName, _model);
       if (criterionTable) {
+        // Threshold dropdown items
         thresholdVector = table.schema.threshold;
         thresholds = (() => {
           let _i;
@@ -130,6 +135,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           }
           return _results;
         })();
+
+        // Threshold criterion dropdown item
         metricVector = criterionTable.schema.metric;
         idxVector = criterionTable.schema.idx;
         criteria = (() => {
@@ -151,10 +158,16 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       }
       return void 0;
     };
+
+    // TODO Mega-hack alert
+    // Last arg thresholdsAndCriteria applicable only to 
+    // ROC charts for binomial models.
     const renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
       let rocPanel;
       const container = Flow.Dataflow.signal(null);
       const linkedFrame = Flow.Dataflow.signal(null);
+
+      // TODO HACK
       if (thresholdsAndCriteria) {
         rocPanel = {
           thresholds: Flow.Dataflow.signals(thresholdsAndCriteria.thresholds),
@@ -194,12 +207,17 @@ export function h2oModelOutput(_, _go, _model, refresh) {
                 return linkedFrame(table.element);
               }
             });
+
+            // TODO HACK
             if (rocPanel) {
               if (indices.length === 1) {
                 selectedIndex = lodash.head(indices);
                 _autoHighlight = false;
                 rocPanel.threshold(lodash.find(rocPanel.thresholds(), threshold => threshold.index === selectedIndex));
                 currentCriterion = rocPanel.criterion();
+
+                // More than one criterion can point to the same threshold,
+                // so ensure that we're preserving the existing criterion, if any.
                 if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
                   rocPanel.criterion(lodash.find(rocPanel.criteria(), criterion => criterion.index === selectedIndex));
                 }
@@ -212,11 +230,15 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           });
           vis.subscribe('markdeselect', () => {
             linkedFrame(null);
+
+            // TODO HACK
             if (rocPanel) {
               rocPanel.criterion(null);
               return rocPanel.threshold(null);
             }
           });
+
+          // TODO HACK
           if (rocPanel) {
             Flow.Dataflow.react(rocPanel.threshold, threshold => {
               if (threshold && _autoHighlight) {
@@ -256,6 +278,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       const columnCount = cm.columns.length;
       const rowCount = cm.rowcount;
       const headers = lodash.map(cm.columns, (column, i) => bold(column.description));
+
+      // NW corner cell
       headers.unshift(normal(' '));
       const rows = [tr(headers)];
       const errorColumnIndex = columnCount - 2;
@@ -268,11 +292,15 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           const _results = [];
           for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
             column = _ref1[i];
+
+            // Last two columns should be emphasized
+            // special-format error column
             cell = i < errorColumnIndex ? i === rowIndex ? yellow : rowIndex < totalRowIndex ? normal : bold : bold;
             _results.push(cell(i === errorColumnIndex ? format4f(column[rowIndex]) : column[rowIndex]));
           }
           return _results;
         })();
+        // Add the corresponding column label
         cells.unshift(bold(rowIndex === rowCount - 1 ? 'Total' : cm.columns[rowIndex].description));
         rows.push(tr(cells));
       }
@@ -370,16 +398,28 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+          
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+          
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`'ROC Curve - Validation Metrics' + ${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+          
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`'ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - Variable Importances', _model);
@@ -431,16 +471,28 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+          
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+          
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`ROC Curve - Validation Metrics${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+        
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`ROC Curve - Cross Validation Metrics${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - Variable Importances', _model);
@@ -471,20 +523,34 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           }
         }
         break;
+        // end of when 'gbm', 'drf', 'svm'
+
       case 'stackedensemble':
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+          
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`ROC Curve - Training Metrics${getAucAsLabel(_model, 'output - training_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+          
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`'ROC Curve - Validation Metrics${getAucAsLabel(_model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+          
+          // TODO Mega-hack alert.
+          // Last arg thresholdsAndCriteria applicable only to
+          // ROC charts for binomial models.
           renderPlot(`ROC Curve - Cross Validation Metrics${getAucAsLabel(_model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
         }
         table = _.inspect('output - Variable Importances', _model);
@@ -518,6 +584,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       default:
         // do nothing
     }
+    // end of stackedensemble 
+
     table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
     if (table) {
       renderPlot('Training Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
@@ -537,6 +605,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         continue;
       }
       _ref25 = _model.output;
+
+      // Skip confusion matrix tables for multinomial models
       output = (_ref25 != null ? _ref25.model_category : void 0) === 'Multinomial';
       if (output) {
         if (tableName.indexOf('output - training_metrics - cm') === 0) {
@@ -553,7 +623,10 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       }
     }
     const toggle = () => _isExpanded(!_isExpanded());
-    const cloneModel = () => alert('Not implemented');
+    const cloneModel = () => {
+      // _.insertAndExecuteCell 'cs', 'assist buildModel,
+      return alert('Not implemented');
+    }
     const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(_model.modelId.name)}`);
     const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_model.modelId.name)}`);
     const previewPojo = () => _.requestPojoPreview(_model.modelId.name, (error, result) => {

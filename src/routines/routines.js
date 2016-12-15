@@ -143,6 +143,7 @@ export function routines() {
     target = new Array(source.length);
     for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
       value = source[i];
+      // TODO handle formatting
       target[i] = value === 'NaN' ? void 0 : value === 'Infinity' ? Number.POSITIVE_INFINITY : value === '-Infinity' ? Number.NEGATIVE_INFINITY : value;
     }
     return target;
@@ -167,6 +168,7 @@ export function routines() {
     }
   };
   convertTableToFrame = (table, tableName, metadata) => {
+    // TODO handle format strings and description
     let column;
     let i;
     let vectors;
@@ -638,6 +640,8 @@ export function routines() {
     let testNetwork;
     let transformBinomialMetrics;
     let unwrapPrediction;
+
+    // TODO move these into Flow.Async
     let _apply;
     let _async;
     let _call;
@@ -671,7 +675,10 @@ export function routines() {
     _isFuture = Flow.Async.isFuture;
     _async = Flow.Async.async;
     _get = Flow.Async.get;
+
+    // XXX obsolete
     proceed = (func, args, go) => go(null, render_({}, () => func(...[_].concat(args || []))));
+
     proceed = (func, args, go) => go(null, render_(...[
             {},
       func
@@ -687,15 +694,19 @@ export function routines() {
       }
     }
     flow_ = raw => raw._flow_ || (raw._flow_ = { _cache_: {} });
+
+    // XXX obsolete
     render_ = (raw, render) => {
       flow_(raw).render = render;
       return raw;
     };
+
     render_ = function () {
       let args;
       let raw;
       let render;
       raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
+      // Prepend current context (_) and a continuation (go)
       flow_(raw).render = go => render(...[
         _,
         go
@@ -853,7 +864,7 @@ export function routines() {
         scores.columns.push({
           name: 'CM',
           description: 'CM',
-          format: 'matrix',
+          format: 'matrix', // TODO HACK
           type: 'matrix'
         });
         scores.data.push(cms);
@@ -1048,7 +1059,7 @@ export function routines() {
         return _results;
       })();
       return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-        description: `Parameters for model \'${model.modelId.name}\'`,
+        description: `Parameters for model \'${model.modelId.name}\'`, // TODO frame model_id
         origin: `getModel ${flowPrelude.stringify(model.modelId.name)}`
       });
     };
@@ -1233,6 +1244,8 @@ export function routines() {
         inspections.parameters = inspectModelParameters(model);
         origin = `getModel ${flowPrelude.stringify(model.modelId.name)}`;
         inspectObject(inspections, 'output', origin, model.output);
+
+        // Obviously, an array of 2d tables calls for a megahack.
         if (model.__meta.schema_type === 'NaiveBayesModel') {
           if (lodash.isArray(model.output.pcond)) {
             _ref1 = model.output.pcond;
@@ -1289,6 +1302,14 @@ export function routines() {
       if (algos.length === 1) {
         inspections.parameters = inspectParametersAcrossModels(models);
       }
+
+      // modelCategories = unique (model.output.model_category for model in models)
+      //
+      // TODO implement model comparision after 2d table cleanup for model metrics
+      //
+      // if modelCategories.length is 1
+      //  inspections.outputs = inspectOutputsAcrossModels (head modelCategories), models
+
       inspect_(models, inspections);
       return render_(models, h2oModelsOutput, models);
     };
@@ -1365,6 +1386,7 @@ export function routines() {
         }
       };
       vectors = (() => {
+        // XXX format functions
         let _i;
         let _len;
         let _ref1;
@@ -1680,6 +1702,8 @@ export function routines() {
           intervalData = new Array(binCount);
           widthData = new Array(binCount);
           countData = new Array(binCount);
+
+          // Trim off empty bins from the end
           for (i = _i = 0; binCount >= 0 ? _i < binCount : _i > binCount; i = binCount >= 0 ? ++_i : --_i) {
             m = i * width;
             n = m + width;
@@ -1848,9 +1872,11 @@ export function routines() {
       switch (column.type) {
         case 'int':
         case 'real':
+          // Skip for columns with all NAs
           if (column.histogram_bins.length) {
             inspections.distribution = inspectDistribution;
           }
+          // Skip for columns with all NAs
           if (!lodash.some(column.percentiles, a => a === 'NaN')) {
             inspections.summary = inspectSummary;
             inspections.percentiles = inspectPercentiles;
@@ -2069,10 +2095,16 @@ export function routines() {
       }
       return assist(mergeFrames);
     };
+
+    // define the function that is called when 
+    // the Partial Dependence plot input form
+    // is submitted
     buildPartialDependence = opts => {
       if (opts) {
         return _fork(requestPartialDependence, opts);
       }
+      // specify function to call if user
+      // provides malformed input
       return assist(buildPartialDependence);
     };
     getPartialDependence = destinationKey => {
@@ -2978,11 +3010,17 @@ export function routines() {
       }
     });
     routines = {
+      //
+      // fork/join
+      //
       fork: _fork,
       join: _join,
       call: _call,
       apply: _apply,
       isFuture: _isFuture,
+      //
+      // Dataflow
+      //
       signal: Flow.Dataflow.signal,
       signals: Flow.Dataflow.signals,
       isSignal: Flow.Dataflow.isSignal,
@@ -2990,14 +3028,29 @@ export function routines() {
       react: Flow.Dataflow.react,
       lift: Flow.Dataflow.lift,
       merge: Flow.Dataflow.merge,
+      //
+      // Generic
+      //
       dump,
       inspect,
       plot,
       grid,
       get: _get,
+      //
+      // Meta
+      //
       assist,
+      //
+      // GUI
+      //
       gui,
+      //
+      // Util
+      //
       loadScript,
+      //
+      // H2O
+      //
       getJobs,
       getJob,
       cancelJob,

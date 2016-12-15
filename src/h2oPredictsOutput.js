@@ -105,6 +105,19 @@ export function h2oPredictsOutput(_, _go, opts, _predictions) {
   const predict = () => _.insertAndExecuteCell('cs', 'predict');
   const initialize = predictions => {
     _predictionViews(lodash.map(predictions, createPredictionView));
+
+    // TODO handle non-binomial models
+    // warning: sample code is CoffeeScript
+    // rocCurveConfig =
+    //   data: _.inspect 'scores', _predictions
+    //   type: 'line'
+    //   x: 'FPR'
+    //   y: 'TPR'
+    //   color: 'key'
+    // _.plot rocCurveConfig, (error, el) ->
+    //   unless error
+    //     _rocCurve el
+
     return lodash.defer(_go);
   };
   initialize(_predictions);

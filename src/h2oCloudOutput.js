@@ -4,6 +4,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
   const moment = window.moment;
   const d3 = window.d3;
   let _isHealthy;
+  // TODO Display in .jade
   const _exception = Flow.Dataflow.signal(null);
   const _isLive = Flow.Dataflow.signal(false);
   const _isBusy = Flow.Dataflow.signal(false);
@@ -17,6 +18,8 @@ export function h2oCloudOutput(_, _go, _cloud) {
   const _isLocked = Flow.Dataflow.signal();
   const _nodes = Flow.Dataflow.signals();
   const formatMilliseconds = ms => Flow.Util.fromNow(new Date(new Date().getTime() - ms));
+
+  // precision = 3
   const format3f = d3.format('.3f');
   const _sizes = [
     'B',
@@ -77,6 +80,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
   };
   const avg = (nodes, attrOf) => sum(nodes, attrOf) / nodes.length;
   const _headers = [
+    // [ Caption, show_always? ]
     [
       '&nbsp;',
       true,

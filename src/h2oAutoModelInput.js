@@ -34,6 +34,7 @@ export function h2oAutoModelInput(_, _go, opts) {
     let frame;
     if (error) {
       // empty
+      // TODO handle properly
     } else {
       _frames((() => {
         let _i;
@@ -58,6 +59,7 @@ export function h2oAutoModelInput(_, _go, opts) {
         let column;
         if (error) {
           // empty
+          // TODO handle properly
         } else {
           _columns((() => {
             let _i;
@@ -72,7 +74,7 @@ export function h2oAutoModelInput(_, _go, opts) {
           })());
           if (opts.column) {
             _column(opts.column);
-            return delete opts.column;
+            return delete opts.column; // HACK
           }
         }
       });

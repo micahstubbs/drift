@@ -4,6 +4,7 @@ const flowPrelude = flowPreludeFunction();
 export function h2oMergeFramesInput(_, _go) {
   const lodash = window._;
   const Flow = window.Flow;
+  // TODO display in .jade
   const _exception = Flow.Dataflow.signal(null);
   const _destinationKey = Flow.Dataflow.signal(`merged-${Flow.Util.uuid()}`);
   const _frames = Flow.Dataflow.signals([]);

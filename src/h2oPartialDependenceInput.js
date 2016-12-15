@@ -4,6 +4,8 @@ const flowPrelude = flowPreludeFunction();
 export function h2oPartialDependenceInput(_, _go) {
   const lodash = window._;
   const Flow = window.Flow;
+
+  // TODO display in .jade
   const _exception = Flow.Dataflow.signal(null);
   const _destinationKey = Flow.Dataflow.signal(`ppd-${Flow.Util.uuid()}`);
   const _frames = Flow.Dataflow.signals([]);
@@ -11,18 +13,33 @@ export function h2oPartialDependenceInput(_, _go) {
   const _selectedModel = Flow.Dataflow.signals(null);
   const _selectedFrame = Flow.Dataflow.signal(null);
   const _nbins = Flow.Dataflow.signal(20);
+
+  //  a conditional check that makes sure that 
+  //  all fields in the form are filled in
+  //  before the button is shown as active
   const _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
   const _compute = () => {
     if (!_canCompute()) {
       return;
     }
+
+    // parameters are selections from Flow UI
+    // form dropdown menus, text boxes, etc
     const opts = {
       destination_key: _destinationKey(),
       modelId: _selectedModel(),
       frame_id: _selectedFrame(),
       nbins: _nbins(),
     };
+
+    // assemble a string for the h2o Rapids AST
+    // this contains the function to call
+    // along with the options to pass in
     const cs = `buildPartialDependence ${flowPrelude.stringify(opts)}`;
+
+    // insert a cell with the expression `cs` 
+    // into the current Flow notebook
+    // and run the cell
     return _.insertAndExecuteCell('cs', cs);
   };
   _.requestFrames((error, frames) => {
@@ -52,6 +69,7 @@ export function h2oPartialDependenceInput(_, _go) {
       let _i;
       let _len;
       const _results = [];
+      // TODO use models directly
       for (_i = 0, _len = models.length; _i < _len; _i++) {
         model = models[_i];
         _results.push(model.modelId.name);
