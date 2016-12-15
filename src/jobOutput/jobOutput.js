@@ -11,6 +11,11 @@ export function jobOutput() {
     running: '#f0ad4e',
   };
   const getJobOutputStatusColor = status => {
+    // CREATED   Job was created
+    // RUNNING   Job is running
+    // CANCELLED Job was cancelled by user
+    // FAILED    Job crashed, error message/exception is available
+    // DONE      Job was successfully finished
     switch (status) {
       case 'DONE':
         return jobOutputStatusColors.done;
@@ -18,6 +23,7 @@ export function jobOutput() {
       case 'RUNNING':
         return jobOutputStatusColors.running;
       default:
+        // 'CANCELLED', 'FAILED'
         return jobOutputStatusColors.failed;
     }
   };
@@ -149,6 +155,7 @@ export function jobOutput() {
         case 'PartialDependence':
           return _.insertAndExecuteCell('cs', `getPartialDependence ${flowPrelude.stringify(_destinationKey)}`);
         case 'Auto Model':
+          // FIXME getGrid() for AutoML is hosed; resort to getGrids() for now.
           return _.insertAndExecuteCell('cs', 'getGrids');
         case 'Void':
           return alert(`This frame was exported to\n${_job.dest.name}`);
