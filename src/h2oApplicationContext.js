@@ -73,6 +73,9 @@ export function h2oApplicationContext(_) {
   _.plot = Flow.Dataflow.slot();
   _.grid = Flow.Dataflow.slot();
   _.enumerate = Flow.Dataflow.slot();
+  //
+  // Sparkling-Water
+  //
   _.scalaIntpId = Flow.Dataflow.signal(-1);
   _.requestRDDs = Flow.Dataflow.slot();
   _.requestDataFrames = Flow.Dataflow.slot();
