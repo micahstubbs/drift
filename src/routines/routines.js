@@ -1004,7 +1004,7 @@ export function routines() {
         _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
-          _results.push(model.model_id.name);
+          _results.push(model.modelId.name);
         }
         return _results;
       })();
@@ -1048,8 +1048,8 @@ export function routines() {
         return _results;
       })();
       return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-        description: `Parameters for model \'${model.model_id.name}\'`,
-        origin: `getModel ${flowPrelude.stringify(model.model_id.name)}`
+        description: `Parameters for model \'${model.modelId.name}\'`,
+        origin: `getModel ${flowPrelude.stringify(model.modelId.name)}`
       });
     };
     extendJob = job => render_(job, H2O.JobOutput, job);
@@ -1231,7 +1231,7 @@ export function routines() {
         let _ref1;
         inspections = {};
         inspections.parameters = inspectModelParameters(model);
-        origin = `getModel ${flowPrelude.stringify(model.model_id.name)}`;
+        origin = `getModel ${flowPrelude.stringify(model.modelId.name)}`;
         inspectObject(inspections, 'output', origin, model.output);
         if (model.__meta.schema_type === 'NaiveBayesModel') {
           if (lodash.isArray(model.output.pcond)) {
@@ -1246,7 +1246,7 @@ export function routines() {
         inspect_(model, inspections);
         return model;
       };
-      refresh = go => _.requestModel(model.model_id.name, (error, model) => {
+      refresh = go => _.requestModel(model.modelId.name, (error, model) => {
         if (error) {
           return go(error);
         }

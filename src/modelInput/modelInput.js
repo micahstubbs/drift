@@ -748,7 +748,7 @@ export function modelInput() {
     });
     const _modelForm = Flow.Dataflow.signal(null);
     const populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
-      const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
+      const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'modelId');
       if (destinationKeyParameter && !destinationKeyParameter.actualValue) {
         destinationKeyParameter.actualValue = `${algorithm}-${Flow.Util.uuid()}`;
       }

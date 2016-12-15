@@ -18,7 +18,7 @@ export function h2oPartialDependenceInput(_, _go) {
     }
     const opts = {
       destination_key: _destinationKey(),
-      model_id: _selectedModel(),
+      modelId: _selectedModel(),
       frame_id: _selectedFrame(),
       nbins: _nbins(),
     };
@@ -54,7 +54,7 @@ export function h2oPartialDependenceInput(_, _go) {
       const _results = [];
       for (_i = 0, _len = models.length; _i < _len; _i++) {
         model = models[_i];
-        _results.push(model.model_id.name);
+        _results.push(model.modelId.name);
       }
       return _results;
     })());

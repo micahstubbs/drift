@@ -6,7 +6,7 @@ export function h2oGridOutput(_, _go, _grid) {
   const Flow = window.Flow;
   let _isCheckingAll;
   const _modelViews = Flow.Dataflow.signal([]);
-  const _hasModels = _grid.model_ids.length > 0;
+  const _hasModels = _grid.modelIds.length > 0;
   const _errorViews = Flow.Dataflow.signal([]);
   const _hasErrors = _grid.failure_details.length > 0;
   const _checkAllModels = Flow.Dataflow.signal(false);
@@ -27,7 +27,7 @@ export function h2oGridOutput(_, _go, _grid) {
     _checkedModelCount(checkAll ? views.length : 0);
     _isCheckingAll = false;
   });
-  const createModelView = model_id => {
+  const createModelView = modelId => {
     const _isChecked = Flow.Dataflow.signal(false);
     Flow.Dataflow.react(_isChecked, () => {
       let view;
@@ -49,13 +49,13 @@ export function h2oGridOutput(_, _go, _grid) {
       })();
       return _checkedModelCount(checkedViews.length);
     });
-    const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(model_id.name)}`);
-    const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
+    const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(modelId.name)}`);
+    const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(modelId.name)}`);
     alert('Not implemented');
-    const view = () => _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model_id.name)}`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(model_id.name)}`);
+    const view = () => _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(modelId.name)}`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(modelId.name)}`);
     return {
-      key: model_id.name,
+      key: modelId.name,
       isChecked: _isChecked,
       predict,
       clone: cloneModel,
@@ -113,7 +113,7 @@ export function h2oGridOutput(_, _go, _grid) {
   };
   const initialize = grid => {
     let i;
-    _modelViews(lodash.map(grid.model_ids, createModelView));
+    _modelViews(lodash.map(grid.modelIds, createModelView));
     const errorViews = (() => {
       let _i;
       let _ref;

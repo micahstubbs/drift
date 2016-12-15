@@ -554,27 +554,27 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     }
     const toggle = () => _isExpanded(!_isExpanded());
     const cloneModel = () => alert('Not implemented');
-    const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(_model.model_id.name)}`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_model.model_id.name)}`);
-    const previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
+    const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(_model.modelId.name)}`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_model.modelId.name)}`);
+    const previewPojo = () => _.requestPojoPreview(_model.modelId.name, (error, result) => {
       if (error) {
         return _pojoPreview(`<pre>${lodash.escape(error)}</pre>`);
       }
       return _pojoPreview(`<pre>${Flow.Util.highlight(result, 'java')}</pre>`);
     });
-    const downloadPojo = () => window.open(`/3/Models.java/${encodeURIComponent(_model.model_id.name)}`, '_blank');
-    const downloadMojo = () => window.open(`/3/Models/${encodeURIComponent(_model.model_id.name)}/mojo`, '_blank');
-    const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_model.model_id.name)}`);
+    const downloadPojo = () => window.open(`/3/Models.java/${encodeURIComponent(_model.modelId.name)}`, '_blank');
+    const downloadMojo = () => window.open(`/3/Models/${encodeURIComponent(_model.modelId.name)}/mojo`, '_blank');
+    const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_model.modelId.name)}`);
     const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
       acceptCaption: 'Delete Model',
       declineCaption: 'Cancel',
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModel ${flowPrelude.stringify(_model.model_id.name)}`);
+        return _.insertAndExecuteCell('cs', `deleteModel ${flowPrelude.stringify(_model.modelId.name)}`);
       }
     });
     return {
-      key: _model.model_id,
+      key: _model.modelId,
       algo: _model.algo_full_name,
       plots: _plots,
       inputParameters: _inputParameters,

@@ -110,7 +110,7 @@ export function h2oPredictInput(_, _go, opt) {
         const _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
-          _results.push(model.model_id.name);
+          _results.push(model.modelId.name);
         }
         return _results;
       })());
