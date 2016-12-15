@@ -813,7 +813,7 @@
       });
       const _modelForm = Flow.Dataflow.signal(null);
       const populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
-        const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
+        const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'modelId');
         if (destinationKeyParameter && !destinationKeyParameter.actualValue) {
           destinationKeyParameter.actualValue = `${ algorithm }-${ Flow.Util.uuid() }`;
         }
@@ -2169,7 +2169,7 @@
     let _i;
     let _len;
     const _destinationKey = _result.destination_key;
-    const _modelId = _result.model_id.name;
+    const _modelId = _result.modelId.name;
     const _frameId = _result.frame_id.name;
     const renderPlot = (target, render) => render((error, vis) => {
       if (error) {
@@ -2851,27 +2851,27 @@
       }
       const toggle = () => _isExpanded(!_isExpanded());
       const cloneModel = () => alert('Not implemented');
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
-      const previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.modelId.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.modelId.name) }`);
+      const previewPojo = () => _.requestPojoPreview(_model.modelId.name, (error, result) => {
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
         }
         return _pojoPreview(`<pre>${ Flow.Util.highlight(result, 'java') }</pre>`);
       });
-      const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
-      const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
-      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+      const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.modelId.name) }`, '_blank');
+      const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.modelId.name) }/mojo`, '_blank');
+      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$14.stringify(_model.modelId.name) }`);
       const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
         acceptCaption: 'Delete Model',
         declineCaption: 'Cancel'
       }, accept => {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$14.stringify(_model.model_id.name) }`);
+          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$14.stringify(_model.modelId.name) }`);
         }
       });
       return {
-        key: _model.model_id,
+        key: _model.modelId,
         algo: _model.algo_full_name,
         plots: _plots,
         inputParameters: _inputParameters,
@@ -2923,7 +2923,7 @@
     const Flow = window.Flow;
     let _isCheckingAll;
     const _modelViews = Flow.Dataflow.signal([]);
-    const _hasModels = _grid.model_ids.length > 0;
+    const _hasModels = _grid.modelIds.length > 0;
     const _errorViews = Flow.Dataflow.signal([]);
     const _hasErrors = _grid.failure_details.length > 0;
     const _checkAllModels = Flow.Dataflow.signal(false);
@@ -2944,7 +2944,7 @@
       _checkedModelCount(checkAll ? views.length : 0);
       _isCheckingAll = false;
     });
-    const createModelView = model_id => {
+    const createModelView = modelId => {
       const _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
         let view;
@@ -2966,13 +2966,13 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$15.stringify(model_id.name) }`);
-      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$15.stringify(modelId.name) }`);
+      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(modelId.name)}`);
       alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$15.stringify(model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$15.stringify(model_id.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$15.stringify(modelId.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$15.stringify(modelId.name) }`);
       return {
-        key: model_id.name,
+        key: modelId.name,
         isChecked: _isChecked,
         predict,
         clone: cloneModel,
@@ -3030,7 +3030,7 @@
     };
     const initialize = grid => {
       let i;
-      _modelViews(lodash.map(grid.model_ids, createModelView));
+      _modelViews(lodash.map(grid.modelIds, createModelView));
       const errorViews = (() => {
         let _i;
         let _ref;
@@ -3079,7 +3079,7 @@
       const view = () => _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$16.stringify(grid.grid_id.name) }`);
       return {
         key: grid.grid_id.name,
-        size: grid.model_ids.length,
+        size: grid.modelIds.length,
         view
       };
     };
@@ -3143,13 +3143,13 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(model.model_id.name) }`);
-      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(model.modelId.name) }`);
+      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.modelId.name)}`);
       alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(model.model_id.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify(model.modelId.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(model.modelId.name) }`);
       return {
-        key: model.model_id.name,
+        key: model.modelId.name,
         algo: model.algo_full_name,
         isChecked: _isChecked,
         predict,
@@ -4123,7 +4123,7 @@
           const _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
-            _results.push(model.model_id.name);
+            _results.push(model.modelId.name);
           }
           return _results;
         })());
@@ -4207,7 +4207,7 @@
     const _rows = Flow.Dataflow.signal(10000);
     const _columns = Flow.Dataflow.signal(100);
     const _seed = Flow.Dataflow.signal(7595850248774472000);
-    const _seed_for_column_types = Flow.Dataflow.signal(-1);
+    const _seedForColumnTypes = Flow.Dataflow.signal(-1);
     const _randomize = Flow.Dataflow.signal(true);
     const _value = Flow.Dataflow.signal(0);
     const _realRange = Flow.Dataflow.signal(100);
@@ -4228,7 +4228,7 @@
         rows: _rows(),
         cols: _columns(),
         seed: _seed(),
-        seed_for_column_types: _seed_for_column_types(),
+        seed_for_column_types: _seedForColumnTypes(),
         randomize: _randomize(),
         value: _value(),
         real_range: _realRange(),
@@ -4252,7 +4252,7 @@
       rows: _rows,
       columns: _columns,
       seed: _seed,
-      seed_for_column_types: _seed_for_column_types,
+      seed_for_column_types: _seedForColumnTypes,
       randomize: _randomize,
       value: _value,
       realRange: _realRange,
@@ -4548,7 +4548,7 @@
       }
       const opts = {
         destination_key: _destinationKey(),
-        model_id: _selectedModel(),
+        modelId: _selectedModel(),
         frame_id: _selectedFrame(),
         nbins: _nbins()
       };
@@ -4584,7 +4584,7 @@
         const _results = [];
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
-          _results.push(model.model_id.name);
+          _results.push(model.modelId.name);
         }
         return _results;
       })());
@@ -4691,7 +4691,7 @@
           const _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
-            _results.push(model.model_id.name);
+            _results.push(model.modelId.name);
           }
           return _results;
         })());
@@ -5634,7 +5634,7 @@
           _results = [];
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
-            _results.push(model.model_id.name);
+            _results.push(model.modelId.name);
           }
           return _results;
         })();
@@ -5672,8 +5672,8 @@
           return _results;
         })();
         return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-          description: `Parameters for model \'${ model.model_id.name }\'`,
-          origin: `getModel ${ flowPrelude$5.stringify(model.model_id.name) }`
+          description: `Parameters for model \'${ model.modelId.name }\'`,
+          origin: `getModel ${ flowPrelude$5.stringify(model.modelId.name) }`
         });
       };
       extendJob = job => render_(job, H2O.JobOutput, job);
@@ -5855,7 +5855,7 @@
           let _ref1;
           inspections = {};
           inspections.parameters = inspectModelParameters(model);
-          origin = `getModel ${ flowPrelude$5.stringify(model.model_id.name) }`;
+          origin = `getModel ${ flowPrelude$5.stringify(model.modelId.name) }`;
           inspectObject(inspections, 'output', origin, model.output);
           if (model.__meta.schema_type === 'NaiveBayesModel') {
             if (lodash.isArray(model.output.pcond)) {
@@ -5870,7 +5870,7 @@
           inspect_(model, inspections);
           return model;
         };
-        refresh = go => _.requestModel(model.model_id.name, (error, model) => {
+        refresh = go => _.requestModel(model.modelId.name, (error, model) => {
           if (error) {
             return go(error);
           }
