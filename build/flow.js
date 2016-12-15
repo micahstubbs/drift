@@ -1539,19 +1539,19 @@
     };
     const formatThreads = fjs => {
       let i;
-      let max_lo;
+      let maxLo;
       let s;
       let _i;
       let _j;
       let _k;
       let _ref;
-      for (max_lo = _i = 120; _i > 0; max_lo = --_i) {
-        if (fjs[max_lo - 1] !== -1) {
+      for (maxLo = _i = 120; _i > 0; maxLo = --_i) {
+        if (fjs[maxLo - 1] !== -1) {
           break;
         }
       }
       s = '[';
-      for (i = _j = 0; max_lo >= 0 ? _j < max_lo : _j > max_lo; i = max_lo >= 0 ? ++_j : --_j) {
+      for (i = _j = 0; maxLo >= 0 ? _j < maxLo : _j > maxLo; i = maxLo >= 0 ? ++_j : --_j) {
         s += Math.max(fjs[i], 0);
         s += '/';
       }
