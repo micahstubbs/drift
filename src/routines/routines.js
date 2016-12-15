@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { format4f } from './format4f';
+import { convertTableToFrame } from './convertTableToFrame'; 
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -58,7 +59,6 @@ export function routines() {
   let computeFalsePositiveRate;
   let computeTruePositiveRate;
   let concatArrays;
-  let convertTableToFrame;
   let createArrays;
   let createDataframe;
   let createFactor;
@@ -131,26 +131,6 @@ export function routines() {
       description: 'Make a prediction',
       icon: 'bolt'
     }
-  };
-  convertTableToFrame = (table, tableName, metadata) => {
-    // TODO handle format strings and description
-    let column;
-    let i;
-    let vectors;
-    vectors = (() => {
-      let _i;
-      let _len;
-      let _ref;
-      let _results;
-      _ref = table.columns;
-      _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        column = _ref[i];
-        _results.push(convertColumnToVector(column, table.data[i]));
-      }
-      return _results;
-    })();
-    return createDataframe(tableName, vectors, lodash.range(table.rowcount), null, metadata);
   };
   getTwoDimData = (table, columnName) => {
     let columnIndex;
