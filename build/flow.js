@@ -618,7 +618,7 @@
                   }
                   break;
                 default:
-                  // checkbox 
+                  // checkbox
                   hyperParameters[control.name] = [true, false];
               }
             } else {
@@ -687,15 +687,15 @@
         return parameters;
       };
       //
-      // The 'checkForErrors' parameter exists so that we can conditionally choose 
-      // to ignore validation errors. This is because we need the show/hide states 
-      // for each field the first time around, but not the errors/warnings/info 
-      // messages. 
+      // The 'checkForErrors' parameter exists so that we can conditionally choose
+      // to ignore validation errors. This is because we need the show/hide states
+      // for each field the first time around, but not the errors/warnings/info
+      // messages.
       //
-      // Thus, when this function is called during form init, checkForErrors is 
-      //  passed in as 'false', and during form submission, checkForErrors is 
+      // Thus, when this function is called during form init, checkForErrors is
+      //  passed in as 'false', and during form submission, checkForErrors is
       //  passsed in as 'true'.
-      //  
+      //
       const performValidations = (checkForErrors, go) => {
         _exception(null);
         const parameters = collectParameters(true);
@@ -2506,7 +2506,7 @@
       };
 
       // TODO Mega-hack alert
-      // Last arg thresholdsAndCriteria applicable only to 
+      // Last arg thresholdsAndCriteria applicable only to
       // ROC charts for binomial models.
       const renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
         let rocPanel;
@@ -2930,7 +2930,7 @@
         default:
         // do nothing
       }
-      // end of stackedensemble 
+      // end of stackedensemble
 
       table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
       if (table) {
@@ -2970,6 +2970,7 @@
       }
       const toggle = () => _isExpanded(!_isExpanded());
       const cloneModel = () => {
+        // eslint-disable-line
         // _.insertAndExecuteCell 'cs', 'assist buildModel,
         return alert('Not implemented');
       };
@@ -3558,6 +3559,7 @@
       }
     }
     const inspect = () => {
+      // eslint-disable-line
       // XXX get this from prediction table
       return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$19.stringify(model.name) }, frame: ${ flowPrelude$19.stringify(frame.name) }`);
     };
@@ -4699,7 +4701,7 @@
     const _selectedFrame = Flow.Dataflow.signal(null);
     const _nbins = Flow.Dataflow.signal(20);
 
-    //  a conditional check that makes sure that 
+    //  a conditional check that makes sure that
     //  all fields in the form are filled in
     //  before the button is shown as active
     const _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
@@ -4722,7 +4724,7 @@
       // along with the options to pass in
       const cs = `buildPartialDependence ${ flowPrelude$29.stringify(opts) }`;
 
-      // insert a cell with the expression `cs` 
+      // insert a cell with the expression `cs`
       // into the current Flow notebook
       // and run the cell
       return _.insertAndExecuteCell('cs', cs);
@@ -5112,20 +5114,20 @@
   //   Update the DOM element based on the supplied values here.
   //
   // Registering a callback on the disposal of an element
-  // 
-  // To register a function to run when a node is removed, 
-  // you can call ko.utils.domNodeDisposal.addDisposeCallback(node, callback). 
-  // As an example, suppose you create a custom binding to instantiate a widget. 
-  // When the element with the binding is removed, 
+  //
+  // To register a function to run when a node is removed,
+  // you can call ko.utils.domNodeDisposal.addDisposeCallback(node, callback).
+  // As an example, suppose you create a custom binding to instantiate a widget.
+  // When the element with the binding is removed,
   // you may want to call the destroy method of the widget:
-  // 
+  //
   // ko.bindingHandlers.myWidget = {
   //     init: function(element, valueAccessor) {
   //         var options = ko.unwrap(valueAccessor()),
   //             $el = $(element);
-  //  
+  //
   //         $el.myWidget(options);
-  //  
+  //
   //         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
   //             // This will be called when the element is removed by Knockout or
   //             // if some other part of your code calls ko.removeNode(element)
@@ -5214,8 +5216,8 @@
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
         const arg = ko.unwrap(valueAccessor());
         if (arg) {
-          // Bit of a hack. 
-          // Attaches a method to the bound object that returns the cursor position. 
+          // Bit of a hack.
+          // Attaches a method to the bound object that returns the cursor position.
           // Uses dwieeb/jquery-textrange.
           arg.getCursorPosition = () => $(element).textrange('get', 'position');
         }
@@ -6232,7 +6234,7 @@
         }
       }));
     }
-    // Like _.compose, but async. 
+    // Like _.compose, but async.
     // Equivalent to caolan/async.waterfall()
     const pipe = tasks => {
       const _tasks = tasks.slice(0);
@@ -7064,7 +7066,7 @@
     };
 
     // TODO DO NOT call this for raw javascript:
-    // Require alternate strategy: 
+    // Require alternate strategy:
     //  Declarations with 'var' need to be local to the cell.
     //  Undeclared identifiers are assumed to be global.
     //  'use strict' should be unsupported.
@@ -7076,7 +7078,7 @@
           if (node.type === 'VariableDeclaration') {
             declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
             if (declarations.length === 0) {
-              // purge this node so that escodegen doesn't fail 
+              // purge this node so that escodegen doesn't fail
               return deleteAstNode(parent, key);
             }
             // replace with cleaned-up declarations
@@ -7471,7 +7473,7 @@
 
     // tied to mouse-clicks on the cell
     const select = () => {
-      // pass scrollIntoView=false, 
+      // pass scrollIntoView=false,
       // otherwise mouse actions like clicking on a form field will cause scrolling.
       _.selectCell(self, false);
       // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
@@ -7771,7 +7773,7 @@
       const _dialogs = Flow.dialogs(_);
 
       // initialize the interpreter when the notebook is created
-      // one interpreter is shared by all scala cells  
+      // one interpreter is shared by all scala cells
       const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
         if (error) {
           // Handle the error
@@ -8034,7 +8036,7 @@
         _selectedCell.execute(() => insertNewCellBelow());
         return false;
       };
-      // ipython has inconsistent behavior here. 
+      // ipython has inconsistent behavior here.
       // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
       const runCellAndSelectBelow = () => {
         _selectedCell.execute(() => selectNextCell());
@@ -8124,7 +8126,7 @@
         _areInputsHidden(!wereHidden);
         //
         // If cells are generated while inputs are hidden, the input boxes
-        //   do not resize to fit contents. So explicitly ask all cells 
+        //   do not resize to fit contents. So explicitly ask all cells
         //   to resize themselves.
         //
         if (wereHidden) {
@@ -8395,13 +8397,13 @@
       // (From IPython Notebook keyboard shortcuts dialog)
       //
       // The IPython Notebook has two different keyboard input modes.
-      // Edit mode allows you to type code/text into a cell 
+      // Edit mode allows you to type code/text into a cell
       // and is indicated by a green cell border.
-      // Command mode binds the keyboard to notebook level 
+      // Command mode binds the keyboard to notebook level
       // actions and is indicated by a grey cell border.
       //
       // Command Mode (press Esc to enable)
-      //   
+      //
       const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode],
       // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
       // [ 'ctrl+enter', 'run cell', runCell ]
@@ -8418,7 +8420,7 @@
       }
 
       //
-      // Edit Mode (press Enter to enable) 
+      // Edit Mode (press Enter to enable)
       //
       const editModeKeyboardShortcuts = [
       // Tab : code completion or indent
@@ -9115,6 +9117,7 @@
     });
     const requestFrame = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }`, unwrap(go, result => lodash.head(result.frames)));
     const requestFrameSlice = (key, searchTerm, offset, count, go) => {
+      // eslint-disable-line
       // TODO send search term
       return doGet(`/3/Frames/${ encodeURIComponent(key) }?column_offset=${ offset }&column_count=${ count }`, unwrap(go, result => lodash.head(result.frames)));
     };
@@ -9200,20 +9203,20 @@
       return doPost('/3/Parse', opts, go);
     };
 
-    // Create data for partial dependence plot(s) 
+    // Create data for partial dependence plot(s)
     // for the specified model and frame.
     //
     // make a post request to h2o-3 to request
     // the data about the specified model and frame
     // subject to the other options `opts`
     //
-    // returns a job 
+    // returns a job
     const requestPartialDependence = (opts, go) => doPost('/3/PartialDependence/', opts, go);
 
     // make a post request to h2o-3 to do request
     // the data about the specified model and frame
     // subject to the other options `opts`
-    // 
+    //
     // returns a json response that contains the data
     const requestPartialDependenceData = (key, go) => doGet(`/3/PartialDependence/${ encodeURIComponent(key) }`, (error, result) => {
       if (error) {
@@ -9401,7 +9404,7 @@
         }
         //
         // TODO workaround for a filtering bug in the API
-        //    
+        //
         const predictions = (() => {
           let _i;
           let _len;

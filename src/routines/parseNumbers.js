@@ -1,10 +1,9 @@
 export function parseNumbers(source) {
   let i;
-  let target;
   let value;
   let _i;
   let _len;
-  target = new Array(source.length);
+  const target = new Array(source.length);
   for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
     value = source[i];
     // TODO handle formatting
