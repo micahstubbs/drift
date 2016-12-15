@@ -27,7 +27,10 @@ export function h2oGridOutput(_, _go, _grid) {
     _checkedModelCount(checkAll ? views.length : 0);
     _isCheckingAll = false;
   });
-  const createModelView = model_id => {
+
+  // allow a non-camelCase function parameter name for now
+  // to avoid an error that breaks getModel
+  const createModelView = model_id => { // eslint-disable-line
     const _isChecked = Flow.Dataflow.signal(false);
     Flow.Dataflow.react(_isChecked, () => {
       let view;

@@ -3168,7 +3168,11 @@
       _checkedModelCount(checkAll ? views.length : 0);
       _isCheckingAll = false;
     });
+
+    // allow a non-camelCase function parameter name for now
+    // to avoid an error that breaks getModel
     const createModelView = model_id => {
+      // eslint-disable-line
       const _isChecked = Flow.Dataflow.signal(false);
       Flow.Dataflow.react(_isChecked, () => {
         let view;
