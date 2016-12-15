@@ -98,6 +98,7 @@ export function h2oModelsOutput(_, _go, _models) {
       }
       return _results;
     })();
+    // TODO use table origin
     return _.insertAndExecuteCell('cs', `inspect getModels ${flowPrelude.stringify(allKeys)}`);
   };
   const initialize = models => {
