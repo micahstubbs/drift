@@ -367,6 +367,7 @@ export function modelInput() {
         }
         return false;
       });
+      // Show/hide grid settings if any controls are grid-ified.
       lodash.forEach(controls, control => Flow.Dataflow.react(control.isGrided, () => {
         let isGrided;
         let _i;
@@ -488,7 +489,10 @@ export function modelInput() {
                     offsetColumnsParameter.values(columnValues);
                   }
                   if (responseColumnParameter && ignoredColumnsParameter) {
+                    // Mark response column as 'unavailable' in ignored column list.
                     return Flow.Dataflow.lift(responseColumnParameter.value, responseVariableName => {
+                      // FIXME
+                      // ignoredColumnsParameter.unavailableValues [ responseVariableName ]
                     });
                   }
                 }
@@ -544,6 +548,7 @@ export function modelInput() {
                 }
                 break;
               default:
+                // checkbox 
                 hyperParameters[control.name] = [
                   true,
                   false,
@@ -585,6 +590,7 @@ export function modelInput() {
       if (isGrided) {
         parameters.grid_id = _gridId();
         parameters.hyper_parameters = hyperParameters;
+        // { 'strategy': "RandomDiscrete/Cartesian", 'max_models': 3, 'max_runtime_secs': 20 }
         searchCriteria = { strategy: _gridStrategy() };
         switch (searchCriteria.strategy) {
           case 'RandomDiscrete':
@@ -613,10 +619,21 @@ export function modelInput() {
       }
       return parameters;
     };
+    //
+    // The 'checkForErrors' parameter exists so that we can conditionally choose 
+    // to ignore validation errors. This is because we need the show/hide states 
+    // for each field the first time around, but not the errors/warnings/info 
+    // messages. 
+    //
+    // Thus, when this function is called during form init, checkForErrors is 
+    //  passed in as 'false', and during form submission, checkForErrors is 
+    //  passsed in as 'true'.
+    //  
     const performValidations = (checkForErrors, go) => {
       _exception(null);
       const parameters = collectParameters(true);
       if (parameters.hyper_parameters) {
+        // parameter validation fails with hyper_parameters, so skip.
         return go();
       }
       _validationFailureMessage('');
@@ -682,8 +699,10 @@ export function modelInput() {
           }
         }
         if (hasErrors) {
+          // Do not pass go(). Do not collect $200.
           return _validationFailureMessage('Your model parameters have one or more errors. Please fix them and try again.');
         }
+        // Proceed with form submission
         _validationFailureMessage('');
         return go();
       });
@@ -696,12 +715,15 @@ export function modelInput() {
       });
     };
     const _revalidate = value => {
+      // HACK: ko seems to be raising change notifications when dropdown boxes are initialized.
       if (value !== void 0) {
         return performValidations(false, () => {
         });
       }
     };
     const revalidate = lodash.throttle(_revalidate, 100, { leading: false });
+
+    // Kick off validations (minus error checking) to get hidden parameters
     performValidations(false, () => {
       let controls;
       let _l;
@@ -752,6 +774,10 @@ export function modelInput() {
       if (destinationKeyParameter && !destinationKeyParameter.actualValue) {
         destinationKeyParameter.actualValue = `${algorithm}-${Flow.Util.uuid()}`;
       }
+
+      //
+      // Force classification.
+      //
       const classificationParameter = lodash.find(parameters, parameter => parameter.name === 'do_classification');
       if (classificationParameter) {
         classificationParameter.actualValue = true;
@@ -765,6 +791,7 @@ export function modelInput() {
         let _len;
         if (error) {
           // empty
+          // TODO handle properly
         } else {
           frameKeys = (() => {
             let _i;
@@ -780,6 +807,8 @@ export function modelInput() {
           for (_i = 0, _len = frameParameters.length; _i < _len; _i++) {
             parameter = frameParameters[_i];
             parameter.values = frameKeys;
+
+            // TODO HACK
             if (parameter.name === 'training_frame') {
               if (frameKey) {
                 parameter.actualValue = frameKey;
@@ -810,7 +839,7 @@ export function modelInput() {
     const createModel = () => _modelForm().createModel();
     lodash.defer(_go);
     return {
-      parentException: _exception,
+      parentException: _exception, // XXX hacky
       algorithms: _algorithms,
       algorithm: _algorithm,
       modelForm: _modelForm,
