@@ -75,7 +75,10 @@ export function h2oPredictOutput(_, _go, prediction) {
       }
     }
   }
-  const inspect = () => _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(model.name)}, frame: ${flowPrelude.stringify(frame.name)}`);
+  const inspect = () => {
+    // XXX get this from prediction table
+    return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${flowPrelude.stringify(model.name)}, frame: ${flowPrelude.stringify(frame.name)}`);
+  }
   lodash.defer(_go);
   return {
     plots: _plots,
