@@ -1,3 +1,24 @@
+//
+// Insane hack to compress large 2D data tables.
+// The basis for doing this is described here:
+// http://www.html5rocks.com/en/tutorials/speed/v8/
+// See Tip #1 "Hidden Classes"
+//
+// Applies to IE as well:
+// http://msdn.microsoft.com/en-us/library/windows/apps/hh781219.aspx#optimize_property_access
+//
+// http://jsperf.com/big-data-matrix/3
+// As of 31 Oct 2014, for a 10000 row, 100 column table in Chrome,
+//   retained memory sizes:
+// raw json: 31,165 KB
+// array of objects: 41,840 KB
+// array of arrays: 14,960 KB
+// array of prototyped instances: 14,840 KB
+//
+// Usage:
+// Foo = Flow.Data.createCompiledPrototype [ 'bar', 'baz', 'qux', ... ]
+// foo = new Foo()
+//
 export function data() {
   const lodash = window._;
   const Flow = window.Flow;
@@ -7,6 +28,8 @@ export function data() {
   const nextPrototypeName = () => `Map${++_prototypeId}`;
   const _prototypeCache = {};
   const createCompiledPrototype = attrs => {
+    // Since the prototype depends only on attribute names,
+    // return a cached prototype, if any.
     let attr;
     let i;
     const proto = _prototypeCache[cacheKey];
@@ -95,6 +118,7 @@ export function data() {
       const _results = [];
       for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
         type = types[_j];
+        // TODO attach to prototype
         label = lodash.uniqueId('__flow_variable_');
         _results.push(schema[label] = createNumericVariable(label));
       }
