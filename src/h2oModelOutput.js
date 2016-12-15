@@ -50,7 +50,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     });
     const _inputParameters = lodash.map(_model.parameters, parameter => {
       const type = parameter.type;
-      const default_value = parameter.default_value;
+      const defaultValue = parameter.defaultValue;
       const actualValue = parameter.actualValue;
       const label = parameter.label;
       const help = parameter.help;
@@ -89,7 +89,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         label,
         value,
         help,
-        isModified: default_value === actualValue,
+        isModified: defaultValue === actualValue,
       };
     });
     const format4f = number => {

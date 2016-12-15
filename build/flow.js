@@ -2347,7 +2347,7 @@
       });
       const _inputParameters = lodash.map(_model.parameters, parameter => {
         const type = parameter.type;
-        const default_value = parameter.default_value;
+        const defaultValue = parameter.defaultValue;
         const actualValue = parameter.actualValue;
         const label = parameter.label;
         const help = parameter.help;
@@ -2386,7 +2386,7 @@
           label,
           value,
           help,
-          isModified: default_value === actualValue
+          isModified: defaultValue === actualValue
         };
       });
       const format4f = number => {
@@ -5652,7 +5652,7 @@
         let parameters;
         let vectors;
         parameters = model.parameters;
-        attrs = ['label', 'type', 'level', 'actualValue', 'default_value'];
+        attrs = ['label', 'type', 'level', 'actualValue', 'defaultValue'];
         vectors = (() => {
           let _i;
           let _j;
