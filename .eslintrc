@@ -1,6 +1,7 @@
 {
   "extends": "airbnb",
   "rules": {
+    "max-len": "off",
     "prefer-rest-params": "off",
     "no-restricted-syntax": "off",
     "func-names": "off",
