@@ -3736,7 +3736,7 @@
     const Flow = window.Flow;
     const _scalaIntpView = Flow.Dataflow.signal(null);
     const createScalaIntpView = result => ({
-      session_id: result.session_id
+      sessionId: result.sessionId
     });
     _scalaIntpView(createScalaIntpView(_result));
     lodash.defer(_go);
@@ -7393,7 +7393,7 @@
         }
         return _fork(requestAsDataFrame, hfId, name);
       };
-      requestScalaCode = (session_id, code, go) => _.requestScalaCode(session_id, code, (error, result) => {
+      requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -7403,7 +7403,7 @@
         render_(result, h2oScalaCodeOutput, result);
         return result;
       };
-      runScalaCode = (session_id, code) => _fork(requestScalaCode, session_id, code);
+      runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
       requestScalaIntp = go => _.requestScalaIntp((error, result) => {
         if (error) {
           return go(error);
@@ -10264,7 +10264,7 @@
         if (error) {
           return _.scalaIntpId(-1);
         }
-        return _.scalaIntpId(response.session_id);
+        return _.scalaIntpId(response.sessionId);
       });
       const serialize = () => {
         let cell;
@@ -11871,7 +11871,7 @@
     const requestRDDs = go => doGet('/3/RDDs', go);
     const requestDataFrames = go => doGet('/3/dataframes', go);
     const requestScalaIntp = go => doPost('/3/scalaint', {}, go);
-    const requestScalaCode = (session_id, code, go) => doPost(`/3/scalaint/${ session_id }`, { code }, go);
+    const requestScalaCode = (sessionId, code, go) => doPost(`/3/scalaint/${ sessionId }`, { code }, go);
     const requestAsH2OFrameFromRDD = (rddId, name, go) => {
       if (name === void 0) {
         return doPost(`/3/RDDs/${ rddId }/h2oframe`, {}, go);

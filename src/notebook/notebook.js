@@ -92,7 +92,7 @@ export function notebook() {
       if (error) {
         return _.scalaIntpId(-1);
       }
-      return _.scalaIntpId(response.session_id);
+      return _.scalaIntpId(response.sessionId);
     });
     const serialize = () => {
       let cell;

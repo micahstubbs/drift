@@ -2859,7 +2859,7 @@ export function routines() {
       }
       return _fork(requestAsDataFrame, hfId, name);
     };
-    requestScalaCode = (session_id, code, go) => _.requestScalaCode(session_id, code, (error, result) => {
+    requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -2869,7 +2869,7 @@ export function routines() {
       render_(result, h2oScalaCodeOutput, result);
       return result;
     };
-    runScalaCode = (session_id, code) => _fork(requestScalaCode, session_id, code);
+    runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
     requestScalaIntp = go => _.requestScalaIntp((error, result) => {
       if (error) {
         return go(error);

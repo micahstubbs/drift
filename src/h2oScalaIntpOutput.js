@@ -3,7 +3,7 @@ export function h2oScalaIntpOutput(_, _go, _result) {
   const Flow = window.Flow;
   const _scalaIntpView = Flow.Dataflow.signal(null);
   const createScalaIntpView = result => ({
-    session_id: result.session_id,
+    sessionId: result.sessionId,
   });
   _scalaIntpView(createScalaIntpView(_result));
   lodash.defer(_go);
