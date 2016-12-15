@@ -21,7 +21,10 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
     }
     return target(vis.element);
   });
+
+  // Hold as many plots as are present in the result.
   const _plots = [];
+  
   const _ref = _result.partial_dependence_data;
   for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
     data = _ref[i];
