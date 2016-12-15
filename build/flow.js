@@ -7365,17 +7365,17 @@
         }
         return _fork(requestAsH2OFrameFromRDD, rdd_id, name);
       };
-      requestAsH2OFrameFromDF = (df_id, name, go) => _.requestAsH2OFrameFromDF(df_id, name, (error, result) => {
+      requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendAsH2OFrame(result));
       });
-      asH2OFrameFromDF = (df_id, name) => {
+      asH2OFrameFromDF = (dfId, name) => {
         if (name == null) {
           name = void 0;
         }
-        return _fork(requestAsH2OFrameFromDF, df_id, name);
+        return _fork(requestAsH2OFrameFromDF, dfId, name);
       };
       extendAsDataFrame = result => {
         render_(result, h2oDataFrameOutput, result);
@@ -11878,11 +11878,11 @@
       }
       return doPost(`/3/RDDs/${ rdd_id }/h2oframe`, { h2oframe_id: name }, go);
     };
-    const requestAsH2OFrameFromDF = (df_id, name, go) => {
+    const requestAsH2OFrameFromDF = (dfId, name, go) => {
       if (name === void 0) {
-        return doPost(`/3/dataframes/${ df_id }/h2oframe`, {}, go);
+        return doPost(`/3/dataframes/${ dfId }/h2oframe`, {}, go);
       }
-      return doPost(`/3/dataframes/${ df_id }/h2oframe`, { h2oframe_id: name }, go);
+      return doPost(`/3/dataframes/${ dfId }/h2oframe`, { h2oframe_id: name }, go);
     };
     const requestAsDataFrame = (hfId, name, go) => {
       if (name === void 0) {
