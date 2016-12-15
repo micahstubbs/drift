@@ -67,8 +67,8 @@ export function modelInput() {
       default:
         // do nothing
     }
-    const _ref = parameter.actual_value;
-    const _ref1 = parameter.actual_value;
+    const _ref = parameter.actualValue;
+    const _ref1 = parameter.actualValue;
     const _text = Flow.Dataflow.signal(isArrayValued ? (_ref != null ? _ref : []).join(', ') : _ref1 != null ? _ref1 : '');
     const _textGrided = Flow.Dataflow.signal(`${_text()};`);
     const textToValues = text => {
@@ -131,7 +131,7 @@ export function modelInput() {
     value: Flow.Dataflow.signal(true),
   }));
   const createDropdownControl = parameter => {
-    const _value = Flow.Dataflow.signal(parameter.actual_value);
+    const _value = Flow.Dataflow.signal(parameter.actualValue);
     const control = createControl('dropdown', parameter);
     control.values = Flow.Dataflow.signals(parameter.values);
     control.value = _value;
@@ -283,7 +283,7 @@ export function modelInput() {
     return control;
   };
   const createCheckboxControl = parameter => {
-    const _value = Flow.Dataflow.signal(parameter.actual_value);
+    const _value = Flow.Dataflow.signal(parameter.actualValue);
     const control = createControl('checkbox', parameter);
     control.clientId = lodash.uniqueId();
     control.value = _value;
@@ -749,12 +749,12 @@ export function modelInput() {
     const _modelForm = Flow.Dataflow.signal(null);
     const populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
       const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
-      if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
-        destinationKeyParameter.actual_value = `${algorithm}-${Flow.Util.uuid()}`;
+      if (destinationKeyParameter && !destinationKeyParameter.actualValue) {
+        destinationKeyParameter.actualValue = `${algorithm}-${Flow.Util.uuid()}`;
       }
       const classificationParameter = lodash.find(parameters, parameter => parameter.name === 'do_classification');
       if (classificationParameter) {
-        classificationParameter.actual_value = true;
+        classificationParameter.actualValue = true;
       }
       return _.requestFrames((error, frames) => {
         let frame;
@@ -782,9 +782,9 @@ export function modelInput() {
             parameter.values = frameKeys;
             if (parameter.name === 'training_frame') {
               if (frameKey) {
-                parameter.actual_value = frameKey;
+                parameter.actualValue = frameKey;
               } else {
-                frameKey = parameter.actual_value;
+                frameKey = parameter.actualValue;
               }
             }
           }

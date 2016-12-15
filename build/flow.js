@@ -161,8 +161,8 @@
         default:
         // do nothing
       }
-      const _ref = parameter.actual_value;
-      const _ref1 = parameter.actual_value;
+      const _ref = parameter.actualValue;
+      const _ref1 = parameter.actualValue;
       const _text = Flow.Dataflow.signal(isArrayValued ? (_ref != null ? _ref : []).join(', ') : _ref1 != null ? _ref1 : '');
       const _textGrided = Flow.Dataflow.signal(`${ _text() };`);
       const textToValues = text => {
@@ -225,7 +225,7 @@
       value: Flow.Dataflow.signal(true)
     }));
     const createDropdownControl = parameter => {
-      const _value = Flow.Dataflow.signal(parameter.actual_value);
+      const _value = Flow.Dataflow.signal(parameter.actualValue);
       const control = createControl('dropdown', parameter);
       control.values = Flow.Dataflow.signals(parameter.values);
       control.value = _value;
@@ -377,7 +377,7 @@
       return control;
     };
     const createCheckboxControl = parameter => {
-      const _value = Flow.Dataflow.signal(parameter.actual_value);
+      const _value = Flow.Dataflow.signal(parameter.actualValue);
       const control = createControl('checkbox', parameter);
       control.clientId = lodash.uniqueId();
       control.value = _value;
@@ -814,12 +814,12 @@
       const _modelForm = Flow.Dataflow.signal(null);
       const populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
         const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
-        if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
-          destinationKeyParameter.actual_value = `${ algorithm }-${ Flow.Util.uuid() }`;
+        if (destinationKeyParameter && !destinationKeyParameter.actualValue) {
+          destinationKeyParameter.actualValue = `${ algorithm }-${ Flow.Util.uuid() }`;
         }
         const classificationParameter = lodash.find(parameters, parameter => parameter.name === 'do_classification');
         if (classificationParameter) {
-          classificationParameter.actual_value = true;
+          classificationParameter.actualValue = true;
         }
         return _.requestFrames((error, frames) => {
           let frame;
@@ -847,9 +847,9 @@
               parameter.values = frameKeys;
               if (parameter.name === 'training_frame') {
                 if (frameKey) {
-                  parameter.actual_value = frameKey;
+                  parameter.actualValue = frameKey;
                 } else {
-                  frameKey = parameter.actual_value;
+                  frameKey = parameter.actualValue;
                 }
               }
             }
@@ -2348,21 +2348,21 @@
       const _inputParameters = lodash.map(_model.parameters, parameter => {
         const type = parameter.type;
         const default_value = parameter.default_value;
-        const actual_value = parameter.actual_value;
+        const actualValue = parameter.actualValue;
         const label = parameter.label;
         const help = parameter.help;
         const value = (() => {
           switch (type) {
             case 'Key<Frame>':
             case 'Key<Model>':
-              if (actual_value) {
-                return actual_value.name;
+              if (actualValue) {
+                return actualValue.name;
               }
               return null;
             // break; // no-unreachable
             case 'VecSpecifier':
-              if (actual_value) {
-                return actual_value.column_name;
+              if (actualValue) {
+                return actualValue.column_name;
               }
               return null;
             // break; // no-unreachable
@@ -2373,20 +2373,20 @@
             case 'long[]':
             case 'float[]':
             case 'double[]':
-              if (actual_value) {
-                return actual_value.join(', ');
+              if (actualValue) {
+                return actualValue.join(', ');
               }
               return null;
             // break; // no-unreachable
             default:
-              return actual_value;
+              return actualValue;
           }
         })();
         return {
           label,
           value,
           help,
-          isModified: default_value === actual_value
+          isModified: default_value === actualValue
         };
       });
       const format4f = number => {
@@ -2592,7 +2592,7 @@
           table = _.inspect('output - Scoring History', _model);
           if (table) {
             lambdaSearchParameter = lodash.find(_model.parameters, parameter => parameter.name === 'lambda_search');
-            if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
+            if (lambdaSearchParameter != null ? lambdaSearchParameter.actualValue : void 0) {
               renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
             } else {
               renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
@@ -4050,7 +4050,7 @@
           _ref1 = model.parameters;
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             parameter = _ref1[_i];
-            if (parameter.name === 'autoencoder' && parameter.actual_value === true) {
+            if (parameter.name === 'autoencoder' && parameter.actualValue === true) {
               return true;
             }
           }
@@ -5581,7 +5581,7 @@
               _results1 = [];
               for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
                 model = models[_j];
-                _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actual_value));
+                _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actualValue));
               }
               return _results1;
             })();
@@ -5652,7 +5652,7 @@
         let parameters;
         let vectors;
         parameters = model.parameters;
-        attrs = ['label', 'type', 'level', 'actual_value', 'default_value'];
+        attrs = ['label', 'type', 'level', 'actualValue', 'default_value'];
         vectors = (() => {
           let _i;
           let _j;
@@ -5665,7 +5665,7 @@
             data = new Array(parameters.length);
             for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
               parameter = parameters[i];
-              data[i] = attr === 'actual_value' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
+              data[i] = attr === 'actualValue' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
             }
             _results.push(createList(attr, data));
           }

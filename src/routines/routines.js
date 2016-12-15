@@ -951,7 +951,7 @@ export function routines() {
             _results1 = [];
             for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
               model = models[_j];
-              _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actual_value));
+              _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actualValue));
             }
             return _results1;
           })();
@@ -1026,7 +1026,7 @@ export function routines() {
         'label',
         'type',
         'level',
-        'actual_value',
+        'actualValue',
         'default_value'
       ];
       vectors = (() => {
@@ -1041,7 +1041,7 @@ export function routines() {
           data = new Array(parameters.length);
           for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
             parameter = parameters[i];
-            data[i] = attr === 'actual_value' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
+            data[i] = attr === 'actualValue' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
           }
           _results.push(createList(attr, data));
         }

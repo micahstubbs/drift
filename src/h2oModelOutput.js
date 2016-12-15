@@ -51,21 +51,21 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     const _inputParameters = lodash.map(_model.parameters, parameter => {
       const type = parameter.type;
       const default_value = parameter.default_value;
-      const actual_value = parameter.actual_value;
+      const actualValue = parameter.actualValue;
       const label = parameter.label;
       const help = parameter.help;
       const value = (() => {
         switch (type) {
           case 'Key<Frame>':
           case 'Key<Model>':
-            if (actual_value) {
-              return actual_value.name;
+            if (actualValue) {
+              return actualValue.name;
             }
             return null;
             // break; // no-unreachable
           case 'VecSpecifier':
-            if (actual_value) {
-              return actual_value.column_name;
+            if (actualValue) {
+              return actualValue.column_name;
             }
             return null;
             // break; // no-unreachable
@@ -76,20 +76,20 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           case 'long[]':
           case 'float[]':
           case 'double[]':
-            if (actual_value) {
-              return actual_value.join(', ');
+            if (actualValue) {
+              return actualValue.join(', ');
             }
             return null;
             // break; // no-unreachable
           default:
-            return actual_value;
+            return actualValue;
         }
       })();
       return {
         label,
         value,
         help,
-        isModified: default_value === actual_value,
+        isModified: default_value === actualValue,
       };
     });
     const format4f = number => {
@@ -295,7 +295,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - Scoring History', _model);
         if (table) {
           lambdaSearchParameter = lodash.find(_model.parameters, parameter => parameter.name === 'lambda_search');
-          if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
+          if (lambdaSearchParameter != null ? lambdaSearchParameter.actualValue : void 0) {
             renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
           } else {
             renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
