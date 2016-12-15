@@ -7803,7 +7803,7 @@
               }
             });
           } else {
-            throw 'Enter key action is not a function';
+            throw new Error('Enter key action is not a function');
           }
         }
       }
@@ -7820,7 +7820,7 @@
               source: action
             });
           } else {
-            throw 'Typeahead action is not a function';
+            throw new Error('Typeahead action is not a function');
           }
         }
       }
