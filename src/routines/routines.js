@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { parseNumbers } from './parseNumbers';
+import { format4f } from './format4f';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -58,7 +58,6 @@ export function routines() {
   let computeFalsePositiveRate;
   let computeTruePositiveRate;
   let concatArrays;
-  let convertColumnToVector;
   let convertTableToFrame;
   let createArrays;
   let createDataframe;
@@ -66,9 +65,7 @@ export function routines() {
   let createList;
   let createTempKey;
   let createVector;
-  let format4f;
   let format6fi;
-  let formatConfusionMatrix;
   let formulateGetPredictionsOrigin;
   let getTwoDimData;
   let lightning;
@@ -76,7 +73,6 @@ export function routines() {
   let parseAndFormatObjectArray;
   let parseNaNs;
   let parseNulls;
-  let parseNumbers;
   let repeatValues;
   let _assistance;
   const __slice = [].slice;
@@ -136,25 +132,6 @@ export function routines() {
       icon: 'bolt'
     }
   };
-  convertColumnToVector = (column, data) => {
-    switch (column.type) {
-      case 'byte':
-      case 'short':
-      case 'int':
-      case 'integer':
-      case 'long':
-        return createVector(column.name, 'Number', parseNumbers(data));
-      case 'float':
-      case 'double':
-        return createVector(column.name, 'Number', parseNumbers(data), format4f);
-      case 'string':
-        return createFactor(column.name, 'String', data);
-      case 'matrix':
-        return createList(column.name, data, formatConfusionMatrix);
-      default:
-        return createList(column.name, data);
-    }
-  };
   convertTableToFrame = (table, tableName, metadata) => {
     // TODO handle format strings and description
     let column;
@@ -182,15 +159,6 @@ export function routines() {
       return table.data[columnIndex];
     }
     return void 0;
-  };
-  format4f = number => {
-    if (number) {
-      if (number === 'NaN') {
-        return void 0;
-      }
-      return number.toFixed(4).replace(/\.0+$/, '.0');
-    }
-    return number;
   };
   format6fi = number => {
     if (number) {
@@ -351,60 +319,6 @@ export function routines() {
     let _ref1;
     (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
     return fp / (fp + tn);
-  };
-  formatConfusionMatrix = cm => {
-    let domain;
-    let fn;
-    let fnr;
-    let fp;
-    let fpr;
-    let normal;
-    let strong;
-    let table;
-    let tbody;
-    let tn;
-    let tp;
-    let tr;
-    let yellow;
-    let _ref;
-    let _ref1;
-    let _ref2;
-    let _ref3;
-    _ref = cm.matrix, (_ref1 = _ref[0], tn = _ref1[0], fp = _ref1[1]), (_ref2 = _ref[1], fn = _ref2[0], tp = _ref2[1]);
-    fnr = fn / (tp + fn);
-    fpr = fp / (fp + tn);
-    domain = cm.domain;
-    _ref3 = Flow.HTML.template('table.flow-matrix', 'tbody', 'tr', 'td.strong.flow-center', 'td', 'td.bg-yellow'), table = _ref3[0], tbody = _ref3[1], tr = _ref3[2], strong = _ref3[3], normal = _ref3[4], yellow = _ref3[5];
-    return table([tbody([
-      tr([
-        strong('Actual/Predicted'),
-        strong(domain[0]),
-        strong(domain[1]),
-        strong('Error'),
-        strong('Rate')
-      ]),
-      tr([
-        strong(domain[0]),
-        yellow(tn),
-        normal(fp),
-        normal(format4f(fpr)),
-        normal(`${fp} / ${(fp + tn)}`)
-      ]),
-      tr([
-        strong(domain[1]),
-        normal(fn),
-        yellow(tp),
-        normal(format4f(fnr)),
-        normal(`${fn} / ${(tp + fn)}`)
-      ]),
-      tr([
-        strong('Total'),
-        strong(tn + fn),
-        strong(tp + fp),
-        strong(format4f((fn + fp) / (fp + tn + tp + fn))),
-        strong(`${fn}${fp} / ${(fp + tn + tp + fn)}`)
-      ])
-    ])]);
   };
   formulateGetPredictionsOrigin = opts => {
     let frameKey;
