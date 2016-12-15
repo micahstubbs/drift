@@ -8,6 +8,7 @@ export function flowApplication(_, routines) {
   const Flow = window.Flow;
   flowApplicationContext(_);
   const _sandbox = flowSandbox(_, routines(_));
+  // TODO support external renderers
   const _renderers = Flow.renderers(_, _sandbox);
   flowAnalytics(_);
   flowGrowl(_);
