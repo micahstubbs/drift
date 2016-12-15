@@ -12,6 +12,6 @@ in the same directory as [h2o-3](https://github.com/h2oai/h2o-3) and [h2o-flow](
 `cd drift`  
 `npm install`  
 
-generate a new `flow.js` bundle and copy it over to your local `h2o-3/h2o-web/...` directory with the command
+generate a new `flow.js` bundle and copy it over to your local `h2o-3/h2o-web/src/main/resources/www/flow/js/` directory with the command
 
 `npm run build`
