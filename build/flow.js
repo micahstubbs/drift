@@ -445,6 +445,7 @@
           }
           return false;
         });
+        // Show/hide grid settings if any controls are grid-ified.
         lodash.forEach(controls, control => Flow.Dataflow.react(control.isGrided, () => {
           let isGrided;
           let _i;
@@ -558,7 +559,11 @@
                       offsetColumnsParameter.values(columnValues);
                     }
                     if (responseColumnParameter && ignoredColumnsParameter) {
-                      return Flow.Dataflow.lift(responseColumnParameter.value, responseVariableName => {});
+                      // Mark response column as 'unavailable' in ignored column list.
+                      return Flow.Dataflow.lift(responseColumnParameter.value, responseVariableName => {
+                        // FIXME
+                        // ignoredColumnsParameter.unavailableValues [ responseVariableName ]
+                      });
                     }
                   }
                 });
@@ -613,6 +618,7 @@
                   }
                   break;
                 default:
+                  // checkbox 
                   hyperParameters[control.name] = [true, false];
               }
             } else {
@@ -651,6 +657,7 @@
         if (isGrided) {
           parameters.grid_id = _gridId();
           parameters.hyper_parameters = hyperParameters;
+          // { 'strategy': "RandomDiscrete/Cartesian", 'max_models': 3, 'max_runtime_secs': 20 }
           searchCriteria = { strategy: _gridStrategy() };
           switch (searchCriteria.strategy) {
             case 'RandomDiscrete':
@@ -679,10 +686,21 @@
         }
         return parameters;
       };
+      //
+      // The 'checkForErrors' parameter exists so that we can conditionally choose 
+      // to ignore validation errors. This is because we need the show/hide states 
+      // for each field the first time around, but not the errors/warnings/info 
+      // messages. 
+      //
+      // Thus, when this function is called during form init, checkForErrors is 
+      //  passed in as 'false', and during form submission, checkForErrors is 
+      //  passsed in as 'true'.
+      //  
       const performValidations = (checkForErrors, go) => {
         _exception(null);
         const parameters = collectParameters(true);
         if (parameters.hyper_parameters) {
+          // parameter validation fails with hyper_parameters, so skip.
           return go();
         }
         _validationFailureMessage('');
@@ -748,8 +766,10 @@
             }
           }
           if (hasErrors) {
+            // Do not pass go(). Do not collect $200.
             return _validationFailureMessage('Your model parameters have one or more errors. Please fix them and try again.');
           }
+          // Proceed with form submission
           _validationFailureMessage('');
           return go();
         });
@@ -762,11 +782,14 @@
         });
       };
       const _revalidate = value => {
+        // HACK: ko seems to be raising change notifications when dropdown boxes are initialized.
         if (value !== void 0) {
           return performValidations(false, () => {});
         }
       };
       const revalidate = lodash.throttle(_revalidate, 100, { leading: false });
+
+      // Kick off validations (minus error checking) to get hidden parameters
       performValidations(false, () => {
         let controls;
         let _l;
@@ -817,6 +840,10 @@
         if (destinationKeyParameter && !destinationKeyParameter.actualValue) {
           destinationKeyParameter.actualValue = `${ algorithm }-${ Flow.Util.uuid() }`;
         }
+
+        //
+        // Force classification.
+        //
         const classificationParameter = lodash.find(parameters, parameter => parameter.name === 'do_classification');
         if (classificationParameter) {
           classificationParameter.actualValue = true;
@@ -830,6 +857,7 @@
           let _len;
           if (error) {
             // empty
+            // TODO handle properly
           } else {
             frameKeys = (() => {
               let _i;
@@ -845,6 +873,8 @@
             for (_i = 0, _len = frameParameters.length; _i < _len; _i++) {
               parameter = frameParameters[_i];
               parameter.values = frameKeys;
+
+              // TODO HACK
               if (parameter.name === 'training_frame') {
                 if (frameKey) {
                   parameter.actualValue = frameKey;
@@ -875,7 +905,7 @@
       const createModel = () => _modelForm().createModel();
       lodash.defer(_go);
       return {
-        parentException: _exception,
+        parentException: _exception, // XXX hacky
         algorithms: _algorithms,
         algorithm: _algorithm,
         modelForm: _modelForm,
@@ -1084,6 +1114,11 @@
       running: '#f0ad4e'
     };
     const getJobOutputStatusColor = status => {
+      // CREATED   Job was created
+      // RUNNING   Job is running
+      // CANCELLED Job was cancelled by user
+      // FAILED    Job crashed, error message/exception is available
+      // DONE      Job was successfully finished
       switch (status) {
         case 'DONE':
           return jobOutputStatusColors.done;
@@ -1091,6 +1126,7 @@
         case 'RUNNING':
           return jobOutputStatusColors.running;
         default:
+          // 'CANCELLED', 'FAILED'
           return jobOutputStatusColors.failed;
       }
     };
@@ -1222,6 +1258,7 @@
           case 'PartialDependence':
             return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$4.stringify(_destinationKey) }`);
           case 'Auto Model':
+            // FIXME getGrid() for AutoML is hosed; resort to getGrids() for now.
             return _.insertAndExecuteCell('cs', 'getGrids');
           case 'Void':
             return alert(`This frame was exported to\n${ _job.dest.name }`);
@@ -1335,6 +1372,7 @@
         let frame;
         if (error) {
           // empty
+          // TODO handle properly
         } else {
           _frames((() => {
             let _i;
@@ -1359,6 +1397,7 @@
             let column;
             if (error) {
               // empty
+              // TODO handle properly
             } else {
               _columns((() => {
                 let _i;
@@ -1373,7 +1412,7 @@
               })());
               if (opts.column) {
                 _column(opts.column);
-                return delete opts.column;
+                return delete opts.column; // HACK
               }
             }
           });
@@ -1424,6 +1463,7 @@
       return {
         label: table.label,
         description: table.metadata.description,
+        // variables: table.variables #XXX unused?
         inspect,
         grid,
         canPlot: table.metadata.plot,
@@ -1515,6 +1555,7 @@
     const moment = window.moment;
     const d3 = window.d3;
     let _isHealthy;
+    // TODO Display in .jade
     const _exception = Flow.Dataflow.signal(null);
     const _isLive = Flow.Dataflow.signal(false);
     const _isBusy = Flow.Dataflow.signal(false);
@@ -1528,6 +1569,8 @@
     const _isLocked = Flow.Dataflow.signal();
     const _nodes = Flow.Dataflow.signals();
     const formatMilliseconds = ms => Flow.Util.fromNow(new Date(new Date().getTime() - ms));
+
+    // precision = 3
     const format3f = d3.format('.3f');
     const _sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const prettyPrintBytes = bytes => {
@@ -1577,7 +1620,9 @@
       return total;
     };
     const avg = (nodes, attrOf) => sum(nodes, attrOf) / nodes.length;
-    const _headers = [['&nbsp;', true], ['Name', true], ['Ping', true], ['Cores', true], ['Load', true], ['My CPU %', true], ['Sys CPU %', true], ['GFLOPS', true], ['Memory Bandwidth', true], ['Data (Used/Total)', true], ['Data (% Cached)', true], ['GC (Free / Total / Max)', true], ['Disk (Free / Max)', true], ['Disk (% Free)', true], ['PID', false], ['Keys', false], ['TCP', false], ['FD', false], ['RPCs', false], ['Threads', false], ['Tasks', false]];
+    const _headers = [
+    // [ Caption, show_always? ]
+    ['&nbsp;', true], ['Name', true], ['Ping', true], ['Cores', true], ['Load', true], ['My CPU %', true], ['Sys CPU %', true], ['GFLOPS', true], ['Memory Bandwidth', true], ['Data (Used/Total)', true], ['Data (% Cached)', true], ['GC (Free / Total / Max)', true], ['Disk (Free / Max)', true], ['Disk (% Free)', true], ['PID', false], ['Keys', false], ['TCP', false], ['FD', false], ['RPCs', false], ['Threads', false], ['Tasks', false]];
     const createNodeRow = node => [node.healthy, node.ip_port, moment(new Date(node.last_ping)).fromNow(), node.num_cpus, format3f(node.sys_load), node.my_cpu_pct, node.sys_cpu_pct, format3f(node.gflops), `${ prettyPrintBytes(node.mem_bw) } / s`, `${ prettyPrintBytes(node.mem_value_size) } / ${ prettyPrintBytes(node.total_value_size) }`, `${ Math.floor(node.mem_value_size * 100 / node.total_value_size) }%`, `${ prettyPrintBytes(node.free_mem) } / ${ prettyPrintBytes(node.tot_mem) } / ${ prettyPrintBytes(node.max_mem) }`, `${ prettyPrintBytes(node.free_disk) } / ${ prettyPrintBytes(node.max_disk) }`, `${ Math.floor(node.free_disk * 100 / node.max_disk) }%`, node.pid, node.num_keys, node.tcps_active, node.open_fds, node.rpcs_active, formatThreads(node.fjthrds), formatThreads(node.fjqueue)];
     const createTotalRow = cloud => {
       const nodes = cloud.nodes;
@@ -1852,6 +1897,7 @@
   function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
     const lodash = window._;
     const Flow = window.Flow;
+    // TODO Display in .jade
     const _exception = Flow.Dataflow.signal(null);
     const _contents = Flow.Dataflow.signal('');
     const _nodes = Flow.Dataflow.signal([]);
@@ -2177,7 +2223,10 @@
       }
       return target(vis.element);
     });
+
+    // Hold as many plots as are present in the result.
     const _plots = [];
+
     const _ref = _result.partial_dependence_data;
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       data = _ref[i];
@@ -2345,6 +2394,8 @@
         }
         return false;
       });
+
+      // TODO use _.enumerate()
       const _inputParameters = lodash.map(_model.parameters, parameter => {
         const type = parameter.type;
         const defaultValue = parameter.defaultValue;
@@ -2389,6 +2440,8 @@
           isModified: defaultValue === actualValue
         };
       });
+
+      // TODO copied over from routines.coffee. replace post h2o.js integration.
       const format4f = number => {
         if (number) {
           if (number === 'NaN') {
@@ -2414,6 +2467,7 @@
         let thresholds;
         const criterionTable = _.inspect(tableName, _model);
         if (criterionTable) {
+          // Threshold dropdown items
           thresholdVector = table.schema.threshold;
           thresholds = (() => {
             let _i;
@@ -2427,6 +2481,8 @@
             }
             return _results;
           })();
+
+          // Threshold criterion dropdown item
           metricVector = criterionTable.schema.metric;
           idxVector = criterionTable.schema.idx;
           criteria = (() => {
@@ -2448,10 +2504,16 @@
         }
         return void 0;
       };
+
+      // TODO Mega-hack alert
+      // Last arg thresholdsAndCriteria applicable only to 
+      // ROC charts for binomial models.
       const renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
         let rocPanel;
         const container = Flow.Dataflow.signal(null);
         const linkedFrame = Flow.Dataflow.signal(null);
+
+        // TODO HACK
         if (thresholdsAndCriteria) {
           rocPanel = {
             thresholds: Flow.Dataflow.signals(thresholdsAndCriteria.thresholds),
@@ -2491,12 +2553,17 @@
                   return linkedFrame(table.element);
                 }
               });
+
+              // TODO HACK
               if (rocPanel) {
                 if (indices.length === 1) {
                   selectedIndex = lodash.head(indices);
                   _autoHighlight = false;
                   rocPanel.threshold(lodash.find(rocPanel.thresholds(), threshold => threshold.index === selectedIndex));
                   currentCriterion = rocPanel.criterion();
+
+                  // More than one criterion can point to the same threshold,
+                  // so ensure that we're preserving the existing criterion, if any.
                   if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
                     rocPanel.criterion(lodash.find(rocPanel.criteria(), criterion => criterion.index === selectedIndex));
                   }
@@ -2509,11 +2576,15 @@
             });
             vis.subscribe('markdeselect', () => {
               linkedFrame(null);
+
+              // TODO HACK
               if (rocPanel) {
                 rocPanel.criterion(null);
                 return rocPanel.threshold(null);
               }
             });
+
+            // TODO HACK
             if (rocPanel) {
               Flow.Dataflow.react(rocPanel.threshold, threshold => {
                 if (threshold && _autoHighlight) {
@@ -2553,6 +2624,8 @@
         const columnCount = cm.columns.length;
         const rowCount = cm.rowcount;
         const headers = lodash.map(cm.columns, (column, i) => bold(column.description));
+
+        // NW corner cell
         headers.unshift(normal(' '));
         const rows = [tr(headers)];
         const errorColumnIndex = columnCount - 2;
@@ -2565,11 +2638,15 @@
             const _results = [];
             for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
               column = _ref1[i];
+
+              // Last two columns should be emphasized
+              // special-format error column
               cell = i < errorColumnIndex ? i === rowIndex ? yellow : rowIndex < totalRowIndex ? normal : bold : bold;
               _results.push(cell(i === errorColumnIndex ? format4f(column[rowIndex]) : column[rowIndex]));
             }
             return _results;
           })();
+          // Add the corresponding column label
           cells.unshift(bold(rowIndex === rowCount - 1 ? 'Total' : cm.columns[rowIndex].description));
           rows.push(tr(cells));
         }
@@ -2667,16 +2744,28 @@
           table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`'ROC Curve - Validation Metrics' + ${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`'ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - Variable Importances', _model);
@@ -2728,16 +2817,28 @@
           table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - Variable Importances', _model);
@@ -2768,20 +2869,34 @@
             }
           }
           break;
+        // end of when 'gbm', 'drf', 'svm'
+
         case 'stackedensemble':
           table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`'ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
           if (table) {
             plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+
+            // TODO Mega-hack alert.
+            // Last arg thresholdsAndCriteria applicable only to
+            // ROC charts for binomial models.
             renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - Variable Importances', _model);
@@ -2815,6 +2930,8 @@
         default:
         // do nothing
       }
+      // end of stackedensemble 
+
       table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
       if (table) {
         renderPlot('Training Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
@@ -2834,6 +2951,8 @@
           continue;
         }
         _ref25 = _model.output;
+
+        // Skip confusion matrix tables for multinomial models
         output = (_ref25 != null ? _ref25.model_category : void 0) === 'Multinomial';
         if (output) {
           if (tableName.indexOf('output - training_metrics - cm') === 0) {
@@ -2850,7 +2969,10 @@
         }
       }
       const toggle = () => _isExpanded(!_isExpanded());
-      const cloneModel = () => alert('Not implemented');
+      const cloneModel = () => {
+        // _.insertAndExecuteCell 'cs', 'assist buildModel,
+        return alert('Not implemented');
+      };
       const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$14.stringify(_model.modelId.name) }`);
       const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$14.stringify(_model.modelId.name) }`);
       const previewPojo = () => _.requestPojoPreview(_model.modelId.name, (error, result) => {
@@ -3026,6 +3148,7 @@
         }
         return _results;
       })();
+      // TODO use table origin
       return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$15.stringify(allKeys) }`);
     };
     const initialize = grid => {
@@ -3196,6 +3319,7 @@
         }
         return _results;
       })();
+      // TODO use table origin
       return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$17.stringify(allKeys) }`);
     };
     const initialize = models => {
@@ -3325,6 +3449,19 @@
     const predict = () => _.insertAndExecuteCell('cs', 'predict');
     const initialize = predictions => {
       _predictionViews(lodash.map(predictions, createPredictionView));
+
+      // TODO handle non-binomial models
+      // warning: sample code is CoffeeScript
+      // rocCurveConfig =
+      //   data: _.inspect 'scores', _predictions
+      //   type: 'line'
+      //   x: 'FPR'
+      //   y: 'TPR'
+      //   color: 'key'
+      // _.plot rocCurveConfig, (error, el) ->
+      //   unless error
+      //     _rocCurve el
+
       return lodash.defer(_go);
     };
     initialize(_predictions);
@@ -3420,7 +3557,10 @@
         }
       }
     }
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$19.stringify(model.name) }, frame: ${ flowPrelude$19.stringify(frame.name) }`);
+    const inspect = () => {
+      // XXX get this from prediction table
+      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$19.stringify(model.name) }, frame: ${ flowPrelude$19.stringify(frame.name) }`);
+    };
     lodash.defer(_go);
     return {
       plots: _plots,
@@ -3517,6 +3657,7 @@
       return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
         if (error) {
           // empty
+          // TODO
         } else {
           _lastUsedSearchTerm = searchTerm;
           _currentPage(pageIndex);
@@ -3646,6 +3787,8 @@
     const _canParse = _allFrames.length > 0;
     const _title = `${ _allFrames.length } / ${ _importResults.length } files imported.`;
     const createImportView = result => ({
+      // TODO dels?
+      // TODO fails?
       files: result.files,
       template: 'flow-import-file-output'
     });
@@ -3778,6 +3921,9 @@
   const flowPrelude$24 = flowPreludeFunction();
 
   function h2oImportFilesInput(_, _go) {
+    //
+    // Search files/directories
+    //
     const lodash = window._;
     const Flow = window.Flow;
     const _specifiedPath = Flow.Dataflow.signal('');
@@ -3795,9 +3941,14 @@
           return _exception(error.stack);
         }
         _exception('');
+        // _go 'confirm', result
         return processImportResult(result);
       });
     };
+
+    //
+    // File selection
+    //
     const _importedFiles = Flow.Dataflow.signals([]);
     const _importedFileCount = Flow.Dataflow.lift(_importedFiles, files => {
       if (files.length) {
@@ -3908,7 +4059,7 @@
     lodash.defer(_go);
     return {
       specifiedPath: _specifiedPath,
-      hasErrorMessage: _hasErrorMessage,
+      hasErrorMessage: _hasErrorMessage, // XXX obsolete
       exception: _exception,
       tryImportFiles,
       listPathHints: lodash.throttle(listPathHints, 100),
@@ -3962,6 +4113,7 @@
       let frame;
       if (error) {
         // empty
+        // TODO handle properly
       } else {
         _frames((() => {
           let _i;
@@ -3986,6 +4138,7 @@
           let column;
           if (error) {
             // empty
+            // TODO handle properly
           } else {
             _columns((() => {
               let _i;
@@ -4000,7 +4153,7 @@
             })());
             if (opts.column) {
               _column(opts.column);
-              return delete opts.column;
+              return delete opts.column; // HACK
             }
           }
         });
@@ -4121,6 +4274,7 @@
           let _i;
           let _len;
           const _results = [];
+          // TODO use models directly
           for (_i = 0, _len = models.length; _i < _len; _i++) {
             model = models[_i];
             _results.push(model.modelId.name);
@@ -4454,6 +4608,7 @@
   function h2oMergeFramesInput(_, _go) {
     const lodash = window._;
     const Flow = window.Flow;
+    // TODO display in .jade
     const _exception = Flow.Dataflow.signal(null);
     const _destinationKey = Flow.Dataflow.signal(`merged-${ Flow.Util.uuid() }`);
     const _frames = Flow.Dataflow.signals([]);
@@ -4534,6 +4689,8 @@
   function h2oPartialDependenceInput(_, _go) {
     const lodash = window._;
     const Flow = window.Flow;
+
+    // TODO display in .jade
     const _exception = Flow.Dataflow.signal(null);
     const _destinationKey = Flow.Dataflow.signal(`ppd-${ Flow.Util.uuid() }`);
     const _frames = Flow.Dataflow.signals([]);
@@ -4541,18 +4698,33 @@
     const _selectedModel = Flow.Dataflow.signals(null);
     const _selectedFrame = Flow.Dataflow.signal(null);
     const _nbins = Flow.Dataflow.signal(20);
+
+    //  a conditional check that makes sure that 
+    //  all fields in the form are filled in
+    //  before the button is shown as active
     const _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
     const _compute = () => {
       if (!_canCompute()) {
         return;
       }
+
+      // parameters are selections from Flow UI
+      // form dropdown menus, text boxes, etc
       const opts = {
         destination_key: _destinationKey(),
         modelId: _selectedModel(),
         frame_id: _selectedFrame(),
         nbins: _nbins()
       };
+
+      // assemble a string for the h2o Rapids AST
+      // this contains the function to call
+      // along with the options to pass in
       const cs = `buildPartialDependence ${ flowPrelude$29.stringify(opts) }`;
+
+      // insert a cell with the expression `cs` 
+      // into the current Flow notebook
+      // and run the cell
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames((error, frames) => {
@@ -4582,6 +4754,7 @@
         let _i;
         let _len;
         const _results = [];
+        // TODO use models directly
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
           _results.push(model.modelId.name);
@@ -4684,6 +4857,7 @@
       let model;
       if (error) {
         // empty
+        // TODO handle properly
       } else {
         _models((() => {
           let _i;
@@ -4721,2879 +4895,55 @@
     };
   }
 
-  const flowPrelude$5 = flowPreludeFunction();
-
-  function routines() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    let combineTables;
-    let computeFalsePositiveRate;
-    let computeTruePositiveRate;
-    let concatArrays;
-    let convertColumnToVector;
-    let convertTableToFrame;
-    let createArrays;
-    let createDataframe;
-    let createFactor;
-    let createList;
-    let createTempKey;
-    let createVector;
-    let format4f;
-    let format6fi;
-    let formatConfusionMatrix;
-    let formulateGetPredictionsOrigin;
-    let getTwoDimData;
-    let lightning;
-    let parseAndFormatArray;
-    let parseAndFormatObjectArray;
-    let parseNaNs;
-    let parseNulls;
-    let parseNumbers;
-    let repeatValues;
-    let _assistance;
-    const __slice = [].slice;
-    lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-    createTempKey = () => `flow_${ Flow.Util.uuid().replace(/\-/g, '') }`;
-    createVector = lightning.createVector;
-    createFactor = lightning.createFactor;
-    createList = lightning.createList;
-    createDataframe = lightning.createFrame;
-    _assistance = {
-      importFiles: {
-        description: 'Import file(s) into H<sub>2</sub>O',
-        icon: 'files-o'
-      },
-      getFrames: {
-        description: 'Get a list of frames in H<sub>2</sub>O',
-        icon: 'table'
-      },
-      splitFrame: {
-        description: 'Split a frame into two or more frames',
-        icon: 'scissors'
-      },
-      mergeFrames: {
-        description: 'Merge two frames into one',
-        icon: 'link'
-      },
-      getModels: {
-        description: 'Get a list of models in H<sub>2</sub>O',
-        icon: 'cubes'
-      },
-      getGrids: {
-        description: 'Get a list of grid search results in H<sub>2</sub>O',
-        icon: 'th'
-      },
-      getPredictions: {
-        description: 'Get a list of predictions in H<sub>2</sub>O',
-        icon: 'bolt'
-      },
-      getJobs: {
-        description: 'Get a list of jobs running in H<sub>2</sub>O',
-        icon: 'tasks'
-      },
-      buildModel: {
-        description: 'Build a model',
-        icon: 'cube'
-      },
-      importModel: {
-        description: 'Import a saved model',
-        icon: 'cube'
-      },
-      predict: {
-        description: 'Make a prediction',
-        icon: 'bolt'
-      }
-    };
-    parseNumbers = source => {
-      let i;
-      let target;
-      let value;
-      let _i;
-      let _len;
-      target = new Array(source.length);
-      for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-        value = source[i];
-        target[i] = value === 'NaN' ? void 0 : value === 'Infinity' ? Number.POSITIVE_INFINITY : value === '-Infinity' ? Number.NEGATIVE_INFINITY : value;
-      }
-      return target;
-    };
-    convertColumnToVector = (column, data) => {
-      switch (column.type) {
-        case 'byte':
-        case 'short':
-        case 'int':
-        case 'integer':
-        case 'long':
-          return createVector(column.name, 'Number', parseNumbers(data));
-        case 'float':
-        case 'double':
-          return createVector(column.name, 'Number', parseNumbers(data), format4f);
-        case 'string':
-          return createFactor(column.name, 'String', data);
-        case 'matrix':
-          return createList(column.name, data, formatConfusionMatrix);
-        default:
-          return createList(column.name, data);
-      }
-    };
-    convertTableToFrame = (table, tableName, metadata) => {
-      let column;
-      let i;
-      let vectors;
-      vectors = (() => {
-        let _i;
-        let _len;
-        let _ref;
-        let _results;
-        _ref = table.columns;
-        _results = [];
-        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-          column = _ref[i];
-          _results.push(convertColumnToVector(column, table.data[i]));
-        }
-        return _results;
-      })();
-      return createDataframe(tableName, vectors, lodash.range(table.rowcount), null, metadata);
-    };
-    getTwoDimData = (table, columnName) => {
-      let columnIndex;
-      columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
-      if (columnIndex >= 0) {
-        return table.data[columnIndex];
-      }
-      return void 0;
-    };
-    format4f = number => {
-      if (number) {
-        if (number === 'NaN') {
-          return void 0;
-        }
-        return number.toFixed(4).replace(/\.0+$/, '.0');
-      }
-      return number;
-    };
-    format6fi = number => {
-      if (number) {
-        if (number === 'NaN') {
-          return void 0;
-        }
-        return number.toFixed(6).replace(/\.0+$/, '');
-      }
-      return number;
-    };
-    combineTables = tables => {
-      let columnCount;
-      let columnData;
-      let data;
-      let element;
-      let i;
-      let index;
-      let leader;
-      let rowCount;
-      let table;
-      let _i;
-      let _j;
-      let _k;
-      let _l;
-      let _len;
-      let _len1;
-      let _len2;
-      let _ref;
-      leader = lodash.head(tables);
-      rowCount = 0;
-      columnCount = leader.data.length;
-      data = new Array(columnCount);
-      for (_i = 0, _len = tables.length; _i < _len; _i++) {
-        table = tables[_i];
-        rowCount += table.rowcount;
-      }
-      for (i = _j = 0; columnCount >= 0 ? _j < columnCount : _j > columnCount; i = columnCount >= 0 ? ++_j : --_j) {
-        data[i] = columnData = new Array(rowCount);
-        index = 0;
-        for (_k = 0, _len1 = tables.length; _k < _len1; _k++) {
-          table = tables[_k];
-          _ref = table.data[i];
-          for (_l = 0, _len2 = _ref.length; _l < _len2; _l++) {
-            element = _ref[_l];
-            columnData[index++] = element;
-          }
-        }
-      }
-      return {
-        name: leader.name,
-        columns: leader.columns,
-        data,
-        rowcount: rowCount
-      };
-    };
-    createArrays = (count, length) => {
-      let i;
-      let _i;
-      let _results;
-      _results = [];
-      for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
-        _results.push(new Array(length));
-      }
-      return _results;
-    };
-    parseNaNs = source => {
-      let element;
-      let i;
-      let target;
-      let _i;
-      let _len;
-      target = new Array(source.length);
-      for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-        element = source[i];
-        target[i] = element === 'NaN' ? void 0 : element;
-      }
-      return target;
-    };
-    parseNulls = source => {
-      let element;
-      let i;
-      let target;
-      let _i;
-      let _len;
-      target = new Array(source.length);
-      for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-        element = source[i];
-        target[i] = element != null ? element : void 0;
-      }
-      return target;
-    };
-    parseAndFormatArray = source => {
-      let element;
-      let i;
-      let target;
-      let _i;
-      let _len;
-      target = new Array(source.length);
-      for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-        element = source[i];
-        target[i] = element != null ? lodash.isNumber(element) ? format6fi(element) : element : void 0;
-      }
-      return target;
-    };
-    parseAndFormatObjectArray = source => {
-      let element;
-      let i;
-      let target;
-      let _i;
-      let _len;
-      let _ref;
-      let _ref1;
-      target = new Array(source.length);
-      for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-        element = source[i];
-        target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$5.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : element : void 0;
-      }
-      return target;
-    };
-    repeatValues = (count, value) => {
-      let i;
-      let target;
-      let _i;
-      target = new Array(count);
-      for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
-        target[i] = value;
-      }
-      return target;
-    };
-    concatArrays = arrays => {
-      let a;
-      switch (arrays.length) {
-        case 0:
-          return [];
-        case 1:
-          return lodash.head(arrays);
-        default:
-          a = lodash.head(arrays);
-          return a.concat(...lodash.tail(arrays));
-      }
-    };
-    computeTruePositiveRate = cm => {
-      let fn;
-      let fp;
-      let tn;
-      let tp;
-      let _ref;
-      let _ref1;
-      (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
-      return tp / (tp + fn);
-    };
-    computeFalsePositiveRate = cm => {
-      let fn;
-      let fp;
-      let tn;
-      let tp;
-      let _ref;
-      let _ref1;
-      (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
-      return fp / (fp + tn);
-    };
-    formatConfusionMatrix = cm => {
-      let domain;
-      let fn;
-      let fnr;
-      let fp;
-      let fpr;
-      let normal;
-      let strong;
-      let table;
-      let tbody;
-      let tn;
-      let tp;
-      let tr;
-      let yellow;
-      let _ref;
-      let _ref1;
-      let _ref2;
-      let _ref3;
-      _ref = cm.matrix, (_ref1 = _ref[0], tn = _ref1[0], fp = _ref1[1]), (_ref2 = _ref[1], fn = _ref2[0], tp = _ref2[1]);
-      fnr = fn / (tp + fn);
-      fpr = fp / (fp + tn);
-      domain = cm.domain;
-      _ref3 = Flow.HTML.template('table.flow-matrix', 'tbody', 'tr', 'td.strong.flow-center', 'td', 'td.bg-yellow'), table = _ref3[0], tbody = _ref3[1], tr = _ref3[2], strong = _ref3[3], normal = _ref3[4], yellow = _ref3[5];
-      return table([tbody([tr([strong('Actual/Predicted'), strong(domain[0]), strong(domain[1]), strong('Error'), strong('Rate')]), tr([strong(domain[0]), yellow(tn), normal(fp), normal(format4f(fpr)), normal(`${ fp } / ${ fp + tn }`)]), tr([strong(domain[1]), normal(fn), yellow(tp), normal(format4f(fnr)), normal(`${ fn } / ${ tp + fn }`)]), tr([strong('Total'), strong(tn + fn), strong(tp + fp), strong(format4f((fn + fp) / (fp + tn + tp + fn))), strong(`${ fn }${ fp } / ${ fp + tn + tp + fn }`)])])]);
-    };
-    formulateGetPredictionsOrigin = opts => {
-      let frameKey;
-      let modelKey;
-      let opt;
-      let sanitizedOpt;
-      let sanitizedOpts;
-      if (lodash.isArray(opts)) {
-        sanitizedOpts = (() => {
-          let _i;
-          let _len;
-          let _results;
-          _results = [];
-          for (_i = 0, _len = opts.length; _i < _len; _i++) {
-            opt = opts[_i];
-            sanitizedOpt = {};
-            if (opt.model) {
-              sanitizedOpt.model = opt.model;
-            }
-            if (opt.frame) {
-              sanitizedOpt.frame = opt.frame;
-            }
-            _results.push(sanitizedOpt);
-          }
-          return _results;
-        })();
-        return `getPredictions ${ flowPrelude$5.stringify(sanitizedOpts) }`;
-      }
-      modelKey = opts.model, frameKey = opts.frame;
-      if (modelKey && frameKey) {
-        return `getPredictions model: ${ flowPrelude$5.stringify(modelKey) }, frame: ${ flowPrelude$5.stringify(frameKey) }`;
-      } else if (modelKey) {
-        return `getPredictions model: ${ flowPrelude$5.stringify(modelKey) }`;
-      } else if (frameKey) {
-        return `getPredictions frame: ${ flowPrelude$5.stringify(frameKey) }`;
-      }
-      return 'getPredictions()';
-    };
-    H2O.Routines = _ => {
-      let asDataFrame;
-      let asH2OFrameFromDF;
-      let asH2OFrameFromRDD;
-      let assist;
-      let attrname;
-      let bindFrames;
-      let blacklistedAttributesBySchema;
-      let buildAutoModel;
-      let buildModel;
-      let buildPartialDependence;
-      let cancelJob;
-      let changeColumnType;
-      let computeSplits;
-      let createFrame;
-      let createGui;
-      let createPlot;
-      let deleteAll;
-      let deleteFrame;
-      let deleteFrames;
-      let deleteModel;
-      let deleteModels;
-      let dump;
-      let dumpFuture;
-      let exportFrame;
-      let exportModel;
-      let extendAsDataFrame;
-      let extendAsH2OFrame;
-      let extendBindFrames;
-      let extendCancelJob;
-      let extendCloud;
-      let extendColumnSummary;
-      let extendDataFrames;
-      let extendDeletedKeys;
-      let extendExportFrame;
-      let extendExportModel;
-      let extendFrame;
-      let extendFrameData;
-      let extendFrameSummary;
-      let extendFrames;
-      let extendGrid;
-      let extendGrids;
-      let extendGuiForm;
-      let extendImportModel;
-      let extendImportResults;
-      let extendJob;
-      let extendJobs;
-      let extendLogFile;
-      let extendMergeFramesResult;
-      let extendModel;
-      let extendModels;
-      let extendNetworkTest;
-      let extendParseResult;
-      let extendParseSetupResults;
-      let extendPartialDependence;
-      let extendPlot;
-      let extendPrediction;
-      let extendPredictions;
-      let extendProfile;
-      let extendRDDs;
-      let extendScalaCode;
-      let extendScalaIntp;
-      let extendSplitFrameResult;
-      let extendStackTrace;
-      let extendTimeline;
-      let f;
-      let findColumnIndexByColumnLabel;
-      let findColumnIndicesByColumnLabels;
-      let flow_;
-      let getCloud;
-      let getColumnSummary;
-      let getDataFrames;
-      let getFrame;
-      let getFrameData;
-      let getFrameSummary;
-      let getFrames;
-      let getGrid;
-      let getGrids;
-      let getJob;
-      let getJobs;
-      let getLogFile;
-      let getModel;
-      let getModelParameterValue;
-      let getModels;
-      let getPartialDependence;
-      let getPrediction;
-      let getPredictions;
-      let getProfile;
-      let getRDDs;
-      let getScalaIntp;
-      let getStackTrace;
-      let getTimeline;
-      let grid;
-      let gui;
-      let importFiles;
-      let importModel;
-      let imputeColumn;
-      let initAssistanceSparklingWater;
-      let inspect;
-      let inspect$1;
-      let inspect$2;
-      let inspectFrameColumns;
-      let inspectFrameData;
-      let inspectModelParameters;
-      let inspectNetworkTestResult;
-      let inspectObject;
-      let inspectObjectArray_;
-      let inspectParametersAcrossModels;
-      let inspectRawArray_;
-      let inspectRawObject_;
-      let inspectTwoDimTable_;
-      let inspect_;
-      let loadScript;
-      let ls;
-      let mergeFrames;
-      let name;
-      let parseFiles;
-      let plot;
-      let predict;
-      let proceed;
-      let read;
-      let render_;
-      let requestAsDataFrame;
-      let requestAsH2OFrameFromDF;
-      let requestAsH2OFrameFromRDD;
-      let requestAutoModelBuild;
-      let requestBindFrames;
-      let requestCancelJob;
-      let requestChangeColumnType;
-      let requestCloud;
-      let requestColumnSummary;
-      let requestCreateFrame;
-      let requestDataFrames;
-      let requestDeleteFrame;
-      let requestDeleteFrames;
-      let requestDeleteModel;
-      let requestDeleteModels;
-      let requestExportFrame;
-      let requestExportModel;
-      let requestFrame;
-      let requestFrameData;
-      let requestFrameSummary;
-      let requestFrameSummarySlice;
-      let requestFrames;
-      let requestGrid;
-      let requestGrids;
-      let requestImportAndParseFiles;
-      let requestImportAndParseSetup;
-      let requestImportFiles;
-      let requestImportModel;
-      let requestImputeColumn;
-      let requestJob;
-      let requestJobs;
-      let requestLogFile;
-      let requestMergeFrames;
-      let requestModel;
-      let requestModelBuild;
-      let requestModels;
-      let requestModelsByKeys;
-      let requestNetworkTest;
-      let requestParseFiles;
-      let requestParseSetup;
-      let requestPartialDependence;
-      let requestPartialDependenceData;
-      let requestPredict;
-      let requestPrediction;
-      let requestPredictions;
-      let requestPredicts;
-      let requestProfile;
-      let requestRDDs;
-      let requestRemoveAll;
-      let requestScalaCode;
-      let requestScalaIntp;
-      let requestSplitFrame;
-      let requestStackTrace;
-      let requestTimeline;
-      let routines;
-      let routinesOnSw;
-      let runScalaCode;
-      let schemaTransforms;
-      let setupParse;
-      let splitFrame;
-      let testNetwork;
-      let transformBinomialMetrics;
-      let unwrapPrediction;
-      let _apply;
-      let _async;
-      let _call;
-      let _fork;
-      let _get;
-      let _isFuture;
-      let _join;
-      let _plot;
-      let _ref;
-      let _schemaHacks;
-      _fork = function () {
-        let args;
-        let f;
-        f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-        return Flow.Async.fork(f, args);
-      };
-      _join = function () {
-        let args;
-        let go;
-        let _i;
-        args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), go = arguments[_i++];
-        return Flow.Async.join(args, Flow.Async.applicate(go));
-      };
-      _call = function () {
-        let args;
-        let go;
-        go = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-        return Flow.Async.join(args, Flow.Async.applicate(go));
-      };
-      _apply = (go, args) => Flow.Async.join(args, go);
-      _isFuture = Flow.Async.isFuture;
-      _async = Flow.Async.async;
-      _get = Flow.Async.get;
-      proceed = (func, args, go) => go(null, render_({}, () => func(...[_].concat(args || []))));
-      proceed = (func, args, go) => go(null, render_(...[{}, func].concat(args || [])));
-      extendGuiForm = form => render_(form, flowForm, form);
-      createGui = (controls, go) => go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
-      gui = controls => _fork(createGui, controls);
-      _ref = Flow.Gui;
-      for (name in _ref) {
-        if ({}.hasOwnProperty.call(_ref, name)) {
-          f = _ref[name];
-          gui[name] = f;
-        }
-      }
-      flow_ = raw => raw._flow_ || (raw._flow_ = { _cache_: {} });
-      render_ = (raw, render) => {
-        flow_(raw).render = render;
-        return raw;
-      };
-      render_ = function () {
-        let args;
-        let raw;
-        let render;
-        raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
-        flow_(raw).render = go => render(...[_, go].concat(args));
-        return raw;
-      };
-      inspect_ = (raw, inspectors) => {
-        let attr;
-        let root;
-        root = flow_(raw);
-        if (root.inspect == null) {
-          root.inspect = {};
-        }
-        for (attr in inspectors) {
-          if ({}.hasOwnProperty.call(inspectors, attr)) {
-            f = inspectors[attr];
-            root.inspect[attr] = f;
-          }
-        }
-        return raw;
-      };
-      inspect = function (a, b) {
-        if (arguments.length === 1) {
-          return inspect$1(a);
-        }
-        return inspect$2(a, b);
-      };
-      inspect$1 = obj => {
-        let attr;
-        let inspections;
-        let inspectors;
-        let _ref1;
-        if (_isFuture(obj)) {
-          return _async(inspect, obj);
-        }
-        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
-          inspections = [];
-          for (attr in inspectors) {
-            if ({}.hasOwnProperty.call(inspectors, attr)) {
-              f = inspectors[attr];
-              inspections.push(inspect$2(attr, obj));
-            }
-          }
-          render_(inspections, h2oInspectsOutput, inspections);
-          return inspections;
-        }
-        return {};
-      };
-      ls = obj => {
-        let inspectors;
-        let _ref1;
-        if (_isFuture(obj)) {
-          return _async(ls, obj);
-        }
-        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
-          return lodash.keys(inspectors);
-        }
-        return [];
-      };
-      inspect$2 = (attr, obj) => {
-        let cached;
-        let inspection;
-        let inspectors;
-        let key;
-        let root;
-        if (!attr) {
-          return;
-        }
-        if (_isFuture(obj)) {
-          return _async(inspect, attr, obj);
-        }
-        if (!obj) {
-          return;
-        }
-        if (!(root = obj._flow_)) {
-          return;
-        }
-        if (!(inspectors = root.inspect)) {
-          return;
-        }
-        if (cached = root._cache_[key = `inspect_${ attr }`]) {
-          return cached;
-        }
-        if (!(f = inspectors[attr])) {
-          return;
-        }
-        if (!lodash.isFunction(f)) {
-          return;
-        }
-        root._cache_[key] = inspection = f();
-        render_(inspection, h2oInspectOutput, inspection);
-        return inspection;
-      };
-      _plot = (render, go) => render((error, vis) => {
-        if (error) {
-          return go(new Flow.Error('Error rendering vis.', error));
-        }
-        return go(null, vis);
-      });
-      extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
-      createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendPlot(vis));
-      });
-      plot = f => {
-        if (_isFuture(f)) {
-          return _fork(proceed, h2oPlotInput, f);
-        } else if (lodash.isFunction(f)) {
-          return _fork(createPlot, f);
-        }
-        return assist(plot);
-      };
-      grid = f => plot(g => g(g.select(), g.from(f)));
-      transformBinomialMetrics = metrics => {
-        let cms;
-        let domain;
-        let fns;
-        let fps;
-        let i;
-        let scores;
-        let tns;
-        let tp;
-        let tps;
-        if (scores = metrics.thresholds_and_metric_scores) {
-          domain = metrics.domain;
-          tps = getTwoDimData(scores, 'tps');
-          tns = getTwoDimData(scores, 'tns');
-          fps = getTwoDimData(scores, 'fps');
-          fns = getTwoDimData(scores, 'fns');
-          cms = (() => {
-            let _i;
-            let _len;
-            let _results;
-            _results = [];
-            for (i = _i = 0, _len = tps.length; _i < _len; i = ++_i) {
-              tp = tps[i];
-              _results.push({
-                domain,
-                matrix: [[tns[i], fps[i]], [fns[i], tp]]
-              });
-            }
-            return _results;
-          })();
-          scores.columns.push({
-            name: 'CM',
-            description: 'CM',
-            format: 'matrix',
-            type: 'matrix'
-          });
-          scores.data.push(cms);
-        }
-        return metrics;
-      };
-      extendCloud = cloud => render_(cloud, h2oCloudOutput, cloud);
-      extendTimeline = timeline => render_(timeline, h2oTimelineOutput, timeline);
-      extendStackTrace = stackTrace => render_(stackTrace, h2oStackTraceOutput, stackTrace);
-      extendLogFile = (cloud, nodeIndex, fileType, logFile) => render_(logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
-      inspectNetworkTestResult = testResult => () => convertTableToFrame(testResult.table, testResult.table.name, {
-        description: testResult.table.name,
-        origin: 'testNetwork'
-      });
-      extendNetworkTest = testResult => {
-        inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
-        return render_(testResult, h2oNetworkTestOutput, testResult);
-      };
-      extendProfile = profile => render_(profile, h2oProfileOutput, profile);
-      extendFrames = frames => {
-        render_(frames, h2oFramesOutput, frames);
-        return frames;
-      };
-      extendSplitFrameResult = result => {
-        render_(result, h2oSplitFrameOutput, result);
-        return result;
-      };
-      extendMergeFramesResult = result => {
-        render_(result, h2oMergeFramesOutput, result);
-        return result;
-      };
-      extendPartialDependence = result => {
-        let data;
-        let i;
-        let inspections;
-        let origin;
-        let _i;
-        let _len;
-        let _ref1;
-        inspections = {};
-        _ref1 = result.partial_dependence_data;
-        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-          data = _ref1[i];
-          origin = `getPartialDependence ${ flowPrelude$5.stringify(result.destination_key) }`;
-          inspections[`plot${ i + 1 }`] = inspectTwoDimTable_(origin, `plot${ i + 1 }`, data);
-        }
-        inspect_(result, inspections);
-        render_(result, h2oPartialDependenceOutput, result);
-        return result;
-      };
-      getModelParameterValue = (type, value) => {
-        switch (type) {
-          case 'Key<Frame>':
-          case 'Key<Model>':
-            if (value != null) {
-              return value.name;
-            }
-            return void 0;
-          // break; // no-unreachable
-          case 'VecSpecifier':
-            if (value != null) {
-              return value.column_name;
-            }
-            return void 0;
-          // break; // no-unreachable
-          default:
-            if (value != null) {
-              return value;
-            }
-            return void 0;
-        }
-      };
-      inspectParametersAcrossModels = models => () => {
-        let data;
-        let i;
-        let leader;
-        let model;
-        let modelKeys;
-        let parameter;
-        let vectors;
-        leader = lodash.head(models);
-        vectors = (() => {
-          let _i;
-          let _len;
-          let _ref1;
-          let _results;
-          _ref1 = leader.parameters;
-          _results = [];
-          for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-            parameter = _ref1[i];
-            data = (() => {
-              let _j;
-              let _len1;
-              let _results1;
-              _results1 = [];
-              for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
-                model = models[_j];
-                _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actualValue));
-              }
-              return _results1;
-            })();
-            switch (parameter.type) {
-              case 'enum':
-              case 'Frame':
-              case 'string':
-                _results.push(createFactor(parameter.label, 'String', data));
-                break;
-              case 'byte':
-              case 'short':
-              case 'int':
-              case 'long':
-              case 'float':
-              case 'double':
-                _results.push(createVector(parameter.label, 'Number', data));
-                break;
-              case 'string[]':
-              case 'byte[]':
-              case 'short[]':
-              case 'int[]':
-              case 'long[]':
-              case 'float[]':
-              case 'double[]':
-                _results.push(createList(parameter.label, data, a => {
-                  if (a) {
-                    return a;
-                  }
-                  return void 0;
-                }));
-                break;
-              case 'boolean':
-                _results.push(createList(parameter.label, data, a => {
-                  if (a) {
-                    return 'true';
-                  }
-                  return 'false';
-                }));
-                break;
-              default:
-                _results.push(createList(parameter.label, data));
-            }
-          }
-          return _results;
-        })();
-        modelKeys = (() => {
-          let _i;
-          let _len;
-          let _results;
-          _results = [];
-          for (_i = 0, _len = models.length; _i < _len; _i++) {
-            model = models[_i];
-            _results.push(model.modelId.name);
-          }
-          return _results;
-        })();
-        return createDataframe('parameters', vectors, lodash.range(models.length), null, {
-          description: `Parameters for models ${ modelKeys.join(', ') }`,
-          origin: `getModels ${ flowPrelude$5.stringify(modelKeys) }`
-        });
-      };
-      inspectModelParameters = model => () => {
-        let attr;
-        let attrs;
-        let data;
-        let i;
-        let parameter;
-        let parameters;
-        let vectors;
-        parameters = model.parameters;
-        attrs = ['label', 'type', 'level', 'actualValue', 'defaultValue'];
-        vectors = (() => {
-          let _i;
-          let _j;
-          let _len;
-          let _len1;
-          let _results;
-          _results = [];
-          for (_i = 0, _len = attrs.length; _i < _len; _i++) {
-            attr = attrs[_i];
-            data = new Array(parameters.length);
-            for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
-              parameter = parameters[i];
-              data[i] = attr === 'actualValue' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
-            }
-            _results.push(createList(attr, data));
-          }
-          return _results;
-        })();
-        return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-          description: `Parameters for model \'${ model.modelId.name }\'`,
-          origin: `getModel ${ flowPrelude$5.stringify(model.modelId.name) }`
-        });
-      };
-      extendJob = job => render_(job, H2O.JobOutput, job);
-      extendJobs = jobs => {
-        let job;
-        let _i;
-        let _len;
-        for (_i = 0, _len = jobs.length; _i < _len; _i++) {
-          job = jobs[_i];
-          extendJob(job);
-        }
-        return render_(jobs, h2oJobsOutput, jobs);
-      };
-      extendCancelJob = cancellation => render_(cancellation, h2oCancelJobOutput, cancellation);
-      extendDeletedKeys = keys => render_(keys, h2oDeleteObjectsOutput, keys);
-      inspectTwoDimTable_ = (origin, tableName, table) => () => convertTableToFrame(table, tableName, {
-        description: table.description || '',
-        origin
-      });
-      inspectRawArray_ = (name, origin, description, array) => () => createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
-        description: '',
-        origin
-      });
-      inspectObjectArray_ = (name, origin, description, array) => () => createDataframe(name, [createList(name, parseAndFormatObjectArray(array))], lodash.range(array.length), null, {
-        description: '',
-        origin
-      });
-      inspectRawObject_ = (name, origin, description, obj) => () => {
-        let k;
-        let v;
-        let vectors;
-        vectors = (() => {
-          let _results;
-          _results = [];
-          for (k in obj) {
-            if ({}.hasOwnProperty.call(obj, k)) {
-              v = obj[k];
-              _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
-            }
-          }
-          return _results;
-        })();
-        return createDataframe(name, vectors, lodash.range(1), null, {
-          description: '',
-          origin
-        });
-      };
-      _schemaHacks = {
-        KMeansOutput: { fields: 'names domains help' },
-        GBMOutput: { fields: 'names domains help' },
-        GLMOutput: { fields: 'names domains help' },
-        DRFOutput: { fields: 'names domains help' },
-        DeepLearningModelOutput: { fields: 'names domains help' },
-        NaiveBayesOutput: { fields: 'names domains help pcond' },
-        PCAOutput: { fields: 'names domains help' },
-        ModelMetricsBinomialGLM: {
-          fields: null,
-          transform: transformBinomialMetrics
-        },
-        ModelMetricsBinomial: {
-          fields: null,
-          transform: transformBinomialMetrics
-        },
-        ModelMetricsMultinomialGLM: { fields: null },
-        ModelMetricsMultinomial: { fields: null },
-        ModelMetricsRegressionGLM: { fields: null },
-        ModelMetricsRegression: { fields: null },
-        ModelMetricsClustering: { fields: null },
-        ModelMetricsAutoEncoder: { fields: null },
-        ConfusionMatrix: { fields: null }
-      };
-      blacklistedAttributesBySchema = (() => {
-        let attrs;
-        let dict;
-        let dicts;
-        let field;
-        let schema;
-        let _i;
-        let _len;
-        let _ref1;
-        dicts = {};
-        for (schema in _schemaHacks) {
-          if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
-            attrs = _schemaHacks[schema];
-            dicts[schema] = dict = { __meta: true };
-            if (attrs.fields) {
-              _ref1 = flowPrelude$5.words(attrs.fields);
-              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                field = _ref1[_i];
-                dict[field] = true;
-              }
-            }
-          }
-        }
-        return dicts;
-      })();
-      schemaTransforms = (() => {
-        let attrs;
-        let schema;
-        let transform;
-        let transforms;
-        transforms = {};
-        for (schema in _schemaHacks) {
-          if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
-            attrs = _schemaHacks[schema];
-            if (transform = attrs.transform) {
-              transforms[schema] = transform;
-            }
-          }
-        }
-        return transforms;
-      })();
-      inspectObject = (inspections, name, origin, obj) => {
-        let attrs;
-        let blacklistedAttributes;
-        let k;
-        let meta;
-        let record;
-        let schemaType;
-        let transform;
-        let v;
-        let _ref1;
-        let _ref2;
-        schemaType = (_ref1 = obj.__meta) != null ? _ref1.schema_type : void 0;
-        blacklistedAttributes = schemaType ? (attrs = blacklistedAttributesBySchema[schemaType]) ? attrs : {} : {};
-        if (transform = schemaTransforms[schemaType]) {
-          obj = transform(obj);
-        }
-        record = {};
-        inspections[name] = inspectRawObject_(name, origin, name, record);
-        for (k in obj) {
-          if ({}.hasOwnProperty.call(obj, k)) {
-            v = obj[k];
-            if (!blacklistedAttributes[k]) {
-              if (v === null) {
-                record[k] = null;
-              } else {
-                if (((_ref2 = v.__meta) != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
-                  inspections[`${ name } - ${ v.name }`] = inspectTwoDimTable_(origin, `${ name } - ${ v.name }`, v);
-                } else {
-                  if (lodash.isArray(v)) {
-                    if (k === 'cross_validation_models' || k === 'cross_validation_predictions' || name === 'output' && (k === 'weights' || k === 'biases')) {
-                      inspections[k] = inspectObjectArray_(k, origin, k, v);
-                    } else {
-                      inspections[k] = inspectRawArray_(k, origin, k, v);
-                    }
-                  } else if (lodash.isObject(v)) {
-                    if (meta = v.__meta) {
-                      if (meta.schema_type === 'Key<Frame>') {
-                        record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
-                      } else if (meta.schema_type === 'Key<Model>') {
-                        record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$5.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
-                      } else if (meta.schema_type === 'Frame') {
-                        record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
-                      } else {
-                        inspectObject(inspections, `${ name } - ${ k }`, origin, v);
-                      }
-                    } else {
-                      console.log(`WARNING: dropping [${ k }] from inspection:`, v);
-                    }
-                  } else {
-                    record[k] = lodash.isNumber(v) ? format6fi(v) : v;
-                  }
-                }
-              }
-            }
-          }
-        }
-      };
-      extendModel = model => {
-        let refresh;
-        lodash.extend = model => {
-          let inspections;
-          let origin;
-          let table;
-          let tableName;
-          let _i;
-          let _len;
-          let _ref1;
-          inspections = {};
-          inspections.parameters = inspectModelParameters(model);
-          origin = `getModel ${ flowPrelude$5.stringify(model.modelId.name) }`;
-          inspectObject(inspections, 'output', origin, model.output);
-          if (model.__meta.schema_type === 'NaiveBayesModel') {
-            if (lodash.isArray(model.output.pcond)) {
-              _ref1 = model.output.pcond;
-              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                table = _ref1[_i];
-                tableName = `output - pcond - ${ table.name }`;
-                inspections[tableName] = inspectTwoDimTable_(origin, tableName, table);
-              }
-            }
-          }
-          inspect_(model, inspections);
-          return model;
-        };
-        refresh = go => _.requestModel(model.modelId.name, (error, model) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, lodash.extend(model));
-        });
-        lodash.extend(model);
-        return render_(model, h2oModelOutput, model, refresh);
-      };
-      extendGrid = (grid, opts) => {
-        let inspections;
-        let origin;
-        origin = `getGrid ${ flowPrelude$5.stringify(grid.grid_id.name) }`;
-        if (opts) {
-          origin += `, ${ flowPrelude$5.stringify(opts) }`;
-        }
-        inspections = {
-          summary: inspectTwoDimTable_(origin, 'summary', grid.summary_table),
-          scoring_history: inspectTwoDimTable_(origin, 'scoring_history', grid.scoring_history)
-        };
-        inspect_(grid, inspections);
-        return render_(grid, h2oGridOutput, grid);
-      };
-      extendGrids = grids => render_(grids, h2oGridsOutput, grids);
-      extendModels = models => {
-        let algos;
-        let inspections;
-        let model;
-        inspections = {};
-        algos = lodash.unique((() => {
-          let _i;
-          let _len;
-          let _results;
-          _results = [];
-          for (_i = 0, _len = models.length; _i < _len; _i++) {
-            model = models[_i];
-            _results.push(model.algo);
-          }
-          return _results;
-        })());
-        if (algos.length === 1) {
-          inspections.parameters = inspectParametersAcrossModels(models);
-        }
-        inspect_(models, inspections);
-        return render_(models, h2oModelsOutput, models);
-      };
-      read = value => {
-        if (value === 'NaN') {
-          return null;
-        }
-        return value;
-      };
-      extendPredictions = (opts, predictions) => {
-        render_(predictions, h2oPredictsOutput, opts, predictions);
-        return predictions;
-      };
-      extendPrediction = result => {
-        let frameKey;
-        let inspections;
-        let modelKey;
-        let prediction;
-        let predictionFrame;
-        let _ref1;
-        modelKey = result.model.name;
-        frameKey = (_ref1 = result.frame) != null ? _ref1.name : void 0;
-        prediction = lodash.head(result.model_metrics);
-        predictionFrame = result.predictions_frame;
-        inspections = {};
-        if (prediction) {
-          inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$5.stringify(modelKey) }, frame: ${ flowPrelude$5.stringify(frameKey) }`, prediction);
-        } else {
-          prediction = {};
-          inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$5.stringify(modelKey) }, frame: ${ flowPrelude$5.stringify(frameKey) }`, { prediction_frame: predictionFrame });
-        }
-        inspect_(prediction, inspections);
-        return render_(prediction, h2oPredictOutput, prediction);
-      };
-      inspectFrameColumns = (tableLabel, frameKey, frame, frameColumns) => () => {
-        let actionsData;
-        let attr;
-        let attrs;
-        let column;
-        let i;
-        let labelVector;
-        let title;
-        let toColumnSummaryLink;
-        let toConversionLink;
-        let typeVector;
-        let vectors;
-        attrs = ['label', 'type', 'missing_count|Missing', 'zero_count|Zeros', 'positive_infinity_count|+Inf', 'negative_infinity_count|-Inf', 'min', 'max', 'mean', 'sigma', 'cardinality'];
-        toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${ flowPrelude$5.stringify(label) }>${ lodash.escape(label) }</a>`;
-        toConversionLink = value => {
-          let label;
-          let type;
-          let _ref1;
-          _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
-          switch (type) {
-            case 'enum':
-              return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${ flowPrelude$5.stringify(label) }>Convert to numeric</a>`;
-            case 'int':
-            case 'string':
-              return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${ flowPrelude$5.stringify(label) }>Convert to enum</a>'`;
-            default:
-              return void 0;
-          }
-        };
-        vectors = (() => {
-          let _i;
-          let _len;
-          let _ref1;
-          let _results;
-          _results = [];
-          for (_i = 0, _len = attrs.length; _i < _len; _i++) {
-            attr = attrs[_i];
-            _ref1 = attr.split('|'), name = _ref1[0], title = _ref1[1];
-            title = title != null ? title : name;
-            switch (name) {
-              case 'min':
-                _results.push(createVector(title, 'Number', (() => {
-                  let _j;
-                  let _len1;
-                  let _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(lodash.head(column.mins));
-                  }
-                  return _results1;
-                })(), format4f));
-                break;
-              case 'max':
-                _results.push(createVector(title, 'Number', (() => {
-                  let _j;
-                  let _len1;
-                  let _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(lodash.head(column.maxs));
-                  }
-                  return _results1;
-                })(), format4f));
-                break;
-              case 'cardinality':
-                _results.push(createVector(title, 'Number', (() => {
-                  let _j;
-                  let _len1;
-                  let _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column.type === 'enum' ? column.domain_cardinality : void 0);
-                  }
-                  return _results1;
-                })()));
-                break;
-              case 'label':
-                _results.push(createFactor(title, 'String', (() => {
-                  let _j;
-                  let _len1;
-                  let _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column[name]);
-                  }
-                  return _results1;
-                })(), null, toColumnSummaryLink));
-                break;
-              case 'type':
-                _results.push(createFactor(title, 'String', (() => {
-                  let _j;
-                  let _len1;
-                  let _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column[name]);
-                  }
-                  return _results1;
-                })()));
-                break;
-              case 'mean':
-              case 'sigma':
-                _results.push(createVector(title, 'Number', (() => {
-                  let _j;
-                  let _len1;
-                  let _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column[name]);
-                  }
-                  return _results1;
-                })(), format4f));
-                break;
-              default:
-                _results.push(createVector(title, 'Number', (() => {
-                  let _j;
-                  let _len1;
-                  let _results1;
-                  _results1 = [];
-                  for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                    column = frameColumns[_j];
-                    _results1.push(column[name]);
-                  }
-                  return _results1;
-                })()));
-            }
-          }
-          return _results;
-        })();
-        labelVector = vectors[0], typeVector = vectors[1];
-        actionsData = (() => {
-          let _i;
-          let _ref1;
-          let _results;
-          _results = [];
-          for (i = _i = 0, _ref1 = frameColumns.length; _ref1 >= 0 ? _i < _ref1 : _i > _ref1; i = _ref1 >= 0 ? ++_i : --_i) {
-            _results.push(`${ typeVector.valueAt(i) }\0${ labelVector.valueAt(i) }`);
-          }
-          return _results;
-        })();
-        vectors.push(createFactor('Actions', 'String', actionsData, null, toConversionLink));
-        return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
-          description: `A list of ${ tableLabel } in the H2O Frame.`,
-          origin: `getFrameSummary ${ flowPrelude$5.stringify(frameKey) }`,
-          plot: `plot inspect \'${ tableLabel }\', getFrameSummary ${ flowPrelude$5.stringify(frameKey) }`
-        });
-      };
-      inspectFrameData = (frameKey, frame) => () => {
-        let column;
-        let domain;
-        let frameColumns;
-        let index;
-        let rowIndex;
-        let vectors;
-        frameColumns = frame.columns;
-        vectors = (() => {
-          let _i;
-          let _len;
-          let _results;
-          _results = [];
-          for (_i = 0, _len = frameColumns.length; _i < _len; _i++) {
-            column = frameColumns[_i];
-            switch (column.type) {
-              case 'int':
-              case 'real':
-                _results.push(createVector(column.label, 'Number', parseNaNs(column.data), format4f));
-                break;
-              case 'enum':
-                domain = column.domain;
-                _results.push(createFactor(column.label, 'String', (() => {
-                  let _j;
-                  let _len1;
-                  let _ref1;
-                  let _results1;
-                  _ref1 = column.data;
-                  _results1 = [];
-                  for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-                    index = _ref1[_j];
-                    _results1.push(index != null ? domain[index] : void 0);
-                  }
-                  return _results1;
-                })()));
-                break;
-              case 'time':
-                _results.push(createVector(column.label, 'Number', parseNaNs(column.data)));
-                break;
-              case 'string':
-              case 'uuid':
-                _results.push(createList(column.label, parseNulls(column.string_data)));
-                break;
-              default:
-                _results.push(createList(column.label, parseNulls(column.data)));
-            }
-          }
-          return _results;
-        })();
-        vectors.unshift(createVector('Row', 'Number', (() => {
-          let _i;
-          let _ref1;
-          let _ref2;
-          let _results;
-          _results = [];
-          for (rowIndex = _i = _ref1 = frame.row_offset, _ref2 = frame.row_count; _ref1 <= _ref2 ? _i < _ref2 : _i > _ref2; rowIndex = _ref1 <= _ref2 ? ++_i : --_i) {
-            _results.push(rowIndex + 1);
-          }
-          return _results;
-        })()));
-        return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
-          description: 'A partial list of rows in the H2O Frame.',
-          origin: `getFrameData ${ flowPrelude$5.stringify(frameKey) }`
-        });
-      };
-      extendFrameData = (frameKey, frame) => {
-        let inspections;
-        let origin;
-        inspections = { data: inspectFrameData(frameKey, frame) };
-        origin = `getFrameData ${ flowPrelude$5.stringify(frameKey) }`;
-        inspect_(frame, inspections);
-        return render_(frame, h2oFrameDataOutput, frame);
-      };
-      extendFrame = (frameKey, frame) => {
-        let column;
-        let enumColumns;
-        let inspections;
-        let origin;
-        inspections = {
-          columns: inspectFrameColumns('columns', frameKey, frame, frame.columns),
-          data: inspectFrameData(frameKey, frame)
-        };
-        enumColumns = (() => {
-          let _i;
-          let _len;
-          let _ref1;
-          let _results;
-          _ref1 = frame.columns;
-          _results = [];
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            column = _ref1[_i];
-            if (column.type === 'enum') {
-              _results.push(column);
-            }
-          }
-          return _results;
-        })();
-        if (enumColumns.length > 0) {
-          inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
-        }
-        origin = `getFrameSummary ${ flowPrelude$5.stringify(frameKey) }`;
-        inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
-        inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
-        inspect_(frame, inspections);
-        return render_(frame, h2oFrameOutput, frame);
-      };
-      extendFrameSummary = (frameKey, frame) => {
-        let column;
-        let enumColumns;
-        let inspections;
-        let origin;
-        inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
-        enumColumns = (() => {
-          let _i;
-          let _len;
-          let _ref1;
-          let _results;
-          _ref1 = frame.columns;
-          _results = [];
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            column = _ref1[_i];
-            if (column.type === 'enum') {
-              _results.push(column);
-            }
-          }
-          return _results;
-        })();
-        if (enumColumns.length > 0) {
-          inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
-        }
-        origin = `getFrameSummary ${ flowPrelude$5.stringify(frameKey) }`;
-        inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
-        inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
-        inspect_(frame, inspections);
-        return render_(frame, h2oFrameOutput, frame);
-      };
-      extendColumnSummary = (frameKey, frame, columnName) => {
-        let column;
-        let inspectCharacteristics;
-        let inspectDistribution;
-        let inspectDomain;
-        let inspectPercentiles;
-        let inspectSummary;
-        let inspections;
-        let rowCount;
-        column = lodash.head(frame.columns);
-        rowCount = frame.rows;
-        inspectPercentiles = () => {
-          let vectors;
-          vectors = [createVector('percentile', 'Number', frame.default_percentiles), createVector('value', 'Number', column.percentiles)];
-          return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
-            description: `Percentiles for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
-          });
-        };
-        inspectDistribution = () => {
-          let base;
-          let binCount;
-          let binIndex;
-          let bins;
-          let count;
-          let countData;
-          let i;
-          let interval;
-          let intervalData;
-          let m;
-          let minBinCount;
-          let n;
-          let rows;
-          let stride;
-          let vectors;
-          let width;
-          let widthData;
-          let _i;
-          let _j;
-          let _k;
-          let _l;
-          let _len;
-          let _ref1;
-          minBinCount = 32;
-          base = column.histogram_base, stride = column.histogram_stride, bins = column.histogram_bins;
-          width = Math.ceil(bins.length / minBinCount);
-          interval = stride * width;
-          rows = [];
-          if (width > 0) {
-            binCount = minBinCount + (bins.length % width > 0 ? 1 : 0);
-            intervalData = new Array(binCount);
-            widthData = new Array(binCount);
-            countData = new Array(binCount);
-            for (i = _i = 0; binCount >= 0 ? _i < binCount : _i > binCount; i = binCount >= 0 ? ++_i : --_i) {
-              m = i * width;
-              n = m + width;
-              count = 0;
-              for (binIndex = _j = m; m <= n ? _j < n : _j > n; binIndex = m <= n ? ++_j : --_j) {
-                if (binIndex < bins.length) {
-                  count += bins[binIndex];
-                }
-              }
-              intervalData[i] = base + i * interval;
-              widthData[i] = interval;
-              countData[i] = count;
-            }
-          } else {
-            binCount = bins.length;
-            intervalData = new Array(binCount);
-            widthData = new Array(binCount);
-            countData = new Array(binCount);
-            for (i = _k = 0, _len = bins.length; _k < _len; i = ++_k) {
-              count = bins[i];
-              intervalData[i] = base + i * stride;
-              widthData[i] = stride;
-              countData[i] = count;
-            }
-          }
-          for (i = _l = _ref1 = binCount - 1; _ref1 <= 0 ? _l <= 0 : _l >= 0; i = _ref1 <= 0 ? ++_l : --_l) {
-            if (countData[i] !== 0) {
-              binCount = i + 1;
-              intervalData = intervalData.slice(0, binCount);
-              widthData = widthData.slice(0, binCount);
-              countData = countData.slice(0, binCount);
-              break;
-            }
-          }
-          vectors = [createFactor('interval', 'String', intervalData), createVector('width', 'Number', widthData), createVector('count', 'Number', countData)];
-          return createDataframe('distribution', vectors, lodash.range(binCount), null, {
-            description: `Distribution for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`,
-            plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
-          });
-        };
-        inspectCharacteristics = () => {
-          let characteristicData;
-          let count;
-          let countData;
-          let missing_count;
-          let negative_infinity_count;
-          let other;
-          let percentData;
-          let positive_infinity_count;
-          let vectors;
-          let zero_count;
-          missing_count = column.missing_count, zero_count = column.zero_count, positive_infinity_count = column.positive_infinity_count, negative_infinity_count = column.negative_infinity_count;
-          other = rowCount - missing_count - zero_count - positive_infinity_count - negative_infinity_count;
-          characteristicData = ['Missing', '-Inf', 'Zero', '+Inf', 'Other'];
-          countData = [missing_count, negative_infinity_count, zero_count, positive_infinity_count, other];
-          percentData = (() => {
-            let _i;
-            let _len;
-            let _results;
-            _results = [];
-            for (_i = 0, _len = countData.length; _i < _len; _i++) {
-              count = countData[_i];
-              _results.push(100 * count / rowCount);
-            }
-            return _results;
-          })();
-          vectors = [createFactor('characteristic', 'String', characteristicData), createVector('count', 'Number', countData), createVector('percent', 'Number', percentData)];
-          return createDataframe('characteristics', vectors, lodash.range(characteristicData.length), null, {
-            description: `Characteristics for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`,
-            plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
-          });
-        };
-        inspectSummary = () => {
-          let defaultPercentiles;
-          let maximum;
-          let mean;
-          let minimum;
-          let outliers;
-          let percentiles;
-          let q1;
-          let q2;
-          let q3;
-          let vectors;
-          defaultPercentiles = frame.default_percentiles;
-          percentiles = column.percentiles;
-          mean = column.mean;
-          q1 = percentiles[defaultPercentiles.indexOf(0.25)];
-          q2 = percentiles[defaultPercentiles.indexOf(0.5)];
-          q3 = percentiles[defaultPercentiles.indexOf(0.75)];
-          outliers = lodash.unique(column.mins.concat(column.maxs));
-          minimum = lodash.head(column.mins);
-          maximum = lodash.head(column.maxs);
-          vectors = [createFactor('column', 'String', [columnName]), createVector('mean', 'Number', [mean]), createVector('q1', 'Number', [q1]), createVector('q2', 'Number', [q2]), createVector('q3', 'Number', [q3]), createVector('min', 'Number', [minimum]), createVector('max', 'Number', [maximum])];
-          return createDataframe('summary', vectors, lodash.range(1), null, {
-            description: `Summary for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`,
-            plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
-          });
-        };
-        inspectDomain = () => {
-          let counts;
-          let i;
-          let labels;
-          let level;
-          let levels;
-          let percents;
-          let sortedLevels;
-          let vectors;
-          let _i;
-          let _len;
-          let _ref1;
-          levels = lodash.map(column.histogram_bins, (count, index) => ({
-            count,
-            index
-          }));
-          sortedLevels = lodash.sortBy(levels, level => -level.count);
-          _ref1 = createArrays(3, sortedLevels.length), labels = _ref1[0], counts = _ref1[1], percents = _ref1[2];
-          for (i = _i = 0, _len = sortedLevels.length; _i < _len; i = ++_i) {
-            level = sortedLevels[i];
-            labels[i] = column.domain[level.index];
-            counts[i] = level.count;
-            percents[i] = 100 * level.count / rowCount;
-          }
-          vectors = [createFactor('label', 'String', labels), createVector('count', 'Number', counts), createVector('percent', 'Number', percents)];
-          return createDataframe('domain', vectors, lodash.range(sortedLevels.length), null, {
-            description: `Domain for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-            origin: `getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`,
-            plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$5.stringify(frameKey) }, ${ flowPrelude$5.stringify(columnName) }`
-          });
-        };
-        inspections = { characteristics: inspectCharacteristics };
-        switch (column.type) {
-          case 'int':
-          case 'real':
-            if (column.histogram_bins.length) {
-              inspections.distribution = inspectDistribution;
-            }
-            if (!lodash.some(column.percentiles, a => a === 'NaN')) {
-              inspections.summary = inspectSummary;
-              inspections.percentiles = inspectPercentiles;
-            }
-            break;
-          case 'enum':
-            inspections.domain = inspectDomain;
-        }
-        inspect_(frame, inspections);
-        return render_(frame, h2oColumnSummaryOutput, frameKey, frame, columnName);
-      };
-      requestFrame = (frameKey, go) => _.requestFrameSlice(frameKey, void 0, 0, 20, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrame(frameKey, frame));
-      });
-      requestFrameData = (frameKey, searchTerm, offset, count, go) => _.requestFrameSlice(frameKey, searchTerm, offset, count, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrameData(frameKey, frame));
-      });
-      requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrameSummary(frameKey, frame));
-      });
-      requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(frameKey, void 0, 0, 20, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrameSummary(frameKey, frame));
-      });
-      requestColumnSummary = (frameKey, columnName, go) => _.requestColumnSummary(frameKey, columnName, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendColumnSummary(frameKey, frame, columnName));
-      });
-      requestFrames = go => _.requestFrames((error, frames) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrames(frames));
-      });
-      requestCreateFrame = (opts, go) => _.requestCreateFrame(opts, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return _.requestJob(result.key.name, (error, job) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(job));
-        });
-      });
-      requestPartialDependence = (opts, go) => _.requestPartialDependence(opts, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return _.requestJob(result.key.name, (error, job) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(job));
-        });
-      });
-      requestPartialDependenceData = (key, go) => _.requestPartialDependenceData(key, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendPartialDependence(result));
-      });
-      computeSplits = (ratios, keys) => {
-        let i;
-        let key;
-        let part;
-        let parts;
-        let ratio;
-        let splits;
-        let sum;
-        let _i;
-        let _j;
-        let _len;
-        let _len1;
-        let _ref1;
-        parts = [];
-        sum = 0;
-        _ref1 = keys.slice(0, ratios.length);
-        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-          key = _ref1[i];
-          sum += ratio = ratios[i];
-          parts.push({
-            key,
-            ratio
-          });
-        }
-        parts.push({
-          key: keys[keys.length - 1],
-          ratio: 1 - sum
-        });
-        splits = [];
-        sum = 0;
-        for (_j = 0, _len1 = parts.length; _j < _len1; _j++) {
-          part = parts[_j];
-          splits.push({
-            min: sum,
-            max: sum + part.ratio,
-            key: part.key
-          });
-          sum += part.ratio;
-        }
-        return splits;
-      };
-      requestBindFrames = (key, sourceKeys, go) => _.requestExec(`(assign ${ key } (cbind ${ sourceKeys.join(' ') }))`, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendBindFrames(key, result));
-      });
-      requestSplitFrame = (frameKey, splitRatios, splitKeys, seed, go) => {
-        let g;
-        let i;
-        let l;
-        let part;
-        let randomVecKey;
-        let sliceExpr;
-        let splits;
-        let statements;
-        let _i;
-        let _len;
-        if (splitRatios.length === splitKeys.length - 1) {
-          splits = computeSplits(splitRatios, splitKeys);
-          randomVecKey = createTempKey();
-          statements = [];
-          statements.push(`(tmp= ${ randomVecKey } (h2o.runif ${ frameKey } ${ seed }))`);
-          for (i = _i = 0, _len = splits.length; _i < _len; i = ++_i) {
-            part = splits[i];
-            g = i !== 0 ? `(> ${ randomVecKey } ${ part.min })` : null;
-            l = i !== splits.length - 1 ? `(<= ${ randomVecKey } ${ part.max })` : null;
-            if (g && l) {
-              sliceExpr = `(& ${ g } ${ l })`;
-            } else {
-              if (l) {
-                sliceExpr = l;
-              } else {
-                sliceExpr = g;
-              }
-            }
-            statements.push(`(assign ${ part.key } (rows ${ frameKey } ${ sliceExpr }))`);
-          }
-          statements.push(`(rm ${ randomVecKey })`);
-          return _.requestExec(`(, ${ statements.join(' ') })`, (error, result) => {
-            if (error) {
-              return go(error);
-            }
-            return go(null, extendSplitFrameResult({
-              keys: splitKeys,
-              ratios: splitRatios
-            }));
-          });
-        }
-        return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));
-      };
-      requestMergeFrames = (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows, go) => {
-        let lr;
-        let rr;
-        let statement;
-        lr = includeAllLeftRows ? 'TRUE' : 'FALSE';
-        rr = includeAllRightRows ? 'TRUE' : 'FALSE';
-        statement = `(assign ${ destinationKey } (merge ${ leftFrameKey } ${ rightFrameKey } ${ lr } ${ rr } ${ leftColumnIndex } ${ rightColumnIndex } "radix"))`;
-        return _.requestExec(statement, (error, result) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendMergeFramesResult({ key: destinationKey }));
-        });
-      };
-      createFrame = opts => {
-        if (opts) {
-          return _fork(requestCreateFrame, opts);
-        }
-        return assist(createFrame);
-      };
-      splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
-        if (seed == null) {
-          seed = -1;
-        }
-        if (frameKey && splitRatios && splitKeys) {
-          return _fork(requestSplitFrame, frameKey, splitRatios, splitKeys, seed);
-        }
-        return assist(splitFrame);
-      };
-      mergeFrames = (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows) => {
-        if (destinationKey && leftFrameKey && rightFrameKey) {
-          return _fork(requestMergeFrames, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
-        }
-        return assist(mergeFrames);
-      };
-      buildPartialDependence = opts => {
-        if (opts) {
-          return _fork(requestPartialDependence, opts);
-        }
-        return assist(buildPartialDependence);
-      };
-      getPartialDependence = destinationKey => {
-        if (destinationKey) {
-          return _fork(requestPartialDependenceData, destinationKey);
-        }
-        return assist(getPartialDependence);
-      };
-      getFrames = () => _fork(requestFrames);
-      getFrame = frameKey => {
-        switch (flowPrelude$5.typeOf(frameKey)) {
-          case 'String':
-            return _fork(requestFrame, frameKey);
-          default:
-            return assist(getFrame);
-        }
-      };
-      bindFrames = (key, sourceKeys) => _fork(requestBindFrames, key, sourceKeys);
-      getFrameSummary = frameKey => {
-        switch (flowPrelude$5.typeOf(frameKey)) {
-          case 'String':
-            return _fork(requestFrameSummary, frameKey);
-          default:
-            return assist(getFrameSummary);
-        }
-      };
-      getFrameData = frameKey => {
-        switch (flowPrelude$5.typeOf(frameKey)) {
-          case 'String':
-            return _fork(requestFrameData, frameKey, void 0, 0, 20);
-          default:
-            return assist(getFrameSummary);
-        }
-      };
-      requestDeleteFrame = (frameKey, go) => _.requestDeleteFrame(frameKey, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys([frameKey]));
-      });
-      deleteFrame = frameKey => {
-        if (frameKey) {
-          return _fork(requestDeleteFrame, frameKey);
-        }
-        return assist(deleteFrame);
-      };
-      extendExportFrame = result => render_(result, h2oExportFrameOutput, result);
-      extendBindFrames = (key, result) => render_(result, h2oBindFramesOutput, key, result);
-      requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return _.requestJob(result.job.key.name, (error, job) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(job));
-        });
-      });
-      exportFrame = (frameKey, path, opts) => {
-        if (opts == null) {
-          opts = {};
-        }
-        if (frameKey && path) {
-          return _fork(requestExportFrame, frameKey, path, opts);
-        }
-        return assist(exportFrame, frameKey, path, opts);
-      };
-      requestDeleteFrames = (frameKeys, go) => {
-        let futures;
-        futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, frameKey));
-        return Flow.Async.join(futures, (error, results) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendDeletedKeys(frameKeys));
-        });
-      };
-      deleteFrames = frameKeys => {
-        switch (frameKeys.length) {
-          case 0:
-            return assist(deleteFrames);
-          case 1:
-            return deleteFrame(lodash.head(frameKeys));
-          default:
-            return _fork(requestDeleteFrames, frameKeys);
-        }
-      };
-      getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, frameKey, columnName);
-      requestModels = go => _.requestModels((error, models) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendModels(models));
-      });
-      requestModelsByKeys = (modelKeys, go) => {
-        let futures;
-        futures = lodash.map(modelKeys, key => _fork(_.requestModel, key));
-        return Flow.Async.join(futures, (error, models) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendModels(models));
-        });
-      };
-      getModels = modelKeys => {
-        if (lodash.isArray(modelKeys)) {
-          if (modelKeys.length) {
-            return _fork(requestModelsByKeys, modelKeys);
-          }
-          return _fork(requestModels);
-        }
-        return _fork(requestModels);
-      };
-      requestGrids = go => _.requestGrids((error, grids) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendGrids(grids));
-      });
-      getGrids = () => _fork(requestGrids);
-      requestModel = (modelKey, go) => _.requestModel(modelKey, (error, model) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendModel(model));
-      });
-      getModel = modelKey => {
-        switch (flowPrelude$5.typeOf(modelKey)) {
-          case 'String':
-            return _fork(requestModel, modelKey);
-          default:
-            return assist(getModel);
-        }
-      };
-      requestGrid = (gridKey, opts, go) => _.requestGrid(gridKey, opts, (error, grid) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendGrid(grid, opts));
-      });
-      getGrid = (gridKey, opts) => {
-        switch (flowPrelude$5.typeOf(gridKey)) {
-          case 'String':
-            return _fork(requestGrid, gridKey, opts);
-          default:
-            return assist(getGrid);
-        }
-      };
-      findColumnIndexByColumnLabel = (frame, columnLabel) => {
-        let column;
-        let i;
-        let _i;
-        let _len;
-        let _ref1;
-        _ref1 = frame.columns;
-        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-          column = _ref1[i];
-          if (column.label === columnLabel) {
-            return i;
-          }
-        }
-        throw new Flow.Error(`Column [${ columnLabel }] not found in frame`);
-      };
-      findColumnIndicesByColumnLabels = (frame, columnLabels) => {
-        let columnLabel;
-        let _i;
-        let _len;
-        let _results;
-        _results = [];
-        for (_i = 0, _len = columnLabels.length; _i < _len; _i++) {
-          columnLabel = columnLabels[_i];
-          _results.push(findColumnIndexByColumnLabel(frame, columnLabel));
-        }
-        return _results;
-      };
-      requestImputeColumn = (opts, go) => {
-        let column;
-        let combineMethod;
-        let frame;
-        let groupByColumns;
-        let method;
-        frame = opts.frame, column = opts.column, method = opts.method, combineMethod = opts.combineMethod, groupByColumns = opts.groupByColumns;
-        combineMethod = combineMethod != null ? combineMethod : 'interpolate';
-        return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-          let columnIndex;
-          let columnIndicesError;
-          let columnKeyError;
-          let groupByArg;
-          let groupByColumnIndices;
-          if (error) {
-            return go(error);
-          }
-          try {
-            columnIndex = findColumnIndexByColumnLabel(result, column);
-          } catch (_error) {
-            columnKeyError = _error;
-            return go(columnKeyError);
-          }
-          if (groupByColumns && groupByColumns.length) {
-            try {
-              groupByColumnIndices = findColumnIndicesByColumnLabels(result, groupByColumns);
-            } catch (_error) {
-              columnIndicesError = _error;
-              return go(columnIndicesError);
-            }
-          } else {
-            groupByColumnIndices = null;
-          }
-          groupByArg = groupByColumnIndices ? `[${ groupByColumnIndices.join(' ') }]` : '[]';
-          return _.requestExec(`(h2o.impute ${ frame } ${ columnIndex } ${ JSON.stringify(method) } ${ JSON.stringify(combineMethod) } ${ groupByArg } _ _)`, (error, result) => {
-            if (error) {
-              return go(error);
-            }
-            return requestColumnSummary(frame, column, go);
-          });
-        });
-      };
-      requestChangeColumnType = (opts, go) => {
-        let column;
-        let frame;
-        let method;
-        let type;
-        frame = opts.frame, column = opts.column, type = opts.type;
-        method = type === 'enum' ? 'as.factor' : 'as.numeric';
-        return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-          let columnIndex;
-          let columnKeyError;
-          try {
-            columnIndex = findColumnIndexByColumnLabel(result, column);
-          } catch (_error) {
-            columnKeyError = _error;
-            return go(columnKeyError);
-          }
-          return _.requestExec(`(assign ${ frame } (:= ${ frame } (${ method } (cols ${ frame } ${ columnIndex })) ${ columnIndex } [0:${ result.rows }]))`, (error, result) => {
-            if (error) {
-              return go(error);
-            }
-            return requestColumnSummary(frame, column, go);
-          });
-        });
-      };
-      imputeColumn = opts => {
-        if (opts && opts.frame && opts.column && opts.method) {
-          return _fork(requestImputeColumn, opts);
-        }
-        return assist(imputeColumn, opts);
-      };
-      changeColumnType = opts => {
-        if (opts && opts.frame && opts.column && opts.type) {
-          return _fork(requestChangeColumnType, opts);
-        }
-        return assist(changeColumnType, opts);
-      };
-      requestDeleteModel = (modelKey, go) => _.requestDeleteModel(modelKey, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys([modelKey]));
-      });
-      deleteModel = modelKey => {
-        if (modelKey) {
-          return _fork(requestDeleteModel, modelKey);
-        }
-        return assist(deleteModel);
-      };
-      extendImportModel = result => render_(result, H2O.ImportModelOutput, result);
-      requestImportModel = (path, opts, go) => _.requestImportModel(path, opts.overwrite, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendImportModel(result));
-      });
-      importModel = (path, opts) => {
-        if (path && path.length) {
-          return _fork(requestImportModel, path, opts);
-        }
-        return assist(importModel, path, opts);
-      };
-      extendExportModel = result => render_(result, h2oExportModelOutput, result);
-      requestExportModel = (modelKey, path, opts, go) => _.requestExportModel(modelKey, path, opts.overwrite, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendExportModel(result));
-      });
-      exportModel = (modelKey, path, opts) => {
-        if (modelKey && path) {
-          return _fork(requestExportModel, modelKey, path, opts);
-        }
-        return assist(exportModel, modelKey, path, opts);
-      };
-      requestDeleteModels = (modelKeys, go) => {
-        let futures;
-        futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, modelKey));
-        return Flow.Async.join(futures, (error, results) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendDeletedKeys(modelKeys));
-        });
-      };
-      deleteModels = modelKeys => {
-        switch (modelKeys.length) {
-          case 0:
-            return assist(deleteModels);
-          case 1:
-            return deleteModel(lodash.head(modelKeys));
-          default:
-            return _fork(requestDeleteModels, modelKeys);
-        }
-      };
-      requestJob = (key, go) => _.requestJob(key, (error, job) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendJob(job));
-      });
-      requestJobs = go => _.requestJobs((error, jobs) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendJobs(jobs));
-      });
-      getJobs = () => _fork(requestJobs);
-      getJob = arg => {
-        switch (flowPrelude$5.typeOf(arg)) {
-          case 'String':
-            return _fork(requestJob, arg);
-          case 'Object':
-            if (arg.key != null) {
-              return getJob(arg.key);
-            }
-            return assist(getJob);
-          // break; // no-unreachable
-          default:
-            return assist(getJob);
-        }
-      };
-      requestCancelJob = (key, go) => _.requestCancelJob(key, error => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendCancelJob({}));
-      });
-      cancelJob = arg => {
-        switch (flowPrelude$5.typeOf(arg)) {
-          case 'String':
-            return _fork(requestCancelJob, arg);
-          default:
-            return assist(cancelJob);
-        }
-      };
-      extendImportResults = importResults => render_(importResults, h2oImportFilesOutput, importResults);
-      requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendImportResults(importResults));
-      });
-      importFiles = paths => {
-        switch (flowPrelude$5.typeOf(paths)) {
-          case 'Array':
-            return _fork(requestImportFiles, paths);
-          default:
-            return assist(importFiles);
-        }
-      };
-      extendParseSetupResults = (args, parseSetupResults) => render_(parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
-      requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
-        let sourceKeys;
-        if (error) {
-          return go(error);
-        }
-        sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-        return _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendParseSetupResults({ paths }, parseSetupResults));
-        });
-      });
-      requestParseSetup = (sourceKeys, go) => _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
-      });
-      setupParse = args => {
-        if (args.paths && lodash.isArray(args.paths)) {
-          return _fork(requestImportAndParseSetup, args.paths);
-        } else if (args.source_frames && lodash.isArray(args.source_frames)) {
-          return _fork(requestParseSetup, args.source_frames);
-        }
-        return assist(setupParse);
-      };
-      extendParseResult = parseResult => render_(parseResult, H2O.JobOutput, parseResult.job);
-      requestImportAndParseFiles = (paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestImportFiles(paths, (error, importResults) => {
-        let sourceKeys;
-        if (error) {
-          return go(error);
-        }
-        sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-        return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendParseResult(parseResult));
-        });
-      });
-      requestParseFiles = (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendParseResult(parseResult));
-      });
-      parseFiles = opts => {
-        let checkHeader;
-        let chunkSize;
-        let columnCount;
-        let columnNames;
-        let columnTypes;
-        let deleteOnDone;
-        let destinationKey;
-        let parseType;
-        let separator;
-        let useSingleQuotes;
-        destinationKey = opts.destination_frame;
-        parseType = opts.parse_type;
-        separator = opts.separator;
-        columnCount = opts.number_columns;
-        useSingleQuotes = opts.single_quotes;
-        columnNames = opts.column_names;
-        columnTypes = opts.column_types;
-        deleteOnDone = opts.delete_on_done;
-        checkHeader = opts.check_header;
-        chunkSize = opts.chunk_size;
-        if (opts.paths) {
-          return _fork(requestImportAndParseFiles, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
-        }
-        return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
-      };
-      requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
-        let messages;
-        let validation;
-        if (error) {
-          return go(error);
-        }
-        if (result.error_count > 0) {
-          messages = (() => {
-            let _i;
-            let _len;
-            let _ref1;
-            let _results;
-            _ref1 = result.messages;
-            _results = [];
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              validation = _ref1[_i];
-              _results.push(validation.message);
-            }
-            return _results;
-          })();
-          return go(new Flow.Error(`Model build failure: ${ messages.join('; ') }`));
-        }
-        return go(null, extendJob(result.job));
-      });
-      requestAutoModelBuild = (opts, go) => {
-        let params;
-        params = {
-          input_spec: {
-            training_frame: opts.frame,
-            response_column: opts.column
-          },
-          build_control: { stopping_criteria: { max_runtime_secs: opts.maxRunTime } }
-        };
-        return _.requestAutoModelBuild(params, (error, result) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(result.job));
-        });
-      };
-      buildAutoModel = opts => {
-        if (opts && lodash.keys(opts).length > 1) {
-          return _fork(requestAutoModelBuild, opts);
-        }
-        return assist(buildAutoModel, opts);
-      };
-      buildModel = (algo, opts) => {
-        if (algo && opts && lodash.keys(opts).length > 1) {
-          return _fork(requestModelBuild, algo, opts);
-        }
-        return assist(buildModel, algo, opts);
-      };
-      unwrapPrediction = go => (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendPrediction(result));
-      };
-      requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(go));
-      requestPredicts = (opts, go) => {
-        let futures;
-        futures = lodash.map(opts, opt => {
-          let frameKey;
-          let modelKey;
-          let options;
-          modelKey = opt.model, frameKey = opt.frame, options = opt.options;
-          return _fork(_.requestPredict, null, modelKey, frameKey, options || {});
-        });
-        return Flow.Async.join(futures, (error, predictions) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendPredictions(opts, predictions));
-        });
-      };
-      predict = opts => {
-        let combos;
-        let deep_features_hidden_layer;
-        let exemplar_index;
-        let frame;
-        let frames;
-        let leaf_node_assignment;
-        let model;
-        let models;
-        let predictions_frame;
-        let reconstruction_error;
-        let _i;
-        let _j;
-        let _len;
-        let _len1;
-        if (opts == null) {
-          opts = {};
-        }
-        predictions_frame = opts.predictions_frame, model = opts.model, models = opts.models, frame = opts.frame, frames = opts.frames, reconstruction_error = opts.reconstruction_error, deep_features_hidden_layer = opts.deep_features_hidden_layer, leaf_node_assignment = opts.leaf_node_assignment, exemplar_index = opts.exemplar_index;
-        if (models || frames) {
-          if (!models) {
-            if (model) {
-              models = [model];
-            }
-          }
-          if (!frames) {
-            if (frame) {
-              frames = [frame];
-            }
-          }
-          if (frames && models) {
-            combos = [];
-            for (_i = 0, _len = models.length; _i < _len; _i++) {
-              model = models[_i];
-              for (_j = 0, _len1 = frames.length; _j < _len1; _j++) {
-                frame = frames[_j];
-                combos.push({
-                  model,
-                  frame
-                });
-              }
-            }
-            return _fork(requestPredicts, combos);
-          }
-          return assist(predict, {
-            predictions_frame,
-            models,
-            frames
-          });
-        }
-        if (model && frame) {
-          return _fork(requestPredict, predictions_frame, model, frame, {
-            reconstruction_error,
-            deep_features_hidden_layer,
-            leaf_node_assignment
-          });
-        } else if (model && exemplar_index !== void 0) {
-          return _fork(requestPredict, predictions_frame, model, null, { exemplar_index });
-        }
-        return assist(predict, {
-          predictions_frame,
-          model,
-          frame
-        });
-      };
-      requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(go));
-      requestPredictions = (opts, go) => {
-        let frameKey;
-        let futures;
-        let modelKey;
-        if (lodash.isArray(opts)) {
-          futures = lodash.map(opts, opt => {
-            let frameKey;
-            let modelKey;
-            modelKey = opt.model, frameKey = opt.frame;
-            return _fork(_.requestPredictions, modelKey, frameKey);
-          });
-          return Flow.Async.join(futures, (error, predictions) => {
-            let uniquePredictions;
-            if (error) {
-              return go(error);
-            }
-            uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), prediction => prediction.model.name + prediction.frame.name));
-            return go(null, extendPredictions(opts, uniquePredictions));
-          });
-        }
-        modelKey = opts.model, frameKey = opts.frame;
-        return _.requestPredictions(modelKey, frameKey, (error, predictions) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendPredictions(opts, predictions));
-        });
-      };
-      getPrediction = opts => {
-        let frame;
-        let model;
-        let predictions_frame;
-        if (opts == null) {
-          opts = {};
-        }
-        predictions_frame = opts.predictions_frame, model = opts.model, frame = opts.frame;
-        if (model && frame) {
-          return _fork(requestPrediction, model, frame);
-        }
-        return assist(getPrediction, {
-          predictions_frame,
-          model,
-          frame
-        });
-      };
-      getPredictions = opts => {
-        if (opts == null) {
-          opts = {};
-        }
-        return _fork(requestPredictions, opts);
-      };
-      requestCloud = go => _.requestCloud((error, cloud) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendCloud(cloud));
-      });
-      getCloud = () => _fork(requestCloud);
-      requestTimeline = go => _.requestTimeline((error, timeline) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendTimeline(timeline));
-      });
-      getTimeline = () => _fork(requestTimeline);
-      requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendStackTrace(stackTrace));
-      });
-      getStackTrace = () => _fork(requestStackTrace);
-      requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
-        let NODE_INDEX_SELF;
-        if (error) {
-          return go(error);
-        }
-        if (nodeIndex < 0 || nodeIndex >= cloud.nodes.length) {
-          NODE_INDEX_SELF = -1;
-          nodeIndex = NODE_INDEX_SELF;
-        }
-        return _.requestLogFile(nodeIndex, fileType, (error, logFile) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendLogFile(cloud, nodeIndex, fileType, logFile));
-        });
-      });
-      getLogFile = (nodeIndex, fileType) => {
-        if (nodeIndex == null) {
-          nodeIndex = -1;
-        }
-        if (fileType == null) {
-          fileType = 'info';
-        }
-        return _fork(requestLogFile, nodeIndex, fileType);
-      };
-      requestNetworkTest = go => _.requestNetworkTest((error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendNetworkTest(result));
-      });
-      testNetwork = () => _fork(requestNetworkTest);
-      requestRemoveAll = go => _.requestRemoveAll((error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys([]));
-      });
-      deleteAll = () => _fork(requestRemoveAll);
-      extendRDDs = rdds => {
-        render_(rdds, h2oRDDsOutput, rdds);
-        return rdds;
-      };
-      requestRDDs = go => _.requestRDDs((error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendRDDs(result.rdds));
-      });
-      getRDDs = () => _fork(requestRDDs);
-      extendDataFrames = dataframes => {
-        render_(dataframes, h2oDataFramesOutput, dataframes);
-        return dataframes;
-      };
-      requestDataFrames = go => _.requestDataFrames((error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDataFrames(result.dataframes));
-      });
-      getDataFrames = () => _fork(requestDataFrames);
-      extendAsH2OFrame = result => {
-        render_(result, h2oH2OFrameOutput, result);
-        return result;
-      };
-      requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsH2OFrame(h2oframe_id));
-      });
-      asH2OFrameFromRDD = (rddId, name) => {
-        if (name == null) {
-          name = void 0;
-        }
-        return _fork(requestAsH2OFrameFromRDD, rddId, name);
-      };
-      requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsH2OFrame(result));
-      });
-      asH2OFrameFromDF = (dfId, name) => {
-        if (name == null) {
-          name = void 0;
-        }
-        return _fork(requestAsH2OFrameFromDF, dfId, name);
-      };
-      extendAsDataFrame = result => {
-        render_(result, h2oDataFrameOutput, result);
-        return result;
-      };
-      requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsDataFrame(result));
-      });
-      asDataFrame = (hfId, name) => {
-        if (name == null) {
-          name = void 0;
-        }
-        return _fork(requestAsDataFrame, hfId, name);
-      };
-      requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendScalaCode(result));
-      });
-      extendScalaCode = result => {
-        render_(result, h2oScalaCodeOutput, result);
-        return result;
-      };
-      runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
-      requestScalaIntp = go => _.requestScalaIntp((error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendScalaIntp(result));
-      });
-      extendScalaIntp = result => {
-        render_(result, h2oScalaIntpOutput, result);
-        return result;
-      };
-      getScalaIntp = () => _fork(requestScalaIntp);
-      requestProfile = (depth, go) => _.requestProfile(depth, (error, profile) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendProfile(profile));
-      });
-      getProfile = opts => {
-        if (!opts) {
-          opts = { depth: 10 };
-        }
-        return _fork(requestProfile, opts.depth);
-      };
-      loadScript = (path, go) => {
-        let onDone;
-        let onFail;
-        onDone = (script, status) => go(null, {
-          script,
-          status
-        });
-        onFail = (jqxhr, settings, error) => go(error);
-        return $.getScript(path).done(onDone).fail(onFail);
-      };
-      dumpFuture = (result, go) => {
-        if (result == null) {
-          result = {};
-        }
-        console.debug(result);
-        return go(null, render_(result, Flow.objectBrowser, 'dump', result));
-      };
-      dump = f => {
-        if (f != null ? f.isFuture : void 0) {
-          return _fork(dumpFuture, f);
-        }
-        return Flow.Async.async(() => f);
-      };
-      assist = function () {
-        let args;
-        let func;
-        func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-        if (func === void 0) {
-          return _fork(proceed, h2oAssist, [_assistance]);
-        }
-        switch (func) {
-          case importFiles:
-            return _fork(proceed, h2oImportFilesInput, []);
-          case buildModel:
-            return _fork(proceed, H2O.ModelInput, args);
-          case buildAutoModel:
-            return _fork(proceed, h2oAutoModelInput, args);
-          case predict:
-          case getPrediction:
-            return _fork(proceed, h2oPredictInput, args);
-          case createFrame:
-            return _fork(proceed, h2oCreateFrameInput, args);
-          case splitFrame:
-            return _fork(proceed, h2oSplitFrameInput, args);
-          case mergeFrames:
-            return _fork(proceed, h2oMergeFramesInput, args);
-          case buildPartialDependence:
-            return _fork(proceed, h2oPartialDependenceInput, args);
-          case exportFrame:
-            return _fork(proceed, h2oExportFrameInput, args);
-          case imputeColumn:
-            return _fork(proceed, H2O.ImputeInput, args);
-          case importModel:
-            return _fork(proceed, h2oImportModelInput, args);
-          case exportModel:
-            return _fork(proceed, h2oExportModelInput, args);
-          default:
-            return _fork(proceed, h2oNoAssist, []);
-        }
-      };
-      Flow.Dataflow.link(_.ready, () => {
-        Flow.Dataflow.link(_.ls, ls);
-        Flow.Dataflow.link(_.inspect, inspect);
-        Flow.Dataflow.link(_.plot, plot => plot(lightning));
-        Flow.Dataflow.link(_.grid, frame => lightning(lightning.select(), lightning.from(frame)));
-        Flow.Dataflow.link(_.enumerate, frame => lightning(lightning.select(0), lightning.from(frame)));
-        Flow.Dataflow.link(_.requestFrameDataE, requestFrameData);
-        return Flow.Dataflow.link(_.requestFrameSummarySliceE, requestFrameSummarySlice);
-      });
-      initAssistanceSparklingWater = () => {
-        _assistance.getRDDs = {
-          description: 'Get a list of Spark\'s RDDs',
-          icon: 'table'
-        };
-        return _assistance.getDataFrames = {
-          description: 'Get a list of Spark\'s data frames',
-          icon: 'table'
-        };
-      };
-      Flow.Dataflow.link(_.initialized, () => {
-        if (_.onSparklingWater) {
-          return initAssistanceSparklingWater();
-        }
-      });
-      routines = {
-        fork: _fork,
-        join: _join,
-        call: _call,
-        apply: _apply,
-        isFuture: _isFuture,
-        signal: Flow.Dataflow.signal,
-        signals: Flow.Dataflow.signals,
-        isSignal: Flow.Dataflow.isSignal,
-        act: Flow.Dataflow.act,
-        react: Flow.Dataflow.react,
-        lift: Flow.Dataflow.lift,
-        merge: Flow.Dataflow.merge,
-        dump,
-        inspect,
-        plot,
-        grid,
-        get: _get,
-        assist,
-        gui,
-        loadScript,
-        getJobs,
-        getJob,
-        cancelJob,
-        importFiles,
-        setupParse,
-        parseFiles,
-        createFrame,
-        splitFrame,
-        mergeFrames,
-        buildPartialDependence,
-        getPartialDependence,
-        getFrames,
-        getFrame,
-        bindFrames,
-        getFrameSummary,
-        getFrameData,
-        deleteFrames,
-        deleteFrame,
-        exportFrame,
-        getColumnSummary,
-        changeColumnType,
-        imputeColumn,
-        buildModel,
-        buildAutoModel,
-        getGrids,
-        getModels,
-        getModel,
-        getGrid,
-        deleteModels,
-        deleteModel,
-        importModel,
-        exportModel,
-        predict,
-        getPrediction,
-        getPredictions,
-        getCloud,
-        getTimeline,
-        getProfile,
-        getStackTrace,
-        getLogFile,
-        testNetwork,
-        deleteAll
-      };
-      if (_.onSparklingWater) {
-        routinesOnSw = {
-          getDataFrames,
-          getRDDs,
-          getScalaIntp,
-          runScalaCode,
-          asH2OFrameFromRDD,
-          asH2OFrameFromDF,
-          asDataFrame
-        };
-        for (attrname in routinesOnSw) {
-          if ({}.hasOwnProperty.call(routinesOnSw, attrname)) {
-            routines[attrname] = routinesOnSw[attrname];
-          }
-        }
-      }
-      return routines;
-    };
-  }
+  const flowPrelude$5=flowPreludeFunction();function routines(){const lodash=window._;const Flow=window.Flow;let combineTables;let computeFalsePositiveRate;let computeTruePositiveRate;let concatArrays;let convertColumnToVector;let convertTableToFrame;let createArrays;let createDataframe;let createFactor;let createList;let createTempKey;let createVector;let format4f;let format6fi;let formatConfusionMatrix;let formulateGetPredictionsOrigin;let getTwoDimData;let lightning;let parseAndFormatArray;let parseAndFormatObjectArray;let parseNaNs;let parseNulls;let parseNumbers;let repeatValues;let _assistance;const __slice=[].slice;lightning=(typeof window!=='undefined'&&window!==null?window.plot:void 0)!=null?window.plot:{};if(lightning.settings){lightning.settings.axisLabelFont='11px "Source Code Pro", monospace';lightning.settings.axisTitleFont='bold 11px "Source Code Pro", monospace';}createTempKey=()=>`flow_${Flow.Util.uuid().replace(/\-/g,'')}`;createVector=lightning.createVector;createFactor=lightning.createFactor;createList=lightning.createList;createDataframe=lightning.createFrame;_assistance={importFiles:{description:'Import file(s) into H<sub>2</sub>O',icon:'files-o'},getFrames:{description:'Get a list of frames in H<sub>2</sub>O',icon:'table'},splitFrame:{description:'Split a frame into two or more frames',icon:'scissors'},mergeFrames:{description:'Merge two frames into one',icon:'link'},getModels:{description:'Get a list of models in H<sub>2</sub>O',icon:'cubes'},getGrids:{description:'Get a list of grid search results in H<sub>2</sub>O',icon:'th'},getPredictions:{description:'Get a list of predictions in H<sub>2</sub>O',icon:'bolt'},getJobs:{description:'Get a list of jobs running in H<sub>2</sub>O',icon:'tasks'},buildModel:{description:'Build a model',icon:'cube'},importModel:{description:'Import a saved model',icon:'cube'},predict:{description:'Make a prediction',icon:'bolt'}};parseNumbers=source=>{let i;let target;let value;let _i;let _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){value=source[i];// TODO handle formatting
+  target[i]=value==='NaN'?void 0:value==='Infinity'?Number.POSITIVE_INFINITY:value==='-Infinity'?Number.NEGATIVE_INFINITY:value;}return target;};convertColumnToVector=(column,data)=>{switch(column.type){case'byte':case'short':case'int':case'integer':case'long':return createVector(column.name,'Number',parseNumbers(data));case'float':case'double':return createVector(column.name,'Number',parseNumbers(data),format4f);case'string':return createFactor(column.name,'String',data);case'matrix':return createList(column.name,data,formatConfusionMatrix);default:return createList(column.name,data);}};convertTableToFrame=(table,tableName,metadata)=>{// TODO handle format strings and description
+  let column;let i;let vectors;vectors=(()=>{let _i;let _len;let _ref;let _results;_ref=table.columns;_results=[];for(i=_i=0,_len=_ref.length;_i<_len;i=++_i){column=_ref[i];_results.push(convertColumnToVector(column,table.data[i]));}return _results;})();return createDataframe(tableName,vectors,lodash.range(table.rowcount),null,metadata);};getTwoDimData=(table,columnName)=>{let columnIndex;columnIndex=lodash.findIndex(table.columns,column=>column.name===columnName);if(columnIndex>=0){return table.data[columnIndex];}return void 0;};format4f=number=>{if(number){if(number==='NaN'){return void 0;}return number.toFixed(4).replace(/\.0+$/,'.0');}return number;};format6fi=number=>{if(number){if(number==='NaN'){return void 0;}return number.toFixed(6).replace(/\.0+$/,'');}return number;};combineTables=tables=>{let columnCount;let columnData;let data;let element;let i;let index;let leader;let rowCount;let table;let _i;let _j;let _k;let _l;let _len;let _len1;let _len2;let _ref;leader=lodash.head(tables);rowCount=0;columnCount=leader.data.length;data=new Array(columnCount);for(_i=0,_len=tables.length;_i<_len;_i++){table=tables[_i];rowCount+=table.rowcount;}for(i=_j=0;columnCount>=0?_j<columnCount:_j>columnCount;i=columnCount>=0?++_j:--_j){data[i]=columnData=new Array(rowCount);index=0;for(_k=0,_len1=tables.length;_k<_len1;_k++){table=tables[_k];_ref=table.data[i];for(_l=0,_len2=_ref.length;_l<_len2;_l++){element=_ref[_l];columnData[index++]=element;}}}return{name:leader.name,columns:leader.columns,data,rowcount:rowCount};};createArrays=(count,length)=>{let i;let _i;let _results;_results=[];for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){_results.push(new Array(length));}return _results;};parseNaNs=source=>{let element;let i;let target;let _i;let _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element==='NaN'?void 0:element;}return target;};parseNulls=source=>{let element;let i;let target;let _i;let _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?element:void 0;}return target;};parseAndFormatArray=source=>{let element;let i;let target;let _i;let _len;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?lodash.isNumber(element)?format6fi(element):element:void 0;}return target;};parseAndFormatObjectArray=source=>{let element;let i;let target;let _i;let _len;let _ref;let _ref1;target=new Array(source.length);for(i=_i=0,_len=source.length;_i<_len;i=++_i){element=source[i];target[i]=element!=null?((_ref=element.__meta)!=null?_ref.schema_type:void 0)==='Key<Model>'?`<a href=\'#\' data-type=\'model\' data-key=${flowPrelude$5.stringify(element.name)}>${lodash.escape(element.name)}</a>`:((_ref1=element.__meta)!=null?_ref1.schema_type:void 0)==='Key<Frame>'?`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$5.stringify(element.name)}>${lodash.escape(element.name)}</a>`:element:void 0;}return target;};repeatValues=(count,value)=>{let i;let target;let _i;target=new Array(count);for(i=_i=0;count>=0?_i<count:_i>count;i=count>=0?++_i:--_i){target[i]=value;}return target;};concatArrays=arrays=>{let a;switch(arrays.length){case 0:return[];case 1:return lodash.head(arrays);default:a=lodash.head(arrays);return a.concat(...lodash.tail(arrays));}};computeTruePositiveRate=cm=>{let fn;let fp;let tn;let tp;let _ref;let _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return tp/(tp+fn);};computeFalsePositiveRate=cm=>{let fn;let fp;let tn;let tp;let _ref;let _ref1;(_ref=cm[0],tn=_ref[0],fp=_ref[1]),(_ref1=cm[1],fn=_ref1[0],tp=_ref1[1]);return fp/(fp+tn);};formatConfusionMatrix=cm=>{let domain;let fn;let fnr;let fp;let fpr;let normal;let strong;let table;let tbody;let tn;let tp;let tr;let yellow;let _ref;let _ref1;let _ref2;let _ref3;_ref=cm.matrix,(_ref1=_ref[0],tn=_ref1[0],fp=_ref1[1]),(_ref2=_ref[1],fn=_ref2[0],tp=_ref2[1]);fnr=fn/(tp+fn);fpr=fp/(fp+tn);domain=cm.domain;_ref3=Flow.HTML.template('table.flow-matrix','tbody','tr','td.strong.flow-center','td','td.bg-yellow'),table=_ref3[0],tbody=_ref3[1],tr=_ref3[2],strong=_ref3[3],normal=_ref3[4],yellow=_ref3[5];return table([tbody([tr([strong('Actual/Predicted'),strong(domain[0]),strong(domain[1]),strong('Error'),strong('Rate')]),tr([strong(domain[0]),yellow(tn),normal(fp),normal(format4f(fpr)),normal(`${fp} / ${fp+tn}`)]),tr([strong(domain[1]),normal(fn),yellow(tp),normal(format4f(fnr)),normal(`${fn} / ${tp+fn}`)]),tr([strong('Total'),strong(tn+fn),strong(tp+fp),strong(format4f((fn+fp)/(fp+tn+tp+fn))),strong(`${fn}${fp} / ${fp+tn+tp+fn}`)])])]);};formulateGetPredictionsOrigin=opts=>{let frameKey;let modelKey;let opt;let sanitizedOpt;let sanitizedOpts;if(lodash.isArray(opts)){sanitizedOpts=(()=>{let _i;let _len;let _results;_results=[];for(_i=0,_len=opts.length;_i<_len;_i++){opt=opts[_i];sanitizedOpt={};if(opt.model){sanitizedOpt.model=opt.model;}if(opt.frame){sanitizedOpt.frame=opt.frame;}_results.push(sanitizedOpt);}return _results;})();return`getPredictions ${flowPrelude$5.stringify(sanitizedOpts)}`;}modelKey=opts.model,frameKey=opts.frame;if(modelKey&&frameKey){return`getPredictions model: ${flowPrelude$5.stringify(modelKey)}, frame: ${flowPrelude$5.stringify(frameKey)}`;}else if(modelKey){return`getPredictions model: ${flowPrelude$5.stringify(modelKey)}`;}else if(frameKey){return`getPredictions frame: ${flowPrelude$5.stringify(frameKey)}`;}return'getPredictions()';};H2O.Routines=_=>{let asDataFrame;let asH2OFrameFromDF;let asH2OFrameFromRDD;let assist;let attrname;let bindFrames;let blacklistedAttributesBySchema;let buildAutoModel;let buildModel;let buildPartialDependence;let cancelJob;let changeColumnType;let computeSplits;let createFrame;let createGui;let createPlot;let deleteAll;let deleteFrame;let deleteFrames;let deleteModel;let deleteModels;let dump;let dumpFuture;let exportFrame;let exportModel;let extendAsDataFrame;let extendAsH2OFrame;let extendBindFrames;let extendCancelJob;let extendCloud;let extendColumnSummary;let extendDataFrames;let extendDeletedKeys;let extendExportFrame;let extendExportModel;let extendFrame;let extendFrameData;let extendFrameSummary;let extendFrames;let extendGrid;let extendGrids;let extendGuiForm;let extendImportModel;let extendImportResults;let extendJob;let extendJobs;let extendLogFile;let extendMergeFramesResult;let extendModel;let extendModels;let extendNetworkTest;let extendParseResult;let extendParseSetupResults;let extendPartialDependence;let extendPlot;let extendPrediction;let extendPredictions;let extendProfile;let extendRDDs;let extendScalaCode;let extendScalaIntp;let extendSplitFrameResult;let extendStackTrace;let extendTimeline;let f;let findColumnIndexByColumnLabel;let findColumnIndicesByColumnLabels;let flow_;let getCloud;let getColumnSummary;let getDataFrames;let getFrame;let getFrameData;let getFrameSummary;let getFrames;let getGrid;let getGrids;let getJob;let getJobs;let getLogFile;let getModel;let getModelParameterValue;let getModels;let getPartialDependence;let getPrediction;let getPredictions;let getProfile;let getRDDs;let getScalaIntp;let getStackTrace;let getTimeline;let grid;let gui;let importFiles;let importModel;let imputeColumn;let initAssistanceSparklingWater;let inspect;let inspect$1;let inspect$2;let inspectFrameColumns;let inspectFrameData;let inspectModelParameters;let inspectNetworkTestResult;let inspectObject;let inspectObjectArray_;let inspectParametersAcrossModels;let inspectRawArray_;let inspectRawObject_;let inspectTwoDimTable_;let inspect_;let loadScript;let ls;let mergeFrames;let name;let parseFiles;let plot;let predict;let proceed;let read;let render_;let requestAsDataFrame;let requestAsH2OFrameFromDF;let requestAsH2OFrameFromRDD;let requestAutoModelBuild;let requestBindFrames;let requestCancelJob;let requestChangeColumnType;let requestCloud;let requestColumnSummary;let requestCreateFrame;let requestDataFrames;let requestDeleteFrame;let requestDeleteFrames;let requestDeleteModel;let requestDeleteModels;let requestExportFrame;let requestExportModel;let requestFrame;let requestFrameData;let requestFrameSummary;let requestFrameSummarySlice;let requestFrames;let requestGrid;let requestGrids;let requestImportAndParseFiles;let requestImportAndParseSetup;let requestImportFiles;let requestImportModel;let requestImputeColumn;let requestJob;let requestJobs;let requestLogFile;let requestMergeFrames;let requestModel;let requestModelBuild;let requestModels;let requestModelsByKeys;let requestNetworkTest;let requestParseFiles;let requestParseSetup;let requestPartialDependence;let requestPartialDependenceData;let requestPredict;let requestPrediction;let requestPredictions;let requestPredicts;let requestProfile;let requestRDDs;let requestRemoveAll;let requestScalaCode;let requestScalaIntp;let requestSplitFrame;let requestStackTrace;let requestTimeline;let routines;let routinesOnSw;let runScalaCode;let schemaTransforms;let setupParse;let splitFrame;let testNetwork;let transformBinomialMetrics;let unwrapPrediction;// TODO move these into Flow.Async
+  let _apply;let _async;let _call;let _fork;let _get;let _isFuture;let _join;let _plot;let _ref;let _schemaHacks;_fork=function(){let args;let f;f=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.fork(f,args);};_join=function(){let args;let go;let _i;args=arguments.length>=2?__slice.call(arguments,0,_i=arguments.length-1):(_i=0,[]),go=arguments[_i++];return Flow.Async.join(args,Flow.Async.applicate(go));};_call=function(){let args;let go;go=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];return Flow.Async.join(args,Flow.Async.applicate(go));};_apply=(go,args)=>Flow.Async.join(args,go);_isFuture=Flow.Async.isFuture;_async=Flow.Async.async;_get=Flow.Async.get;// XXX obsolete
+  proceed=(func,args,go)=>go(null,render_({},()=>func(...[_].concat(args||[]))));proceed=(func,args,go)=>go(null,render_(...[{},func].concat(args||[])));extendGuiForm=form=>render_(form,flowForm,form);createGui=(controls,go)=>go(null,extendGuiForm(Flow.Dataflow.signals(controls||[])));gui=controls=>_fork(createGui,controls);_ref=Flow.Gui;for(name in _ref){if({}.hasOwnProperty.call(_ref,name)){f=_ref[name];gui[name]=f;}}flow_=raw=>raw._flow_||(raw._flow_={_cache_:{}});// XXX obsolete
+  render_=(raw,render)=>{flow_(raw).render=render;return raw;};render_=function(){let args;let raw;let render;raw=arguments[0],render=arguments[1],args=arguments.length>=3?__slice.call(arguments,2):[];// Prepend current context (_) and a continuation (go)
+  flow_(raw).render=go=>render(...[_,go].concat(args));return raw;};inspect_=(raw,inspectors)=>{let attr;let root;root=flow_(raw);if(root.inspect==null){root.inspect={};}for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];root.inspect[attr]=f;}}return raw;};inspect=function(a,b){if(arguments.length===1){return inspect$1(a);}return inspect$2(a,b);};inspect$1=obj=>{let attr;let inspections;let inspectors;let _ref1;if(_isFuture(obj)){return _async(inspect,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){inspections=[];for(attr in inspectors){if({}.hasOwnProperty.call(inspectors,attr)){f=inspectors[attr];inspections.push(inspect$2(attr,obj));}}render_(inspections,h2oInspectsOutput,inspections);return inspections;}return{};};ls=obj=>{let inspectors;let _ref1;if(_isFuture(obj)){return _async(ls,obj);}if(inspectors=obj!=null?(_ref1=obj._flow_)!=null?_ref1.inspect:void 0:void 0){return lodash.keys(inspectors);}return[];};inspect$2=(attr,obj)=>{let cached;let inspection;let inspectors;let key;let root;if(!attr){return;}if(_isFuture(obj)){return _async(inspect,attr,obj);}if(!obj){return;}if(!(root=obj._flow_)){return;}if(!(inspectors=root.inspect)){return;}if(cached=root._cache_[key=`inspect_${attr}`]){return cached;}if(!(f=inspectors[attr])){return;}if(!lodash.isFunction(f)){return;}root._cache_[key]=inspection=f();render_(inspection,h2oInspectOutput,inspection);return inspection;};_plot=(render,go)=>render((error,vis)=>{if(error){return go(new Flow.Error('Error rendering vis.',error));}return go(null,vis);});extendPlot=vis=>render_(vis,h2oPlotOutput,vis.element);createPlot=(f,go)=>_plot(f(lightning),(error,vis)=>{if(error){return go(error);}return go(null,extendPlot(vis));});plot=f=>{if(_isFuture(f)){return _fork(proceed,h2oPlotInput,f);}else if(lodash.isFunction(f)){return _fork(createPlot,f);}return assist(plot);};grid=f=>plot(g=>g(g.select(),g.from(f)));transformBinomialMetrics=metrics=>{let cms;let domain;let fns;let fps;let i;let scores;let tns;let tp;let tps;if(scores=metrics.thresholds_and_metric_scores){domain=metrics.domain;tps=getTwoDimData(scores,'tps');tns=getTwoDimData(scores,'tns');fps=getTwoDimData(scores,'fps');fns=getTwoDimData(scores,'fns');cms=(()=>{let _i;let _len;let _results;_results=[];for(i=_i=0,_len=tps.length;_i<_len;i=++_i){tp=tps[i];_results.push({domain,matrix:[[tns[i],fps[i]],[fns[i],tp]]});}return _results;})();scores.columns.push({name:'CM',description:'CM',format:'matrix',// TODO HACK
+  type:'matrix'});scores.data.push(cms);}return metrics;};extendCloud=cloud=>render_(cloud,h2oCloudOutput,cloud);extendTimeline=timeline=>render_(timeline,h2oTimelineOutput,timeline);extendStackTrace=stackTrace=>render_(stackTrace,h2oStackTraceOutput,stackTrace);extendLogFile=(cloud,nodeIndex,fileType,logFile)=>render_(logFile,h2oLogFileOutput,cloud,nodeIndex,fileType,logFile);inspectNetworkTestResult=testResult=>()=>convertTableToFrame(testResult.table,testResult.table.name,{description:testResult.table.name,origin:'testNetwork'});extendNetworkTest=testResult=>{inspect_(testResult,{result:inspectNetworkTestResult(testResult)});return render_(testResult,h2oNetworkTestOutput,testResult);};extendProfile=profile=>render_(profile,h2oProfileOutput,profile);extendFrames=frames=>{render_(frames,h2oFramesOutput,frames);return frames;};extendSplitFrameResult=result=>{render_(result,h2oSplitFrameOutput,result);return result;};extendMergeFramesResult=result=>{render_(result,h2oMergeFramesOutput,result);return result;};extendPartialDependence=result=>{let data;let i;let inspections;let origin;let _i;let _len;let _ref1;inspections={};_ref1=result.partial_dependence_data;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){data=_ref1[i];origin=`getPartialDependence ${flowPrelude$5.stringify(result.destination_key)}`;inspections[`plot${i+1}`]=inspectTwoDimTable_(origin,`plot${i+1}`,data);}inspect_(result,inspections);render_(result,h2oPartialDependenceOutput,result);return result;};getModelParameterValue=(type,value)=>{switch(type){case'Key<Frame>':case'Key<Model>':if(value!=null){return value.name;}return void 0;// break; // no-unreachable
+  case'VecSpecifier':if(value!=null){return value.column_name;}return void 0;// break; // no-unreachable
+  default:if(value!=null){return value;}return void 0;}};inspectParametersAcrossModels=models=>()=>{let data;let i;let leader;let model;let modelKeys;let parameter;let vectors;leader=lodash.head(models);vectors=(()=>{let _i;let _len;let _ref1;let _results;_ref1=leader.parameters;_results=[];for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){parameter=_ref1[i];data=(()=>{let _j;let _len1;let _results1;_results1=[];for(_j=0,_len1=models.length;_j<_len1;_j++){model=models[_j];_results1.push(getModelParameterValue(parameter.type,model.parameters[i].actualValue));}return _results1;})();switch(parameter.type){case'enum':case'Frame':case'string':_results.push(createFactor(parameter.label,'String',data));break;case'byte':case'short':case'int':case'long':case'float':case'double':_results.push(createVector(parameter.label,'Number',data));break;case'string[]':case'byte[]':case'short[]':case'int[]':case'long[]':case'float[]':case'double[]':_results.push(createList(parameter.label,data,a=>{if(a){return a;}return void 0;}));break;case'boolean':_results.push(createList(parameter.label,data,a=>{if(a){return'true';}return'false';}));break;default:_results.push(createList(parameter.label,data));}}return _results;})();modelKeys=(()=>{let _i;let _len;let _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.modelId.name);}return _results;})();return createDataframe('parameters',vectors,lodash.range(models.length),null,{description:`Parameters for models ${modelKeys.join(', ')}`,origin:`getModels ${flowPrelude$5.stringify(modelKeys)}`});};inspectModelParameters=model=>()=>{let attr;let attrs;let data;let i;let parameter;let parameters;let vectors;parameters=model.parameters;attrs=['label','type','level','actualValue','defaultValue'];vectors=(()=>{let _i;let _j;let _len;let _len1;let _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];data=new Array(parameters.length);for(i=_j=0,_len1=parameters.length;_j<_len1;i=++_j){parameter=parameters[i];data[i]=attr==='actualValue'?getModelParameterValue(parameter.type,parameter[attr]):parameter[attr];}_results.push(createList(attr,data));}return _results;})();return createDataframe('parameters',vectors,lodash.range(parameters.length),null,{description:`Parameters for model \'${model.modelId.name}\'`,// TODO frame model_id
+  origin:`getModel ${flowPrelude$5.stringify(model.modelId.name)}`});};extendJob=job=>render_(job,H2O.JobOutput,job);extendJobs=jobs=>{let job;let _i;let _len;for(_i=0,_len=jobs.length;_i<_len;_i++){job=jobs[_i];extendJob(job);}return render_(jobs,h2oJobsOutput,jobs);};extendCancelJob=cancellation=>render_(cancellation,h2oCancelJobOutput,cancellation);extendDeletedKeys=keys=>render_(keys,h2oDeleteObjectsOutput,keys);inspectTwoDimTable_=(origin,tableName,table)=>()=>convertTableToFrame(table,tableName,{description:table.description||'',origin});inspectRawArray_=(name,origin,description,array)=>()=>createDataframe(name,[createList(name,parseAndFormatArray(array))],lodash.range(array.length),null,{description:'',origin});inspectObjectArray_=(name,origin,description,array)=>()=>createDataframe(name,[createList(name,parseAndFormatObjectArray(array))],lodash.range(array.length),null,{description:'',origin});inspectRawObject_=(name,origin,description,obj)=>()=>{let k;let v;let vectors;vectors=(()=>{let _results;_results=[];for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];_results.push(createList(k,[v===null?void 0:lodash.isNumber(v)?format6fi(v):v]));}}return _results;})();return createDataframe(name,vectors,lodash.range(1),null,{description:'',origin});};_schemaHacks={KMeansOutput:{fields:'names domains help'},GBMOutput:{fields:'names domains help'},GLMOutput:{fields:'names domains help'},DRFOutput:{fields:'names domains help'},DeepLearningModelOutput:{fields:'names domains help'},NaiveBayesOutput:{fields:'names domains help pcond'},PCAOutput:{fields:'names domains help'},ModelMetricsBinomialGLM:{fields:null,transform:transformBinomialMetrics},ModelMetricsBinomial:{fields:null,transform:transformBinomialMetrics},ModelMetricsMultinomialGLM:{fields:null},ModelMetricsMultinomial:{fields:null},ModelMetricsRegressionGLM:{fields:null},ModelMetricsRegression:{fields:null},ModelMetricsClustering:{fields:null},ModelMetricsAutoEncoder:{fields:null},ConfusionMatrix:{fields:null}};blacklistedAttributesBySchema=(()=>{let attrs;let dict;let dicts;let field;let schema;let _i;let _len;let _ref1;dicts={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];dicts[schema]=dict={__meta:true};if(attrs.fields){_ref1=flowPrelude$5.words(attrs.fields);for(_i=0,_len=_ref1.length;_i<_len;_i++){field=_ref1[_i];dict[field]=true;}}}}return dicts;})();schemaTransforms=(()=>{let attrs;let schema;let transform;let transforms;transforms={};for(schema in _schemaHacks){if({}.hasOwnProperty.call(_schemaHacks,schema)){attrs=_schemaHacks[schema];if(transform=attrs.transform){transforms[schema]=transform;}}}return transforms;})();inspectObject=(inspections,name,origin,obj)=>{let attrs;let blacklistedAttributes;let k;let meta;let record;let schemaType;let transform;let v;let _ref1;let _ref2;schemaType=(_ref1=obj.__meta)!=null?_ref1.schema_type:void 0;blacklistedAttributes=schemaType?(attrs=blacklistedAttributesBySchema[schemaType])?attrs:{}:{};if(transform=schemaTransforms[schemaType]){obj=transform(obj);}record={};inspections[name]=inspectRawObject_(name,origin,name,record);for(k in obj){if({}.hasOwnProperty.call(obj,k)){v=obj[k];if(!blacklistedAttributes[k]){if(v===null){record[k]=null;}else{if(((_ref2=v.__meta)!=null?_ref2.schema_type:void 0)==='TwoDimTable'){inspections[`${name} - ${v.name}`]=inspectTwoDimTable_(origin,`${name} - ${v.name}`,v);}else{if(lodash.isArray(v)){if(k==='cross_validation_models'||k==='cross_validation_predictions'||name==='output'&&(k==='weights'||k==='biases')){inspections[k]=inspectObjectArray_(k,origin,k,v);}else{inspections[k]=inspectRawArray_(k,origin,k,v);}}else if(lodash.isObject(v)){if(meta=v.__meta){if(meta.schema_type==='Key<Frame>'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$5.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Key<Model>'){record[k]=`<a href=\'#\' data-type=\'model\' data-key=${flowPrelude$5.stringify(v.name)}>${lodash.escape(v.name)}</a>`;}else if(meta.schema_type==='Frame'){record[k]=`<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude$5.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;}else{inspectObject(inspections,`${name} - ${k}`,origin,v);}}else{console.log(`WARNING: dropping [${k}] from inspection:`,v);}}else{record[k]=lodash.isNumber(v)?format6fi(v):v;}}}}}}};extendModel=model=>{let refresh;lodash.extend=model=>{let inspections;let origin;let table;let tableName;let _i;let _len;let _ref1;inspections={};inspections.parameters=inspectModelParameters(model);origin=`getModel ${flowPrelude$5.stringify(model.modelId.name)}`;inspectObject(inspections,'output',origin,model.output);// Obviously, an array of 2d tables calls for a megahack.
+  if(model.__meta.schema_type==='NaiveBayesModel'){if(lodash.isArray(model.output.pcond)){_ref1=model.output.pcond;for(_i=0,_len=_ref1.length;_i<_len;_i++){table=_ref1[_i];tableName=`output - pcond - ${table.name}`;inspections[tableName]=inspectTwoDimTable_(origin,tableName,table);}}}inspect_(model,inspections);return model;};refresh=go=>_.requestModel(model.modelId.name,(error,model)=>{if(error){return go(error);}return go(null,lodash.extend(model));});lodash.extend(model);return render_(model,h2oModelOutput,model,refresh);};extendGrid=(grid,opts)=>{let inspections;let origin;origin=`getGrid ${flowPrelude$5.stringify(grid.grid_id.name)}`;if(opts){origin+=`, ${flowPrelude$5.stringify(opts)}`;}inspections={summary:inspectTwoDimTable_(origin,'summary',grid.summary_table),scoring_history:inspectTwoDimTable_(origin,'scoring_history',grid.scoring_history)};inspect_(grid,inspections);return render_(grid,h2oGridOutput,grid);};extendGrids=grids=>render_(grids,h2oGridsOutput,grids);extendModels=models=>{let algos;let inspections;let model;inspections={};algos=lodash.unique((()=>{let _i;let _len;let _results;_results=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];_results.push(model.algo);}return _results;})());if(algos.length===1){inspections.parameters=inspectParametersAcrossModels(models);}// modelCategories = unique (model.output.model_category for model in models)
+  //
+  // TODO implement model comparision after 2d table cleanup for model metrics
+  //
+  // if modelCategories.length is 1
+  //  inspections.outputs = inspectOutputsAcrossModels (head modelCategories), models
+  inspect_(models,inspections);return render_(models,h2oModelsOutput,models);};read=value=>{if(value==='NaN'){return null;}return value;};extendPredictions=(opts,predictions)=>{render_(predictions,h2oPredictsOutput,opts,predictions);return predictions;};extendPrediction=result=>{let frameKey;let inspections;let modelKey;let prediction;let predictionFrame;let _ref1;modelKey=result.model.name;frameKey=(_ref1=result.frame)!=null?_ref1.name:void 0;prediction=lodash.head(result.model_metrics);predictionFrame=result.predictions_frame;inspections={};if(prediction){inspectObject(inspections,'Prediction',`getPrediction model: ${flowPrelude$5.stringify(modelKey)}, frame: ${flowPrelude$5.stringify(frameKey)}`,prediction);}else{prediction={};inspectObject(inspections,'Prediction',`getPrediction model: ${flowPrelude$5.stringify(modelKey)}, frame: ${flowPrelude$5.stringify(frameKey)}`,{prediction_frame:predictionFrame});}inspect_(prediction,inspections);return render_(prediction,h2oPredictOutput,prediction);};inspectFrameColumns=(tableLabel,frameKey,frame,frameColumns)=>()=>{let actionsData;let attr;let attrs;let column;let i;let labelVector;let title;let toColumnSummaryLink;let toConversionLink;let typeVector;let vectors;attrs=['label','type','missing_count|Missing','zero_count|Zeros','positive_infinity_count|+Inf','negative_infinity_count|-Inf','min','max','mean','sigma','cardinality'];toColumnSummaryLink=label=>`<a href=\'#\' data-type=\'summary-link\' data-key=${flowPrelude$5.stringify(label)}>${lodash.escape(label)}</a>`;toConversionLink=value=>{let label;let type;let _ref1;_ref1=value.split('\0'),type=_ref1[0],label=_ref1[1];switch(type){case'enum':return`<a href=\'#\' data-type=\'as-numeric-link\' data-key=${flowPrelude$5.stringify(label)}>Convert to numeric</a>`;case'int':case'string':return`<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude$5.stringify(label)}>Convert to enum</a>'`;default:return void 0;}};vectors=(()=>{// XXX format functions
+  let _i;let _len;let _ref1;let _results;_results=[];for(_i=0,_len=attrs.length;_i<_len;_i++){attr=attrs[_i];_ref1=attr.split('|'),name=_ref1[0],title=_ref1[1];title=title!=null?title:name;switch(name){case'min':_results.push(createVector(title,'Number',(()=>{let _j;let _len1;let _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.mins));}return _results1;})(),format4f));break;case'max':_results.push(createVector(title,'Number',(()=>{let _j;let _len1;let _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(lodash.head(column.maxs));}return _results1;})(),format4f));break;case'cardinality':_results.push(createVector(title,'Number',(()=>{let _j;let _len1;let _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column.type==='enum'?column.domain_cardinality:void 0);}return _results1;})()));break;case'label':_results.push(createFactor(title,'String',(()=>{let _j;let _len1;let _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;})(),null,toColumnSummaryLink));break;case'type':_results.push(createFactor(title,'String',(()=>{let _j;let _len1;let _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;})()));break;case'mean':case'sigma':_results.push(createVector(title,'Number',(()=>{let _j;let _len1;let _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;})(),format4f));break;default:_results.push(createVector(title,'Number',(()=>{let _j;let _len1;let _results1;_results1=[];for(_j=0,_len1=frameColumns.length;_j<_len1;_j++){column=frameColumns[_j];_results1.push(column[name]);}return _results1;})()));}}return _results;})();labelVector=vectors[0],typeVector=vectors[1];actionsData=(()=>{let _i;let _ref1;let _results;_results=[];for(i=_i=0,_ref1=frameColumns.length;_ref1>=0?_i<_ref1:_i>_ref1;i=_ref1>=0?++_i:--_i){_results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);}return _results;})();vectors.push(createFactor('Actions','String',actionsData,null,toConversionLink));return createDataframe(tableLabel,vectors,lodash.range(frameColumns.length),null,{description:`A list of ${tableLabel} in the H2O Frame.`,origin:`getFrameSummary ${flowPrelude$5.stringify(frameKey)}`,plot:`plot inspect \'${tableLabel}\', getFrameSummary ${flowPrelude$5.stringify(frameKey)}`});};inspectFrameData=(frameKey,frame)=>()=>{let column;let domain;let frameColumns;let index;let rowIndex;let vectors;frameColumns=frame.columns;vectors=(()=>{let _i;let _len;let _results;_results=[];for(_i=0,_len=frameColumns.length;_i<_len;_i++){column=frameColumns[_i];switch(column.type){case'int':case'real':_results.push(createVector(column.label,'Number',parseNaNs(column.data),format4f));break;case'enum':domain=column.domain;_results.push(createFactor(column.label,'String',(()=>{let _j;let _len1;let _ref1;let _results1;_ref1=column.data;_results1=[];for(_j=0,_len1=_ref1.length;_j<_len1;_j++){index=_ref1[_j];_results1.push(index!=null?domain[index]:void 0);}return _results1;})()));break;case'time':_results.push(createVector(column.label,'Number',parseNaNs(column.data)));break;case'string':case'uuid':_results.push(createList(column.label,parseNulls(column.string_data)));break;default:_results.push(createList(column.label,parseNulls(column.data)));}}return _results;})();vectors.unshift(createVector('Row','Number',(()=>{let _i;let _ref1;let _ref2;let _results;_results=[];for(rowIndex=_i=_ref1=frame.row_offset,_ref2=frame.row_count;_ref1<=_ref2?_i<_ref2:_i>_ref2;rowIndex=_ref1<=_ref2?++_i:--_i){_results.push(rowIndex+1);}return _results;})()));return createDataframe('data',vectors,lodash.range(frame.row_count-frame.row_offset),null,{description:'A partial list of rows in the H2O Frame.',origin:`getFrameData ${flowPrelude$5.stringify(frameKey)}`});};extendFrameData=(frameKey,frame)=>{let inspections;let origin;inspections={data:inspectFrameData(frameKey,frame)};origin=`getFrameData ${flowPrelude$5.stringify(frameKey)}`;inspect_(frame,inspections);return render_(frame,h2oFrameDataOutput,frame);};extendFrame=(frameKey,frame)=>{let column;let enumColumns;let inspections;let origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns),data:inspectFrameData(frameKey,frame)};enumColumns=(()=>{let _i;let _len;let _ref1;let _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;})();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${flowPrelude$5.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendFrameSummary=(frameKey,frame)=>{let column;let enumColumns;let inspections;let origin;inspections={columns:inspectFrameColumns('columns',frameKey,frame,frame.columns)};enumColumns=(()=>{let _i;let _len;let _ref1;let _results;_ref1=frame.columns;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){column=_ref1[_i];if(column.type==='enum'){_results.push(column);}}return _results;})();if(enumColumns.length>0){inspections.factors=inspectFrameColumns('factors',frameKey,frame,enumColumns);}origin=`getFrameSummary ${flowPrelude$5.stringify(frameKey)}`;inspections[frame.chunk_summary.name]=inspectTwoDimTable_(origin,frame.chunk_summary.name,frame.chunk_summary);inspections[frame.distribution_summary.name]=inspectTwoDimTable_(origin,frame.distribution_summary.name,frame.distribution_summary);inspect_(frame,inspections);return render_(frame,h2oFrameOutput,frame);};extendColumnSummary=(frameKey,frame,columnName)=>{let column;let inspectCharacteristics;let inspectDistribution;let inspectDomain;let inspectPercentiles;let inspectSummary;let inspections;let rowCount;column=lodash.head(frame.columns);rowCount=frame.rows;inspectPercentiles=()=>{let vectors;vectors=[createVector('percentile','Number',frame.default_percentiles),createVector('value','Number',column.percentiles)];return createDataframe('percentiles',vectors,lodash.range(frame.default_percentiles.length),null,{description:`Percentiles for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspectDistribution=()=>{let base;let binCount;let binIndex;let bins;let count;let countData;let i;let interval;let intervalData;let m;let minBinCount;let n;let rows;let stride;let vectors;let width;let widthData;let _i;let _j;let _k;let _l;let _len;let _ref1;minBinCount=32;base=column.histogram_base,stride=column.histogram_stride,bins=column.histogram_bins;width=Math.ceil(bins.length/minBinCount);interval=stride*width;rows=[];if(width>0){binCount=minBinCount+(bins.length%width>0?1:0);intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);// Trim off empty bins from the end
+  for(i=_i=0;binCount>=0?_i<binCount:_i>binCount;i=binCount>=0?++_i:--_i){m=i*width;n=m+width;count=0;for(binIndex=_j=m;m<=n?_j<n:_j>n;binIndex=m<=n?++_j:--_j){if(binIndex<bins.length){count+=bins[binIndex];}}intervalData[i]=base+i*interval;widthData[i]=interval;countData[i]=count;}}else{binCount=bins.length;intervalData=new Array(binCount);widthData=new Array(binCount);countData=new Array(binCount);for(i=_k=0,_len=bins.length;_k<_len;i=++_k){count=bins[i];intervalData[i]=base+i*stride;widthData[i]=stride;countData[i]=count;}}for(i=_l=_ref1=binCount-1;_ref1<=0?_l<=0:_l>=0;i=_ref1<=0?++_l:--_l){if(countData[i]!==0){binCount=i+1;intervalData=intervalData.slice(0,binCount);widthData=widthData.slice(0,binCount);countData=countData.slice(0,binCount);break;}}vectors=[createFactor('interval','String',intervalData),createVector('width','Number',widthData),createVector('count','Number',countData)];return createDataframe('distribution',vectors,lodash.range(binCount),null,{description:`Distribution for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`,plot:`plot inspect \'distribution\', getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspectCharacteristics=()=>{let characteristicData;let count;let countData;let missing_count;let negative_infinity_count;let other;let percentData;let positive_infinity_count;let vectors;let zero_count;missing_count=column.missing_count,zero_count=column.zero_count,positive_infinity_count=column.positive_infinity_count,negative_infinity_count=column.negative_infinity_count;other=rowCount-missing_count-zero_count-positive_infinity_count-negative_infinity_count;characteristicData=['Missing','-Inf','Zero','+Inf','Other'];countData=[missing_count,negative_infinity_count,zero_count,positive_infinity_count,other];percentData=(()=>{let _i;let _len;let _results;_results=[];for(_i=0,_len=countData.length;_i<_len;_i++){count=countData[_i];_results.push(100*count/rowCount);}return _results;})();vectors=[createFactor('characteristic','String',characteristicData),createVector('count','Number',countData),createVector('percent','Number',percentData)];return createDataframe('characteristics',vectors,lodash.range(characteristicData.length),null,{description:`Characteristics for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`,plot:`plot inspect \'characteristics\', getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspectSummary=()=>{let defaultPercentiles;let maximum;let mean;let minimum;let outliers;let percentiles;let q1;let q2;let q3;let vectors;defaultPercentiles=frame.default_percentiles;percentiles=column.percentiles;mean=column.mean;q1=percentiles[defaultPercentiles.indexOf(0.25)];q2=percentiles[defaultPercentiles.indexOf(0.5)];q3=percentiles[defaultPercentiles.indexOf(0.75)];outliers=lodash.unique(column.mins.concat(column.maxs));minimum=lodash.head(column.mins);maximum=lodash.head(column.maxs);vectors=[createFactor('column','String',[columnName]),createVector('mean','Number',[mean]),createVector('q1','Number',[q1]),createVector('q2','Number',[q2]),createVector('q3','Number',[q3]),createVector('min','Number',[minimum]),createVector('max','Number',[maximum])];return createDataframe('summary',vectors,lodash.range(1),null,{description:`Summary for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`,plot:`plot inspect \'summary\', getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspectDomain=()=>{let counts;let i;let labels;let level;let levels;let percents;let sortedLevels;let vectors;let _i;let _len;let _ref1;levels=lodash.map(column.histogram_bins,(count,index)=>({count,index}));sortedLevels=lodash.sortBy(levels,level=>-level.count);_ref1=createArrays(3,sortedLevels.length),labels=_ref1[0],counts=_ref1[1],percents=_ref1[2];for(i=_i=0,_len=sortedLevels.length;_i<_len;i=++_i){level=sortedLevels[i];labels[i]=column.domain[level.index];counts[i]=level.count;percents[i]=100*level.count/rowCount;}vectors=[createFactor('label','String',labels),createVector('count','Number',counts),createVector('percent','Number',percents)];return createDataframe('domain',vectors,lodash.range(sortedLevels.length),null,{description:`Domain for column \'${column.label}\' in frame \'${frameKey}\'.`,origin:`getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`,plot:`plot inspect \'domain\', getColumnSummary ${flowPrelude$5.stringify(frameKey)}, ${flowPrelude$5.stringify(columnName)}`});};inspections={characteristics:inspectCharacteristics};switch(column.type){case'int':case'real':// Skip for columns with all NAs
+  if(column.histogram_bins.length){inspections.distribution=inspectDistribution;}// Skip for columns with all NAs
+  if(!lodash.some(column.percentiles,a=>a==='NaN')){inspections.summary=inspectSummary;inspections.percentiles=inspectPercentiles;}break;case'enum':inspections.domain=inspectDomain;}inspect_(frame,inspections);return render_(frame,h2oColumnSummaryOutput,frameKey,frame,columnName);};requestFrame=(frameKey,go)=>_.requestFrameSlice(frameKey,void 0,0,20,(error,frame)=>{if(error){return go(error);}return go(null,extendFrame(frameKey,frame));});requestFrameData=(frameKey,searchTerm,offset,count,go)=>_.requestFrameSlice(frameKey,searchTerm,offset,count,(error,frame)=>{if(error){return go(error);}return go(null,extendFrameData(frameKey,frame));});requestFrameSummarySlice=(frameKey,searchTerm,offset,length,go)=>_.requestFrameSummarySlice(frameKey,searchTerm,offset,length,(error,frame)=>{if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});requestFrameSummary=(frameKey,go)=>_.requestFrameSummarySlice(frameKey,void 0,0,20,(error,frame)=>{if(error){return go(error);}return go(null,extendFrameSummary(frameKey,frame));});requestColumnSummary=(frameKey,columnName,go)=>_.requestColumnSummary(frameKey,columnName,(error,frame)=>{if(error){return go(error);}return go(null,extendColumnSummary(frameKey,frame,columnName));});requestFrames=go=>_.requestFrames((error,frames)=>{if(error){return go(error);}return go(null,extendFrames(frames));});requestCreateFrame=(opts,go)=>_.requestCreateFrame(opts,(error,result)=>{if(error){return go(error);}return _.requestJob(result.key.name,(error,job)=>{if(error){return go(error);}return go(null,extendJob(job));});});requestPartialDependence=(opts,go)=>_.requestPartialDependence(opts,(error,result)=>{if(error){return go(error);}return _.requestJob(result.key.name,(error,job)=>{if(error){return go(error);}return go(null,extendJob(job));});});requestPartialDependenceData=(key,go)=>_.requestPartialDependenceData(key,(error,result)=>{if(error){return go(error);}return go(null,extendPartialDependence(result));});computeSplits=(ratios,keys)=>{let i;let key;let part;let parts;let ratio;let splits;let sum;let _i;let _j;let _len;let _len1;let _ref1;parts=[];sum=0;_ref1=keys.slice(0,ratios.length);for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){key=_ref1[i];sum+=ratio=ratios[i];parts.push({key,ratio});}parts.push({key:keys[keys.length-1],ratio:1-sum});splits=[];sum=0;for(_j=0,_len1=parts.length;_j<_len1;_j++){part=parts[_j];splits.push({min:sum,max:sum+part.ratio,key:part.key});sum+=part.ratio;}return splits;};requestBindFrames=(key,sourceKeys,go)=>_.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`,(error,result)=>{if(error){return go(error);}return go(null,extendBindFrames(key,result));});requestSplitFrame=(frameKey,splitRatios,splitKeys,seed,go)=>{let g;let i;let l;let part;let randomVecKey;let sliceExpr;let splits;let statements;let _i;let _len;if(splitRatios.length===splitKeys.length-1){splits=computeSplits(splitRatios,splitKeys);randomVecKey=createTempKey();statements=[];statements.push(`(tmp= ${randomVecKey} (h2o.runif ${frameKey} ${seed}))`);for(i=_i=0,_len=splits.length;_i<_len;i=++_i){part=splits[i];g=i!==0?`(> ${randomVecKey} ${part.min})`:null;l=i!==splits.length-1?`(<= ${randomVecKey} ${part.max})`:null;if(g&&l){sliceExpr=`(& ${g} ${l})`;}else{if(l){sliceExpr=l;}else{sliceExpr=g;}}statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);}statements.push(`(rm ${randomVecKey})`);return _.requestExec(`(, ${statements.join(' ')})`,(error,result)=>{if(error){return go(error);}return go(null,extendSplitFrameResult({keys:splitKeys,ratios:splitRatios}));});}return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));};requestMergeFrames=(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows,go)=>{let lr;let rr;let statement;lr=includeAllLeftRows?'TRUE':'FALSE';rr=includeAllRightRows?'TRUE':'FALSE';statement=`(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;return _.requestExec(statement,(error,result)=>{if(error){return go(error);}return go(null,extendMergeFramesResult({key:destinationKey}));});};createFrame=opts=>{if(opts){return _fork(requestCreateFrame,opts);}return assist(createFrame);};splitFrame=(frameKey,splitRatios,splitKeys,seed)=>{if(seed==null){seed=-1;}if(frameKey&&splitRatios&&splitKeys){return _fork(requestSplitFrame,frameKey,splitRatios,splitKeys,seed);}return assist(splitFrame);};mergeFrames=(destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows)=>{if(destinationKey&&leftFrameKey&&rightFrameKey){return _fork(requestMergeFrames,destinationKey,leftFrameKey,leftColumnIndex,includeAllLeftRows,rightFrameKey,rightColumnIndex,includeAllRightRows);}return assist(mergeFrames);};// define the function that is called when 
+  // the Partial Dependence plot input form
+  // is submitted
+  buildPartialDependence=opts=>{if(opts){return _fork(requestPartialDependence,opts);}// specify function to call if user
+  // provides malformed input
+  return assist(buildPartialDependence);};getPartialDependence=destinationKey=>{if(destinationKey){return _fork(requestPartialDependenceData,destinationKey);}return assist(getPartialDependence);};getFrames=()=>_fork(requestFrames);getFrame=frameKey=>{switch(flowPrelude$5.typeOf(frameKey)){case'String':return _fork(requestFrame,frameKey);default:return assist(getFrame);}};bindFrames=(key,sourceKeys)=>_fork(requestBindFrames,key,sourceKeys);getFrameSummary=frameKey=>{switch(flowPrelude$5.typeOf(frameKey)){case'String':return _fork(requestFrameSummary,frameKey);default:return assist(getFrameSummary);}};getFrameData=frameKey=>{switch(flowPrelude$5.typeOf(frameKey)){case'String':return _fork(requestFrameData,frameKey,void 0,0,20);default:return assist(getFrameSummary);}};requestDeleteFrame=(frameKey,go)=>_.requestDeleteFrame(frameKey,(error,result)=>{if(error){return go(error);}return go(null,extendDeletedKeys([frameKey]));});deleteFrame=frameKey=>{if(frameKey){return _fork(requestDeleteFrame,frameKey);}return assist(deleteFrame);};extendExportFrame=result=>render_(result,h2oExportFrameOutput,result);extendBindFrames=(key,result)=>render_(result,h2oBindFramesOutput,key,result);requestExportFrame=(frameKey,path,opts,go)=>_.requestExportFrame(frameKey,path,opts.overwrite,(error,result)=>{if(error){return go(error);}return _.requestJob(result.job.key.name,(error,job)=>{if(error){return go(error);}return go(null,extendJob(job));});});exportFrame=(frameKey,path,opts)=>{if(opts==null){opts={};}if(frameKey&&path){return _fork(requestExportFrame,frameKey,path,opts);}return assist(exportFrame,frameKey,path,opts);};requestDeleteFrames=(frameKeys,go)=>{let futures;futures=lodash.map(frameKeys,frameKey=>_fork(_.requestDeleteFrame,frameKey));return Flow.Async.join(futures,(error,results)=>{if(error){return go(error);}return go(null,extendDeletedKeys(frameKeys));});};deleteFrames=frameKeys=>{switch(frameKeys.length){case 0:return assist(deleteFrames);case 1:return deleteFrame(lodash.head(frameKeys));default:return _fork(requestDeleteFrames,frameKeys);}};getColumnSummary=(frameKey,columnName)=>_fork(requestColumnSummary,frameKey,columnName);requestModels=go=>_.requestModels((error,models)=>{if(error){return go(error);}return go(null,extendModels(models));});requestModelsByKeys=(modelKeys,go)=>{let futures;futures=lodash.map(modelKeys,key=>_fork(_.requestModel,key));return Flow.Async.join(futures,(error,models)=>{if(error){return go(error);}return go(null,extendModels(models));});};getModels=modelKeys=>{if(lodash.isArray(modelKeys)){if(modelKeys.length){return _fork(requestModelsByKeys,modelKeys);}return _fork(requestModels);}return _fork(requestModels);};requestGrids=go=>_.requestGrids((error,grids)=>{if(error){return go(error);}return go(null,extendGrids(grids));});getGrids=()=>_fork(requestGrids);requestModel=(modelKey,go)=>_.requestModel(modelKey,(error,model)=>{if(error){return go(error);}return go(null,extendModel(model));});getModel=modelKey=>{switch(flowPrelude$5.typeOf(modelKey)){case'String':return _fork(requestModel,modelKey);default:return assist(getModel);}};requestGrid=(gridKey,opts,go)=>_.requestGrid(gridKey,opts,(error,grid)=>{if(error){return go(error);}return go(null,extendGrid(grid,opts));});getGrid=(gridKey,opts)=>{switch(flowPrelude$5.typeOf(gridKey)){case'String':return _fork(requestGrid,gridKey,opts);default:return assist(getGrid);}};findColumnIndexByColumnLabel=(frame,columnLabel)=>{let column;let i;let _i;let _len;let _ref1;_ref1=frame.columns;for(i=_i=0,_len=_ref1.length;_i<_len;i=++_i){column=_ref1[i];if(column.label===columnLabel){return i;}}throw new Flow.Error(`Column [${columnLabel}] not found in frame`);};findColumnIndicesByColumnLabels=(frame,columnLabels)=>{let columnLabel;let _i;let _len;let _results;_results=[];for(_i=0,_len=columnLabels.length;_i<_len;_i++){columnLabel=columnLabels[_i];_results.push(findColumnIndexByColumnLabel(frame,columnLabel));}return _results;};requestImputeColumn=(opts,go)=>{let column;let combineMethod;let frame;let groupByColumns;let method;frame=opts.frame,column=opts.column,method=opts.method,combineMethod=opts.combineMethod,groupByColumns=opts.groupByColumns;combineMethod=combineMethod!=null?combineMethod:'interpolate';return _.requestFrameSummaryWithoutData(frame,(error,result)=>{let columnIndex;let columnIndicesError;let columnKeyError;let groupByArg;let groupByColumnIndices;if(error){return go(error);}try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}if(groupByColumns&&groupByColumns.length){try{groupByColumnIndices=findColumnIndicesByColumnLabels(result,groupByColumns);}catch(_error){columnIndicesError=_error;return go(columnIndicesError);}}else{groupByColumnIndices=null;}groupByArg=groupByColumnIndices?`[${groupByColumnIndices.join(' ')}]`:'[]';return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`,(error,result)=>{if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};requestChangeColumnType=(opts,go)=>{let column;let frame;let method;let type;frame=opts.frame,column=opts.column,type=opts.type;method=type==='enum'?'as.factor':'as.numeric';return _.requestFrameSummaryWithoutData(frame,(error,result)=>{let columnIndex;let columnKeyError;try{columnIndex=findColumnIndexByColumnLabel(result,column);}catch(_error){columnKeyError=_error;return go(columnKeyError);}return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`,(error,result)=>{if(error){return go(error);}return requestColumnSummary(frame,column,go);});});};imputeColumn=opts=>{if(opts&&opts.frame&&opts.column&&opts.method){return _fork(requestImputeColumn,opts);}return assist(imputeColumn,opts);};changeColumnType=opts=>{if(opts&&opts.frame&&opts.column&&opts.type){return _fork(requestChangeColumnType,opts);}return assist(changeColumnType,opts);};requestDeleteModel=(modelKey,go)=>_.requestDeleteModel(modelKey,(error,result)=>{if(error){return go(error);}return go(null,extendDeletedKeys([modelKey]));});deleteModel=modelKey=>{if(modelKey){return _fork(requestDeleteModel,modelKey);}return assist(deleteModel);};extendImportModel=result=>render_(result,H2O.ImportModelOutput,result);requestImportModel=(path,opts,go)=>_.requestImportModel(path,opts.overwrite,(error,result)=>{if(error){return go(error);}return go(null,extendImportModel(result));});importModel=(path,opts)=>{if(path&&path.length){return _fork(requestImportModel,path,opts);}return assist(importModel,path,opts);};extendExportModel=result=>render_(result,h2oExportModelOutput,result);requestExportModel=(modelKey,path,opts,go)=>_.requestExportModel(modelKey,path,opts.overwrite,(error,result)=>{if(error){return go(error);}return go(null,extendExportModel(result));});exportModel=(modelKey,path,opts)=>{if(modelKey&&path){return _fork(requestExportModel,modelKey,path,opts);}return assist(exportModel,modelKey,path,opts);};requestDeleteModels=(modelKeys,go)=>{let futures;futures=lodash.map(modelKeys,modelKey=>_fork(_.requestDeleteModel,modelKey));return Flow.Async.join(futures,(error,results)=>{if(error){return go(error);}return go(null,extendDeletedKeys(modelKeys));});};deleteModels=modelKeys=>{switch(modelKeys.length){case 0:return assist(deleteModels);case 1:return deleteModel(lodash.head(modelKeys));default:return _fork(requestDeleteModels,modelKeys);}};requestJob=(key,go)=>_.requestJob(key,(error,job)=>{if(error){return go(error);}return go(null,extendJob(job));});requestJobs=go=>_.requestJobs((error,jobs)=>{if(error){return go(error);}return go(null,extendJobs(jobs));});getJobs=()=>_fork(requestJobs);getJob=arg=>{switch(flowPrelude$5.typeOf(arg)){case'String':return _fork(requestJob,arg);case'Object':if(arg.key!=null){return getJob(arg.key);}return assist(getJob);// break; // no-unreachable
+  default:return assist(getJob);}};requestCancelJob=(key,go)=>_.requestCancelJob(key,error=>{if(error){return go(error);}return go(null,extendCancelJob({}));});cancelJob=arg=>{switch(flowPrelude$5.typeOf(arg)){case'String':return _fork(requestCancelJob,arg);default:return assist(cancelJob);}};extendImportResults=importResults=>render_(importResults,h2oImportFilesOutput,importResults);requestImportFiles=(paths,go)=>_.requestImportFiles(paths,(error,importResults)=>{if(error){return go(error);}return go(null,extendImportResults(importResults));});importFiles=paths=>{switch(flowPrelude$5.typeOf(paths)){case'Array':return _fork(requestImportFiles,paths);default:return assist(importFiles);}};extendParseSetupResults=(args,parseSetupResults)=>render_(parseSetupResults,H2O.SetupParseOutput,args,parseSetupResults);requestImportAndParseSetup=(paths,go)=>_.requestImportFiles(paths,(error,importResults)=>{let sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,result=>result.destination_frames)));return _.requestParseSetup(sourceKeys,(error,parseSetupResults)=>{if(error){return go(error);}return go(null,extendParseSetupResults({paths},parseSetupResults));});});requestParseSetup=(sourceKeys,go)=>_.requestParseSetup(sourceKeys,(error,parseSetupResults)=>{if(error){return go(error);}return go(null,extendParseSetupResults({source_frames:sourceKeys},parseSetupResults));});setupParse=args=>{if(args.paths&&lodash.isArray(args.paths)){return _fork(requestImportAndParseSetup,args.paths);}else if(args.source_frames&&lodash.isArray(args.source_frames)){return _fork(requestParseSetup,args.source_frames);}return assist(setupParse);};extendParseResult=parseResult=>render_(parseResult,H2O.JobOutput,parseResult.job);requestImportAndParseFiles=(paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go)=>_.requestImportFiles(paths,(error,importResults)=>{let sourceKeys;if(error){return go(error);}sourceKeys=lodash.flatten(lodash.compact(lodash.map(importResults,result=>result.destination_frames)));return _.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,(error,parseResult)=>{if(error){return go(error);}return go(null,extendParseResult(parseResult));});});requestParseFiles=(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,go)=>_.requestParseFiles(sourceKeys,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize,(error,parseResult)=>{if(error){return go(error);}return go(null,extendParseResult(parseResult));});parseFiles=opts=>{let checkHeader;let chunkSize;let columnCount;let columnNames;let columnTypes;let deleteOnDone;let destinationKey;let parseType;let separator;let useSingleQuotes;destinationKey=opts.destination_frame;parseType=opts.parse_type;separator=opts.separator;columnCount=opts.number_columns;useSingleQuotes=opts.single_quotes;columnNames=opts.column_names;columnTypes=opts.column_types;deleteOnDone=opts.delete_on_done;checkHeader=opts.check_header;chunkSize=opts.chunk_size;if(opts.paths){return _fork(requestImportAndParseFiles,opts.paths,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);}return _fork(requestParseFiles,opts.source_frames,destinationKey,parseType,separator,columnCount,useSingleQuotes,columnNames,columnTypes,deleteOnDone,checkHeader,chunkSize);};requestModelBuild=(algo,opts,go)=>_.requestModelBuild(algo,opts,(error,result)=>{let messages;let validation;if(error){return go(error);}if(result.error_count>0){messages=(()=>{let _i;let _len;let _ref1;let _results;_ref1=result.messages;_results=[];for(_i=0,_len=_ref1.length;_i<_len;_i++){validation=_ref1[_i];_results.push(validation.message);}return _results;})();return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));}return go(null,extendJob(result.job));});requestAutoModelBuild=(opts,go)=>{let params;params={input_spec:{training_frame:opts.frame,response_column:opts.column},build_control:{stopping_criteria:{max_runtime_secs:opts.maxRunTime}}};return _.requestAutoModelBuild(params,(error,result)=>{if(error){return go(error);}return go(null,extendJob(result.job));});};buildAutoModel=opts=>{if(opts&&lodash.keys(opts).length>1){return _fork(requestAutoModelBuild,opts);}return assist(buildAutoModel,opts);};buildModel=(algo,opts)=>{if(algo&&opts&&lodash.keys(opts).length>1){return _fork(requestModelBuild,algo,opts);}return assist(buildModel,algo,opts);};unwrapPrediction=go=>(error,result)=>{if(error){return go(error);}return go(null,extendPrediction(result));};requestPredict=(destinationKey,modelKey,frameKey,options,go)=>_.requestPredict(destinationKey,modelKey,frameKey,options,unwrapPrediction(go));requestPredicts=(opts,go)=>{let futures;futures=lodash.map(opts,opt=>{let frameKey;let modelKey;let options;modelKey=opt.model,frameKey=opt.frame,options=opt.options;return _fork(_.requestPredict,null,modelKey,frameKey,options||{});});return Flow.Async.join(futures,(error,predictions)=>{if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};predict=opts=>{let combos;let deep_features_hidden_layer;let exemplar_index;let frame;let frames;let leaf_node_assignment;let model;let models;let predictions_frame;let reconstruction_error;let _i;let _j;let _len;let _len1;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,models=opts.models,frame=opts.frame,frames=opts.frames,reconstruction_error=opts.reconstruction_error,deep_features_hidden_layer=opts.deep_features_hidden_layer,leaf_node_assignment=opts.leaf_node_assignment,exemplar_index=opts.exemplar_index;if(models||frames){if(!models){if(model){models=[model];}}if(!frames){if(frame){frames=[frame];}}if(frames&&models){combos=[];for(_i=0,_len=models.length;_i<_len;_i++){model=models[_i];for(_j=0,_len1=frames.length;_j<_len1;_j++){frame=frames[_j];combos.push({model,frame});}}return _fork(requestPredicts,combos);}return assist(predict,{predictions_frame,models,frames});}if(model&&frame){return _fork(requestPredict,predictions_frame,model,frame,{reconstruction_error,deep_features_hidden_layer,leaf_node_assignment});}else if(model&&exemplar_index!==void 0){return _fork(requestPredict,predictions_frame,model,null,{exemplar_index});}return assist(predict,{predictions_frame,model,frame});};requestPrediction=(modelKey,frameKey,go)=>_.requestPrediction(modelKey,frameKey,unwrapPrediction(go));requestPredictions=(opts,go)=>{let frameKey;let futures;let modelKey;if(lodash.isArray(opts)){futures=lodash.map(opts,opt=>{let frameKey;let modelKey;modelKey=opt.model,frameKey=opt.frame;return _fork(_.requestPredictions,modelKey,frameKey);});return Flow.Async.join(futures,(error,predictions)=>{let uniquePredictions;if(error){return go(error);}uniquePredictions=lodash.values(lodash.indexBy(lodash.flatten(predictions,true),prediction=>prediction.model.name+prediction.frame.name));return go(null,extendPredictions(opts,uniquePredictions));});}modelKey=opts.model,frameKey=opts.frame;return _.requestPredictions(modelKey,frameKey,(error,predictions)=>{if(error){return go(error);}return go(null,extendPredictions(opts,predictions));});};getPrediction=opts=>{let frame;let model;let predictions_frame;if(opts==null){opts={};}predictions_frame=opts.predictions_frame,model=opts.model,frame=opts.frame;if(model&&frame){return _fork(requestPrediction,model,frame);}return assist(getPrediction,{predictions_frame,model,frame});};getPredictions=opts=>{if(opts==null){opts={};}return _fork(requestPredictions,opts);};requestCloud=go=>_.requestCloud((error,cloud)=>{if(error){return go(error);}return go(null,extendCloud(cloud));});getCloud=()=>_fork(requestCloud);requestTimeline=go=>_.requestTimeline((error,timeline)=>{if(error){return go(error);}return go(null,extendTimeline(timeline));});getTimeline=()=>_fork(requestTimeline);requestStackTrace=go=>_.requestStackTrace((error,stackTrace)=>{if(error){return go(error);}return go(null,extendStackTrace(stackTrace));});getStackTrace=()=>_fork(requestStackTrace);requestLogFile=(nodeIndex,fileType,go)=>_.requestCloud((error,cloud)=>{let NODE_INDEX_SELF;if(error){return go(error);}if(nodeIndex<0||nodeIndex>=cloud.nodes.length){NODE_INDEX_SELF=-1;nodeIndex=NODE_INDEX_SELF;}return _.requestLogFile(nodeIndex,fileType,(error,logFile)=>{if(error){return go(error);}return go(null,extendLogFile(cloud,nodeIndex,fileType,logFile));});});getLogFile=(nodeIndex,fileType)=>{if(nodeIndex==null){nodeIndex=-1;}if(fileType==null){fileType='info';}return _fork(requestLogFile,nodeIndex,fileType);};requestNetworkTest=go=>_.requestNetworkTest((error,result)=>{if(error){return go(error);}return go(null,extendNetworkTest(result));});testNetwork=()=>_fork(requestNetworkTest);requestRemoveAll=go=>_.requestRemoveAll((error,result)=>{if(error){return go(error);}return go(null,extendDeletedKeys([]));});deleteAll=()=>_fork(requestRemoveAll);extendRDDs=rdds=>{render_(rdds,h2oRDDsOutput,rdds);return rdds;};requestRDDs=go=>_.requestRDDs((error,result)=>{if(error){return go(error);}return go(null,extendRDDs(result.rdds));});getRDDs=()=>_fork(requestRDDs);extendDataFrames=dataframes=>{render_(dataframes,h2oDataFramesOutput,dataframes);return dataframes;};requestDataFrames=go=>_.requestDataFrames((error,result)=>{if(error){return go(error);}return go(null,extendDataFrames(result.dataframes));});getDataFrames=()=>_fork(requestDataFrames);extendAsH2OFrame=result=>{render_(result,h2oH2OFrameOutput,result);return result;};requestAsH2OFrameFromRDD=(rddId,name,go)=>_.requestAsH2OFrameFromRDD(rddId,name,(error,h2oframe_id)=>{if(error){return go(error);}return go(null,extendAsH2OFrame(h2oframe_id));});asH2OFrameFromRDD=(rddId,name)=>{if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromRDD,rddId,name);};requestAsH2OFrameFromDF=(dfId,name,go)=>_.requestAsH2OFrameFromDF(dfId,name,(error,result)=>{if(error){return go(error);}return go(null,extendAsH2OFrame(result));});asH2OFrameFromDF=(dfId,name)=>{if(name==null){name=void 0;}return _fork(requestAsH2OFrameFromDF,dfId,name);};extendAsDataFrame=result=>{render_(result,h2oDataFrameOutput,result);return result;};requestAsDataFrame=(hfId,name,go)=>_.requestAsDataFrame(hfId,name,(error,result)=>{if(error){return go(error);}return go(null,extendAsDataFrame(result));});asDataFrame=(hfId,name)=>{if(name==null){name=void 0;}return _fork(requestAsDataFrame,hfId,name);};requestScalaCode=(sessionId,code,go)=>_.requestScalaCode(sessionId,code,(error,result)=>{if(error){return go(error);}return go(null,extendScalaCode(result));});extendScalaCode=result=>{render_(result,h2oScalaCodeOutput,result);return result;};runScalaCode=(sessionId,code)=>_fork(requestScalaCode,sessionId,code);requestScalaIntp=go=>_.requestScalaIntp((error,result)=>{if(error){return go(error);}return go(null,extendScalaIntp(result));});extendScalaIntp=result=>{render_(result,h2oScalaIntpOutput,result);return result;};getScalaIntp=()=>_fork(requestScalaIntp);requestProfile=(depth,go)=>_.requestProfile(depth,(error,profile)=>{if(error){return go(error);}return go(null,extendProfile(profile));});getProfile=opts=>{if(!opts){opts={depth:10};}return _fork(requestProfile,opts.depth);};loadScript=(path,go)=>{let onDone;let onFail;onDone=(script,status)=>go(null,{script,status});onFail=(jqxhr,settings,error)=>go(error);return $.getScript(path).done(onDone).fail(onFail);};dumpFuture=(result,go)=>{if(result==null){result={};}console.debug(result);return go(null,render_(result,Flow.objectBrowser,'dump',result));};dump=f=>{if(f!=null?f.isFuture:void 0){return _fork(dumpFuture,f);}return Flow.Async.async(()=>f);};assist=function(){let args;let func;func=arguments[0],args=arguments.length>=2?__slice.call(arguments,1):[];if(func===void 0){return _fork(proceed,h2oAssist,[_assistance]);}switch(func){case importFiles:return _fork(proceed,h2oImportFilesInput,[]);case buildModel:return _fork(proceed,H2O.ModelInput,args);case buildAutoModel:return _fork(proceed,h2oAutoModelInput,args);case predict:case getPrediction:return _fork(proceed,h2oPredictInput,args);case createFrame:return _fork(proceed,h2oCreateFrameInput,args);case splitFrame:return _fork(proceed,h2oSplitFrameInput,args);case mergeFrames:return _fork(proceed,h2oMergeFramesInput,args);case buildPartialDependence:return _fork(proceed,h2oPartialDependenceInput,args);case exportFrame:return _fork(proceed,h2oExportFrameInput,args);case imputeColumn:return _fork(proceed,H2O.ImputeInput,args);case importModel:return _fork(proceed,h2oImportModelInput,args);case exportModel:return _fork(proceed,h2oExportModelInput,args);default:return _fork(proceed,h2oNoAssist,[]);}};Flow.Dataflow.link(_.ready,()=>{Flow.Dataflow.link(_.ls,ls);Flow.Dataflow.link(_.inspect,inspect);Flow.Dataflow.link(_.plot,plot=>plot(lightning));Flow.Dataflow.link(_.grid,frame=>lightning(lightning.select(),lightning.from(frame)));Flow.Dataflow.link(_.enumerate,frame=>lightning(lightning.select(0),lightning.from(frame)));Flow.Dataflow.link(_.requestFrameDataE,requestFrameData);return Flow.Dataflow.link(_.requestFrameSummarySliceE,requestFrameSummarySlice);});initAssistanceSparklingWater=()=>{_assistance.getRDDs={description:'Get a list of Spark\'s RDDs',icon:'table'};return _assistance.getDataFrames={description:'Get a list of Spark\'s data frames',icon:'table'};};Flow.Dataflow.link(_.initialized,()=>{if(_.onSparklingWater){return initAssistanceSparklingWater();}});routines={//
+  // fork/join
+  //
+  fork:_fork,join:_join,call:_call,apply:_apply,isFuture:_isFuture,//
+  // Dataflow
+  //
+  signal:Flow.Dataflow.signal,signals:Flow.Dataflow.signals,isSignal:Flow.Dataflow.isSignal,act:Flow.Dataflow.act,react:Flow.Dataflow.react,lift:Flow.Dataflow.lift,merge:Flow.Dataflow.merge,//
+  // Generic
+  //
+  dump,inspect,plot,grid,get:_get,//
+  // Meta
+  //
+  assist,//
+  // GUI
+  //
+  gui,//
+  // Util
+  //
+  loadScript,//
+  // H2O
+  //
+  getJobs,getJob,cancelJob,importFiles,setupParse,parseFiles,createFrame,splitFrame,mergeFrames,buildPartialDependence,getPartialDependence,getFrames,getFrame,bindFrames,getFrameSummary,getFrameData,deleteFrames,deleteFrame,exportFrame,getColumnSummary,changeColumnType,imputeColumn,buildModel,buildAutoModel,getGrids,getModels,getModel,getGrid,deleteModels,deleteModel,importModel,exportModel,predict,getPrediction,getPredictions,getCloud,getTimeline,getProfile,getStackTrace,getLogFile,testNetwork,deleteAll};if(_.onSparklingWater){routinesOnSw={getDataFrames,getRDDs,getScalaIntp,runScalaCode,asH2OFrameFromRDD,asH2OFrameFromDF,asDataFrame};for(attrname in routinesOnSw){if({}.hasOwnProperty.call(routinesOnSw,attrname)){routines[attrname]=routinesOnSw[attrname];}}}return routines;};}
 
   function coreUtils() {
     const lodash = window._;
@@ -7750,6 +5100,42 @@
     };
   }
 
+  //
+  // Custom Knockout.js binding handlers
+  //
+  // init:
+  //   This will be called when the binding is first applied to an element
+  //   Set up any initial state, event handlers, etc. here
+  //
+  // update:
+  //   This will be called once when the binding is first applied to an element,
+  //    and again whenever the associated observable changes value.
+  //   Update the DOM element based on the supplied values here.
+  //
+  // Registering a callback on the disposal of an element
+  // 
+  // To register a function to run when a node is removed, 
+  // you can call ko.utils.domNodeDisposal.addDisposeCallback(node, callback). 
+  // As an example, suppose you create a custom binding to instantiate a widget. 
+  // When the element with the binding is removed, 
+  // you may want to call the destroy method of the widget:
+  // 
+  // ko.bindingHandlers.myWidget = {
+  //     init: function(element, valueAccessor) {
+  //         var options = ko.unwrap(valueAccessor()),
+  //             $el = $(element);
+  //  
+  //         $el.myWidget(options);
+  //  
+  //         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+  //             // This will be called when the element is removed by Knockout or
+  //             // if some other part of your code calls ko.removeNode(element)
+  //             $el.myWidget("destroy");
+  //         });
+  //     }
+  // };
+  //
+
   function knockout() {
     const lodash = window._;
     const $ = window.jQuery;
@@ -7829,6 +5215,9 @@
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
         const arg = ko.unwrap(valueAccessor());
         if (arg) {
+          // Bit of a hack. 
+          // Attaches a method to the bound object that returns the cursor position. 
+          // Uses dwieeb/jquery-textrange.
           arg.getCursorPosition = () => $(element).textrange('get', 'position');
         }
       }
@@ -7839,6 +5228,8 @@
         const arg = ko.unwrap(valueAccessor());
         let resize;
         if (arg) {
+          // Bit of a hack.
+          // Attaches a method to the bound object that resizes the element to fit its content.
           arg.autoResize = resize = () => lodash.defer(() => $el.css('height', 'auto').height(element.scrollHeight));
           $el = $(element).on('input', resize);
           resize();
@@ -7851,6 +5242,8 @@
         let $viewport;
         const arg = ko.unwrap(valueAccessor());
         if (arg) {
+          // Bit of a hack.
+          // Attaches a method to the bound object that scrolls the cell into view
           $el = $(element);
           $viewport = $el.closest('.flow-box-notebook');
           arg.scrollIntoView = immediate => {
@@ -7860,6 +5253,7 @@
             const position = $viewport.scrollTop();
             const top = $el.position().top + position;
             const height = $viewport.height();
+            // scroll if element is outside the viewport
             if (top - 20 < position || top + 20 > position + height) {
               if (immediate) {
                 return $viewport.scrollTop(top);
@@ -7940,7 +5334,9 @@
     };
     ko.bindingHandlers.codemirror = {
       init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        // get the code mirror options
         const options = ko.unwrap(valueAccessor());
+        // created editor replaces the textarea on which it was created
         const editor = CodeMirror.fromTextArea(element, options);
         editor.on('change', cm => allBindings().value(cm.getValue()));
         element.editor = editor;
@@ -8182,6 +5578,10 @@
 
   const flowPrelude$33 = flowPreludeFunction();
 
+  //
+  // Reactive programming / Dataflow programming wrapper over ko
+  //
+
   function dataflow() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -8328,6 +5728,9 @@
         console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
         return arrows.dispose();
       };
+      //
+      // Combinators
+      //
       const _apply = (sources, func) => func(...lodash.map(sources, source => source()));
       const _act = (...args) => {
         let _i;
@@ -8376,6 +5779,27 @@
     })();
   }
 
+  //
+  // Insane hack to compress large 2D data tables.
+  // The basis for doing this is described here:
+  // http://www.html5rocks.com/en/tutorials/speed/v8/
+  // See Tip #1 "Hidden Classes"
+  //
+  // Applies to IE as well:
+  // http://msdn.microsoft.com/en-us/library/windows/apps/hh781219.aspx#optimize_property_access
+  //
+  // http://jsperf.com/big-data-matrix/3
+  // As of 31 Oct 2014, for a 10000 row, 100 column table in Chrome,
+  //   retained memory sizes:
+  // raw json: 31,165 KB
+  // array of objects: 41,840 KB
+  // array of arrays: 14,960 KB
+  // array of prototyped instances: 14,840 KB
+  //
+  // Usage:
+  // Foo = Flow.Data.createCompiledPrototype [ 'bar', 'baz', 'qux', ... ]
+  // foo = new Foo()
+  //
   function data() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -8385,6 +5809,8 @@
     const nextPrototypeName = () => `Map${ ++_prototypeId }`;
     const _prototypeCache = {};
     const createCompiledPrototype = attrs => {
+      // Since the prototype depends only on attribute names,
+      // return a cached prototype, if any.
       let attr;
       let i;
       const proto = _prototypeCache[cacheKey];
@@ -8474,6 +5900,7 @@
         const _results = [];
         for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
           type = types[_j];
+          // TODO attach to prototype
           label = lodash.uniqueId('__flow_variable_');
           _results.push(schema[label] = createNumericVariable(label));
         }
@@ -8702,6 +6129,7 @@
       const self = go => {
         const canGo = lodash.isFunction(go);
         if (self.settled) {
+          // proceed with cached error/result
           if (self.rejected) {
             if (canGo) {
               return go(self.error);
@@ -8805,6 +6233,8 @@
         }
       }));
     }
+    // Like _.compose, but async. 
+    // Equivalent to caolan/async.waterfall()
     const pipe = tasks => {
       const _tasks = tasks.slice(0);
       const next = (args, go) => {
@@ -8842,10 +6272,17 @@
             return next(go);
           });
         }
+        // XXX should errors be included in arg #1?
         return go(null, _results);
       };
       return go => next(go);
     };
+
+    //
+    // Gives a synchronous operation an asynchronous signature.
+    // Used to pass synchronous functions to callers that expect
+    // asynchronous signatures.
+    //
     const _async = function () {
       const f = arguments[0];
       const args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
@@ -8865,6 +6302,15 @@
       };
       return _fork(later, args);
     };
+
+    //
+    // Asynchronous find operation.
+    //
+    // find attr, prop, array
+    // find array, attr, prop
+    // find attr, obj
+    // find obj, attr
+    //
     const _find$3 = (attr, prop, obj) => {
       let v;
       let _i;
@@ -8932,6 +6378,8 @@
         // do nothing
       }
     };
+
+    // Duplicate of _find$2
     const _get = (attr, obj) => {
       if (_isFuture(obj)) {
         return _async(_get, attr, obj);
@@ -8943,7 +6391,7 @@
       }
     };
     Flow.Async = {
-      createBuffer,
+      createBuffer, // XXX rename
       noop: _noop,
       applicate: _applicate,
       isFuture: _isFuture,
@@ -9046,6 +6494,7 @@
           return type;
       }
     };
+    // TODO slice large arrays
     Flow.objectBrowserElement = (key, object) => {
       const _expansions = Flow.Dataflow.signal(null);
       const _isExpanded = Flow.Dataflow.signal(false);
@@ -9391,9 +6840,16 @@
     const esprima = window.esprima;
     const CoffeeScript = window.CoffeeScript;
     const safetyWrapCoffeescript = guid => (cs, go) => {
-      const lines = cs.replace(/[\n\r]/g, '\n').split('\n');
+      const lines = cs.replace(/[\n\r]/g, '\n') // normalize CR/LF
+      .split('\n'); // split into lines
+
+      // indent once
       const block = lodash.map(lines, line => `  ${ line }`);
+
+      // enclose in execute-immediate closure
       block.unshift(`_h2o_results_[\'${ guid }\'].result do ->`);
+
+      // join and proceed
       return go(null, block.join('\n'));
     };
     const compileCoffeescript = (cs, go) => {
@@ -9438,6 +6894,9 @@
             return _results;
           })();
         case 'FunctionDeclaration':
+          //
+          // XXX Not sure about the semantics here.
+          //
           if (node.id.type === 'Identifier') {
             return [{
               name: node.id.name,
@@ -9482,6 +6941,7 @@
       let i;
       if (lodash.isArray(node)) {
         i = node.length;
+        // walk backwards to allow callers to delete nodes
         while (i--) {
           child = node[i];
           if (lodash.isObject(child)) {
@@ -9512,7 +6972,10 @@
       let param;
       let _i;
       let _len;
+      // parse all declarations in this scope
       const localScope = parseDeclarations(node.body);
+
+      // include formal parameters
       const _ref = node.params;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         param = _ref[_i];
@@ -9525,6 +6988,8 @@
       }
       return localScope;
     };
+
+    // redefine scope by coalescing down to non-local identifiers
     const coalesceScopes = scopes => {
       let i;
       let identifier;
@@ -9558,6 +7023,7 @@
       let currentScope;
       const isNewScope = node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
       if (isNewScope) {
+        // create and push a new local scope onto scope stack
         scopes.push(createLocalScope(node));
         currentScope = coalesceScopes(scopes);
       } else {
@@ -9573,6 +7039,7 @@
         }
       }
       if (isNewScope) {
+        // discard local scope
         scopes.pop();
       }
     };
@@ -9596,6 +7063,12 @@
         return go(new Flow.Error('Error parsing root scope', error));
       }
     };
+
+    // TODO DO NOT call this for raw javascript:
+    // Require alternate strategy: 
+    //  Declarations with 'var' need to be local to the cell.
+    //  Undeclared identifiers are assumed to be global.
+    //  'use strict' should be unsupported.
     const removeHoistedDeclarations = (rootScope, program, go) => {
       let error;
       try {
@@ -9604,8 +7077,10 @@
           if (node.type === 'VariableDeclaration') {
             declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
             if (declarations.length === 0) {
+              // purge this node so that escodegen doesn't fail 
               return deleteAstNode(parent, key);
             }
+            // replace with cleaned-up declarations
             node.declarations = declarations;
             return node.declarations;
           }
@@ -9643,9 +7118,11 @@
         traverseJavascriptScoped([globalScope], globalScope, null, null, program, (globalScope, parent, key, node) => {
           let identifier;
           if (node.type === 'Identifier') {
+            // ignore var declarations
             if (parent.type === 'VariableDeclarator' && key === 'id') {
               return;
             }
+            // ignore members
             if (key === 'property') {
               return;
             }
@@ -9653,6 +7130,8 @@
             if (!identifier) {
               return;
             }
+
+            // qualify identifier with '_h2o_context_'
             parent[key] = {
               type: 'MemberExpression',
               computed: false,
@@ -9740,6 +7219,8 @@
       }
       return false;
     };
+
+    // XXX special-case functions so that bodies are not printed with the raw renderer.
     const render = (input, output) => {
       let cellResult;
       let outputBuffer;
@@ -9885,6 +7366,7 @@
       if (error) {
         return console.debug(error);
       }
+      // XXX sort
       return _docs(lodash.map(notebooks, notebook => createNotebookView(notebook)));
     });
     Flow.Dataflow.link(_.ready, () => {
@@ -9958,12 +7440,19 @@
     const _hasInput = Flow.Dataflow.signal(true);
     const _input = Flow.Dataflow.signal(input);
     const _outputs = Flow.Dataflow.signals([]);
+    // Only for headless use.
     const _errors = [];
     const _result = Flow.Dataflow.signal(null);
     const _hasOutput = Flow.Dataflow.lift(_outputs, outputs => outputs.length > 0);
     const _isInputVisible = Flow.Dataflow.signal(true);
     const _isOutputHidden = Flow.Dataflow.signal(false);
+
+    // This is a shim for ko binding handlers to attach methods to
+    // The ko 'cursorPosition' custom binding attaches a getCursorPosition() method to this.
+    // The ko 'autoResize' custom binding attaches an autoResize() method to this.
     const _actions = {};
+
+    // select and display input when activated
     Flow.Dataflow.act(_isActive, isActive => {
       if (isActive) {
         _.selectCell(self);
@@ -9973,19 +7462,32 @@
         }
       }
     });
+
+    // deactivate when deselected
     Flow.Dataflow.act(_isSelected, isSelected => {
       if (!isSelected) {
         return _isActive(false);
       }
     });
+
+    // tied to mouse-clicks on the cell
     const select = () => {
+      // pass scrollIntoView=false, 
+      // otherwise mouse actions like clicking on a form field will cause scrolling.
       _.selectCell(self, false);
+      // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
       return true;
     };
+
+    // tied to mouse-clicks in the outline view
     const navigate = () => {
       _.selectCell(self);
+      // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
       return true;
     };
+
+    // tied to mouse-double-clicks on html content
+    // TODO
     const activate = () => _isActive(true);
     const clip = () => _.saveClip('user', _type(), _input());
     const toggleInput = () => _isInputVisible(!_isInputVisible());
@@ -9993,6 +7495,7 @@
     const clear = () => {
       _result(null);
       _outputs([]);
+      // Only for headless use
       _errors.length = 0;
       _hasError(false);
       if (!_isCode()) {
@@ -10013,9 +7516,13 @@
       _isBusy(true);
       clear();
       if (_type() === 'sca') {
+        // escape backslashes
         input = input.replace(/\\/g, '\\\\');
+        // escape quotes
         input = input.replace(/'/g, '\\\'');
+        // escape new-lines
         input = input.replace(/\n/g, '\\n');
+        // pass the cell body as an argument, representing the scala code, to the appropriate function
         input = `runScalaCode ${ _.scalaIntpId() }, \'${ input }\'`;
       }
       render(input, {
@@ -10023,11 +7530,13 @@
           return _outputs.push(result);
         },
         close(result) {
+          // XXX push to cell output
           return _result(result);
         },
         error(error) {
           _hasError(true);
           if (error.name === 'FlowError') {
+            // XXX review
             _outputs.push(Flow.failure(_, error));
           } else {
             _outputs.push({
@@ -10035,6 +7544,7 @@
               template: 'flow-raw'
             });
           }
+          // Only for headless use
           return _errors.push(error);
         },
         end() {
@@ -10260,8 +7770,12 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
+
+      // initialize the interpreter when the notebook is created
+      // one interpreter is shared by all scala cells  
       const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
         if (error) {
+          // Handle the error
           return _.scalaIntpId(-1);
         }
         return _.scalaIntpId(response.sessionId);
@@ -10306,6 +7820,8 @@
         })();
         _cells(cells);
         selectCell(lodash.head(cells));
+
+        // Execute all non-code cells (headings, markdown, etc.)
         const _ref = _cells();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cell = _ref[_i];
@@ -10359,6 +7875,7 @@
           _selectedCell.isSelected(false);
         }
         _selectedCell = target;
+        // TODO also set focus so that tabs don't jump to the first cell
         _selectedCell.isSelected(true);
         _selectedCellIndex = _cells.indexOf(_selectedCell);
         checkConsistency();
@@ -10404,9 +7921,11 @@
         const cells = _cells();
         if (cells.length > 1) {
           if (_selectedCellIndex === cells.length - 1) {
+            // TODO call dispose() on this cell
             removedCell = lodash.head(_cells.splice(_selectedCellIndex, 1));
             selectCell(cells[_selectedCellIndex - 1]);
           } else {
+            // TODO call dispose() on this cell
             removedCell = lodash.head(_cells.splice(_selectedCellIndex, 1));
             selectCell(cells[_selectedCellIndex]);
           }
@@ -10516,6 +8035,8 @@
         _selectedCell.execute(() => insertNewCellBelow());
         return false;
       };
+      // ipython has inconsistent behavior here. 
+      // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
       const runCellAndSelectBelow = () => {
         _selectedCell.execute(() => selectNextCell());
         return false;
@@ -10527,6 +8048,8 @@
         }
         _remoteName(localName);
         _localName(localName);
+
+        // renamed document
         if (remoteName !== localName) {
           return _.requestDeleteObject('notebook', remoteName, error => {
             if (error) {
@@ -10542,10 +8065,13 @@
         if (localName === '') {
           return _.alert('Invalid notebook name.');
         }
+
+        // saved document
         const remoteName = _remoteName();
         if (remoteName) {
           storeNotebook(localName, remoteName);
         }
+        // unsaved document
         checkIfNameIsInUse(localName, isNameInUse => {
           if (isNameInUse) {
             return _.confirm('A notebook with that name already exists.\nDo you want to replace it with the one you\'re saving?', {
@@ -10597,6 +8123,11 @@
         let _ref;
         const wereHidden = _areInputsHidden();
         _areInputsHidden(!wereHidden);
+        //
+        // If cells are generated while inputs are hidden, the input boxes
+        //   do not resize to fit contents. So explicitly ask all cells 
+        //   to resize themselves.
+        //
         if (wereHidden) {
           _ref = _cells();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -10624,6 +8155,7 @@
         if (_selectedCellIndex !== cells.length - 1) {
           selectCell(cells[_selectedCellIndex + 1]);
         }
+        // prevent arrow keys from scrolling the page
         return false;
       }
       const selectPreviousCell = () => {
@@ -10632,6 +8164,7 @@
           cells = _cells();
           selectCell(cells[_selectedCellIndex - 1]);
         }
+        // prevent arrow keys from scrolling the page
         return false;
       };
       const displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
@@ -10734,14 +8267,17 @@
         }
         const executeNextCell = () => {
           let cell;
+          // will be false if user-aborted
           if (_isRunningAll()) {
             cell = cells.shift();
             if (cell) {
+              // Scroll immediately without affecting selection state.
               cell.scrollIntoView(true);
               cellIndex++;
               _runningCaption(`Running cell ${ cellIndex } of ${ cellCount }`);
               _runningPercent(`${ Math.floor(100 * cellIndex / cellCount) }%`);
               _runningCellInput(cell.input());
+              // TODO Continuation should be EFC, and passing an error should abort 'run all'
               return cell.execute(errors => {
                 if (errors) {
                   return go('failed', errors);
@@ -10767,6 +8303,7 @@
             case 'failed':
               return _.growl('Failed running your flow.', 'danger');
             default:
+              // 'done'
               return _.growl('Finished running your flow!', 'success');
           }
         });
@@ -10788,10 +8325,15 @@
           cell.autoResize();
         }
       };
+      // noop
       const notImplemented = () => {};
       const pasteCellandReplace = notImplemented;
       const mergeCellAbove = notImplemented;
       const startTour = notImplemented;
+
+      //
+      // Top menu bar
+      //
       const createMenu = (label, items) => ({
         label,
         items
@@ -10813,14 +8355,29 @@
         action: null
       };
       const _menus = Flow.Dataflow.signal(null);
-      menuCell = [createMenuItem('Run Cell', runCell, ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell, ['c']), createMenuItem('Paste Cell Above', pasteCellAbove, ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow, ['v']), createMenuItem('Delete Cell', deleteCell, ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete, ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp, ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown, ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']), menuDivider, createMenuItem('Toggle Cell Input', toggleInput), createMenuItem('Toggle Cell Output', toggleOutput, ['o']), createMenuItem('Clear Cell Output', clearCell)];
+      menuCell = [createMenuItem('Run Cell', runCell, ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell, ['c']), createMenuItem('Paste Cell Above', pasteCellAbove, ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow, ['v']),
+      // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
+      createMenuItem('Delete Cell', deleteCell, ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete, ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp, ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown, ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']),
+      // TODO createMenuItem('Split Cell', splitCell),
+      // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
+      // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
+      menuDivider, createMenuItem('Toggle Cell Input', toggleInput), createMenuItem('Toggle Cell Output', toggleOutput, ['o']), createMenuItem('Clear Cell Output', clearCell)];
       const menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow)];
       if (_.onSparklingWater) {
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
       }
       const initializeMenus = builder => {
         const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$36.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
-        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')), createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')), createMenuItem('Shut Down', shutdown)]), createMenu('Help', [createMenuItem('Assist Me', executeCommand('assist')), menuDivider, createMenuItem('Contents', showHelp), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider, createMenuItem('About', displayAbout)])];
+        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
+        // TODO Cluster I/O
+        createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')),
+        // TODO UDP Drop Test
+        // TODO Task Status
+        createMenuItem('Shut Down', shutdown)]), createMenu('Help', [
+        // TODO createMenuItem('Tour', startTour, true),
+        createMenuItem('Assist Me', executeCommand('assist')), menuDivider, createMenuItem('Contents', showHelp), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider,
+        // TODO Tutorial Flows
+        createMenuItem('About', displayAbout)])];
       };
       const setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
       const createTool = (icon, label, action, isDisabled) => {
@@ -10835,11 +8392,51 @@
         };
       };
       const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown)], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell)], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
-      const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode], ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(1)], ['2', 'to heading 2', convertCellToHeading(2)], ['3', 'to heading 3', convertCellToHeading(3)], ['4', 'to heading 4', convertCellToHeading(4)], ['5', 'to heading 5', convertCellToHeading(5)], ['6', 'to heading 6', convertCellToHeading(6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook], ['o', 'toggle output', toggleOutput], ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
+
+      // (From IPython Notebook keyboard shortcuts dialog)
+      //
+      // The IPython Notebook has two different keyboard input modes.
+      // Edit mode allows you to type code/text into a cell 
+      // and is indicated by a green cell border.
+      // Command mode binds the keyboard to notebook level 
+      // actions and is indicated by a grey cell border.
+      //
+      // Command Mode (press Esc to enable)
+      //   
+      const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode],
+      // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
+      // [ 'ctrl+enter', 'run cell', runCell ]
+      // [ 'alt+enter', 'run cell, insert below', runCellAndInsertBelow ]
+      ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(1)], ['2', 'to heading 2', convertCellToHeading(2)], ['3', 'to heading 3', convertCellToHeading(3)], ['4', 'to heading 4', convertCellToHeading(4)], ['5', 'to heading 5', convertCellToHeading(5)], ['6', 'to heading 6', convertCellToHeading(6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
+      // [ 'mod+s', 'save notebook', saveNotebook ]
+      // [ 'l', 'toggle line numbers' ]
+      ['o', 'toggle output', toggleOutput],
+      // [ 'shift+o', 'toggle output scrolling' ]
+      ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
+
       if (_.onSparklingWater) {
         normalModeKeyboardShortcuts.push(['q', 'to Scala', convertCellToScala]);
       }
-      const editModeKeyboardShortcuts = [['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
+
+      //
+      // Edit Mode (press Enter to enable) 
+      //
+      const editModeKeyboardShortcuts = [
+      // Tab : code completion or indent
+      // Shift-Tab : tooltip
+      // Cmd-] : indent
+      // Cmd-[ : dedent
+      // Cmd-a : select all
+      // Cmd-z : undo
+      // Cmd-Shift-z : redo
+      // Cmd-y : redo
+      // Cmd-Up : go to cell start
+      // Cmd-Down : go to cell end
+      // Opt-Left : go one word left
+      // Opt-Right : go one word right
+      // Opt-Backspace : del word before
+      // Opt-Delete : del word after
+      ['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
       const toKeyboardHelp = shortcut => {
         const seq = shortcut[0];
         const caption = shortcut[1];
@@ -10888,6 +8485,7 @@
         Flow.Dataflow.link(_.saved, () => _.growl('Notebook saved.'));
         Flow.Dataflow.link(_.loaded, () => _.growl('Notebook loaded.'));
         executeCommand('assist')();
+        // TODO setPristine() when autosave is implemented.
         _.setDirty();
         if (_.onSparklingWater) {
           return _initializeInterpreter();
@@ -11157,6 +8755,8 @@
       self.value = wrapValue(opts.value, opts.value);
       return self;
     };
+
+    // TODO ko supports array valued args for 'checked' - can provide a checkboxes function
     const dropdown = opts => {
       const self = control('dropdown', opts);
       self.options = opts.options || [];
@@ -11276,6 +8876,9 @@
     _.plot = Flow.Dataflow.slot();
     _.grid = Flow.Dataflow.slot();
     _.enumerate = Flow.Dataflow.slot();
+    //
+    // Sparkling-Water
+    //
     _.scalaIntpId = Flow.Dataflow.signal(-1);
     _.requestRDDs = Flow.Dataflow.slot();
     _.requestDataFrames = Flow.Dataflow.slot();
@@ -11382,6 +8985,8 @@
         _.status('server', 'error', path);
         const response = xhr.responseJSON;
         const meta = response;
+        // special-case net::ERR_CONNECTION_REFUSED
+        // if status is 'error' and xhr.status is 0
         const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
         return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
       });
@@ -11484,6 +9089,7 @@
       if (error) {
         return go(error);
       }
+      // TODO HACK - this api returns a 200 OK on failures
       if (result.error) {
         return go(new Flow.Error(result.error));
       }
@@ -11509,7 +9115,10 @@
       return go(null, result.frames);
     });
     const requestFrame = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }`, unwrap(go, result => lodash.head(result.frames)));
-    const requestFrameSlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }?column_offset=${ offset }&column_count=${ count }`, unwrap(go, result => lodash.head(result.frames)));
+    const requestFrameSlice = (key, searchTerm, offset, count, go) => {
+      // TODO send search term
+      return doGet(`/3/Frames/${ encodeURIComponent(key) }?column_offset=${ offset }&column_count=${ count }`, unwrap(go, result => lodash.head(result.frames)));
+    };
     const requestFrameSummary = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, result => lodash.head(result.frames)));
     const requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
     const requestFrameSummaryWithoutData = (key, go) => doGet(`/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
@@ -11591,7 +9200,22 @@
       };
       return doPost('/3/Parse', opts, go);
     };
+
+    // Create data for partial dependence plot(s) 
+    // for the specified model and frame.
+    //
+    // make a post request to h2o-3 to request
+    // the data about the specified model and frame
+    // subject to the other options `opts`
+    //
+    // returns a job 
     const requestPartialDependence = (opts, go) => doPost('/3/PartialDependence/', opts, go);
+
+    // make a post request to h2o-3 to do request
+    // the data about the specified model and frame
+    // subject to the other options `opts`
+    // 
+    // returns a json response that contains the data
     const requestPartialDependenceData = (key, go) => doGet(`/3/PartialDependence/${ encodeURIComponent(key) }`, (error, result) => {
       if (error) {
         return go(error, result);
@@ -11640,6 +9264,8 @@
       return doPost('/99/Models.bin/not_in_use', opts, go);
     };
     const requestExportModel = (key, path, overwrite, go) => doGet(`/99/Models.bin/${ encodeURIComponent(key) }?dir=${ encodeURIComponent(path) }&force=${ overwrite }`, go);
+
+    // TODO Obsolete
     const requestModelBuildersVisibility = go => doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
     __modelBuilders = null;
     __modelBuilderEndpoints = null;
@@ -11723,6 +9349,7 @@
     const requestModelBuild = (algo, parameters, go) => {
       _.trackEvent('model', algo);
       if (parameters.hyper_parameters) {
+        // super-hack: nest this object as stringified json
         parameters.hyper_parameters = flowPrelude$38.stringify(parameters.hyper_parameters);
         if (parameters.search_criteria) {
           parameters.search_criteria = flowPrelude$38.stringify(parameters.search_criteria);
@@ -11773,6 +9400,9 @@
         if (error) {
           return _go(error);
         }
+        //
+        // TODO workaround for a filtering bug in the API
+        //    
         const predictions = (() => {
           let _i;
           let _len;
@@ -11956,6 +9586,9 @@
     Flow.Dataflow.link(_.requestHelpIndex, requestHelpIndex);
     Flow.Dataflow.link(_.requestHelpContent, requestHelpContent);
     Flow.Dataflow.link(_.requestExec, requestExec);
+    //
+    // Sparkling-Water
+    //
     Flow.Dataflow.link(_.requestRDDs, requestRDDs);
     Flow.Dataflow.link(_.requestDataFrames, requestDataFrames);
     Flow.Dataflow.link(_.requestScalaIntp, requestScalaIntp);
@@ -12025,6 +9658,11 @@
   function flowGrowl(_) {
     const Flow = window.Flow;
     const $ = window.jQuery;
+    // Type should be one of:
+    // undefined = info (blue)
+    // success (green)
+    // warning (orange)
+    // danger (red)
     return Flow.Dataflow.link(_.growl, (message, type) => {
       if (type) {
         return $.bootstrapGrowl(message, { type });
@@ -12036,7 +9674,10 @@
   function flowAutosave(_) {
     const Flow = window.Flow;
     const warnOnExit = e => {
+      // message = 'You have unsaved changes to this notebook.'
       const message = 'Warning: you are about to exit Flow.';
+
+      // < IE8 and < FF4
       e = e != null ? e : window.event;
       if (e) {
         e.returnValue = message;
@@ -12061,6 +9702,7 @@
     const Flow = window.Flow;
     flowApplicationContext(_);
     const _sandbox = flowSandbox(_, routines(_));
+    // TODO support external renderers
     const _renderers = Flow.renderers(_, _sandbox);
     flowAnalytics(_);
     flowGrowl(_);
@@ -12072,6 +9714,18 @@
       view: _notebook
     };
   }
+
+  //
+  // TODO
+  //
+  // XXX how does cell output behave when a widget throws an exception?
+  // XXX GLM case is failing badly. Investigate. Should catch/handle gracefully.
+  //
+  // integrate with groc
+  // tooltips on celltype flags
+  // arrow keys cause page to scroll - disable those behaviors
+  // scrollTo() behavior
+  //
 
   function flow() {
     const Flow = window.Flow;
