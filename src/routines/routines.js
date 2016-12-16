@@ -21,6 +21,7 @@ import { transformBinomialMetrics } from './transformBinomialMetrics';
 import { extendPartialDependence } from './extendPartialDependence';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { getModelParameterValue } from './getModelParameterValue';
+import { inspectParametersAcrossModels } from './inspectParametersAcrossModels';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -238,7 +239,6 @@ export function routines() {
     let inspectNetworkTestResult;
     let inspectObject;
     let inspectObjectArray_;
-    let inspectParametersAcrossModels;
     let inspectRawArray_;
     let inspectRawObject_;
     let loadScript;
@@ -393,93 +393,6 @@ export function routines() {
     extendMergeFramesResult = result => {
       render_(_,  result, h2oMergeFramesOutput, result);
       return result;
-    };
-    inspectParametersAcrossModels = models => () => {
-      let data;
-      let i;
-      let leader;
-      let model;
-      let modelKeys;
-      let parameter;
-      let vectors;
-      leader = lodash.head(models);
-      vectors = (() => {
-        let _i;
-        let _len;
-        let _ref1;
-        let _results;
-        _ref1 = leader.parameters;
-        _results = [];
-        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-          parameter = _ref1[i];
-          data = (() => {
-            let _j;
-            let _len1;
-            let _results1;
-            _results1 = [];
-            for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
-              model = models[_j];
-              _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actualValue));
-            }
-            return _results1;
-          })();
-          switch (parameter.type) {
-            case 'enum':
-            case 'Frame':
-            case 'string':
-              _results.push(createFactor(parameter.label, 'String', data));
-              break;
-            case 'byte':
-            case 'short':
-            case 'int':
-            case 'long':
-            case 'float':
-            case 'double':
-              _results.push(createVector(parameter.label, 'Number', data));
-              break;
-            case 'string[]':
-            case 'byte[]':
-            case 'short[]':
-            case 'int[]':
-            case 'long[]':
-            case 'float[]':
-            case 'double[]':
-              _results.push(createList(parameter.label, data, a => {
-                if (a) {
-                  return a;
-                }
-                return void 0;
-              }));
-              break;
-            case 'boolean':
-              _results.push(createList(parameter.label, data, a => {
-                if (a) {
-                  return 'true';
-                }
-                return 'false';
-              }));
-              break;
-            default:
-              _results.push(createList(parameter.label, data));
-          }
-        }
-        return _results;
-      })();
-      modelKeys = (() => {
-        let _i;
-        let _len;
-        let _results;
-        _results = [];
-        for (_i = 0, _len = models.length; _i < _len; _i++) {
-          model = models[_i];
-          _results.push(model.model_id.name);
-        }
-        return _results;
-      })();
-      return createDataframe('parameters', vectors, lodash.range(models.length), null, {
-        description: `Parameters for models ${modelKeys.join(', ')}`,
-        origin: `getModels ${flowPrelude.stringify(modelKeys)}`
-      });
     };
     inspectModelParameters = model => () => {
       let attr;
