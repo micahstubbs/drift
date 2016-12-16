@@ -24,7 +24,9 @@ import { getModelParameterValue } from './getModelParameterValue';
 import { inspectParametersAcrossModels } from './inspectParametersAcrossModels';
 import { inspectModelParameters } from './inspectModelParameters';
 import { inspectRawObject_ } from './inspectRawObject_';
+import { inspectRawArray_ } from './inspectRawArray_';
 import { inspectObjectArray_ } from './inspectObjectArray_';
+import { inspectObject } from './inspectObject';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -148,7 +150,6 @@ export function routines() {
     let assist;
     let attrname;
     let bindFrames;
-    let blacklistedAttributesBySchema;
     let buildAutoModel;
     let buildModel;
     let buildPartialDependence;
@@ -239,8 +240,6 @@ export function routines() {
     let inspectFrameColumns;
     let inspectFrameData;
     let inspectNetworkTestResult;
-    let inspectObject;
-    let inspectRawArray_;
     let loadScript;
     let mergeFrames;
     let name;
@@ -306,7 +305,6 @@ export function routines() {
     let routines;
     let routinesOnSw;
     let runScalaCode;
-    let schemaTransforms;
     let setupParse;
     let splitFrame;
     let testNetwork;
@@ -407,132 +405,6 @@ export function routines() {
     };
     extendCancelJob = cancellation => render_(_,  cancellation, h2oCancelJobOutput, cancellation);
     extendDeletedKeys = keys => render_(_,  keys, h2oDeleteObjectsOutput, keys);
-    inspectRawArray_ = (name, origin, description, array) => () => createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
-      description: '',
-      origin
-    });
-    _schemaHacks = {
-      KMeansOutput: { fields: 'names domains help' },
-      GBMOutput: { fields: 'names domains help' },
-      GLMOutput: { fields: 'names domains help' },
-      DRFOutput: { fields: 'names domains help' },
-      DeepLearningModelOutput: { fields: 'names domains help' },
-      NaiveBayesOutput: { fields: 'names domains help pcond' },
-      PCAOutput: { fields: 'names domains help' },
-      ModelMetricsBinomialGLM: {
-        fields: null,
-        transform: transformBinomialMetrics
-      },
-      ModelMetricsBinomial: {
-        fields: null,
-        transform: transformBinomialMetrics
-      },
-      ModelMetricsMultinomialGLM: { fields: null },
-      ModelMetricsMultinomial: { fields: null },
-      ModelMetricsRegressionGLM: { fields: null },
-      ModelMetricsRegression: { fields: null },
-      ModelMetricsClustering: { fields: null },
-      ModelMetricsAutoEncoder: { fields: null },
-      ConfusionMatrix: { fields: null }
-    };
-    blacklistedAttributesBySchema = (() => {
-      let attrs;
-      let dict;
-      let dicts;
-      let field;
-      let schema;
-      let _i;
-      let _len;
-      let _ref1;
-      dicts = {};
-      for (schema in _schemaHacks) {
-        if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
-          attrs = _schemaHacks[schema];
-          dicts[schema] = dict = { __meta: true };
-          if (attrs.fields) {
-            _ref1 = flowPrelude.words(attrs.fields);
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              field = _ref1[_i];
-              dict[field] = true;
-            }
-          }
-        }
-      }
-      return dicts;
-    })();
-    schemaTransforms = (() => {
-      let attrs;
-      let schema;
-      let transform;
-      let transforms;
-      transforms = {};
-      for (schema in _schemaHacks) {
-        if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
-          attrs = _schemaHacks[schema];
-          if (transform = attrs.transform) {
-            transforms[schema] = transform;
-          }
-        }
-      }
-      return transforms;
-    })();
-    inspectObject = (inspections, name, origin, obj) => {
-      let attrs;
-      let blacklistedAttributes;
-      let k;
-      let meta;
-      let record;
-      let schemaType;
-      let transform;
-      let v;
-      let _ref1;
-      let _ref2;
-      schemaType = (_ref1 = obj.__meta) != null ? _ref1.schema_type : void 0;
-      blacklistedAttributes = schemaType ? (attrs = blacklistedAttributesBySchema[schemaType]) ? attrs : {} : {};
-      if (transform = schemaTransforms[schemaType]) {
-        obj = transform(obj);
-      }
-      record = {};
-      inspections[name] = inspectRawObject_(name, origin, name, record);
-      for (k in obj) {
-        if ({}.hasOwnProperty.call(obj, k)) {
-          v = obj[k];
-          if (!blacklistedAttributes[k]) {
-            if (v === null) {
-              record[k] = null;
-            } else {
-              if (((_ref2 = v.__meta) != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
-                inspections[`${name} - ${v.name}`] = inspectTwoDimTable_(origin, `${name} - ${v.name}`, v);
-              } else {
-                if (lodash.isArray(v)) {
-                  if (k === 'cross_validation_models' || k === 'cross_validation_predictions' || name === 'output' && (k === 'weights' || k === 'biases')) {
-                    inspections[k] = inspectObjectArray_(k, origin, k, v);
-                  } else {
-                    inspections[k] = inspectRawArray_(k, origin, k, v);
-                  }
-                } else if (lodash.isObject(v)) {
-                  if (meta = v.__meta) {
-                    if (meta.schema_type === 'Key<Frame>') {
-                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
-                    } else if (meta.schema_type === 'Key<Model>') {
-                      record[k] = `<a href=\'#\' data-type=\'model\' data-key=${flowPrelude.stringify(v.name)}>${lodash.escape(v.name)}</a>`;
-                    } else if (meta.schema_type === 'Frame') {
-                      record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude.stringify(v.frame_id.name)}>${lodash.escape(v.frame_id.name)}</a>`;
-                    } else {
-                      inspectObject(inspections, `${name} - ${k}`, origin, v);
-                    }
-                  } else {
-                    console.log(`WARNING: dropping [${k}] from inspection:`, v);
-                  }
-                } else {
-                  record[k] = lodash.isNumber(v) ? format6fi(v) : v;
-                }
-              }
-            }
-          }
-        }
-      }
-    };
     extendModel = model => {
       let refresh;
       lodash.extend = model => {
