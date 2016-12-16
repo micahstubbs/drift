@@ -5210,16 +5210,6 @@
         rowcount: rowCount
       };
     };
-    computeTruePositiveRate = cm => {
-      let fn;
-      let fp;
-      let tn;
-      let tp;
-      let _ref;
-      let _ref1;
-      (_ref = cm[0], tn = _ref[0], fp = _ref[1]), (_ref1 = cm[1], fn = _ref1[0], tp = _ref1[1]);
-      return tp / (tp + fn);
-    };
     computeFalsePositiveRate = cm => {
       let fn;
       let fp;
