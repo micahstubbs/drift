@@ -24,6 +24,7 @@ import { getModelParameterValue } from './getModelParameterValue';
 import { inspectParametersAcrossModels } from './inspectParametersAcrossModels';
 import { inspectModelParameters } from './inspectModelParameters';
 import { inspectRawObject_ } from './inspectRawObject_';
+import { inspectObjectArray_ } from './inspectObjectArray_';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -239,7 +240,6 @@ export function routines() {
     let inspectFrameData;
     let inspectNetworkTestResult;
     let inspectObject;
-    let inspectObjectArray_;
     let inspectRawArray_;
     let loadScript;
     let mergeFrames;
@@ -408,10 +408,6 @@ export function routines() {
     extendCancelJob = cancellation => render_(_,  cancellation, h2oCancelJobOutput, cancellation);
     extendDeletedKeys = keys => render_(_,  keys, h2oDeleteObjectsOutput, keys);
     inspectRawArray_ = (name, origin, description, array) => () => createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
-      description: '',
-      origin
-    });
-    inspectObjectArray_ = (name, origin, description, array) => () => createDataframe(name, [createList(name, parseAndFormatObjectArray(array))], lodash.range(array.length), null, {
       description: '',
       origin
     });
