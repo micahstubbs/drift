@@ -1564,6 +1564,26 @@
     return void 0;
   }
 
+  function format6fi(number) {
+    if (number) {
+      if (number === 'NaN') {
+        return void 0;
+      }
+      return number.toFixed(6).replace(/\.0+$/, '');
+    }
+    return number;
+  }
+
+  function createArrays(count, length) {
+    let i;
+    let _i;
+    const _results = [];
+    for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
+      _results.push(new Array(length));
+    }
+    return _results;
+  }
+
   const flowPrelude$6 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -5020,13 +5040,11 @@
     let computeFalsePositiveRate;
     let computeTruePositiveRate;
     let concatArrays;
-    let createArrays;
     let createDataframe;
     let createFactor;
     let createList;
     let createTempKey;
     let createVector;
-    let format6fi;
     let formulateGetPredictionsOrigin;
     let lightning;
     let parseAndFormatArray;
@@ -5092,15 +5110,7 @@
         icon: 'bolt'
       }
     };
-    format6fi = number => {
-      if (number) {
-        if (number === 'NaN') {
-          return void 0;
-        }
-        return number.toFixed(6).replace(/\.0+$/, '');
-      }
-      return number;
-    };
+
     combineTables = tables => {
       let columnCount;
       let columnData;
@@ -5145,16 +5155,6 @@
         data,
         rowcount: rowCount
       };
-    };
-    createArrays = (count, length) => {
-      let i;
-      let _i;
-      let _results;
-      _results = [];
-      for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
-        _results.push(new Array(length));
-      }
-      return _results;
     };
     parseNaNs = source => {
       let element;

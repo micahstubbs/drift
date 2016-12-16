@@ -2,6 +2,8 @@
 import { format4f } from './format4f';
 import { convertTableToFrame } from './convertTableToFrame';
 import { getTwoDimData } from './getTwoDimData';
+import { format6fi } from './format6fi';
+import { createArrays } from './createArrays';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -60,13 +62,11 @@ export function routines() {
   let computeFalsePositiveRate;
   let computeTruePositiveRate;
   let concatArrays;
-  let createArrays;
   let createDataframe;
   let createFactor;
   let createList;
   let createTempKey;
   let createVector;
-  let format6fi;
   let formulateGetPredictionsOrigin;
   let lightning;
   let parseAndFormatArray;
@@ -132,15 +132,7 @@ export function routines() {
       icon: 'bolt'
     }
   };
-  format6fi = number => {
-    if (number) {
-      if (number === 'NaN') {
-        return void 0;
-      }
-      return number.toFixed(6).replace(/\.0+$/, '');
-    }
-    return number;
-  };
+
   combineTables = tables => {
     let columnCount;
     let columnData;
@@ -185,16 +177,6 @@ export function routines() {
       data,
       rowcount: rowCount
     };
-  };
-  createArrays = (count, length) => {
-    let i;
-    let _i;
-    let _results;
-    _results = [];
-    for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
-      _results.push(new Array(length));
-    }
-    return _results;
   };
   parseNaNs = source => {
     let element;
