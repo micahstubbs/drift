@@ -8,8 +8,6 @@ import { parseNaNs } from './parseNaNs';
 import { parseNulls } from './parseNulls';
 import { parseAndFormatArray } from './parseAndFormatArray';
 import { parseAndFormatObjectArray } from './parseAndFormatObjectArray';
-import { repeatValues } from './repeatValues';
-import { concatArrays } from './concatArrays';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
