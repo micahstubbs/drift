@@ -10,6 +10,7 @@ import { parseAndFormatArray } from './parseAndFormatArray';
 import { parseAndFormatObjectArray } from './parseAndFormatObjectArray';
 import { _fork } from './_fork';
 import { _join } from './_join';
+import { _call } from './_call';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -317,18 +318,11 @@ export function routines() {
     // TODO move these into Flow.Async
     let _apply;
     let _async;
-    let _call;
     let _get;
     let _isFuture;
     let _plot;
     let _ref;
     let _schemaHacks;
-    _call = function () {
-      let args;
-      let go;
-      go = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-      return Flow.Async.join(args, Flow.Async.applicate(go));
-    };
     _apply = (go, args) => Flow.Async.join(args, go);
     _isFuture = Flow.Async.isFuture;
     _async = Flow.Async.async;
