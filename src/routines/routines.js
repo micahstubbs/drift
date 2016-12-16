@@ -7,6 +7,7 @@ import { createArrays } from './createArrays';
 import { parseNaNs } from './parseNaNs';
 import { parseNulls } from './parseNulls';
 import { parseAndFormatArray } from './parseAndFormatArray';
+import { parseAndFormatObjectArray } from './parseAndFormatObjectArray';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -72,7 +73,6 @@ export function routines() {
   let createVector;
   let formulateGetPredictionsOrigin;
   let lightning;
-  let parseAndFormatObjectArray;
   let repeatValues;
   let _assistance;
   const __slice = [].slice;
@@ -177,21 +177,6 @@ export function routines() {
       data,
       rowcount: rowCount
     };
-  };
-  parseAndFormatObjectArray = source => {
-    let element;
-    let i;
-    let target;
-    let _i;
-    let _len;
-    let _ref;
-    let _ref1;
-    target = new Array(source.length);
-    for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-      element = source[i];
-      target[i] = element != null ? ((_ref = element.__meta) != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${flowPrelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : ((_ref1 = element.__meta) != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${flowPrelude.stringify(element.name)}>${lodash.escape(element.name)}</a>` : element : void 0;
-    }
-    return target;
   };
   repeatValues = (count, value) => {
     let i;
