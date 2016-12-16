@@ -1674,6 +1674,28 @@
     return Flow.Async.join(args, go);
   }
 
+  function flow_(raw) {
+    if (!raw._flow_) {
+      raw._flow_ = { _cache_: {} };
+    }
+    return raw._flow_;
+  }
+
+  function inspect_(raw, inspectors) {
+    let attr;
+    const root = flow_(raw);
+    if (root.inspect == null) {
+      root.inspect = {};
+    }
+    for (attr in inspectors) {
+      if ({}.hasOwnProperty.call(inspectors, attr)) {
+        const f = inspectors[attr];
+        root.inspect[attr] = f;
+      }
+    }
+    return raw;
+  }
+
   const flowPrelude$7 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -5258,7 +5280,6 @@
       let f;
       let findColumnIndexByColumnLabel;
       let findColumnIndicesByColumnLabels;
-      let flow_;
       let getCloud;
       let getColumnSummary;
       let getDataFrames;
@@ -5301,7 +5322,6 @@
       let inspectRawArray_;
       let inspectRawObject_;
       let inspectTwoDimTable_;
-      let inspect_;
       let loadScript;
       let ls;
       let mergeFrames;
@@ -5401,7 +5421,6 @@
           gui[name] = f;
         }
       }
-      flow_ = raw => raw._flow_ || (raw._flow_ = { _cache_: {} });
 
       // XXX obsolete
       render_ = (raw, render) => {
@@ -5416,21 +5435,6 @@
         raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
         // Prepend current context (_) and a continuation (go)
         flow_(raw).render = go => render(...[_, go].concat(args));
-        return raw;
-      };
-      inspect_ = (raw, inspectors) => {
-        let attr;
-        let root;
-        root = flow_(raw);
-        if (root.inspect == null) {
-          root.inspect = {};
-        }
-        for (attr in inspectors) {
-          if ({}.hasOwnProperty.call(inspectors, attr)) {
-            f = inspectors[attr];
-            root.inspect[attr] = f;
-          }
-        }
         return raw;
       };
       inspect = function (a, b) {

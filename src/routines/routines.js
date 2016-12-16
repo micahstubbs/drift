@@ -12,6 +12,8 @@ import { _fork } from './_fork';
 import { _join } from './_join';
 import { _call } from './_call';
 import { _apply } from './_apply';
+import { inspect_ } from './inspect_';
+import { flow_ } from './flow_';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -198,7 +200,6 @@ export function routines() {
     let f;
     let findColumnIndexByColumnLabel;
     let findColumnIndicesByColumnLabels;
-    let flow_;
     let getCloud;
     let getColumnSummary;
     let getDataFrames;
@@ -241,7 +242,6 @@ export function routines() {
     let inspectRawArray_;
     let inspectRawObject_;
     let inspectTwoDimTable_;
-    let inspect_;
     let loadScript;
     let ls;
     let mergeFrames;
@@ -344,7 +344,6 @@ export function routines() {
         gui[name] = f;
       }
     }
-    flow_ = raw => raw._flow_ || (raw._flow_ = { _cache_: {} });
 
     // XXX obsolete
     render_ = (raw, render) => {
@@ -362,21 +361,6 @@ export function routines() {
         _,
         go
       ].concat(args));
-      return raw;
-    };
-    inspect_ = (raw, inspectors) => {
-      let attr;
-      let root;
-      root = flow_(raw);
-      if (root.inspect == null) {
-        root.inspect = {};
-      }
-      for (attr in inspectors) {
-        if ({}.hasOwnProperty.call(inspectors, attr)) {
-          f = inspectors[attr];
-          root.inspect[attr] = f;
-        }
-      }
       return raw;
     };
     inspect = function (a, b) {
