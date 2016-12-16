@@ -11,6 +11,7 @@ import { parseAndFormatObjectArray } from './parseAndFormatObjectArray';
 import { _fork } from './_fork';
 import { _join } from './_join';
 import { _call } from './_call';
+import { _apply } from './_apply';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -316,7 +317,6 @@ export function routines() {
     let unwrapPrediction;
 
     // TODO move these into Flow.Async
-    let _apply;
     let _async;
     let _get;
     let _isFuture;

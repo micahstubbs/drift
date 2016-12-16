@@ -1669,6 +1669,11 @@
     return Flow.Async.join(args, Flow.Async.applicate(go));
   }
 
+  function _apply(go, args) {
+    const Flow = window.Flow;
+    return Flow.Async.join(args, go);
+  }
+
   const flowPrelude$7 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -5372,7 +5377,6 @@
       let unwrapPrediction;
 
       // TODO move these into Flow.Async
-      let _apply;
       let _async;
       let _get;
       let _isFuture;
