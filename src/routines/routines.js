@@ -16,6 +16,7 @@ import { inspect_ } from './inspect_';
 import { flow_ } from './flow_';
 import { inspect } from './inspect';
 import { render_ } from './render_';
+import { ls } from './ls';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -240,7 +241,6 @@ export function routines() {
     let inspectRawObject_;
     let inspectTwoDimTable_;
     let loadScript;
-    let ls;
     let mergeFrames;
     let name;
     let parseFiles;
@@ -347,17 +347,6 @@ export function routines() {
     //   return raw;
     // };
 
-    ls = obj => {
-      let inspectors;
-      let _ref1;
-      if (_isFuture(obj)) {
-        return _async(ls, obj);
-      }
-      if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
-        return lodash.keys(inspectors);
-      }
-      return [];
-    };
     _plot = (render, go) => render((error, vis) => {
       if (error) {
         return go(new Flow.Error('Error rendering vis.', error));

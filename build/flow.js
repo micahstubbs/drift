@@ -1827,6 +1827,22 @@
     return inspect$2(a, b);
   }
 
+  function ls(obj) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _isFuture = Flow.Async.isFuture;
+    const _async = Flow.Async.async;
+    if (_isFuture(obj)) {
+      return _async(ls, obj);
+    }
+    const inspectors = obj;
+    const _ref1 = obj._flow_;
+    if (inspectors != null ? _ref1 != null ? _ref1.inspect : void 0 : void 0) {
+      return lodash.keys(inspectors);
+    }
+    return [];
+  }
+
   function h2oPlotOutput(_, _go, _plot) {
     const lodash = window._;
     lodash.defer(_go);
@@ -5406,7 +5422,6 @@
       let inspectRawObject_;
       let inspectTwoDimTable_;
       let loadScript;
-      let ls;
       let mergeFrames;
       let name;
       let parseFiles;
@@ -5510,17 +5525,6 @@
       //   return raw;
       // };
 
-      ls = obj => {
-        let inspectors;
-        let _ref1;
-        if (_isFuture(obj)) {
-          return _async(ls, obj);
-        }
-        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
-          return lodash.keys(inspectors);
-        }
-        return [];
-      };
       _plot = (render, go) => render((error, vis) => {
         if (error) {
           return go(new Flow.Error('Error rendering vis.', error));
