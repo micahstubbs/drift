@@ -17,6 +17,7 @@ import { flow_ } from './flow_';
 import { inspect } from './inspect';
 import { render_ } from './render_';
 import { ls } from './ls';
+import { transformBinomialMetrics } from './transformBinomialMetrics';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -309,7 +310,6 @@ export function routines() {
     let setupParse;
     let splitFrame;
     let testNetwork;
-    let transformBinomialMetrics;
     let unwrapPrediction;
 
     // TODO move these into Flow.Async
@@ -369,55 +369,6 @@ export function routines() {
       return assist(plot);
     };
     grid = f => plot(g => g(g.select(), g.from(f)));
-    transformBinomialMetrics = metrics => {
-      let cms;
-      let domain;
-      let fns;
-      let fps;
-      let i;
-      let scores;
-      let tns;
-      let tp;
-      let tps;
-      if (scores = metrics.thresholds_and_metric_scores) {
-        domain = metrics.domain;
-        tps = getTwoDimData(scores, 'tps');
-        tns = getTwoDimData(scores, 'tns');
-        fps = getTwoDimData(scores, 'fps');
-        fns = getTwoDimData(scores, 'fns');
-        cms = (() => {
-          let _i;
-          let _len;
-          let _results;
-          _results = [];
-          for (i = _i = 0, _len = tps.length; _i < _len; i = ++_i) {
-            tp = tps[i];
-            _results.push({
-              domain,
-              matrix: [
-                [
-                  tns[i],
-                  fps[i]
-                ],
-                [
-                  fns[i],
-                  tp
-                ]
-              ]
-            });
-          }
-          return _results;
-        })();
-        scores.columns.push({
-          name: 'CM',
-          description: 'CM',
-          format: 'matrix', // TODO HACK
-          type: 'matrix'
-        });
-        scores.data.push(cms);
-      }
-      return metrics;
-    };
     extendCloud = cloud => render_(_,  cloud, h2oCloudOutput, cloud);
     extendTimeline = timeline => render_(_,  timeline, h2oTimelineOutput, timeline);
     extendStackTrace = stackTrace => render_(_,  stackTrace, h2oStackTraceOutput, stackTrace);

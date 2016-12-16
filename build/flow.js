@@ -1843,6 +1843,47 @@
     return [];
   }
 
+  function transformBinomialMetrics(metrics) {
+    let cms;
+    let domain;
+    let fns;
+    let fps;
+    let i;
+    let tns;
+    let tp;
+    let tps;
+    const scores = metrics.thresholds_and_metric_scores;
+    if (scores) {
+      domain = metrics.domain;
+      tps = getTwoDimData(scores, 'tps');
+      tns = getTwoDimData(scores, 'tns');
+      fps = getTwoDimData(scores, 'fps');
+      fns = getTwoDimData(scores, 'fns');
+      cms = (() => {
+        let _i;
+        const _results = [];
+        _i = 0;
+        const _len = tps.length;
+        for (i = _i, _len; _i < _len; i = ++_i) {
+          tp = tps[i];
+          _results.push({
+            domain,
+            matrix: [[tns[i], fps[i]], [fns[i], tp]]
+          });
+        }
+        return _results;
+      })();
+      scores.columns.push({
+        name: 'CM',
+        description: 'CM',
+        format: 'matrix', // TODO HACK
+        type: 'matrix'
+      });
+      scores.data.push(cms);
+    }
+    return metrics;
+  }
+
   function h2oPlotOutput(_, _go, _plot) {
     const lodash = window._;
     lodash.defer(_go);
@@ -5490,7 +5531,6 @@
       let setupParse;
       let splitFrame;
       let testNetwork;
-      let transformBinomialMetrics;
       let unwrapPrediction;
 
       // TODO move these into Flow.Async
@@ -5547,46 +5587,6 @@
         return assist(plot);
       };
       grid = f => plot(g => g(g.select(), g.from(f)));
-      transformBinomialMetrics = metrics => {
-        let cms;
-        let domain;
-        let fns;
-        let fps;
-        let i;
-        let scores;
-        let tns;
-        let tp;
-        let tps;
-        if (scores = metrics.thresholds_and_metric_scores) {
-          domain = metrics.domain;
-          tps = getTwoDimData(scores, 'tps');
-          tns = getTwoDimData(scores, 'tns');
-          fps = getTwoDimData(scores, 'fps');
-          fns = getTwoDimData(scores, 'fns');
-          cms = (() => {
-            let _i;
-            let _len;
-            let _results;
-            _results = [];
-            for (i = _i = 0, _len = tps.length; _i < _len; i = ++_i) {
-              tp = tps[i];
-              _results.push({
-                domain,
-                matrix: [[tns[i], fps[i]], [fns[i], tp]]
-              });
-            }
-            return _results;
-          })();
-          scores.columns.push({
-            name: 'CM',
-            description: 'CM',
-            format: 'matrix', // TODO HACK
-            type: 'matrix'
-          });
-          scores.data.push(cms);
-        }
-        return metrics;
-      };
       extendCloud = cloud => render_(_, cloud, h2oCloudOutput, cloud);
       extendTimeline = timeline => render_(_, timeline, h2oTimelineOutput, timeline);
       extendStackTrace = stackTrace => render_(_, stackTrace, h2oStackTraceOutput, stackTrace);
