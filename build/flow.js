@@ -1584,6 +1584,19 @@
     return _results;
   }
 
+  function parseNaNs(source) {
+    let element;
+    let i;
+    let _i;
+    let _len;
+    const target = new Array(source.length);
+    for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
+      element = source[i];
+      target[i] = element === 'NaN' ? void 0 : element;
+    }
+    return target;
+  }
+
   const flowPrelude$6 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -5049,7 +5062,6 @@
     let lightning;
     let parseAndFormatArray;
     let parseAndFormatObjectArray;
-    let parseNaNs;
     let parseNulls;
     let repeatValues;
     let _assistance;
@@ -5155,19 +5167,6 @@
         data,
         rowcount: rowCount
       };
-    };
-    parseNaNs = source => {
-      let element;
-      let i;
-      let target;
-      let _i;
-      let _len;
-      target = new Array(source.length);
-      for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-        element = source[i];
-        target[i] = element === 'NaN' ? void 0 : element;
-      }
-      return target;
     };
     parseNulls = source => {
       let element;

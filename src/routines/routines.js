@@ -4,6 +4,7 @@ import { convertTableToFrame } from './convertTableToFrame';
 import { getTwoDimData } from './getTwoDimData';
 import { format6fi } from './format6fi';
 import { createArrays } from './createArrays';
+import { parseNaNs } from './parseNaNs';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -71,7 +72,6 @@ export function routines() {
   let lightning;
   let parseAndFormatArray;
   let parseAndFormatObjectArray;
-  let parseNaNs;
   let parseNulls;
   let repeatValues;
   let _assistance;
@@ -177,19 +177,6 @@ export function routines() {
       data,
       rowcount: rowCount
     };
-  };
-  parseNaNs = source => {
-    let element;
-    let i;
-    let target;
-    let _i;
-    let _len;
-    target = new Array(source.length);
-    for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-      element = source[i];
-      target[i] = element === 'NaN' ? void 0 : element;
-    }
-    return target;
   };
   parseNulls = source => {
     let element;
