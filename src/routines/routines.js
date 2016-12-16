@@ -68,7 +68,6 @@ export function routines() {
   let createList;
   let createTempKey;
   let createVector;
-  let formulateGetPredictionsOrigin;
   let lightning;
   let _assistance;
   const __slice = [].slice;
@@ -173,43 +172,6 @@ export function routines() {
       data,
       rowcount: rowCount
     };
-  };
-  formulateGetPredictionsOrigin = opts => {
-    let frameKey;
-    let modelKey;
-    let opt;
-    let sanitizedOpt;
-    let sanitizedOpts;
-    if (lodash.isArray(opts)) {
-      sanitizedOpts = (() => {
-        let _i;
-        let _len;
-        let _results;
-        _results = [];
-        for (_i = 0, _len = opts.length; _i < _len; _i++) {
-          opt = opts[_i];
-          sanitizedOpt = {};
-          if (opt.model) {
-            sanitizedOpt.model = opt.model;
-          }
-          if (opt.frame) {
-            sanitizedOpt.frame = opt.frame;
-          }
-          _results.push(sanitizedOpt);
-        }
-        return _results;
-      })();
-      return `getPredictions ${flowPrelude.stringify(sanitizedOpts)}`;
-    }
-    modelKey = opts.model, frameKey = opts.frame;
-    if (modelKey && frameKey) {
-      return `getPredictions model: ${flowPrelude.stringify(modelKey)}, frame: ${flowPrelude.stringify(frameKey)}`;
-    } else if (modelKey) {
-      return `getPredictions model: ${flowPrelude.stringify(modelKey)}`;
-    } else if (frameKey) {
-      return `getPredictions frame: ${flowPrelude.stringify(frameKey)}`;
-    }
-    return 'getPredictions()';
   };
   H2O.Routines = _ => {
     let asDataFrame;
