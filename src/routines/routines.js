@@ -23,6 +23,7 @@ import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { getModelParameterValue } from './getModelParameterValue';
 import { inspectParametersAcrossModels } from './inspectParametersAcrossModels';
 import { inspectModelParameters } from './inspectModelParameters';
+import { inspectRawObject_ } from './inspectRawObject_';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -240,7 +241,6 @@ export function routines() {
     let inspectObject;
     let inspectObjectArray_;
     let inspectRawArray_;
-    let inspectRawObject_;
     let loadScript;
     let mergeFrames;
     let name;
@@ -415,26 +415,6 @@ export function routines() {
       description: '',
       origin
     });
-    inspectRawObject_ = (name, origin, description, obj) => () => {
-      let k;
-      let v;
-      let vectors;
-      vectors = (() => {
-        let _results;
-        _results = [];
-        for (k in obj) {
-          if ({}.hasOwnProperty.call(obj, k)) {
-            v = obj[k];
-            _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
-          }
-        }
-        return _results;
-      })();
-      return createDataframe(name, vectors, lodash.range(1), null, {
-        description: '',
-        origin
-      });
-    };
     _schemaHacks = {
       KMeansOutput: { fields: 'names domains help' },
       GBMOutput: { fields: 'names domains help' },
