@@ -1696,14 +1696,84 @@
     return raw;
   }
 
+  function render_() {
+    const Flow = window.Flow;
+    const __slice = [].slice;
+    const _ = arguments[0];
+    const raw = arguments[1];
+    const render = arguments[2];
+    const args = arguments.length >= 4 ? __slice.call(arguments, 3) : [];
+    // Prepend current context (_) and a continuation (go)
+    flow_(raw).render = go => render(...[_, go].concat(args));
+    return raw;
+  }
+
   const flowPrelude$7 = flowPreludeFunction();
+
+  function h2oInspectOutput(_, _go, _frame) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const view = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$7.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
+    const plot = () => _.insertAndExecuteCell('cs', _frame.metadata.plot);
+    lodash.defer(_go);
+    return {
+      label: _frame.label,
+      vectors: _frame.vectors,
+      view,
+      canPlot: _frame.metadata.plot,
+      plot,
+      template: 'flow-inspect-output'
+    };
+  }
+
+  function inspect$2(attr, obj) {
+    const Flow = window.Flow;
+    const lodash = window._;
+    const _async = Flow.Async.async;
+    const _isFuture = Flow.Async.isFuture;
+    let inspection;
+    if (!attr) {
+      return;
+    }
+    if (_isFuture(obj)) {
+      return _async(inspect, attr, obj);
+    }
+    if (!obj) {
+      return;
+    }
+    const root = obj._flow_;
+    if (!root) {
+      return;
+    }
+    const inspectors = root.inspect;
+    if (!inspectors) {
+      return;
+    }
+    const key = `inspect_${ attr }`;
+    const cached = root._cache_[key];
+    if (cached) {
+      return cached;
+    }
+    const f = inspectors[attr];
+    if (!f) {
+      return;
+    }
+    if (!lodash.isFunction(f)) {
+      return;
+    }
+    root._cache_[key] = inspection = f();
+    render_(inspection, h2oInspectOutput, inspection);
+    return inspection;
+  }
+
+  const flowPrelude$8 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
     const lodash = window._;
     const Flow = window.Flow;
     const createTableView = table => {
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$7.stringify(table.label) }, ${ table.metadata.origin }`);
-      const grid = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$7.stringify(table.label) }, ${ table.metadata.origin }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$8.stringify(table.label) }, ${ table.metadata.origin }`);
+      const grid = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$8.stringify(table.label) }, ${ table.metadata.origin }`);
       const plot = () => _.insertAndExecuteCell('cs', table.metadata.plot);
       return {
         label: table.label,
@@ -1723,22 +1793,38 @@
     };
   }
 
-  const flowPrelude$8 = flowPreludeFunction();
-
-  function h2oInspectOutput(_, _go, _frame) {
-    const lodash = window._;
+  function inspect$1(obj) {
     const Flow = window.Flow;
-    const view = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$8.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
-    const plot = () => _.insertAndExecuteCell('cs', _frame.metadata.plot);
-    lodash.defer(_go);
-    return {
-      label: _frame.label,
-      vectors: _frame.vectors,
-      view,
-      canPlot: _frame.metadata.plot,
-      plot,
-      template: 'flow-inspect-output'
-    };
+    const _async = Flow.Async.async;
+    const _isFuture = Flow.Async.isFuture;
+    let attr;
+    let inspections;
+
+    if (_isFuture(obj)) {
+      return _async(inspect, obj);
+    }
+
+    const _ref1 = obj._flow_;
+    const inspectors = obj;
+    if (inspectors != null ? _ref1 != null ? _ref1.inspect : void 0 : void 0) {
+      inspections = [];
+      for (attr in inspectors) {
+        if ({}.hasOwnProperty.call(inspectors, attr)) {
+          const f = inspectors[attr];
+          inspections.push(inspect$2(attr, obj));
+        }
+      }
+      render_(inspections, h2oInspectsOutput, inspections);
+      return inspections;
+    }
+    return {};
+  }
+
+  function inspect(a, b) {
+    if (arguments.length === 1) {
+      return inspect$1(a);
+    }
+    return inspect$2(a, b);
   }
 
   function h2oPlotOutput(_, _go, _plot) {
@@ -5309,9 +5395,6 @@
       let importModel;
       let imputeColumn;
       let initAssistanceSparklingWater;
-      let inspect;
-      let inspect$1;
-      let inspect$2;
       let inspectFrameColumns;
       let inspectFrameData;
       let inspectModelParameters;
@@ -5331,7 +5414,6 @@
       let predict;
       let proceed;
       let read;
-      let render_;
       let requestAsDataFrame;
       let requestAsH2OFrameFromDF;
       let requestAsH2OFrameFromRDD;
@@ -5408,10 +5490,10 @@
       _get = Flow.Async.get;
 
       // XXX obsolete
-      proceed = (func, args, go) => go(null, render_({}, () => func(...[_].concat(args || []))));
+      // proceed = (func, args, go) => go(null, render_(_,  {}, () => func(...[_].concat(args || []))));
 
-      proceed = (func, args, go) => go(null, render_(...[{}, func].concat(args || [])));
-      extendGuiForm = form => render_(form, flowForm, form);
+      proceed = (func, args, go) => go(null, render_(_, ...[{}, func].concat(args || [])));
+      extendGuiForm = form => render_(_, form, flowForm, form);
       createGui = (controls, go) => go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
       gui = controls => _fork(createGui, controls);
       _ref = Flow.Gui;
@@ -5423,47 +5505,11 @@
       }
 
       // XXX obsolete
-      render_ = (raw, render) => {
-        flow_(raw).render = render;
-        return raw;
-      };
+      // render_ = (raw, render) => {
+      //   flow_(raw).render = render;
+      //   return raw;
+      // };
 
-      render_ = function () {
-        let args;
-        let raw;
-        let render;
-        raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
-        // Prepend current context (_) and a continuation (go)
-        flow_(raw).render = go => render(...[_, go].concat(args));
-        return raw;
-      };
-      inspect = function (a, b) {
-        if (arguments.length === 1) {
-          return inspect$1(a);
-        }
-        return inspect$2(a, b);
-      };
-      inspect$1 = obj => {
-        let attr;
-        let inspections;
-        let inspectors;
-        let _ref1;
-        if (_isFuture(obj)) {
-          return _async(inspect, obj);
-        }
-        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
-          inspections = [];
-          for (attr in inspectors) {
-            if ({}.hasOwnProperty.call(inspectors, attr)) {
-              f = inspectors[attr];
-              inspections.push(inspect$2(attr, obj));
-            }
-          }
-          render_(inspections, h2oInspectsOutput, inspections);
-          return inspections;
-        }
-        return {};
-      };
       ls = obj => {
         let inspectors;
         let _ref1;
@@ -5475,47 +5521,13 @@
         }
         return [];
       };
-      inspect$2 = (attr, obj) => {
-        let cached;
-        let inspection;
-        let inspectors;
-        let key;
-        let root;
-        if (!attr) {
-          return;
-        }
-        if (_isFuture(obj)) {
-          return _async(inspect, attr, obj);
-        }
-        if (!obj) {
-          return;
-        }
-        if (!(root = obj._flow_)) {
-          return;
-        }
-        if (!(inspectors = root.inspect)) {
-          return;
-        }
-        if (cached = root._cache_[key = `inspect_${ attr }`]) {
-          return cached;
-        }
-        if (!(f = inspectors[attr])) {
-          return;
-        }
-        if (!lodash.isFunction(f)) {
-          return;
-        }
-        root._cache_[key] = inspection = f();
-        render_(inspection, h2oInspectOutput, inspection);
-        return inspection;
-      };
       _plot = (render, go) => render((error, vis) => {
         if (error) {
           return go(new Flow.Error('Error rendering vis.', error));
         }
         return go(null, vis);
       });
-      extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
+      extendPlot = vis => render_(_, vis, h2oPlotOutput, vis.element);
       createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
         if (error) {
           return go(error);
@@ -5571,29 +5583,29 @@
         }
         return metrics;
       };
-      extendCloud = cloud => render_(cloud, h2oCloudOutput, cloud);
-      extendTimeline = timeline => render_(timeline, h2oTimelineOutput, timeline);
-      extendStackTrace = stackTrace => render_(stackTrace, h2oStackTraceOutput, stackTrace);
-      extendLogFile = (cloud, nodeIndex, fileType, logFile) => render_(logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
+      extendCloud = cloud => render_(_, cloud, h2oCloudOutput, cloud);
+      extendTimeline = timeline => render_(_, timeline, h2oTimelineOutput, timeline);
+      extendStackTrace = stackTrace => render_(_, stackTrace, h2oStackTraceOutput, stackTrace);
+      extendLogFile = (cloud, nodeIndex, fileType, logFile) => render_(_, logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
       inspectNetworkTestResult = testResult => () => convertTableToFrame(testResult.table, testResult.table.name, {
         description: testResult.table.name,
         origin: 'testNetwork'
       });
       extendNetworkTest = testResult => {
         inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
-        return render_(testResult, h2oNetworkTestOutput, testResult);
+        return render_(_, testResult, h2oNetworkTestOutput, testResult);
       };
-      extendProfile = profile => render_(profile, h2oProfileOutput, profile);
+      extendProfile = profile => render_(_, profile, h2oProfileOutput, profile);
       extendFrames = frames => {
-        render_(frames, h2oFramesOutput, frames);
+        render_(_, frames, h2oFramesOutput, frames);
         return frames;
       };
       extendSplitFrameResult = result => {
-        render_(result, h2oSplitFrameOutput, result);
+        render_(_, result, h2oSplitFrameOutput, result);
         return result;
       };
       extendMergeFramesResult = result => {
-        render_(result, h2oMergeFramesOutput, result);
+        render_(_, result, h2oMergeFramesOutput, result);
         return result;
       };
       extendPartialDependence = result => {
@@ -5612,7 +5624,7 @@
           inspections[`plot${ i + 1 }`] = inspectTwoDimTable_(origin, `plot${ i + 1 }`, data);
         }
         inspect_(result, inspections);
-        render_(result, h2oPartialDependenceOutput, result);
+        render_(_, result, h2oPartialDependenceOutput, result);
         return result;
       };
       getModelParameterValue = (type, value) => {
@@ -5757,7 +5769,7 @@
           origin: `getModel ${ flowPrelude$5.stringify(model.model_id.name) }`
         });
       };
-      extendJob = job => render_(job, H2O.JobOutput, job);
+      extendJob = job => render_(_, job, H2O.JobOutput, job);
       extendJobs = jobs => {
         let job;
         let _i;
@@ -5766,10 +5778,10 @@
           job = jobs[_i];
           extendJob(job);
         }
-        return render_(jobs, h2oJobsOutput, jobs);
+        return render_(_, jobs, h2oJobsOutput, jobs);
       };
-      extendCancelJob = cancellation => render_(cancellation, h2oCancelJobOutput, cancellation);
-      extendDeletedKeys = keys => render_(keys, h2oDeleteObjectsOutput, keys);
+      extendCancelJob = cancellation => render_(_, cancellation, h2oCancelJobOutput, cancellation);
+      extendDeletedKeys = keys => render_(_, keys, h2oDeleteObjectsOutput, keys);
       inspectTwoDimTable_ = (origin, tableName, table) => () => convertTableToFrame(table, tableName, {
         description: table.description || '',
         origin
@@ -5960,7 +5972,7 @@
           return go(null, lodash.extend(model));
         });
         lodash.extend(model);
-        return render_(model, h2oModelOutput, model, refresh);
+        return render_(_, model, h2oModelOutput, model, refresh);
       };
       extendGrid = (grid, opts) => {
         let inspections;
@@ -5974,9 +5986,9 @@
           scoring_history: inspectTwoDimTable_(origin, 'scoring_history', grid.scoring_history)
         };
         inspect_(grid, inspections);
-        return render_(grid, h2oGridOutput, grid);
+        return render_(_, grid, h2oGridOutput, grid);
       };
-      extendGrids = grids => render_(grids, h2oGridsOutput, grids);
+      extendGrids = grids => render_(_, grids, h2oGridsOutput, grids);
       extendModels = models => {
         let algos;
         let inspections;
@@ -6005,7 +6017,7 @@
         //  inspections.outputs = inspectOutputsAcrossModels (head modelCategories), models
 
         inspect_(models, inspections);
-        return render_(models, h2oModelsOutput, models);
+        return render_(_, models, h2oModelsOutput, models);
       };
       read = value => {
         if (value === 'NaN') {
@@ -6014,7 +6026,7 @@
         return value;
       };
       extendPredictions = (opts, predictions) => {
-        render_(predictions, h2oPredictsOutput, opts, predictions);
+        render_(_, predictions, h2oPredictsOutput, opts, predictions);
         return predictions;
       };
       extendPrediction = result => {
@@ -6036,7 +6048,7 @@
           inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$5.stringify(modelKey) }, frame: ${ flowPrelude$5.stringify(frameKey) }`, { prediction_frame: predictionFrame });
         }
         inspect_(prediction, inspections);
-        return render_(prediction, h2oPredictOutput, prediction);
+        return render_(_, prediction, h2oPredictOutput, prediction);
       };
       inspectFrameColumns = (tableLabel, frameKey, frame, frameColumns) => () => {
         let actionsData;
@@ -6263,7 +6275,7 @@
         inspections = { data: inspectFrameData(frameKey, frame) };
         origin = `getFrameData ${ flowPrelude$5.stringify(frameKey) }`;
         inspect_(frame, inspections);
-        return render_(frame, h2oFrameDataOutput, frame);
+        return render_(_, frame, h2oFrameDataOutput, frame);
       };
       extendFrame = (frameKey, frame) => {
         let column;
@@ -6296,7 +6308,7 @@
         inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
         inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
         inspect_(frame, inspections);
-        return render_(frame, h2oFrameOutput, frame);
+        return render_(_, frame, h2oFrameOutput, frame);
       };
       extendFrameSummary = (frameKey, frame) => {
         let column;
@@ -6326,7 +6338,7 @@
         inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
         inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
         inspect_(frame, inspections);
-        return render_(frame, h2oFrameOutput, frame);
+        return render_(_, frame, h2oFrameOutput, frame);
       };
       extendColumnSummary = (frameKey, frame, columnName) => {
         let column;
@@ -6533,7 +6545,7 @@
             inspections.domain = inspectDomain;
         }
         inspect_(frame, inspections);
-        return render_(frame, h2oColumnSummaryOutput, frameKey, frame, columnName);
+        return render_(_, frame, h2oColumnSummaryOutput, frameKey, frame, columnName);
       };
       requestFrame = (frameKey, go) => _.requestFrameSlice(frameKey, void 0, 0, 20, (error, frame) => {
         if (error) {
@@ -6781,8 +6793,8 @@
         }
         return assist(deleteFrame);
       };
-      extendExportFrame = result => render_(result, h2oExportFrameOutput, result);
-      extendBindFrames = (key, result) => render_(result, h2oBindFramesOutput, key, result);
+      extendExportFrame = result => render_(_, result, h2oExportFrameOutput, result);
+      extendBindFrames = (key, result) => render_(_, result, h2oBindFramesOutput, key, result);
       requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
         if (error) {
           return go(error);
@@ -7001,7 +7013,7 @@
         }
         return assist(deleteModel);
       };
-      extendImportModel = result => render_(result, H2O.ImportModelOutput, result);
+      extendImportModel = result => render_(_, result, H2O.ImportModelOutput, result);
       requestImportModel = (path, opts, go) => _.requestImportModel(path, opts.overwrite, (error, result) => {
         if (error) {
           return go(error);
@@ -7014,7 +7026,7 @@
         }
         return assist(importModel, path, opts);
       };
-      extendExportModel = result => render_(result, h2oExportModelOutput, result);
+      extendExportModel = result => render_(_, result, h2oExportModelOutput, result);
       requestExportModel = (modelKey, path, opts, go) => _.requestExportModel(modelKey, path, opts.overwrite, (error, result) => {
         if (error) {
           return go(error);
@@ -7088,7 +7100,7 @@
             return assist(cancelJob);
         }
       };
-      extendImportResults = importResults => render_(importResults, h2oImportFilesOutput, importResults);
+      extendImportResults = importResults => render_(_, importResults, h2oImportFilesOutput, importResults);
       requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
         if (error) {
           return go(error);
@@ -7103,7 +7115,7 @@
             return assist(importFiles);
         }
       };
-      extendParseSetupResults = (args, parseSetupResults) => render_(parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
+      extendParseSetupResults = (args, parseSetupResults) => render_(_, parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
       requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
         let sourceKeys;
         if (error) {
@@ -7131,7 +7143,7 @@
         }
         return assist(setupParse);
       };
-      extendParseResult = parseResult => render_(parseResult, H2O.JobOutput, parseResult.job);
+      extendParseResult = parseResult => render_(_, parseResult, H2O.JobOutput, parseResult.job);
       requestImportAndParseFiles = (paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestImportFiles(paths, (error, importResults) => {
         let sourceKeys;
         if (error) {
@@ -7430,7 +7442,7 @@
       });
       deleteAll = () => _fork(requestRemoveAll);
       extendRDDs = rdds => {
-        render_(rdds, h2oRDDsOutput, rdds);
+        render_(_, rdds, h2oRDDsOutput, rdds);
         return rdds;
       };
       requestRDDs = go => _.requestRDDs((error, result) => {
@@ -7441,7 +7453,7 @@
       });
       getRDDs = () => _fork(requestRDDs);
       extendDataFrames = dataframes => {
-        render_(dataframes, h2oDataFramesOutput, dataframes);
+        render_(_, dataframes, h2oDataFramesOutput, dataframes);
         return dataframes;
       };
       requestDataFrames = go => _.requestDataFrames((error, result) => {
@@ -7452,7 +7464,7 @@
       });
       getDataFrames = () => _fork(requestDataFrames);
       extendAsH2OFrame = result => {
-        render_(result, h2oH2OFrameOutput, result);
+        render_(_, result, h2oH2OFrameOutput, result);
         return result;
       };
       requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
@@ -7480,7 +7492,7 @@
         return _fork(requestAsH2OFrameFromDF, dfId, name);
       };
       extendAsDataFrame = result => {
-        render_(result, h2oDataFrameOutput, result);
+        render_(_, result, h2oDataFrameOutput, result);
         return result;
       };
       requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
@@ -7502,7 +7514,7 @@
         return go(null, extendScalaCode(result));
       });
       extendScalaCode = result => {
-        render_(result, h2oScalaCodeOutput, result);
+        render_(_, result, h2oScalaCodeOutput, result);
         return result;
       };
       runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
@@ -7513,7 +7525,7 @@
         return go(null, extendScalaIntp(result));
       });
       extendScalaIntp = result => {
-        render_(result, h2oScalaIntpOutput, result);
+        render_(_, result, h2oScalaIntpOutput, result);
         return result;
       };
       getScalaIntp = () => _fork(requestScalaIntp);
@@ -7544,7 +7556,7 @@
           result = {};
         }
         console.debug(result);
-        return go(null, render_(result, Flow.objectBrowser, 'dump', result));
+        return go(null, render_(_, result, Flow.objectBrowser, 'dump', result));
       };
       dump = f => {
         if (f != null ? f.isFuture : void 0) {
@@ -10004,11 +10016,11 @@
       const evaluate = ft => {
         if (ft != null ? ft.isFuture : void 0) {
           return ft((error, result) => {
-            const _ref = result._flow_;
             if (error) {
               output.error(new Flow.Error('Error evaluating cell', error));
               return output.end();
             }
+            const _ref = result._flow_;
             if (result != null ? _ref != null ? _ref.render : void 0 : void 0) {
               return output.data(result._flow_.render(() => output.end()));
             }
