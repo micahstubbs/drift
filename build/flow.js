@@ -5379,7 +5379,6 @@
       let _plot;
       let _ref;
       let _schemaHacks;
-      _apply = (go, args) => Flow.Async.join(args, go);
       _isFuture = Flow.Async.isFuture;
       _async = Flow.Async.async;
       _get = Flow.Async.get;
