@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { format4f } from './format4f';
-import { convertTableToFrame } from './convertTableToFrame'; 
+import { convertTableToFrame } from './convertTableToFrame';
+import { getTwoDimData } from './getTwoDimData';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -67,7 +68,6 @@ export function routines() {
   let createVector;
   let format6fi;
   let formulateGetPredictionsOrigin;
-  let getTwoDimData;
   let lightning;
   let parseAndFormatArray;
   let parseAndFormatObjectArray;
@@ -131,14 +131,6 @@ export function routines() {
       description: 'Make a prediction',
       icon: 'bolt'
     }
-  };
-  getTwoDimData = (table, columnName) => {
-    let columnIndex;
-    columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
-    if (columnIndex >= 0) {
-      return table.data[columnIndex];
-    }
-    return void 0;
   };
   format6fi = number => {
     if (number) {

@@ -1555,6 +1555,15 @@
     return createDataframe(tableName, vectors, lodash.range(table.rowcount), null, metadata);
   }
 
+  function getTwoDimData(table, columnName) {
+    const lodash = window._;
+    const columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
+    if (columnIndex >= 0) {
+      return table.data[columnIndex];
+    }
+    return void 0;
+  }
+
   const flowPrelude$6 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -5019,7 +5028,6 @@
     let createVector;
     let format6fi;
     let formulateGetPredictionsOrigin;
-    let getTwoDimData;
     let lightning;
     let parseAndFormatArray;
     let parseAndFormatObjectArray;
@@ -5083,14 +5091,6 @@
         description: 'Make a prediction',
         icon: 'bolt'
       }
-    };
-    getTwoDimData = (table, columnName) => {
-      let columnIndex;
-      columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
-      if (columnIndex >= 0) {
-        return table.data[columnIndex];
-      }
-      return void 0;
     };
     format6fi = number => {
       if (number) {
