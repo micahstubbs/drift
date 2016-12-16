@@ -18,6 +18,8 @@ import { inspect } from './inspect';
 import { render_ } from './render_';
 import { ls } from './ls';
 import { transformBinomialMetrics } from './transformBinomialMetrics';
+import { extendPartialDependence } from './extendPartialDependence';
+import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -188,7 +190,6 @@ export function routines() {
     let extendNetworkTest;
     let extendParseResult;
     let extendParseSetupResults;
-    let extendPartialDependence;
     let extendPlot;
     let extendPrediction;
     let extendPredictions;
@@ -240,7 +241,6 @@ export function routines() {
     let inspectParametersAcrossModels;
     let inspectRawArray_;
     let inspectRawObject_;
-    let inspectTwoDimTable_;
     let loadScript;
     let mergeFrames;
     let name;
@@ -392,25 +392,6 @@ export function routines() {
     };
     extendMergeFramesResult = result => {
       render_(_,  result, h2oMergeFramesOutput, result);
-      return result;
-    };
-    extendPartialDependence = result => {
-      let data;
-      let i;
-      let inspections;
-      let origin;
-      let _i;
-      let _len;
-      let _ref1;
-      inspections = {};
-      _ref1 = result.partial_dependence_data;
-      for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-        data = _ref1[i];
-        origin = `getPartialDependence ${flowPrelude.stringify(result.destination_key)}`;
-        inspections[`plot${(i + 1)}`] = inspectTwoDimTable_(origin, `plot${(i + 1)}`, data);
-      }
-      inspect_(result, inspections);
-      render_(_,  result, h2oPartialDependenceOutput, result);
       return result;
     };
     getModelParameterValue = (type, value) => {
@@ -574,10 +555,6 @@ export function routines() {
     };
     extendCancelJob = cancellation => render_(_,  cancellation, h2oCancelJobOutput, cancellation);
     extendDeletedKeys = keys => render_(_,  keys, h2oDeleteObjectsOutput, keys);
-    inspectTwoDimTable_ = (origin, tableName, table) => () => convertTableToFrame(table, tableName, {
-      description: table.description || '',
-      origin
-    });
     inspectRawArray_ = (name, origin, description, array) => () => createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
       description: '',
       origin
@@ -1448,7 +1425,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendPartialDependence(result));
+      return go(null, extendPartialDependence(_, result));
     });
     computeSplits = (ratios, keys) => {
       let i;
