@@ -22,6 +22,7 @@ import { extendPartialDependence } from './extendPartialDependence';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { getModelParameterValue } from './getModelParameterValue';
 import { inspectParametersAcrossModels } from './inspectParametersAcrossModels';
+import { inspectModelParameters } from './inspectModelParameters';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -235,7 +236,6 @@ export function routines() {
     let initAssistanceSparklingWater;
     let inspectFrameColumns;
     let inspectFrameData;
-    let inspectModelParameters;
     let inspectNetworkTestResult;
     let inspectObject;
     let inspectObjectArray_;
@@ -393,45 +393,6 @@ export function routines() {
     extendMergeFramesResult = result => {
       render_(_,  result, h2oMergeFramesOutput, result);
       return result;
-    };
-    inspectModelParameters = model => () => {
-      let attr;
-      let attrs;
-      let data;
-      let i;
-      let parameter;
-      let parameters;
-      let vectors;
-      parameters = model.parameters;
-      attrs = [
-        'label',
-        'type',
-        'level',
-        'actualValue',
-        'defaultValue'
-      ];
-      vectors = (() => {
-        let _i;
-        let _j;
-        let _len;
-        let _len1;
-        let _results;
-        _results = [];
-        for (_i = 0, _len = attrs.length; _i < _len; _i++) {
-          attr = attrs[_i];
-          data = new Array(parameters.length);
-          for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
-            parameter = parameters[i];
-            data[i] = attr === 'actualValue' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
-          }
-          _results.push(createList(attr, data));
-        }
-        return _results;
-      })();
-      return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-        description: `Parameters for model \'${model.model_id.name}\'`, // TODO frame model_id
-        origin: `getModel ${flowPrelude.stringify(model.model_id.name)}`
-      });
     };
     extendJob = job => render_(_,  job, H2O.JobOutput, job);
     extendJobs = jobs => {
