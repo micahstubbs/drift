@@ -8,6 +8,7 @@ import { parseNaNs } from './parseNaNs';
 import { parseNulls } from './parseNulls';
 import { parseAndFormatArray } from './parseAndFormatArray';
 import { parseAndFormatObjectArray } from './parseAndFormatObjectArray';
+import { _fork } from './_fork';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -316,19 +317,12 @@ export function routines() {
     let _apply;
     let _async;
     let _call;
-    let _fork;
     let _get;
     let _isFuture;
     let _join;
     let _plot;
     let _ref;
     let _schemaHacks;
-    _fork = function () {
-      let args;
-      let f;
-      f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-      return Flow.Async.fork(f, args);
-    };
     _join = function () {
       let args;
       let go;

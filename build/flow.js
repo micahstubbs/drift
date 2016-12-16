@@ -1644,6 +1644,14 @@
     return target;
   }
 
+  function _fork() {
+    const Flow = window.Flow;
+    const f = arguments[0];
+    const __slice = [].slice;
+    const args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
+    return Flow.Async.fork(f, args);
+  }
+
   const flowPrelude$7 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -5350,19 +5358,12 @@
       let _apply;
       let _async;
       let _call;
-      let _fork;
       let _get;
       let _isFuture;
       let _join;
       let _plot;
       let _ref;
       let _schemaHacks;
-      _fork = function () {
-        let args;
-        let f;
-        f = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-        return Flow.Async.fork(f, args);
-      };
       _join = function () {
         let args;
         let go;
