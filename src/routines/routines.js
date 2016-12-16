@@ -9,6 +9,7 @@ import { parseNulls } from './parseNulls';
 import { parseAndFormatArray } from './parseAndFormatArray';
 import { parseAndFormatObjectArray } from './parseAndFormatObjectArray';
 import { repeatValues } from './repeatValues';
+import { concatArrays } from './concatArrays';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -66,7 +67,6 @@ export function routines() {
   let combineTables;
   let computeFalsePositiveRate;
   let computeTruePositiveRate;
-  let concatArrays;
   let createDataframe;
   let createFactor;
   let createList;
@@ -177,18 +177,6 @@ export function routines() {
       data,
       rowcount: rowCount
     };
-  };
-  concatArrays = arrays => {
-    let a;
-    switch (arrays.length) {
-      case 0:
-        return [];
-      case 1:
-        return lodash.head(arrays);
-      default:
-        a = lodash.head(arrays);
-        return a.concat(...lodash.tail(arrays));
-    }
   };
   computeTruePositiveRate = cm => {
     let fn;

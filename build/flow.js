@@ -5099,7 +5099,6 @@
     let combineTables;
     let computeFalsePositiveRate;
     let computeTruePositiveRate;
-    let concatArrays;
     let createDataframe;
     let createFactor;
     let createList;
@@ -5210,18 +5209,6 @@
         data,
         rowcount: rowCount
       };
-    };
-    concatArrays = arrays => {
-      let a;
-      switch (arrays.length) {
-        case 0:
-          return [];
-        case 1:
-          return lodash.head(arrays);
-        default:
-          a = lodash.head(arrays);
-          return a.concat(...lodash.tail(arrays));
-      }
     };
     computeTruePositiveRate = cm => {
       let fn;
