@@ -1597,6 +1597,19 @@
     return target;
   }
 
+  function parseNulls(source) {
+    let element;
+    let i;
+    let _i;
+    let _len;
+    const target = new Array(source.length);
+    for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
+      element = source[i];
+      target[i] = element != null ? element : void 0;
+    }
+    return target;
+  }
+
   const flowPrelude$6 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -5062,7 +5075,6 @@
     let lightning;
     let parseAndFormatArray;
     let parseAndFormatObjectArray;
-    let parseNulls;
     let repeatValues;
     let _assistance;
     const __slice = [].slice;
@@ -5167,19 +5179,6 @@
         data,
         rowcount: rowCount
       };
-    };
-    parseNulls = source => {
-      let element;
-      let i;
-      let target;
-      let _i;
-      let _len;
-      target = new Array(source.length);
-      for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-        element = source[i];
-        target[i] = element != null ? element : void 0;
-      }
-      return target;
     };
     parseAndFormatArray = source => {
       let element;
