@@ -5107,7 +5107,6 @@
     let createVector;
     let formulateGetPredictionsOrigin;
     let lightning;
-    let repeatValues;
     let _assistance;
     const __slice = [].slice;
     lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
@@ -5211,16 +5210,6 @@
         data,
         rowcount: rowCount
       };
-    };
-    repeatValues = (count, value) => {
-      let i;
-      let target;
-      let _i;
-      target = new Array(count);
-      for (i = _i = 0; count >= 0 ? _i < count : _i > count; i = count >= 0 ? ++_i : --_i) {
-        target[i] = value;
-      }
-      return target;
     };
     concatArrays = arrays => {
       let a;
