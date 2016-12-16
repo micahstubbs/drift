@@ -6,6 +6,7 @@ import { format6fi } from './format6fi';
 import { createArrays } from './createArrays';
 import { parseNaNs } from './parseNaNs';
 import { parseNulls } from './parseNulls';
+import { parseAndFormatArray } from './parseAndFormatArray';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -71,7 +72,6 @@ export function routines() {
   let createVector;
   let formulateGetPredictionsOrigin;
   let lightning;
-  let parseAndFormatArray;
   let parseAndFormatObjectArray;
   let repeatValues;
   let _assistance;
@@ -177,19 +177,6 @@ export function routines() {
       data,
       rowcount: rowCount
     };
-  };
-  parseAndFormatArray = source => {
-    let element;
-    let i;
-    let target;
-    let _i;
-    let _len;
-    target = new Array(source.length);
-    for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-      element = source[i];
-      target[i] = element != null ? lodash.isNumber(element) ? format6fi(element) : element : void 0;
-    }
-    return target;
   };
   parseAndFormatObjectArray = source => {
     let element;
