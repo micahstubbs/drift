@@ -20,6 +20,7 @@ import { ls } from './ls';
 import { transformBinomialMetrics } from './transformBinomialMetrics';
 import { extendPartialDependence } from './extendPartialDependence';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
+import { getModelParameterValue } from './getModelParameterValue';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -216,7 +217,6 @@ export function routines() {
     let getJobs;
     let getLogFile;
     let getModel;
-    let getModelParameterValue;
     let getModels;
     let getPartialDependence;
     let getPrediction;
@@ -393,28 +393,6 @@ export function routines() {
     extendMergeFramesResult = result => {
       render_(_,  result, h2oMergeFramesOutput, result);
       return result;
-    };
-    getModelParameterValue = (type, value) => {
-      switch (type) {
-        case 'Key<Frame>':
-        case 'Key<Model>':
-          if (value != null) {
-            return value.name;
-          }
-          return void 0;
-          // break; // no-unreachable
-        case 'VecSpecifier':
-          if (value != null) {
-            return value.column_name;
-          }
-          return void 0;
-          // break; // no-unreachable
-        default:
-          if (value != null) {
-            return value;
-          }
-          return void 0;
-      }
     };
     inspectParametersAcrossModels = models => () => {
       let data;
