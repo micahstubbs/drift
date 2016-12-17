@@ -27,7 +27,7 @@ export function h2oPartialDependenceInput(_, _go) {
     // form dropdown menus, text boxes, etc
     const opts = {
       destination_key: _destinationKey(),
-      modelId: _selectedModel(),
+      model_id: _selectedModel(),
       frame_id: _selectedFrame(),
       nbins: _nbins(),
     };
@@ -72,7 +72,7 @@ export function h2oPartialDependenceInput(_, _go) {
       // TODO use models directly
       for (_i = 0, _len = models.length; _i < _len; _i++) {
         model = models[_i];
-        _results.push(model.modelId.name);
+        _results.push(model.model_id.name);
       }
       return _results;
     })());
