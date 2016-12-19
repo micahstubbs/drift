@@ -17,7 +17,7 @@ export function inspectObject(inspections, name, origin, obj) {
   let _ref2;
   const _ref1 = obj.__meta;
   const schemaType = (_ref1) != null ? _ref1.schema_type : void 0;
-  const attrs = blacklistedAttributesBySchema[schemaType];
+  const attrs = blacklistedAttributesBySchema()[schemaType];
   const blacklistedAttributes = schemaType ? attrs : {};
   const transform = schemaTransforms[schemaType];
   if (transform) {
