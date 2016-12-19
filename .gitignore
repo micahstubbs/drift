@@ -1,5 +1,6 @@
 node_modules/
 bin/
+reports/
 *.sublime-project
 *.sublime-workspace
 selenium-debug.log
