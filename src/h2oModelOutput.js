@@ -52,8 +52,9 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     // TODO use _.enumerate()
     const _inputParameters = lodash.map(_model.parameters, parameter => {
       const type = parameter.type;
-      const defaultValue = parameter.defaultValue;
-      const actualValue = parameter.actualValue;
+      console.log('parameter from h2oModelOutput', parameter);
+      const defaultValue = parameter.default_value;
+      const actualValue = parameter.actual_value;
       const label = parameter.label;
       const help = parameter.help;
       const value = (() => {
@@ -323,7 +324,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - Scoring History', _model);
         if (table) {
           lambdaSearchParameter = lodash.find(_model.parameters, parameter => parameter.name === 'lambda_search');
-          if (lambdaSearchParameter != null ? lambdaSearchParameter.actualValue : void 0) {
+          if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
             renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
           } else {
             renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));

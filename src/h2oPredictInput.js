@@ -28,7 +28,7 @@ export function h2oPredictInput(_, _go, opt) {
         _ref1 = model.parameters;
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           parameter = _ref1[_i];
-          if (parameter.name === 'autoencoder' && parameter.actualValue === true) {
+          if (parameter.name === 'autoencoder' && parameter.actual_value === true) {
             return true;
           }
         }

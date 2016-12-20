@@ -35,7 +35,7 @@ export function inspectParametersAcrossModels(models) {
           const _results1 = [];
           for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
             model = models[_j];
-            _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actualValue));
+            _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actual_value));
           }
           return _results1;
         })();

@@ -24,8 +24,8 @@ export function inspectModelParameters(model) {
       'label',
       'type',
       'level',
-      'actualValue',
-      'defaultValue',
+      'actual_value',
+      'default_value',
     ];
     const vectors = (() => {
       let _i;
@@ -38,7 +38,7 @@ export function inspectModelParameters(model) {
         data = new Array(parameters.length);
         for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
           parameter = parameters[i];
-          data[i] = attr === 'actualValue' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
+          data[i] = attr === 'actual_value' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
         }
         _results.push(createList(attr, data));
       }
