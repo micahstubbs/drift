@@ -1828,6 +1828,22 @@
     return inspect$2(a, b);
   }
 
+  function ls(obj) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _isFuture = Flow.Async.isFuture;
+    const _async = Flow.Async.async;
+    let inspectors;
+    let _ref1;
+    if (_isFuture(obj)) {
+      return _async(ls, obj);
+    }
+    if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
+      return lodash.keys(inspectors);
+    }
+    return [];
+  }
+
   function transformBinomialMetrics(metrics) {
     let cms;
     let domain;
@@ -5877,7 +5893,6 @@
       let inspectFrameData;
       let inspectNetworkTestResult;
       let loadScript;
-      let ls;
       let mergeFrames;
       let name;
       let parseFiles;
@@ -5955,20 +5970,6 @@
       _isFuture = Flow.Async.isFuture;
       _async = Flow.Async.async;
       _get = Flow.Async.get;
-
-      // abstracting this out produces an error
-      // defer for now
-      ls = obj => {
-        let inspectors;
-        let _ref1;
-        if (_isFuture(obj)) {
-          return _async(ls, obj);
-        }
-        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
-          return lodash.keys(inspectors);
-        }
-        return [];
-      };
 
       plot = f => {
         if (_isFuture(f)) {
