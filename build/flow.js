@@ -2324,6 +2324,14 @@
     });
   }
 
+  function proceed(_, func, args, go) {
+    console.log('proceed was called', proceed);
+    console.log('func', func);
+    console.log('args', args);
+    console.log('go', go);
+    return go(null, render_(_, ...[{}, func].concat(args || [])));
+  }
+
   function h2oPlotOutput(_, _go, _plot) {
     const lodash = window._;
     lodash.defer(_go);
@@ -5845,7 +5853,6 @@
       let parseFiles;
       let plot;
       let predict;
-      let proceed;
       let read;
       let requestAsDataFrame;
       let requestAsH2OFrameFromDF;
@@ -5919,11 +5926,6 @@
       _async = Flow.Async.async;
       _get = Flow.Async.get;
 
-      // XXX obsolete
-      // proceed = (func, args, go) => go(null, render_(_,  {}, () => func(...[_].concat(args || []))));
-
-
-      proceed = (func, args, go) => go(null, render_(_, ...[{}, func].concat(args || [])));
       extendGuiForm = form => render_(_, form, flowForm, form);
       createGui = (controls, go) => go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
       gui = controls => _fork(createGui, controls);
@@ -7642,36 +7644,36 @@
         let func;
         func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         if (func === void 0) {
-          return _fork(proceed, h2oAssist, [_assistance]);
+          return _fork(proceed, _, h2oAssist, [_assistance]);
         }
         switch (func) {
           case importFiles:
-            return _fork(proceed, h2oImportFilesInput, []);
+            return _fork(proceed, _, h2oImportFilesInput, []);
           case buildModel:
-            return _fork(proceed, H2O.ModelInput, args);
+            return _fork(proceed, _, H2O.ModelInput, args);
           case buildAutoModel:
-            return _fork(proceed, h2oAutoModelInput, args);
+            return _fork(proceed, _, h2oAutoModelInput, args);
           case predict:
           case getPrediction:
-            return _fork(proceed, h2oPredictInput, args);
+            return _fork(proceed, _, h2oPredictInput, args);
           case createFrame:
-            return _fork(proceed, h2oCreateFrameInput, args);
+            return _fork(proceed, _, h2oCreateFrameInput, args);
           case splitFrame:
-            return _fork(proceed, h2oSplitFrameInput, args);
+            return _fork(proceed, _, h2oSplitFrameInput, args);
           case mergeFrames:
-            return _fork(proceed, h2oMergeFramesInput, args);
+            return _fork(proceed, _, h2oMergeFramesInput, args);
           case buildPartialDependence:
-            return _fork(proceed, h2oPartialDependenceInput, args);
+            return _fork(proceed, _, h2oPartialDependenceInput, args);
           case exportFrame:
-            return _fork(proceed, h2oExportFrameInput, args);
+            return _fork(proceed, _, h2oExportFrameInput, args);
           case imputeColumn:
-            return _fork(proceed, H2O.ImputeInput, args);
+            return _fork(proceed, _, H2O.ImputeInput, args);
           case importModel:
-            return _fork(proceed, h2oImportModelInput, args);
+            return _fork(proceed, _, h2oImportModelInput, args);
           case exportModel:
-            return _fork(proceed, h2oExportModelInput, args);
+            return _fork(proceed, _, h2oExportModelInput, args);
           default:
-            return _fork(proceed, h2oNoAssist, []);
+            return _fork(proceed, _, h2oNoAssist, []);
         }
       };
       Flow.Dataflow.link(_.ready, () => {
