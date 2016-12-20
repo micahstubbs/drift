@@ -325,7 +325,8 @@ export function routines() {
     // XXX obsolete
     // proceed = (func, args, go) => go(null, render_(_,  {}, () => func(...[_].concat(args || []))));
 
-
+    // abstracting this out produces an error
+    // defer for now
     proceed = (func, args, go) => go(null, render_(_,  ...[
             {},
       func
