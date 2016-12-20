@@ -2332,6 +2332,11 @@
     return render_(_, form, flowForm, form);
   }
 
+  function createGui(controls, go) {
+    const Flow = window.Flow;
+    return go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
+  }
+
   function h2oPlotOutput(_, _go, _plot) {
     const lodash = window._;
     lodash.defer(_go);
@@ -5763,7 +5768,6 @@
       let changeColumnType;
       let computeSplits;
       let createFrame;
-      let createGui;
       let createPlot;
       let deleteAll;
       let deleteFrame;
@@ -5925,7 +5929,6 @@
       _async = Flow.Async.async;
       _get = Flow.Async.get;
 
-      createGui = (controls, go) => go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
       gui = controls => _fork(createGui, controls);
       _ref = Flow.Gui;
       for (name in _ref) {

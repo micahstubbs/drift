@@ -29,7 +29,7 @@ import { inspectObjectArray_ } from './inspectObjectArray_';
 import { inspectObject } from './inspectObject';
 import { _plot } from './_plot';
 import { proceed } from './proceed';
-import { extendGuiForm } from './extendGuiForm';
+import { createGui } from './createGui';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -160,7 +160,6 @@ export function routines() {
     let changeColumnType;
     let computeSplits;
     let createFrame;
-    let createGui;
     let createPlot;
     let deleteAll;
     let deleteFrame;
@@ -322,7 +321,6 @@ export function routines() {
     _async = Flow.Async.async;
     _get = Flow.Async.get;
 
-    createGui = (controls, go) => go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
     gui = controls => _fork(createGui, controls);
     _ref = Flow.Gui;
     for (name in _ref) {
