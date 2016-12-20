@@ -2349,15 +2349,6 @@
     }
   }
 
-  function h2oPlotOutput(_, _go, _plot) {
-    const lodash = window._;
-    lodash.defer(_go);
-    return {
-      plot: _plot,
-      template: 'flow-plot-output'
-    };
-  }
-
   const flowPrelude$15 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -5817,7 +5808,6 @@
       let extendNetworkTest;
       let extendParseResult;
       let extendParseSetupResults;
-      let extendPlot;
       let extendPrediction;
       let extendPredictions;
       let extendProfile;
@@ -5954,12 +5944,11 @@
         return [];
       };
 
-      extendPlot = vis => render_(_, vis, h2oPlotOutput, vis.element);
       createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendPlot(vis));
+        return go(null, extendPlot(_, vis));
       });
       plot = f => {
         if (_isFuture(f)) {

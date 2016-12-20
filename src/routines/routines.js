@@ -197,7 +197,6 @@ export function routines() {
     let extendNetworkTest;
     let extendParseResult;
     let extendParseSetupResults;
-    let extendPlot;
     let extendPrediction;
     let extendPredictions;
     let extendProfile;
@@ -334,12 +333,11 @@ export function routines() {
         return [];
     };
 
-    extendPlot = vis => render_(_,  vis, h2oPlotOutput, vis.element);
     createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
       if (error) {
         return go(error);
       }
-      return go(null, extendPlot(vis));
+      return go(null, extendPlot(_, vis));
     });
     plot = f => {
       if (_isFuture(f)) {
