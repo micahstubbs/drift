@@ -2337,6 +2337,18 @@
     return go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
   }
 
+  function gui(controls) {
+    const Flow = window.Flow;
+    _fork(createGui, controls);
+    _ref = Flow.Gui;
+    for (name in _ref) {
+      if ({}.hasOwnProperty.call(_ref, name)) {
+        f = _ref[name];
+        gui[name] = f;
+      }
+    }
+  }
+
   function h2oPlotOutput(_, _go, _plot) {
     const lodash = window._;
     lodash.defer(_go);
@@ -5841,7 +5853,6 @@
       let getStackTrace;
       let getTimeline;
       let grid;
-      let gui;
       let importFiles;
       let importModel;
       let imputeColumn;
@@ -5928,15 +5939,6 @@
       _isFuture = Flow.Async.isFuture;
       _async = Flow.Async.async;
       _get = Flow.Async.get;
-
-      gui = controls => _fork(createGui, controls);
-      _ref = Flow.Gui;
-      for (name in _ref) {
-        if ({}.hasOwnProperty.call(_ref, name)) {
-          f = _ref[name];
-          gui[name] = f;
-        }
-      }
 
       // XXX obsolete
       // render_ = (raw, render) => {
@@ -11559,7 +11561,7 @@
     };
   }
 
-  function gui() {
+  function gui$1() {
     const lodash = window._;
     const Flow = window.Flow;
     const wrapValue = (value, init) => {
@@ -12670,7 +12672,7 @@
     dialogs();
     error();
     format();
-    gui();
+    gui$1();
     html();
     knockout();
     localStorage();

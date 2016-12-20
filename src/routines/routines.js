@@ -29,7 +29,7 @@ import { inspectObjectArray_ } from './inspectObjectArray_';
 import { inspectObject } from './inspectObject';
 import { _plot } from './_plot';
 import { proceed } from './proceed';
-import { createGui } from './createGui';
+import { gui } from './gui';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -233,7 +233,6 @@ export function routines() {
     let getStackTrace;
     let getTimeline;
     let grid;
-    let gui;
     let importFiles;
     let importModel;
     let imputeColumn;
@@ -320,15 +319,6 @@ export function routines() {
     _isFuture = Flow.Async.isFuture;
     _async = Flow.Async.async;
     _get = Flow.Async.get;
-
-    gui = controls => _fork(createGui, controls);
-    _ref = Flow.Gui;
-    for (name in _ref) {
-      if ({}.hasOwnProperty.call(_ref, name)) {
-        f = _ref[name];
-        gui[name] = f;
-      }
-    }
 
     // XXX obsolete
     // render_ = (raw, render) => {
