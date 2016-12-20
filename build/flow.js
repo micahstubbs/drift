@@ -5940,12 +5940,6 @@
       _async = Flow.Async.async;
       _get = Flow.Async.get;
 
-      // XXX obsolete
-      // render_ = (raw, render) => {
-      //   flow_(raw).render = render;
-      //   return raw;
-      // };
-
       // abstracting this out produces an error
       // defer for now
       ls = obj => {
