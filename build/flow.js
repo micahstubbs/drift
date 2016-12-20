@@ -2332,6 +2332,10 @@
     return go(null, render_(_, ...[{}, func].concat(args || [])));
   }
 
+  function extendGuiForm(form) {
+    return render_(_, form, flowForm, form);
+  }
+
   function h2oPlotOutput(_, _go, _plot) {
     const lodash = window._;
     lodash.defer(_go);
@@ -5790,7 +5794,6 @@
       let extendFrames;
       let extendGrid;
       let extendGrids;
-      let extendGuiForm;
       let extendImportModel;
       let extendImportResults;
       let extendJob;
@@ -5926,7 +5929,6 @@
       _async = Flow.Async.async;
       _get = Flow.Async.get;
 
-      extendGuiForm = form => render_(_, form, flowForm, form);
       createGui = (controls, go) => go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
       gui = controls => _fork(createGui, controls);
       _ref = Flow.Gui;

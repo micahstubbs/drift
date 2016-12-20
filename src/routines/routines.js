@@ -29,6 +29,7 @@ import { inspectObjectArray_ } from './inspectObjectArray_';
 import { inspectObject } from './inspectObject';
 import { _plot } from './_plot';
 import { proceed } from './proceed';
+import { extendGuiForm } from './extendGuiForm';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -186,7 +187,6 @@ export function routines() {
     let extendFrames;
     let extendGrid;
     let extendGrids;
-    let extendGuiForm;
     let extendImportModel;
     let extendImportResults;
     let extendJob;
@@ -322,7 +322,6 @@ export function routines() {
     _async = Flow.Async.async;
     _get = Flow.Async.get;
 
-    extendGuiForm = form => render_(_,  form, flowForm, form);
     createGui = (controls, go) => go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
     gui = controls => _fork(createGui, controls);
     _ref = Flow.Gui;
