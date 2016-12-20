@@ -27,9 +27,9 @@ import { inspectRawObject_ } from './inspectRawObject_';
 import { inspectRawArray_ } from './inspectRawArray_';
 import { inspectObjectArray_ } from './inspectObjectArray_';
 import { inspectObject } from './inspectObject';
-import { _plot } from './_plot';
 import { proceed } from './proceed';
 import { gui } from './gui';
+import { createPlot } from './createPlot';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -160,7 +160,6 @@ export function routines() {
     let changeColumnType;
     let computeSplits;
     let createFrame;
-    let createPlot;
     let deleteAll;
     let deleteFrame;
     let deleteFrames;
@@ -333,12 +332,6 @@ export function routines() {
         return [];
     };
 
-    createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendPlot(_, vis));
-    });
     plot = f => {
       if (_isFuture(f)) {
         return _fork(proceed, h2oPlotInput, f);

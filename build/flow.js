@@ -2314,16 +2314,6 @@
     }
   }
 
-  function _plot(render, go) {
-    const Flow = window.Flow;
-    return render((error, vis) => {
-      if (error) {
-        return go(new Flow.Error('Error rendering vis.', error));
-      }
-      return go(null, vis);
-    });
-  }
-
   function proceed(_, func, args, go) {
     return go(null, render_(_, ...[{}, func].concat(args || [])));
   }
@@ -2347,6 +2337,43 @@
         gui[name] = f;
       }
     }
+  }
+
+  function _plot(render, go) {
+    const Flow = window.Flow;
+    return render((error, vis) => {
+      if (error) {
+        return go(new Flow.Error('Error rendering vis.', error));
+      }
+      return go(null, vis);
+    });
+  }
+
+  function h2oPlotOutput(_, _go, _plot) {
+    const lodash = window._;
+    lodash.defer(_go);
+    return {
+      plot: _plot,
+      template: 'flow-plot-output'
+    };
+  }
+
+  function extendPlot(_, vis) {
+    render_(_, vis, h2oPlotOutput, vis.element);
+  }
+
+  function createPlot(f, go) {
+    lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+    if (lightning.settings) {
+      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
+    }
+    return _plot(f(lightning), (error, vis) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendPlot(_, vis));
+    });
   }
 
   const flowPrelude$15 = flowPreludeFunction();
@@ -5771,7 +5798,6 @@
       let changeColumnType;
       let computeSplits;
       let createFrame;
-      let createPlot;
       let deleteAll;
       let deleteFrame;
       let deleteFrames;
@@ -5944,12 +5970,6 @@
         return [];
       };
 
-      createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendPlot(_, vis));
-      });
       plot = f => {
         if (_isFuture(f)) {
           return _fork(proceed, h2oPlotInput, f);
