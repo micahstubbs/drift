@@ -1885,10 +1885,12 @@
   }
 
   function inspectTwoDimTable_(origin, tableName, table) {
-    return convertTableToFrame(table, tableName, {
-      description: table.description || '',
-      origin
-    });
+    return function () {
+      return convertTableToFrame(table, tableName, {
+        description: table.description || '',
+        origin
+      });
+    };
   }
 
   const flowPrelude$10 = flowPreludeFunction();
@@ -1992,200 +1994,210 @@
   const flowPrelude$11 = flowPreludeFunction();
 
   function inspectParametersAcrossModels(models) {
-    const lodash = window._;
+    return function () {
+      const lodash = window._;
 
-    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-    const createVector = lightning.createVector;
-    const createFactor = lightning.createFactor;
-    const createList = lightning.createList;
-    const createDataframe = lightning.createFrame;
+      const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+      if (lightning.settings) {
+        lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+        lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
+      }
+      const createVector = lightning.createVector;
+      const createFactor = lightning.createFactor;
+      const createList = lightning.createList;
+      const createDataframe = lightning.createFrame;
 
-    let data;
-    let i;
-    let model;
-    let parameter;
-    const leader = lodash.head(models);
-    const vectors = (() => {
-      let _i;
-      let _len;
-      const _ref1 = leader.parameters;
-      const _results = [];
-      for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-        parameter = _ref1[i];
-        data = (() => {
-          let _j;
-          let _len1;
-          const _results1 = [];
-          for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
-            model = models[_j];
-            _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actualValue));
+      let data;
+      let i;
+      let model;
+      let parameter;
+      const leader = lodash.head(models);
+      const vectors = (() => {
+        let _i;
+        let _len;
+        const _ref1 = leader.parameters || [];
+        const _results = [];
+        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+          parameter = _ref1[i];
+          data = (() => {
+            let _j;
+            let _len1;
+            const _results1 = [];
+            for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
+              model = models[_j];
+              _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actualValue));
+            }
+            return _results1;
+          })();
+          switch (parameter.type) {
+            case 'enum':
+            case 'Frame':
+            case 'string':
+              _results.push(createFactor(parameter.label, 'String', data));
+              break;
+            case 'byte':
+            case 'short':
+            case 'int':
+            case 'long':
+            case 'float':
+            case 'double':
+              _results.push(createVector(parameter.label, 'Number', data));
+              break;
+            case 'string[]':
+            case 'byte[]':
+            case 'short[]':
+            case 'int[]':
+            case 'long[]':
+            case 'float[]':
+            case 'double[]':
+              _results.push(createList(parameter.label, data, a => {
+                if (a) {
+                  return a;
+                }
+                return void 0;
+              }));
+              break;
+            case 'boolean':
+              _results.push(createList(parameter.label, data, a => {
+                if (a) {
+                  return 'true';
+                }
+                return 'false';
+              }));
+              break;
+            default:
+              _results.push(createList(parameter.label, data));
           }
-          return _results1;
-        })();
-        switch (parameter.type) {
-          case 'enum':
-          case 'Frame':
-          case 'string':
-            _results.push(createFactor(parameter.label, 'String', data));
-            break;
-          case 'byte':
-          case 'short':
-          case 'int':
-          case 'long':
-          case 'float':
-          case 'double':
-            _results.push(createVector(parameter.label, 'Number', data));
-            break;
-          case 'string[]':
-          case 'byte[]':
-          case 'short[]':
-          case 'int[]':
-          case 'long[]':
-          case 'float[]':
-          case 'double[]':
-            _results.push(createList(parameter.label, data, a => {
-              if (a) {
-                return a;
-              }
-              return void 0;
-            }));
-            break;
-          case 'boolean':
-            _results.push(createList(parameter.label, data, a => {
-              if (a) {
-                return 'true';
-              }
-              return 'false';
-            }));
-            break;
-          default:
-            _results.push(createList(parameter.label, data));
         }
-      }
-      return _results;
-    })();
-    const modelKeys = (() => {
-      let _i;
-      let _len;
-      const _results = [];
-      for (_i = 0, _len = models.length; _i < _len; _i++) {
-        model = models[_i];
-        _results.push(model.model_id.name);
-      }
-      return _results;
-    })();
-    return createDataframe('parameters', vectors, lodash.range(models.length), null, {
-      description: `Parameters for models ${ modelKeys.join(', ') }`,
-      origin: `getModels ${ flowPrelude$11.stringify(modelKeys) }`
-    });
+        return _results;
+      })();
+      const modelKeys = (() => {
+        let _i;
+        let _len;
+        const _results = [];
+        for (_i = 0, _len = models.length; _i < _len; _i++) {
+          model = models[_i];
+          _results.push(model.model_id.name);
+        }
+        return _results;
+      })();
+      return createDataframe('parameters', vectors, lodash.range(models.length), null, {
+        description: `Parameters for models ${ modelKeys.join(', ') }`,
+        origin: `getModels ${ flowPrelude$11.stringify(modelKeys) }`
+      });
+    };
   }
 
   const flowPrelude$12 = flowPreludeFunction();
 
   function inspectModelParameters(model) {
-    const lodash = window._;
+    return function () {
+      const lodash = window._;
 
-    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-    const createList = lightning.createList;
-    const createDataframe = lightning.createFrame;
-
-    let attr;
-    let data;
-    let i;
-    let parameter;
-    const parameters = model.parameters;
-    const attrs = ['label', 'type', 'level', 'actualValue', 'defaultValue'];
-    const vectors = (() => {
-      let _i;
-      let _j;
-      let _len;
-      let _len1;
-      const _results = [];
-      for (_i = 0, _len = attrs.length; _i < _len; _i++) {
-        attr = attrs[_i];
-        data = new Array(parameters.length);
-        for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
-          parameter = parameters[i];
-          data[i] = attr === 'actualValue' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
-        }
-        _results.push(createList(attr, data));
+      const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+      if (lightning.settings) {
+        lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+        lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
       }
-      return _results;
-    })();
-    return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
-      description: `Parameters for model \'${ model.model_id.name }\'`, // TODO frame model_id
-      origin: `getModel ${ flowPrelude$12.stringify(model.model_id.name) }`
-    });
+      const createList = lightning.createList;
+      const createDataframe = lightning.createFrame;
+
+      let attr;
+      let data;
+      let i;
+      let parameter;
+      const parameters = model.parameters;
+      const attrs = ['label', 'type', 'level', 'actualValue', 'defaultValue'];
+      const vectors = (() => {
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
+        const _results = [];
+        for (_i = 0, _len = attrs.length; _i < _len; _i++) {
+          attr = attrs[_i];
+          data = new Array(parameters.length);
+          for (i = _j = 0, _len1 = parameters.length; _j < _len1; i = ++_j) {
+            parameter = parameters[i];
+            data[i] = attr === 'actualValue' ? getModelParameterValue(parameter.type, parameter[attr]) : parameter[attr];
+          }
+          _results.push(createList(attr, data));
+        }
+        return _results;
+      })();
+      return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
+        description: `Parameters for model \'${ model.model_id.name }\'`, // TODO frame model_id
+        origin: `getModel ${ flowPrelude$12.stringify(model.model_id.name) }`
+      });
+    };
   }
 
   function inspectRawObject_(name, origin, description, obj) {
-    const lodash = window._;
+    return function () {
+      const lodash = window._;
 
-    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-    const createList = lightning.createList;
-    const createDataframe = lightning.createFrame;
-
-    let k;
-    let v;
-    const vectors = (() => {
-      const _results = [];
-      for (k in obj) {
-        if ({}.hasOwnProperty.call(obj, k)) {
-          v = obj[k];
-          _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
-        }
+      const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+      if (lightning.settings) {
+        lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+        lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
       }
-      return _results;
-    })();
-    return createDataframe(name, vectors, lodash.range(1), null, {
-      description: '',
-      origin
-    });
+      const createList = lightning.createList;
+      const createDataframe = lightning.createFrame;
+
+      let k;
+      let v;
+      const vectors = (() => {
+        const _results = [];
+        for (k in obj) {
+          if ({}.hasOwnProperty.call(obj, k)) {
+            v = obj[k];
+            _results.push(createList(k, [v === null ? void 0 : lodash.isNumber(v) ? format6fi(v) : v]));
+          }
+        }
+        return _results;
+      })();
+      return createDataframe(name, vectors, lodash.range(1), null, {
+        description: '',
+        origin
+      });
+    };
   }
 
   function inspectRawArray_(name, origin, description, array) {
-    const lodash = window._;
+    return function () {
+      const lodash = window._;
 
-    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-    const createList = lightning.createList;
-    const createDataframe = lightning.createFrame;
+      const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+      if (lightning.settings) {
+        lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+        lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
+      }
+      const createList = lightning.createList;
+      const createDataframe = lightning.createFrame;
 
-    return createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
-      description: '',
-      origin
-    });
+      return createDataframe(name, [createList(name, parseAndFormatArray(array))], lodash.range(array.length), null, {
+        description: '',
+        origin
+      });
+    };
   }
 
   function inspectObjectArray_(name, origin, description, array) {
-    const lodash = window._;
-    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-    const createList = lightning.createList;
-    const createDataframe = lightning.createFrame;
+    return function () {
+      const lodash = window._;
+      const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+      if (lightning.settings) {
+        lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+        lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
+      }
+      const createList = lightning.createList;
+      const createDataframe = lightning.createFrame;
 
-    return createDataframe(name, [createList(name, parseAndFormatObjectArray(array))], lodash.range(array.length), null, {
-      description: '',
-      origin
-    });
+      return createDataframe(name, [createList(name, parseAndFormatObjectArray(array))], lodash.range(array.length), null, {
+        description: '',
+        origin
+      });
+    };
   }
 
   const _schemaHacks = {
@@ -2267,7 +2279,7 @@
     let _ref2;
     const _ref1 = obj.__meta;
     const schemaType = _ref1 != null ? _ref1.schema_type : void 0;
-    const attrs = blacklistedAttributesBySchema[schemaType];
+    const attrs = blacklistedAttributesBySchema()[schemaType];
     const blacklistedAttributes = schemaType ? attrs : {};
     const transform = schemaTransforms[schemaType];
     if (transform) {
