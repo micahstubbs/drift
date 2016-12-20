@@ -16,7 +16,7 @@ import { inspect_ } from './inspect_';
 import { flow_ } from './flow_';
 import { inspect } from './inspect';
 import { render_ } from './render_';
-import { ls } from './ls';
+// import { ls } from './ls';
 import { transformBinomialMetrics } from './transformBinomialMetrics';
 import { extendPartialDependence } from './extendPartialDependence';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
@@ -241,6 +241,7 @@ export function routines() {
     let inspectFrameData;
     let inspectNetworkTestResult;
     let loadScript;
+    let ls;
     let mergeFrames;
     let name;
     let parseFiles;
@@ -344,6 +345,20 @@ export function routines() {
     //   flow_(raw).render = render;
     //   return raw;
     // };
+
+    // abstracting this out produces an error
+    // defer for now
+    ls = obj => {
+        let inspectors;
+        let _ref1;
+        if (_isFuture(obj)) {
+          return _async(ls, obj);
+        }
+        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
+          return lodash.keys(inspectors);
+        }
+        return [];
+    };
 
     _plot = (render, go) => render((error, vis) => {
       if (error) {

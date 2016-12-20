@@ -52,7 +52,6 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     // TODO use _.enumerate()
     const _inputParameters = lodash.map(_model.parameters, parameter => {
       const type = parameter.type;
-      console.log('parameter from h2oModelOutput', parameter);
       const defaultValue = parameter.default_value;
       const actualValue = parameter.actual_value;
       const label = parameter.label;
