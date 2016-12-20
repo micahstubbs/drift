@@ -27,6 +27,7 @@ import { inspectRawObject_ } from './inspectRawObject_';
 import { inspectRawArray_ } from './inspectRawArray_';
 import { inspectObjectArray_ } from './inspectObjectArray_';
 import { inspectObject } from './inspectObject';
+import { _plot } from './_plot';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -315,7 +316,6 @@ export function routines() {
     let _async;
     let _get;
     let _isFuture;
-    let _plot;
     let _ref;
     let _schemaHacks;
     _isFuture = Flow.Async.isFuture;
@@ -324,6 +324,7 @@ export function routines() {
 
     // XXX obsolete
     // proceed = (func, args, go) => go(null, render_(_,  {}, () => func(...[_].concat(args || []))));
+
 
     proceed = (func, args, go) => go(null, render_(_,  ...[
             {},
@@ -360,12 +361,6 @@ export function routines() {
         return [];
     };
 
-    _plot = (render, go) => render((error, vis) => {
-      if (error) {
-        return go(new Flow.Error('Error rendering vis.', error));
-      }
-      return go(null, vis);
-    });
     extendPlot = vis => render_(_,  vis, h2oPlotOutput, vis.element);
     createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
       if (error) {

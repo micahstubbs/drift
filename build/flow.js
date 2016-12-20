@@ -2314,6 +2314,16 @@
     }
   }
 
+  function _plot(render, go) {
+    const Flow = window.Flow;
+    return render((error, vis) => {
+      if (error) {
+        return go(new Flow.Error('Error rendering vis.', error));
+      }
+      return go(null, vis);
+    });
+  }
+
   function h2oPlotOutput(_, _go, _plot) {
     const lodash = window._;
     lodash.defer(_go);
@@ -5903,7 +5913,6 @@
       let _async;
       let _get;
       let _isFuture;
-      let _plot;
       let _ref;
       let _schemaHacks;
       _isFuture = Flow.Async.isFuture;
@@ -5912,6 +5921,7 @@
 
       // XXX obsolete
       // proceed = (func, args, go) => go(null, render_(_,  {}, () => func(...[_].concat(args || []))));
+
 
       proceed = (func, args, go) => go(null, render_(_, ...[{}, func].concat(args || [])));
       extendGuiForm = form => render_(_, form, flowForm, form);
@@ -5930,6 +5940,9 @@
       //   flow_(raw).render = render;
       //   return raw;
       // };
+
+      // abstracting this out produces an error
+      // defer for now
       ls = obj => {
         let inspectors;
         let _ref1;
@@ -5942,12 +5955,6 @@
         return [];
       };
 
-      _plot = (render, go) => render((error, vis) => {
-        if (error) {
-          return go(new Flow.Error('Error rendering vis.', error));
-        }
-        return go(null, vis);
-      });
       extendPlot = vis => render_(_, vis, h2oPlotOutput, vis.element);
       createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
         if (error) {
