@@ -54,6 +54,7 @@ export function imputeInput() {
       let groupByColumns;
       const method = _method();
       const arg = {
+        underbar: _,
         frame: _frame(),
         column: _column(),
         method: method.value,

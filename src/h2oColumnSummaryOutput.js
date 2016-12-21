@@ -32,7 +32,7 @@ export function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
   if (table) {
     renderPlot(_domainPlot, _.plot(g => g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000))));
   }
-  const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${flowPrelude.stringify(frameKey)}, column: ${flowPrelude.stringify(columnName)}`);
+  const impute = () => _.insertAndExecuteCell('cs', `imputeColumn underbar: ${_}, frame: ${flowPrelude.stringify(frameKey)}, column: ${flowPrelude.stringify(columnName)}`);
   const inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`);
   lodash.defer(_go);
   return {
