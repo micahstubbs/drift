@@ -35,11 +35,11 @@ import { createTempKey } from './createTempKey';
 import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
+import { extendLogFile } from './extendLogFile';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
-import { h2oLogFileOutput } from '../h2oLogFileOutput';
 import { h2oNetworkTestOutput } from '../h2oNetworkTestOutput';
 import { h2oProfileOutput } from '../h2oProfileOutput';
 import { h2oFramesOutput } from '../h2oFramesOutput';
@@ -143,7 +143,6 @@ export function routines() {
     let extendImportResults;
     let extendJob;
     let extendJobs;
-    let extendLogFile;
     let extendMergeFramesResult;
     let extendModel;
     let extendModels;
@@ -280,7 +279,6 @@ export function routines() {
     };
     // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
-    extendLogFile = (cloud, nodeIndex, fileType, logFile) => render_(_,  logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
     inspectNetworkTestResult = testResult => () => convertTableToFrame(testResult.table, testResult.table.name, {
       description: testResult.table.name,
       origin: 'testNetwork'
@@ -1885,7 +1883,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendLogFile(cloud, nodeIndex, fileType, logFile));
+        return go(null, extendLogFile(_, cloud, nodeIndex, fileType, logFile));
       });
     });
     getLogFile = (nodeIndex, fileType) => {
