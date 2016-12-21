@@ -2360,11 +2360,12 @@
   function gui(_, controls) {
     const Flow = window.Flow;
     _fork(createGui, _, controls);
-    _ref = Flow.Gui;
-    for (name in _ref) {
-      if ({}.hasOwnProperty.call(_ref, name)) {
-        f = _ref[name];
-        gui[name] = f;
+    const _ref = Flow.Gui;
+    let nameThing;
+    for (nameThing in _ref) {
+      if ({}.hasOwnProperty.call(_ref, nameThing)) {
+        const f = _ref[nameThing];
+        gui[nameThing] = f;
       }
     }
   }
