@@ -3172,6 +3172,16 @@
     return render_(_, jobs, h2oJobsOutput, jobs);
   }
 
+  function h2oCancelJobOutput(_, _go, _cancellation) {
+    const lodash = window._;
+    lodash.defer(_go);
+    return { template: 'flow-cancel-job-output' };
+  }
+
+  function extendCancelJob(_, cancellation) {
+    return render_(_, cancellation, h2oCancelJobOutput, cancellation);
+  }
+
   const flowPrelude$17 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -3214,12 +3224,6 @@
       canPlot: _canPlot,
       template: 'flow-plot-input'
     };
-  }
-
-  function h2oCancelJobOutput(_, _go, _cancellation) {
-    const lodash = window._;
-    lodash.defer(_go);
-    return { template: 'flow-cancel-job-output' };
   }
 
   function h2oDeleteObjectsOutput(_, _go, _keys) {
@@ -5833,7 +5837,6 @@
       let extendAsDataFrame;
       let extendAsH2OFrame;
       let extendBindFrames;
-      let extendCancelJob;
       let extendColumnSummary;
       let extendDataFrames;
       let extendDeletedKeys;
@@ -5981,7 +5984,6 @@
       //
       //
       //
-      extendCancelJob = cancellation => render_(_, cancellation, h2oCancelJobOutput, cancellation);
       extendDeletedKeys = keys => render_(_, keys, h2oDeleteObjectsOutput, keys);
       extendModel = model => {
         let refresh;
@@ -7138,7 +7140,7 @@
         if (error) {
           return go(error);
         }
-        return go(null, extendCancelJob({}));
+        return go(null, extendCancelJob(_, {}));
       });
       cancelJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {

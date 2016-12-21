@@ -40,12 +40,12 @@ import { extendProfile } from './extendProfile';
 import { extendFrames } from './extendFrames';
 import { extendJob } from './extendJob';
 import { extendJobs } from './extendJobs';
+import { extendCancelJob } from './extendCancelJob';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
-import { h2oCancelJobOutput } from '../h2oCancelJobOutput';
 import { h2oDeleteObjectsOutput } from '../h2oDeleteObjectsOutput';
 import { h2oModelOutput } from '../h2oModelOutput';
 import { h2oGridOutput } from '../h2oGridOutput';
@@ -126,7 +126,6 @@ export function routines() {
     let extendAsDataFrame;
     let extendAsH2OFrame;
     let extendBindFrames;
-    let extendCancelJob;
     let extendColumnSummary;
     let extendDataFrames;
     let extendDeletedKeys;
@@ -274,7 +273,6 @@ export function routines() {
     //
     //
     //
-    extendCancelJob = cancellation => render_(_,  cancellation, h2oCancelJobOutput, cancellation);
     extendDeletedKeys = keys => render_(_,  keys, h2oDeleteObjectsOutput, keys);
     extendModel = model => {
       let refresh;
@@ -1495,7 +1493,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendCancelJob({}));
+      return go(null, extendCancelJob(_, {}));
     });
     cancelJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
