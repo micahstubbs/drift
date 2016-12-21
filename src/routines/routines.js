@@ -33,11 +33,11 @@ import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
 import { createTempKey } from './createTempKey';
 import { extendCloud } from './extendCloud';
+import { extendTimeline } from './extendTimeline';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
-import { h2oTimelineOutput } from '../h2oTimelineOutput';
 import { h2oStackTraceOutput } from '../h2oStackTraceOutput';
 import { h2oLogFileOutput } from '../h2oLogFileOutput';
 import { h2oNetworkTestOutput } from '../h2oNetworkTestOutput';
@@ -158,7 +158,6 @@ export function routines() {
     let extendScalaIntp;
     let extendSplitFrameResult;
     let extendStackTrace;
-    let extendTimeline;
     let f;
     let findColumnIndexByColumnLabel;
     let findColumnIndicesByColumnLabels;
@@ -282,7 +281,6 @@ export function routines() {
     };
     // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
-    extendTimeline = timeline => render_(_,  timeline, h2oTimelineOutput, timeline);
     extendStackTrace = stackTrace => render_(_,  stackTrace, h2oStackTraceOutput, stackTrace);
     extendLogFile = (cloud, nodeIndex, fileType, logFile) => render_(_,  logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
     inspectNetworkTestResult = testResult => () => convertTableToFrame(testResult.table, testResult.table.name, {
@@ -1866,7 +1864,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendTimeline(timeline));
+      return go(null, extendTimeline(_, timeline));
     });
     getTimeline = () => _fork(requestTimeline);
     requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {

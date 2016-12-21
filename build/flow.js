@@ -2657,50 +2657,6 @@
     return render_(_, cloud, h2oCloudOutput, cloud);
   }
 
-  const flowPrelude$15 = flowPreludeFunction();
-
-  function h2oPlotInput(_, _go, _frame) {
-    const Flow = window.Flow;
-    const lodash = window._;
-    let vector;
-    const _types = ['point', 'path', 'rect'];
-    const _vectors = (() => {
-      let _i;
-      let _len;
-      const _ref = _frame.vectors;
-      const _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        vector = _ref[_i];
-        if (vector.type === 'String' || vector.type === 'Number') {
-          _results.push(vector.label);
-        }
-      }
-      return _results;
-    })();
-    const _type = Flow.Dataflow.signal(null);
-    const _x = Flow.Dataflow.signal(null);
-    const _y = Flow.Dataflow.signal(null);
-    const _color = Flow.Dataflow.signal(null);
-    const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
-    const plot = () => {
-      const color = _color();
-      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n    g.color ${ flowPrelude$15.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
-      return _.insertAndExecuteCell('cs', command);
-    };
-    lodash.defer(_go);
-    return {
-      types: _types,
-      type: _type,
-      vectors: _vectors,
-      x: _x,
-      y: _y,
-      color: _color,
-      plot,
-      canPlot: _canPlot,
-      template: 'flow-plot-input'
-    };
-  }
-
   function h2oTimelineOutput(_, _go, _timeline) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -2795,6 +2751,54 @@
       toggleRefresh,
       refresh,
       template: 'flow-timeline-output'
+    };
+  }
+
+  function extendTimeline(_, timeline) {
+    return render_(_, timeline, h2oTimelineOutput, timeline);
+  }
+
+  const flowPrelude$15 = flowPreludeFunction();
+
+  function h2oPlotInput(_, _go, _frame) {
+    const Flow = window.Flow;
+    const lodash = window._;
+    let vector;
+    const _types = ['point', 'path', 'rect'];
+    const _vectors = (() => {
+      let _i;
+      let _len;
+      const _ref = _frame.vectors;
+      const _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        vector = _ref[_i];
+        if (vector.type === 'String' || vector.type === 'Number') {
+          _results.push(vector.label);
+        }
+      }
+      return _results;
+    })();
+    const _type = Flow.Dataflow.signal(null);
+    const _x = Flow.Dataflow.signal(null);
+    const _y = Flow.Dataflow.signal(null);
+    const _color = Flow.Dataflow.signal(null);
+    const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
+    const plot = () => {
+      const color = _color();
+      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n    g.color ${ flowPrelude$15.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      return _.insertAndExecuteCell('cs', command);
+    };
+    lodash.defer(_go);
+    return {
+      types: _types,
+      type: _type,
+      vectors: _vectors,
+      x: _x,
+      y: _y,
+      color: _color,
+      plot,
+      canPlot: _canPlot,
+      template: 'flow-plot-input'
     };
   }
 
@@ -5879,7 +5883,6 @@
       let extendScalaIntp;
       let extendSplitFrameResult;
       let extendStackTrace;
-      let extendTimeline;
       let f;
       let findColumnIndexByColumnLabel;
       let findColumnIndicesByColumnLabels;
@@ -6003,7 +6006,6 @@
       };
       // depends on `plot`
       grid = f => plot(g => g(g.select(), g.from(f)));
-      extendTimeline = timeline => render_(_, timeline, h2oTimelineOutput, timeline);
       extendStackTrace = stackTrace => render_(_, stackTrace, h2oStackTraceOutput, stackTrace);
       extendLogFile = (cloud, nodeIndex, fileType, logFile) => render_(_, logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
       inspectNetworkTestResult = testResult => () => convertTableToFrame(testResult.table, testResult.table.name, {
@@ -7497,7 +7499,7 @@
         if (error) {
           return go(error);
         }
-        return go(null, extendTimeline(timeline));
+        return go(null, extendTimeline(_, timeline));
       });
       getTimeline = () => _fork(requestTimeline);
       requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
