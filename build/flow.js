@@ -3080,7 +3080,7 @@
   function extendFrames(_, frames) {
     render_(_, frames, h2oFramesOutput, frames);
     return frames;
-  };
+  }
 
   const flowPrelude$16 = flowPreludeFunction();
 
