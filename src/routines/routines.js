@@ -42,7 +42,6 @@ import { extendFrames } from './extendFrames';
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
-import { h2oMergeFramesOutput } from '../h2oMergeFramesOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
 import { h2oJobsOutput } from '../h2oJobsOutput';
 import { h2oCancelJobOutput } from '../h2oCancelJobOutput';
@@ -140,7 +139,6 @@ export function routines() {
     let extendImportResults;
     let extendJob;
     let extendJobs;
-    let extendMergeFramesResult;
     let extendModel;
     let extendModels;
     let extendParseResult;
@@ -276,10 +274,6 @@ export function routines() {
     //
     //
     //
-    extendMergeFramesResult = result => {
-      render_(_,  result, h2oMergeFramesOutput, result);
-      return result;
-    };
     extendJob = job => render_(_,  job, H2O.JobOutput, job);
     extendJobs = jobs => {
       let job;
@@ -1126,7 +1120,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendMergeFramesResult({ key: destinationKey }));
+        return go(null, extendMergeFramesResult(_, { key: destinationKey }));
       });
     };
     createFrame = opts => {
