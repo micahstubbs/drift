@@ -37,11 +37,11 @@ import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
 import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
+import { extendFrames } from './extendFrames';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
-import { h2oFramesOutput } from '../h2oFramesOutput';
 import { h2oSplitFrameOutput } from '../h2oSplitFrameOutput';
 import { h2oMergeFramesOutput } from '../h2oMergeFramesOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
@@ -135,7 +135,6 @@ export function routines() {
     let extendFrame;
     let extendFrameData;
     let extendFrameSummary;
-    let extendFrames;
     let extendGrid;
     let extendGrids;
     let extendImportModel;
@@ -279,10 +278,6 @@ export function routines() {
     //
     //
     //
-    extendFrames = frames => {
-      render_(_,  frames, h2oFramesOutput, frames);
-      return frames;
-    };
     extendSplitFrameResult = result => {
       render_(_,  result, h2oSplitFrameOutput, result);
       return result;
@@ -996,7 +991,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendFrames(frames));
+      return go(null, extendFrames(_, frames));
     });
     requestCreateFrame = (opts, go) => _.requestCreateFrame(opts, (error, result) => {
       if (error) {

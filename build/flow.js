@@ -2973,50 +2973,6 @@
 
   const flowPrelude$15 = flowPreludeFunction();
 
-  function h2oPlotInput(_, _go, _frame) {
-    const Flow = window.Flow;
-    const lodash = window._;
-    let vector;
-    const _types = ['point', 'path', 'rect'];
-    const _vectors = (() => {
-      let _i;
-      let _len;
-      const _ref = _frame.vectors;
-      const _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        vector = _ref[_i];
-        if (vector.type === 'String' || vector.type === 'Number') {
-          _results.push(vector.label);
-        }
-      }
-      return _results;
-    })();
-    const _type = Flow.Dataflow.signal(null);
-    const _x = Flow.Dataflow.signal(null);
-    const _y = Flow.Dataflow.signal(null);
-    const _color = Flow.Dataflow.signal(null);
-    const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
-    const plot = () => {
-      const color = _color();
-      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n    g.color ${ flowPrelude$15.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
-      return _.insertAndExecuteCell('cs', command);
-    };
-    lodash.defer(_go);
-    return {
-      types: _types,
-      type: _type,
-      vectors: _vectors,
-      x: _x,
-      y: _y,
-      color: _color,
-      plot,
-      canPlot: _canPlot,
-      template: 'flow-plot-input'
-    };
-  }
-
-  const flowPrelude$16 = flowPreludeFunction();
-
   function h2oFramesOutput(_, _go, _frames) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -3063,13 +3019,13 @@
       const columnLabels = lodash.head(lodash.map(frame.columns, column => column.label), 15);
       const view = () => {
         if (frame.is_text) {
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$16.stringify(frame.frame_id.name) } ]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$15.stringify(frame.frame_id.name) } ]`);
         }
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$16.stringify(frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$15.stringify(frame.frame_id.name) }`);
       };
-      const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$16.stringify(frame.frame_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$16.stringify(frame.frame_id.name) }`);
-      const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$16.stringify(frame.frame_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$15.stringify(frame.frame_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$15.stringify(frame.frame_id.name) }`);
+      const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$15.stringify(frame.frame_id.name) }`);
       return {
         key: frame.frame_id.name,
         isChecked: _isChecked,
@@ -3098,13 +3054,13 @@
       }
       return _results;
     };
-    const predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$16.stringify(collectSelectedKeys()) }`);
+    const predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$15.stringify(collectSelectedKeys()) }`);
     const deleteFrames = () => _.confirm('Are you sure you want to delete these frames?', {
       acceptCaption: 'Delete Frames',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$16.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$15.stringify(collectSelectedKeys()) }`);
       }
     });
     _frameViews(lodash.map(_frames, createFrameView));
@@ -3118,6 +3074,55 @@
       hasSelectedFrames: _hasSelectedFrames,
       checkAllFrames: _checkAllFrames,
       template: 'flow-frames-output'
+    };
+  }
+
+  function extendFrames(_, frames) {
+    render_(_, frames, h2oFramesOutput, frames);
+    return frames;
+  };
+
+  const flowPrelude$16 = flowPreludeFunction();
+
+  function h2oPlotInput(_, _go, _frame) {
+    const Flow = window.Flow;
+    const lodash = window._;
+    let vector;
+    const _types = ['point', 'path', 'rect'];
+    const _vectors = (() => {
+      let _i;
+      let _len;
+      const _ref = _frame.vectors;
+      const _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        vector = _ref[_i];
+        if (vector.type === 'String' || vector.type === 'Number') {
+          _results.push(vector.label);
+        }
+      }
+      return _results;
+    })();
+    const _type = Flow.Dataflow.signal(null);
+    const _x = Flow.Dataflow.signal(null);
+    const _y = Flow.Dataflow.signal(null);
+    const _color = Flow.Dataflow.signal(null);
+    const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
+    const plot = () => {
+      const color = _color();
+      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$16.stringify(_x()) }, ${ flowPrelude$16.stringify(_y()) }\n    g.color ${ flowPrelude$16.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$16.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$16.stringify(_x()) }, ${ flowPrelude$16.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$16.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      return _.insertAndExecuteCell('cs', command);
+    };
+    lodash.defer(_go);
+    return {
+      types: _types,
+      type: _type,
+      vectors: _vectors,
+      x: _x,
+      y: _y,
+      color: _color,
+      plot,
+      canPlot: _canPlot,
+      template: 'flow-plot-input'
     };
   }
 
@@ -5887,7 +5892,6 @@
       let extendFrame;
       let extendFrameData;
       let extendFrameSummary;
-      let extendFrames;
       let extendGrid;
       let extendGrids;
       let extendImportModel;
@@ -6031,10 +6035,6 @@
       //
       //
       //
-      extendFrames = frames => {
-        render_(_, frames, h2oFramesOutput, frames);
-        return frames;
-      };
       extendSplitFrameResult = result => {
         render_(_, result, h2oSplitFrameOutput, result);
         return result;
@@ -6701,7 +6701,7 @@
         if (error) {
           return go(error);
         }
-        return go(null, extendFrames(frames));
+        return go(null, extendFrames(_, frames));
       });
       requestCreateFrame = (opts, go) => _.requestCreateFrame(opts, (error, result) => {
         if (error) {
