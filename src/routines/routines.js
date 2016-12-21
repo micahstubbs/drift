@@ -32,6 +32,7 @@ import { gui } from './gui';
 import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
 import { createTempKey } from './createTempKey';
+import { extendCloud } from './extendCloud';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -127,7 +128,6 @@ export function routines() {
     let extendAsH2OFrame;
     let extendBindFrames;
     let extendCancelJob;
-    let extendCloud;
     let extendColumnSummary;
     let extendDataFrames;
     let extendDeletedKeys;
@@ -282,7 +282,6 @@ export function routines() {
     };
     // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
-    extendCloud = cloud => render_(_,  cloud, h2oCloudOutput, cloud);
     extendTimeline = timeline => render_(_,  timeline, h2oTimelineOutput, timeline);
     extendStackTrace = stackTrace => render_(_,  stackTrace, h2oStackTraceOutput, stackTrace);
     extendLogFile = (cloud, nodeIndex, fileType, logFile) => render_(_,  logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
@@ -1860,7 +1859,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendCloud(cloud));
+      return go(null, extendCloud(_, cloud));
     });
     getCloud = () => _fork(requestCloud);
     requestTimeline = go => _.requestTimeline((error, timeline) => {
