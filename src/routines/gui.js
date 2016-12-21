@@ -1,9 +1,11 @@
 import { _fork } from './_fork';
 import { createGui } from './createGui';
 
-export function gui(controls) {
+// not used anywhere beyond src/routines/routines?
+// replaced by src/gui/gui?
+export function gui(_, controls) {
   const Flow = window.Flow;
-  _fork(createGui, controls);
+  _fork(createGui, _, controls);
   _ref = Flow.Gui;
   for (name in _ref) {
     if ({}.hasOwnProperty.call(_ref, name)) {

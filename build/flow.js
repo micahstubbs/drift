@@ -2334,18 +2334,20 @@
     return go(null, render_(_, ...[{}, func].concat(args || [])));
   }
 
-  function extendGuiForm(form) {
+  function extendGuiForm(_, form) {
     return render_(_, form, flowForm, form);
   }
 
-  function createGui(controls, go) {
+  function createGui(_, controls, go) {
     const Flow = window.Flow;
-    return go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
+    return go(null, extendGuiForm(_, Flow.Dataflow.signals(controls || [])));
   }
 
-  function gui(controls) {
+  // not used anywhere beyond src/routines/routines?
+  // replaced by src/gui/gui?
+  function gui(_, controls) {
     const Flow = window.Flow;
-    _fork(createGui, controls);
+    _fork(createGui, _, controls);
     _ref = Flow.Gui;
     for (name in _ref) {
       if ({}.hasOwnProperty.call(_ref, name)) {

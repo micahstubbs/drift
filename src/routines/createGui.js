@@ -1,6 +1,6 @@
 import { extendGuiForm } from './extendGuiForm';
 
-export function createGui(controls, go) {
+export function createGui(_, controls, go) {
   const Flow = window.Flow;
-  return go(null, extendGuiForm(Flow.Dataflow.signals(controls || [])));
+  return go(null, extendGuiForm(_, Flow.Dataflow.signals(controls || [])));
 }
