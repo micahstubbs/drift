@@ -40,10 +40,10 @@ export function h2oFrameOutput(_, _go, _frame) {
     });
     return _grid(vis.element);
   });
-  const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  const createModel = () => _.insertAndExecuteCell('cs', `assist ${_} buildModel, null, training_frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
   const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(_frame.frame_id.name)}`);
   const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${flowPrelude.stringify(_frame.frame_id.name)}`);
-  const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${flowPrelude.stringify(_frame.frame_id.name)}`);
+  const splitFrame = () => _.insertAndExecuteCell('cs', `assist ${_} splitFrame, ${flowPrelude.stringify(_frame.frame_id.name)}`);
   const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(_frame.frame_id.name)}`);
   const download = () => window.open(`${window.Flow.ContextPath}${(`3/DownloadDataset?frame_id=${encodeURIComponent(_frame.frame_id.name)}`)}`, '_blank');
   const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_frame.frame_id.name)}`);

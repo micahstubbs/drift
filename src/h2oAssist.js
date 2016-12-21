@@ -1,4 +1,5 @@
 export function h2oAssist(_, _go, _items) {
+  console.log('arguments passed to h2oAssist', arguments);
   const lodash = window._;
   let item;
   let name;
@@ -8,6 +9,7 @@ export function h2oAssist(_, _go, _items) {
     icon: `fa fa-${item.icon} flow-icon`,
 
     execute() {
+      console.log('_ from h2oAssist', _);
       return _.insertAndExecuteCell('cs', name);
     },
   });

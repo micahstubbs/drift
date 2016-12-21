@@ -53,7 +53,7 @@ export function h2oFramesOutput(_, _go, _frames) {
     };
     const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
     const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(frame.frame_id.name)}`);
-    const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
+    const createModel = () => _.insertAndExecuteCell('cs', `assist ${_} buildModel, null, training_frame: ${flowPrelude.stringify(frame.frame_id.name)}`);
     return {
       key: frame.frame_id.name,
       isChecked: _isChecked,

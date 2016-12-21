@@ -12,5 +12,6 @@ export function render_() {
     _,
     go,
   ].concat(args));
+  console.log('raw from render_', raw);
   return raw;
 }

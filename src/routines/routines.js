@@ -30,6 +30,8 @@ import { inspectObject } from './inspectObject';
 import { proceed } from './proceed';
 import { gui } from './gui';
 import { createPlot } from './createPlot';
+import { assist } from './assist';
+import { _assistance } from './_assistance';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -63,18 +65,6 @@ import { h2oRDDsOutput } from '../h2oRDDsOutput';
 import { h2oDataFramesOutput } from '../h2oDataFramesOutput';
 import { h2oScalaCodeOutput } from '../h2oScalaCodeOutput';
 import { h2oScalaIntpOutput } from '../h2oScalaIntpOutput';
-import { h2oAssist } from '../h2oAssist';
-import { h2oImportFilesInput } from '../h2oImportFilesInput';
-import { h2oAutoModelInput } from '../h2oAutoModelInput';
-import { h2oPredictInput } from '../h2oPredictInput';
-import { h2oCreateFrameInput } from '../h2oCreateFrameInput';
-import { h2oSplitFrameInput } from '../h2oSplitFrameInput';
-import { h2oMergeFramesInput } from '../h2oMergeFramesInput';
-import { h2oPartialDependenceInput } from '../h2oPartialDependenceInput';
-import { h2oExportFrameInput } from '../h2oExportFrameInput';
-import { h2oImportModelInput } from '../h2oImportModelInput';
-import { h2oExportModelInput } from '../h2oExportModelInput';
-import { h2oNoAssist } from '../h2oNoAssist';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -82,13 +72,13 @@ const flowPrelude = flowPreludeFunction();
 export function routines() {
   const lodash = window._;
   const Flow = window.Flow;
+  const H2O = window.H2O;
   let createDataframe;
   let createFactor;
   let createList;
   let createTempKey;
   let createVector;
   let lightning;
-  let _assistance;
   const __slice = [].slice;
   lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
   if (lightning.settings) {
@@ -100,57 +90,10 @@ export function routines() {
   createFactor = lightning.createFactor;
   createList = lightning.createList;
   createDataframe = lightning.createFrame;
-  _assistance = {
-    importFiles: {
-      description: 'Import file(s) into H<sub>2</sub>O',
-      icon: 'files-o'
-    },
-    getFrames: {
-      description: 'Get a list of frames in H<sub>2</sub>O',
-      icon: 'table'
-    },
-    splitFrame: {
-      description: 'Split a frame into two or more frames',
-      icon: 'scissors'
-    },
-    mergeFrames: {
-      description: 'Merge two frames into one',
-      icon: 'link'
-    },
-    getModels: {
-      description: 'Get a list of models in H<sub>2</sub>O',
-      icon: 'cubes'
-    },
-    getGrids: {
-      description: 'Get a list of grid search results in H<sub>2</sub>O',
-      icon: 'th'
-    },
-    getPredictions: {
-      description: 'Get a list of predictions in H<sub>2</sub>O',
-      icon: 'bolt'
-    },
-    getJobs: {
-      description: 'Get a list of jobs running in H<sub>2</sub>O',
-      icon: 'tasks'
-    },
-    buildModel: {
-      description: 'Build a model',
-      icon: 'cube'
-    },
-    importModel: {
-      description: 'Import a saved model',
-      icon: 'cube'
-    },
-    predict: {
-      description: 'Make a prediction',
-      icon: 'bolt'
-    }
-  };
   H2O.Routines = _ => {
     let asDataFrame;
     let asH2OFrameFromDF;
     let asH2OFrameFromRDD;
-    let assist;
     let attrname;
     let bindFrames;
     let buildAutoModel;
@@ -174,7 +117,6 @@ export function routines() {
     let extendBindFrames;
     let extendCancelJob;
     let extendCloud;
-    let extendColumnSummary;
     let extendDataFrames;
     let extendDeletedKeys;
     let extendExportFrame;
@@ -233,8 +175,8 @@ export function routines() {
     let grid;
     let importFiles;
     let importModel;
-    let imputeColumn;
     let initAssistanceSparklingWater;
+    let imputeColumn;
     let inspectFrameColumns;
     let inspectFrameData;
     let inspectNetworkTestResult;
@@ -273,7 +215,6 @@ export function routines() {
     let requestImportAndParseSetup;
     let requestImportFiles;
     let requestImportModel;
-    let requestImputeColumn;
     let requestJob;
     let requestJobs;
     let requestLogFile;
@@ -323,7 +264,7 @@ export function routines() {
       } else if (lodash.isFunction(f)) {
         return _fork(_, createPlot, f);
       }
-      return assist(plot);
+      return assist(_, plot);
     };
     grid = f => plot(g => g(g.select(), g.from(f)));
     extendCloud = cloud => render_(_,  cloud, h2oCloudOutput, cloud);
@@ -780,248 +721,6 @@ export function routines() {
       inspect_(frame, inspections);
       return render_(_,  frame, h2oFrameOutput, frame);
     };
-    extendColumnSummary = (frameKey, frame, columnName) => {
-      let column;
-      let inspectCharacteristics;
-      let inspectDistribution;
-      let inspectDomain;
-      let inspectPercentiles;
-      let inspectSummary;
-      let inspections;
-      let rowCount;
-      column = lodash.head(frame.columns);
-      rowCount = frame.rows;
-      inspectPercentiles = () => {
-        let vectors;
-        vectors = [
-          createVector('percentile', 'Number', frame.default_percentiles),
-          createVector('value', 'Number', column.percentiles)
-        ];
-        return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
-          description: `Percentiles for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
-        });
-      };
-      inspectDistribution = () => {
-        let base;
-        let binCount;
-        let binIndex;
-        let bins;
-        let count;
-        let countData;
-        let i;
-        let interval;
-        let intervalData;
-        let m;
-        let minBinCount;
-        let n;
-        let rows;
-        let stride;
-        let vectors;
-        let width;
-        let widthData;
-        let _i;
-        let _j;
-        let _k;
-        let _l;
-        let _len;
-        let _ref1;
-        minBinCount = 32;
-        base = column.histogram_base, stride = column.histogram_stride, bins = column.histogram_bins;
-        width = Math.ceil(bins.length / minBinCount);
-        interval = stride * width;
-        rows = [];
-        if (width > 0) {
-          binCount = minBinCount + (bins.length % width > 0 ? 1 : 0);
-          intervalData = new Array(binCount);
-          widthData = new Array(binCount);
-          countData = new Array(binCount);
-
-          // Trim off empty bins from the end
-          for (i = _i = 0; binCount >= 0 ? _i < binCount : _i > binCount; i = binCount >= 0 ? ++_i : --_i) {
-            m = i * width;
-            n = m + width;
-            count = 0;
-            for (binIndex = _j = m; m <= n ? _j < n : _j > n; binIndex = m <= n ? ++_j : --_j) {
-              if (binIndex < bins.length) {
-                count += bins[binIndex];
-              }
-            }
-            intervalData[i] = base + i * interval;
-            widthData[i] = interval;
-            countData[i] = count;
-          }
-        } else {
-          binCount = bins.length;
-          intervalData = new Array(binCount);
-          widthData = new Array(binCount);
-          countData = new Array(binCount);
-          for (i = _k = 0, _len = bins.length; _k < _len; i = ++_k) {
-            count = bins[i];
-            intervalData[i] = base + i * stride;
-            widthData[i] = stride;
-            countData[i] = count;
-          }
-        }
-        for (i = _l = _ref1 = binCount - 1; _ref1 <= 0 ? _l <= 0 : _l >= 0; i = _ref1 <= 0 ? ++_l : --_l) {
-          if (countData[i] !== 0) {
-            binCount = i + 1;
-            intervalData = intervalData.slice(0, binCount);
-            widthData = widthData.slice(0, binCount);
-            countData = countData.slice(0, binCount);
-            break;
-          }
-        }
-        vectors = [
-          createFactor('interval', 'String', intervalData),
-          createVector('width', 'Number', widthData),
-          createVector('count', 'Number', countData)
-        ];
-        return createDataframe('distribution', vectors, lodash.range(binCount), null, {
-          description: `Distribution for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`,
-          plot: `plot inspect \'distribution\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
-        });
-      };
-      inspectCharacteristics = () => {
-        let characteristicData;
-        let count;
-        let countData;
-        let missing_count;
-        let negative_infinity_count;
-        let other;
-        let percentData;
-        let positive_infinity_count;
-        let vectors;
-        let zero_count;
-        missing_count = column.missing_count, zero_count = column.zero_count, positive_infinity_count = column.positive_infinity_count, negative_infinity_count = column.negative_infinity_count;
-        other = rowCount - missing_count - zero_count - positive_infinity_count - negative_infinity_count;
-        characteristicData = [
-          'Missing',
-          '-Inf',
-          'Zero',
-          '+Inf',
-          'Other'
-        ];
-        countData = [
-          missing_count,
-          negative_infinity_count,
-          zero_count,
-          positive_infinity_count,
-          other
-        ];
-        percentData = (() => {
-          let _i;
-          let _len;
-          let _results;
-          _results = [];
-          for (_i = 0, _len = countData.length; _i < _len; _i++) {
-            count = countData[_i];
-            _results.push(100 * count / rowCount);
-          }
-          return _results;
-        })();
-        vectors = [
-          createFactor('characteristic', 'String', characteristicData),
-          createVector('count', 'Number', countData),
-          createVector('percent', 'Number', percentData)
-        ];
-        return createDataframe('characteristics', vectors, lodash.range(characteristicData.length), null, {
-          description: `Characteristics for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`,
-          plot: `plot inspect \'characteristics\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
-        });
-      };
-      inspectSummary = () => {
-        let defaultPercentiles;
-        let maximum;
-        let mean;
-        let minimum;
-        let outliers;
-        let percentiles;
-        let q1;
-        let q2;
-        let q3;
-        let vectors;
-        defaultPercentiles = frame.default_percentiles;
-        percentiles = column.percentiles;
-        mean = column.mean;
-        q1 = percentiles[defaultPercentiles.indexOf(0.25)];
-        q2 = percentiles[defaultPercentiles.indexOf(0.5)];
-        q3 = percentiles[defaultPercentiles.indexOf(0.75)];
-        outliers = lodash.unique(column.mins.concat(column.maxs));
-        minimum = lodash.head(column.mins);
-        maximum = lodash.head(column.maxs);
-        vectors = [
-          createFactor('column', 'String', [columnName]),
-          createVector('mean', 'Number', [mean]),
-          createVector('q1', 'Number', [q1]),
-          createVector('q2', 'Number', [q2]),
-          createVector('q3', 'Number', [q3]),
-          createVector('min', 'Number', [minimum]),
-          createVector('max', 'Number', [maximum])
-        ];
-        return createDataframe('summary', vectors, lodash.range(1), null, {
-          description: `Summary for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`,
-          plot: `plot inspect \'summary\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
-        });
-      };
-      inspectDomain = () => {
-        let counts;
-        let i;
-        let labels;
-        let level;
-        let levels;
-        let percents;
-        let sortedLevels;
-        let vectors;
-        let _i;
-        let _len;
-        let _ref1;
-        levels = lodash.map(column.histogram_bins, (count, index) => ({
-          count,
-          index
-        }));
-        sortedLevels = lodash.sortBy(levels, level => -level.count);
-        _ref1 = createArrays(3, sortedLevels.length), labels = _ref1[0], counts = _ref1[1], percents = _ref1[2];
-        for (i = _i = 0, _len = sortedLevels.length; _i < _len; i = ++_i) {
-          level = sortedLevels[i];
-          labels[i] = column.domain[level.index];
-          counts[i] = level.count;
-          percents[i] = 100 * level.count / rowCount;
-        }
-        vectors = [
-          createFactor('label', 'String', labels),
-          createVector('count', 'Number', counts),
-          createVector('percent', 'Number', percents)
-        ];
-        return createDataframe('domain', vectors, lodash.range(sortedLevels.length), null, {
-          description: `Domain for column \'${column.label}\' in frame \'${frameKey}\'.`,
-          origin: `getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`,
-          plot: `plot inspect \'domain\', getColumnSummary ${flowPrelude.stringify(frameKey)}, ${flowPrelude.stringify(columnName)}`
-        });
-      };
-      inspections = { characteristics: inspectCharacteristics };
-      switch (column.type) {
-        case 'int':
-        case 'real':
-          // Skip for columns with all NAs
-          if (column.histogram_bins.length) {
-            inspections.distribution = inspectDistribution;
-          }
-          // Skip for columns with all NAs
-          if (!lodash.some(column.percentiles, a => a === 'NaN')) {
-            inspections.summary = inspectSummary;
-            inspections.percentiles = inspectPercentiles;
-          }
-          break;
-        case 'enum':
-          inspections.domain = inspectDomain;
-      }
-      inspect_(frame, inspections);
-      return render_(_,  frame, h2oColumnSummaryOutput, frameKey, frame, columnName);
-    };
     requestFrame = (frameKey, go) => _.requestFrameSlice(frameKey, void 0, 0, 20, (error, frame) => {
       if (error) {
         return go(error);
@@ -1204,7 +903,7 @@ export function routines() {
       if (opts) {
         return _fork(requestCreateFrame, opts);
       }
-      return assist(createFrame);
+      return assist(_, createFrame);
     };
     splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
       if (seed == null) {
@@ -1213,7 +912,7 @@ export function routines() {
       if (frameKey && splitRatios && splitKeys) {
         return _fork(requestSplitFrame, frameKey, splitRatios, splitKeys, seed);
       }
-      return assist(splitFrame);
+      return assist(_, splitFrame);
     };
     mergeFrames = (
       destinationKey,
@@ -1227,7 +926,7 @@ export function routines() {
       if (destinationKey && leftFrameKey && rightFrameKey) {
         return _fork(requestMergeFrames, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
       }
-      return assist(mergeFrames);
+      return assist(_, mergeFrames);
     };
 
     // define the function that is called when 
@@ -1239,13 +938,13 @@ export function routines() {
       }
       // specify function to call if user
       // provides malformed input
-      return assist(buildPartialDependence);
+      return assist(_, buildPartialDependence);
     };
     getPartialDependence = destinationKey => {
       if (destinationKey) {
         return _fork(requestPartialDependenceData, destinationKey);
       }
-      return assist(getPartialDependence);
+      return assist(_, getPartialDependence);
     };
     getFrames = () => _fork(requestFrames);
     getFrame = frameKey => {
@@ -1253,7 +952,7 @@ export function routines() {
         case 'String':
           return _fork(requestFrame, frameKey);
         default:
-          return assist(getFrame);
+          return assist(_, getFrame);
       }
     };
     bindFrames = (key, sourceKeys) => _fork(requestBindFrames, key, sourceKeys);
@@ -1262,7 +961,7 @@ export function routines() {
         case 'String':
           return _fork(requestFrameSummary, frameKey);
         default:
-          return assist(getFrameSummary);
+          return assist(_, getFrameSummary);
       }
     };
     getFrameData = frameKey => {
@@ -1270,7 +969,7 @@ export function routines() {
         case 'String':
           return _fork(requestFrameData, frameKey, void 0, 0, 20);
         default:
-          return assist(getFrameSummary);
+          return assist(_, getFrameSummary);
       }
     };
     requestDeleteFrame = (frameKey, go) => _.requestDeleteFrame(frameKey, (error, result) => {
@@ -1283,7 +982,7 @@ export function routines() {
       if (frameKey) {
         return _fork(requestDeleteFrame, frameKey);
       }
-      return assist(deleteFrame);
+      return assist(_, deleteFrame);
     };
     extendExportFrame = result => render_(_,  result, h2oExportFrameOutput, result);
     extendBindFrames = (key, result) => render_(_,  result, h2oBindFramesOutput, key, result);
@@ -1305,7 +1004,7 @@ export function routines() {
       if (frameKey && path) {
         return _fork(requestExportFrame, frameKey, path, opts);
       }
-      return assist(exportFrame, frameKey, path, opts);
+      return assist(_, exportFrame, frameKey, path, opts);
     };
     requestDeleteFrames = (frameKeys, go) => {
       let futures;
@@ -1320,7 +1019,7 @@ export function routines() {
     deleteFrames = frameKeys => {
       switch (frameKeys.length) {
         case 0:
-          return assist(deleteFrames);
+          return assist(_, deleteFrames);
         case 1:
           return deleteFrame(lodash.head(frameKeys));
         default:
@@ -1371,7 +1070,7 @@ export function routines() {
         case 'String':
           return _fork(requestModel, modelKey);
         default:
-          return assist(getModel);
+          return assist(_, getModel);
       }
     };
     requestGrid = (gridKey, opts, go) => _.requestGrid(gridKey, opts, (error, grid) => {
@@ -1385,7 +1084,7 @@ export function routines() {
         case 'String':
           return _fork(requestGrid, gridKey, opts);
         default:
-          return assist(getGrid);
+          return assist(_, getGrid);
       }
     };
     findColumnIndexByColumnLabel = (frame, columnLabel) => {
@@ -1415,48 +1114,6 @@ export function routines() {
       }
       return _results;
     };
-    requestImputeColumn = (opts, go) => {
-      let column;
-      let combineMethod;
-      let frame;
-      let groupByColumns;
-      let method;
-      frame = opts.frame, column = opts.column, method = opts.method, combineMethod = opts.combineMethod, groupByColumns = opts.groupByColumns;
-      combineMethod = combineMethod != null ? combineMethod : 'interpolate';
-      return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-        let columnIndex;
-        let columnIndicesError;
-        let columnKeyError;
-        let groupByArg;
-        let groupByColumnIndices;
-        if (error) {
-          return go(error);
-        }
-        try {
-          columnIndex = findColumnIndexByColumnLabel(result, column);
-        } catch (_error) {
-          columnKeyError = _error;
-          return go(columnKeyError);
-        }
-        if (groupByColumns && groupByColumns.length) {
-          try {
-            groupByColumnIndices = findColumnIndicesByColumnLabels(result, groupByColumns);
-          } catch (_error) {
-            columnIndicesError = _error;
-            return go(columnIndicesError);
-          }
-        } else {
-          groupByColumnIndices = null;
-        }
-        groupByArg = groupByColumnIndices ? `[${groupByColumnIndices.join(' ')}]` : '[]';
-        return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`, (error, result) => {
-          if (error) {
-            return go(error);
-          }
-          return requestColumnSummary(frame, column, go);
-        });
-      });
-    };
     requestChangeColumnType = (opts, go) => {
       let column;
       let frame;
@@ -1485,13 +1142,13 @@ export function routines() {
       if (opts && opts.frame && opts.column && opts.method) {
         return _fork(requestImputeColumn, opts);
       }
-      return assist(imputeColumn, opts);
+      return assist(_, imputeColumn, opts);
     };
     changeColumnType = opts => {
       if (opts && opts.frame && opts.column && opts.type) {
         return _fork(requestChangeColumnType, opts);
       }
-      return assist(changeColumnType, opts);
+      return assist(_, changeColumnType, opts);
     };
     requestDeleteModel = (modelKey, go) => _.requestDeleteModel(modelKey, (error, result) => {
       if (error) {
@@ -1503,7 +1160,7 @@ export function routines() {
       if (modelKey) {
         return _fork(requestDeleteModel, modelKey);
       }
-      return assist(deleteModel);
+      return assist(_, deleteModel);
     };
     extendImportModel = result => render_(_,  result, H2O.ImportModelOutput, result);
     requestImportModel = (path, opts, go) => _.requestImportModel(path, opts.overwrite, (error, result) => {
@@ -1516,7 +1173,7 @@ export function routines() {
       if (path && path.length) {
         return _fork(requestImportModel, path, opts);
       }
-      return assist(importModel, path, opts);
+      return assist(_, importModel, path, opts);
     };
     extendExportModel = result => render_(_,  result, h2oExportModelOutput, result);
     requestExportModel = (modelKey, path, opts, go) => _.requestExportModel(modelKey, path, opts.overwrite, (error, result) => {
@@ -1529,7 +1186,7 @@ export function routines() {
       if (modelKey && path) {
         return _fork(requestExportModel, modelKey, path, opts);
       }
-      return assist(exportModel, modelKey, path, opts);
+      return assist(_, exportModel, modelKey, path, opts);
     };
     requestDeleteModels = (modelKeys, go) => {
       let futures;
@@ -1544,7 +1201,7 @@ export function routines() {
     deleteModels = modelKeys => {
       switch (modelKeys.length) {
         case 0:
-          return assist(deleteModels);
+          return assist(_, deleteModels);
         case 1:
           return deleteModel(lodash.head(modelKeys));
         default:
@@ -1572,10 +1229,10 @@ export function routines() {
           if (arg.key != null) {
             return getJob(arg.key);
           }
-          return assist(getJob);
+          return assist(_, getJob);
           // break; // no-unreachable
         default:
-          return assist(getJob);
+          return assist(_, getJob);
       }
     };
     requestCancelJob = (key, go) => _.requestCancelJob(key, error => {
@@ -1589,7 +1246,7 @@ export function routines() {
         case 'String':
           return _fork(requestCancelJob, arg);
         default:
-          return assist(cancelJob);
+          return assist(_, cancelJob);
       }
     };
     extendImportResults = importResults => render_(_,  importResults, h2oImportFilesOutput, importResults);
@@ -1604,7 +1261,7 @@ export function routines() {
         case 'Array':
           return _fork(requestImportFiles, paths);
         default:
-          return assist(importFiles);
+          return assist(_, importFiles);
       }
     };
     extendParseSetupResults = (args, parseSetupResults) => render_(_,  parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
@@ -1633,7 +1290,7 @@ export function routines() {
       } else if (args.source_frames && lodash.isArray(args.source_frames)) {
         return _fork(requestParseSetup, args.source_frames);
       }
-      return assist(setupParse);
+      return assist(_, setupParse);
     };
     extendParseResult = parseResult => render_(_,  parseResult, H2O.JobOutput, parseResult.job);
     requestImportAndParseFiles = (
@@ -1751,13 +1408,13 @@ export function routines() {
       if (opts && lodash.keys(opts).length > 1) {
         return _fork(requestAutoModelBuild, opts);
       }
-      return assist(buildAutoModel, opts);
+      return assist(_, buildAutoModel, opts);
     };
     buildModel = (algo, opts) => {
       if (algo && opts && lodash.keys(opts).length > 1) {
         return _fork(requestModelBuild, algo, opts);
       }
-      return assist(buildModel, algo, opts);
+      return assist(_, buildModel, algo, opts);
     };
     unwrapPrediction = go => (error, result) => {
       if (error) {
@@ -1826,7 +1483,7 @@ export function routines() {
           }
           return _fork(requestPredicts, combos);
         }
-        return assist(predict, {
+        return assist(_, predict, {
           predictions_frame,
           models,
           frames
@@ -1841,7 +1498,7 @@ export function routines() {
       } else if (model && exemplar_index !== void 0) {
         return _fork(requestPredict, predictions_frame, model, null, { exemplar_index });
       }
-      return assist(predict, {
+      return assist(_, predict, {
         predictions_frame,
         model,
         frame
@@ -1887,7 +1544,7 @@ export function routines() {
       if (model && frame) {
         return _fork(requestPrediction, model, frame);
       }
-      return assist(getPrediction, {
+      return assist(_, getPrediction, {
         predictions_frame,
         model,
         frame
@@ -2081,43 +1738,6 @@ export function routines() {
         return _fork(dumpFuture, f);
       }
       return Flow.Async.async(() => f);
-    };
-    assist = function () {
-      let args;
-      let func;
-      func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-      if (func === void 0) {
-        return _fork(proceed, _, h2oAssist, [_assistance]);
-      }
-      switch (func) {
-        case importFiles:
-          return _fork(proceed, _, h2oImportFilesInput, []);
-        case buildModel:
-          return _fork(proceed, _, H2O.ModelInput, args);
-        case buildAutoModel:
-          return _fork(proceed, _, h2oAutoModelInput, args);
-        case predict:
-        case getPrediction:
-          return _fork(proceed, _, h2oPredictInput, args);
-        case createFrame:
-          return _fork(proceed, _, h2oCreateFrameInput, args);
-        case splitFrame:
-          return _fork(proceed, _, h2oSplitFrameInput, args);
-        case mergeFrames:
-          return _fork(proceed, _, h2oMergeFramesInput, args);
-        case buildPartialDependence:
-          return _fork(proceed, _, h2oPartialDependenceInput, args);
-        case exportFrame:
-          return _fork(proceed, _, h2oExportFrameInput, args);
-        case imputeColumn:
-          return _fork(proceed, _, H2O.ImputeInput, args);
-        case importModel:
-          return _fork(proceed, _, h2oImportModelInput, args);
-        case exportModel:
-          return _fork(proceed, _, h2oExportModelInput, args);
-        default:
-          return _fork(proceed, _, h2oNoAssist, []);
-      }
     };
     Flow.Dataflow.link(_.ready, () => {
       Flow.Dataflow.link(_.ls, ls);

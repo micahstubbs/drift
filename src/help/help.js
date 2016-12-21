@@ -76,7 +76,7 @@ export function help() {
           });
           break;
         case 'assist':
-          _.insertAndExecuteCell('cs', 'assist');
+          _.insertAndExecuteCell('cs', `assist ${_}`);
           break;
         case 'get-packs':
           _.requestPacks((error, packNames) => {

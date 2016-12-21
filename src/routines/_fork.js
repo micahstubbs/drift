@@ -1,4 +1,5 @@
 export function _fork() {
+  console.log('arguments passed to _fork', arguments);
   const Flow = window.Flow;
   const f = arguments[0];
   const __slice = [].slice;
