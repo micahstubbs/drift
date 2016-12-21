@@ -22,5 +22,5 @@ export const _schemaHacks = {
   ModelMetricsRegression: { fields: null },
   ModelMetricsClustering: { fields: null },
   ModelMetricsAutoEncoder: { fields: null },
-  ConfusionMatrix: { fields: null }
+  ConfusionMatrix: { fields: null },
 };

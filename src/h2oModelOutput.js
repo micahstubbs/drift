@@ -635,7 +635,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     });
     const downloadPojo = () => window.open(`/3/Models.java/${encodeURIComponent(_model.model_id.name)}`, '_blank');
     const downloadMojo = () => window.open(`/3/Models/${encodeURIComponent(_model.model_id.name)}/mojo`, '_blank');
-    const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_model.model_id.name)}`);
+    const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${_} ${flowPrelude.stringify(_model.model_id.name)}`);
     const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
       acceptCaption: 'Delete Model',
       declineCaption: 'Cancel',
