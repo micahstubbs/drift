@@ -35,12 +35,12 @@ import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
-import { extendNetworkTest } from './extendNetworkTest'; 
+import { extendNetworkTest } from './extendNetworkTest';
+import { extendProfile } from './extendProfile';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
-import { h2oProfileOutput } from '../h2oProfileOutput';
 import { h2oFramesOutput } from '../h2oFramesOutput';
 import { h2oSplitFrameOutput } from '../h2oSplitFrameOutput';
 import { h2oMergeFramesOutput } from '../h2oMergeFramesOutput';
@@ -149,7 +149,6 @@ export function routines() {
     let extendParseSetupResults;
     let extendPrediction;
     let extendPredictions;
-    let extendProfile;
     let extendRDDs;
     let extendScalaCode;
     let extendScalaIntp;
@@ -280,7 +279,6 @@ export function routines() {
     //
     //
     //
-    extendProfile = profile => render_(_,  profile, h2oProfileOutput, profile);
     extendFrames = frames => {
       render_(_,  frames, h2oFramesOutput, frames);
       return frames;
@@ -1994,7 +1992,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendProfile(profile));
+      return go(null, extendProfile(_, profile));
     });
     getProfile = opts => {
       if (!opts) {

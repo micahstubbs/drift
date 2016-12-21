@@ -2916,50 +2916,6 @@
     return render_(_, testResult, h2oNetworkTestOutput, testResult);
   }
 
-  const flowPrelude$15 = flowPreludeFunction();
-
-  function h2oPlotInput(_, _go, _frame) {
-    const Flow = window.Flow;
-    const lodash = window._;
-    let vector;
-    const _types = ['point', 'path', 'rect'];
-    const _vectors = (() => {
-      let _i;
-      let _len;
-      const _ref = _frame.vectors;
-      const _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        vector = _ref[_i];
-        if (vector.type === 'String' || vector.type === 'Number') {
-          _results.push(vector.label);
-        }
-      }
-      return _results;
-    })();
-    const _type = Flow.Dataflow.signal(null);
-    const _x = Flow.Dataflow.signal(null);
-    const _y = Flow.Dataflow.signal(null);
-    const _color = Flow.Dataflow.signal(null);
-    const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
-    const plot = () => {
-      const color = _color();
-      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n    g.color ${ flowPrelude$15.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
-      return _.insertAndExecuteCell('cs', command);
-    };
-    lodash.defer(_go);
-    return {
-      types: _types,
-      type: _type,
-      vectors: _vectors,
-      x: _x,
-      y: _y,
-      color: _color,
-      plot,
-      canPlot: _canPlot,
-      template: 'flow-plot-input'
-    };
-  }
-
   function h2oProfileOutput(_, _go, _profile) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -3008,6 +2964,54 @@
       nodes: _nodes,
       activeNode: _activeNode,
       template: 'flow-profile-output'
+    };
+  }
+
+  function extendProfile(_, profile) {
+    return render_(_, profile, h2oProfileOutput, profile);
+  }
+
+  const flowPrelude$15 = flowPreludeFunction();
+
+  function h2oPlotInput(_, _go, _frame) {
+    const Flow = window.Flow;
+    const lodash = window._;
+    let vector;
+    const _types = ['point', 'path', 'rect'];
+    const _vectors = (() => {
+      let _i;
+      let _len;
+      const _ref = _frame.vectors;
+      const _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        vector = _ref[_i];
+        if (vector.type === 'String' || vector.type === 'Number') {
+          _results.push(vector.label);
+        }
+      }
+      return _results;
+    })();
+    const _type = Flow.Dataflow.signal(null);
+    const _x = Flow.Dataflow.signal(null);
+    const _y = Flow.Dataflow.signal(null);
+    const _color = Flow.Dataflow.signal(null);
+    const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
+    const plot = () => {
+      const color = _color();
+      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n    g.color ${ flowPrelude$15.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$15.stringify(_x()) }, ${ flowPrelude$15.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$15.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      return _.insertAndExecuteCell('cs', command);
+    };
+    lodash.defer(_go);
+    return {
+      types: _types,
+      type: _type,
+      vectors: _vectors,
+      x: _x,
+      y: _y,
+      color: _color,
+      plot,
+      canPlot: _canPlot,
+      template: 'flow-plot-input'
     };
   }
 
@@ -5897,7 +5901,6 @@
       let extendParseSetupResults;
       let extendPrediction;
       let extendPredictions;
-      let extendProfile;
       let extendRDDs;
       let extendScalaCode;
       let extendScalaIntp;
@@ -6028,7 +6031,6 @@
       //
       //
       //
-      extendProfile = profile => render_(_, profile, h2oProfileOutput, profile);
       extendFrames = frames => {
         render_(_, frames, h2oFramesOutput, frames);
         return frames;
@@ -7652,7 +7654,7 @@
         if (error) {
           return go(error);
         }
-        return go(null, extendProfile(profile));
+        return go(null, extendProfile(_, profile));
       });
       getProfile = opts => {
         if (!opts) {
