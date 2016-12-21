@@ -35,12 +35,11 @@ import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
-import { inspectNetworkTestResult } from './inspectNetworkTestResult'; 
+import { extendNetworkTest } from './extendNetworkTest'; 
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
-import { h2oNetworkTestOutput } from '../h2oNetworkTestOutput';
 import { h2oProfileOutput } from '../h2oProfileOutput';
 import { h2oFramesOutput } from '../h2oFramesOutput';
 import { h2oSplitFrameOutput } from '../h2oSplitFrameOutput';
@@ -146,7 +145,6 @@ export function routines() {
     let extendMergeFramesResult;
     let extendModel;
     let extendModels;
-    let extendNetworkTest;
     let extendParseResult;
     let extendParseSetupResults;
     let extendPrediction;
@@ -278,10 +276,10 @@ export function routines() {
     };
     // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
-    extendNetworkTest = testResult => {
-      inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
-      return render_(_,  testResult, h2oNetworkTestOutput, testResult);
-    };
+
+    //
+    //
+    //
     extendProfile = profile => render_(_,  profile, h2oProfileOutput, profile);
     extendFrames = frames => {
       render_(_,  frames, h2oFramesOutput, frames);

@@ -2893,6 +2893,29 @@
     };
   }
 
+  function h2oNetworkTestOutput(_, _go, _testResult) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _result = Flow.Dataflow.signal(null);
+    const render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
+    render((error, vis) => {
+      if (error) {
+        return console.debug(error);
+      }
+      return _result(vis.element);
+    });
+    lodash.defer(_go);
+    return {
+      result: _result,
+      template: 'flow-network-test-output'
+    };
+  }
+
+  function extendNetworkTest(testResult) {
+    inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
+    return render_(_, testResult, h2oNetworkTestOutput, testResult);
+  };
+
   const flowPrelude$15 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -2934,24 +2957,6 @@
       plot,
       canPlot: _canPlot,
       template: 'flow-plot-input'
-    };
-  }
-
-  function h2oNetworkTestOutput(_, _go, _testResult) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const _result = Flow.Dataflow.signal(null);
-    const render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
-    render((error, vis) => {
-      if (error) {
-        return console.debug(error);
-      }
-      return _result(vis.element);
-    });
-    lodash.defer(_go);
-    return {
-      result: _result,
-      template: 'flow-network-test-output'
     };
   }
 
@@ -5888,7 +5893,6 @@
       let extendMergeFramesResult;
       let extendModel;
       let extendModels;
-      let extendNetworkTest;
       let extendParseResult;
       let extendParseSetupResults;
       let extendPrediction;
@@ -6020,10 +6024,10 @@
       };
       // depends on `plot`
       grid = f => plot(g => g(g.select(), g.from(f)));
-      extendNetworkTest = testResult => {
-        inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
-        return render_(_, testResult, h2oNetworkTestOutput, testResult);
-      };
+
+      //
+      //
+      //
       extendProfile = profile => render_(_, profile, h2oProfileOutput, profile);
       extendFrames = frames => {
         render_(_, frames, h2oFramesOutput, frames);
