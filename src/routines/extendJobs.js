@@ -3,7 +3,7 @@ import { render_ } from './render_';
 
 import { h2oJobsOutput } from '../h2oJobsOutput';
 
-export function extendJobs(jobs) {
+export function extendJobs(_, jobs) {
   let job;
   let _i;
   let _len;
@@ -11,5 +11,5 @@ export function extendJobs(jobs) {
     job = jobs[_i];
     extendJob(_, job);
   }
-  return render_(_,  jobs, h2oJobsOutput, jobs);
+  return render_(_, jobs, h2oJobsOutput, jobs);
 }

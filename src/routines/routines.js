@@ -39,6 +39,7 @@ import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
 import { extendFrames } from './extendFrames';
 import { extendJob } from './extendJob';
+import { extendJobs } from './extendJobs';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -138,7 +139,6 @@ export function routines() {
     let extendGrids;
     let extendImportModel;
     let extendImportResults;
-    let extendJobs;
     let extendModel;
     let extendModels;
     let extendParseResult;
