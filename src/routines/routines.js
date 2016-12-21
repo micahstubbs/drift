@@ -38,6 +38,7 @@ import { extendLogFile } from './extendLogFile';
 import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
 import { extendFrames } from './extendFrames';
+import { extendJob } from './extendJob';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -82,6 +83,7 @@ const flowPrelude = flowPreludeFunction();
 export function routines() {
   const lodash = window._;
   const Flow = window.Flow;
+  const H2O = window.H2O;
   let createDataframe;
   let createFactor;
   let createList;
@@ -137,7 +139,6 @@ export function routines() {
     let extendGrids;
     let extendImportModel;
     let extendImportResults;
-    let extendJob;
     let extendJobs;
     let extendModel;
     let extendModels;
@@ -274,14 +275,13 @@ export function routines() {
     //
     //
     //
-    extendJob = job => render_(_,  job, H2O.JobOutput, job);
     extendJobs = jobs => {
       let job;
       let _i;
       let _len;
       for (_i = 0, _len = jobs.length; _i < _len; _i++) {
         job = jobs[_i];
-        extendJob(job);
+        extendJob(_, job);
       }
       return render_(_,  jobs, h2oJobsOutput, jobs);
     };
@@ -989,7 +989,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendJob(job));
+        return go(null, extendJob(_, job));
       });
     });
     requestPartialDependence = (opts, go) => _.requestPartialDependence(opts, (error, result) => {
@@ -1000,7 +1000,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendJob(job));
+        return go(null, extendJob(_, job));
       });
     });
     requestPartialDependenceData = (key, go) => _.requestPartialDependenceData(key, (error, result) => {
@@ -1218,7 +1218,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendJob(job));
+        return go(null, extendJob(_, job));
       });
     });
     exportFrame = (frameKey, path, opts) => {
@@ -1479,13 +1479,13 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendJob(job));
+      return go(null, extendJob(_, job));
     });
     requestJobs = go => _.requestJobs((error, jobs) => {
       if (error) {
         return go(error);
       }
-      return go(null, extendJobs(jobs));
+      return go(null, extendJobs(_, jobs));
     });
     getJobs = () => _fork(requestJobs);
     getJob = arg => {
@@ -1653,7 +1653,7 @@ export function routines() {
         })();
         return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));
       }
-      return go(null, extendJob(result.job));
+      return go(null, extendJob(_, result.job));
     });
     requestAutoModelBuild = (opts, go) => {
       let params;
@@ -1668,7 +1668,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendJob(result.job));
+        return go(null, extendJob(_, result.job));
       });
     };
     buildAutoModel = opts => {
