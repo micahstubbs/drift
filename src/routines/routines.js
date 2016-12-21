@@ -317,6 +317,7 @@ export function routines() {
     _async = Flow.Async.async;
     _get = Flow.Async.get;
 
+    // depends on `assist`
     plot = f => {
       if (_isFuture(f)) {
         return _fork(proceed, h2oPlotInput, f);
@@ -325,6 +326,7 @@ export function routines() {
       }
       return assist(plot);
     };
+    // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
     extendCloud = cloud => render_(_,  cloud, h2oCloudOutput, cloud);
     extendTimeline = timeline => render_(_,  timeline, h2oTimelineOutput, timeline);
@@ -1481,6 +1483,7 @@ export function routines() {
         });
       });
     };
+    // depends on `assist`
     imputeColumn = opts => {
       if (opts && opts.frame && opts.column && opts.method) {
         return _fork(requestImputeColumn, opts);
@@ -2082,6 +2085,8 @@ export function routines() {
       }
       return Flow.Async.async(() => f);
     };
+    // abstracting this out produces errors
+    // defer for now
     assist = function () {
       let args;
       let func;
