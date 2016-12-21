@@ -1892,7 +1892,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendNetworkTest(result));
+      return go(null, extendNetworkTest(_, result));
     });
     testNetwork = () => _fork(requestNetworkTest);
     requestRemoveAll = go => _.requestRemoveAll((error, result) => {

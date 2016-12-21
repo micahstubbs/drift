@@ -2911,10 +2911,10 @@
     };
   }
 
-  function extendNetworkTest(testResult) {
+  function extendNetworkTest(_, testResult) {
     inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
     return render_(_, testResult, h2oNetworkTestOutput, testResult);
-  };
+  }
 
   const flowPrelude$15 = flowPreludeFunction();
 
@@ -7550,7 +7550,7 @@
         if (error) {
           return go(error);
         }
-        return go(null, extendNetworkTest(result));
+        return go(null, extendNetworkTest(_, result));
       });
       testNetwork = () => _fork(requestNetworkTest);
       requestRemoveAll = go => _.requestRemoveAll((error, result) => {
