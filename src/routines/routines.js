@@ -42,7 +42,6 @@ import { extendFrames } from './extendFrames';
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
-import { h2oSplitFrameOutput } from '../h2oSplitFrameOutput';
 import { h2oMergeFramesOutput } from '../h2oMergeFramesOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
 import { h2oJobsOutput } from '../h2oJobsOutput';
@@ -151,7 +150,6 @@ export function routines() {
     let extendRDDs;
     let extendScalaCode;
     let extendScalaIntp;
-    let extendSplitFrameResult;
     let f;
     let findColumnIndexByColumnLabel;
     let findColumnIndicesByColumnLabels;
@@ -278,10 +276,6 @@ export function routines() {
     //
     //
     //
-    extendSplitFrameResult = result => {
-      render_(_,  result, h2oSplitFrameOutput, result);
-      return result;
-    };
     extendMergeFramesResult = result => {
       render_(_,  result, h2oMergeFramesOutput, result);
       return result;
@@ -1104,7 +1098,7 @@ export function routines() {
           if (error) {
             return go(error);
           }
-          return go(null, extendSplitFrameResult({
+          return go(null, extendSplitFrameResult(_, {
             keys: splitKeys,
             ratios: splitRatios
           }));
