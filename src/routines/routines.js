@@ -31,6 +31,7 @@ import { proceed } from './proceed';
 import { gui } from './gui';
 import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
+import { createTempKey } from './createTempKey';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -95,7 +96,6 @@ export function routines() {
     lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
     lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
   }
-  createTempKey = () => `flow_${Flow.Util.uuid().replace(/\-/g, '')}`;
   createVector = lightning.createVector;
   createFactor = lightning.createFactor;
   createList = lightning.createList;

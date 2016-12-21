@@ -5814,7 +5814,6 @@
       lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
       lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
     }
-    createTempKey = () => `flow_${ Flow.Util.uuid().replace(/\-/g, '') }`;
     createVector = lightning.createVector;
     createFactor = lightning.createFactor;
     createList = lightning.createList;
