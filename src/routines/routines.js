@@ -44,7 +44,6 @@ import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
-import { h2oJobsOutput } from '../h2oJobsOutput';
 import { h2oCancelJobOutput } from '../h2oCancelJobOutput';
 import { h2oDeleteObjectsOutput } from '../h2oDeleteObjectsOutput';
 import { h2oModelOutput } from '../h2oModelOutput';
@@ -275,16 +274,6 @@ export function routines() {
     //
     //
     //
-    extendJobs = jobs => {
-      let job;
-      let _i;
-      let _len;
-      for (_i = 0, _len = jobs.length; _i < _len; _i++) {
-        job = jobs[_i];
-        extendJob(_, job);
-      }
-      return render_(_,  jobs, h2oJobsOutput, jobs);
-    };
     extendCancelJob = cancellation => render_(_,  cancellation, h2oCancelJobOutput, cancellation);
     extendDeletedKeys = keys => render_(_,  keys, h2oDeleteObjectsOutput, keys);
     extendModel = model => {
