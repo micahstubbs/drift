@@ -1,8 +1,8 @@
 import { _plot } from './_plot';
 import { extendPlot } from './extendPlot';
 
-export function createPlot(f, go) {
-  lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+export function createPlot(_, f, go) {
+  const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
   if (lightning.settings) {
     lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
     lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';

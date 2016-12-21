@@ -321,7 +321,7 @@ export function routines() {
       if (_isFuture(f)) {
         return _fork(proceed, h2oPlotInput, f);
       } else if (lodash.isFunction(f)) {
-        return _fork(createPlot, f);
+        return _fork(_, createPlot, f);
       }
       return assist(plot);
     };

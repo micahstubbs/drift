@@ -2378,8 +2378,8 @@
     render_(_, vis, h2oPlotOutput, vis.element);
   }
 
-  function createPlot(f, go) {
-    lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+  function createPlot(_, f, go) {
+    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
     if (lightning.settings) {
       lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
       lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
@@ -5975,7 +5975,7 @@
         if (_isFuture(f)) {
           return _fork(proceed, h2oPlotInput, f);
         } else if (lodash.isFunction(f)) {
-          return _fork(createPlot, f);
+          return _fork(_, createPlot, f);
         }
         return assist(plot);
       };

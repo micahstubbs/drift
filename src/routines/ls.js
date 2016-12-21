@@ -1,4 +1,4 @@
-export function ls (obj) {
+export function ls(obj) {
   const lodash = window._;
   const Flow = window.Flow;
   const _isFuture = Flow.Async.isFuture;
