@@ -93,6 +93,18 @@
 
   const flowPrelude$1 = flowPreludeFunction();
 
+  function flowForm(_, _form, _go) {
+    const lodash = window._;
+    lodash.defer(_go);
+    return {
+      form: _form,
+      template: 'flow-form',
+      templateOf(control) {
+        return control.template;
+      }
+    };
+  }
+
   const flowPrelude$2 = flowPreludeFunction();
 
   function modelInput() {
