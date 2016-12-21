@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { format4f } from './format4f';
-import { convertTableToFrame } from './convertTableToFrame';
 import { getTwoDimData } from './getTwoDimData';
 import { format6fi } from './format6fi';
 import { createArrays } from './createArrays';
@@ -36,6 +35,7 @@ import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
+import { inspectNetworkTestResult } from './inspectNetworkTestResult'; 
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -188,7 +188,6 @@ export function routines() {
     let initAssistanceSparklingWater;
     let inspectFrameColumns;
     let inspectFrameData;
-    let inspectNetworkTestResult;
     let loadScript;
     let mergeFrames;
     let name;
@@ -279,10 +278,6 @@ export function routines() {
     };
     // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
-    inspectNetworkTestResult = testResult => () => convertTableToFrame(testResult.table, testResult.table.name, {
-      description: testResult.table.name,
-      origin: 'testNetwork'
-    });
     extendNetworkTest = testResult => {
       inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
       return render_(_,  testResult, h2oNetworkTestOutput, testResult);

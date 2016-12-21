@@ -1474,100 +1474,6 @@
     return number;
   }
 
-  function parseNumbers(source) {
-    let i;
-    let value;
-    let _i;
-    let _len;
-    const target = new Array(source.length);
-    for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
-      value = source[i];
-      // TODO handle formatting
-      target[i] = value === 'NaN' ? void 0 : value === 'Infinity' ? Number.POSITIVE_INFINITY : value === '-Infinity' ? Number.NEGATIVE_INFINITY : value;
-    }
-    return target;
-  }
-
-  function formatConfusionMatrix(cm) {
-    const Flow = window.Flow;
-    const _ref = cm.matrix;
-    const _ref1 = _ref[0];
-    const tn = _ref1[0];
-    const fp = _ref1[1];
-    const _ref2 = _ref[1];
-    const fn = _ref2[0];
-    const tp = _ref2[1];
-    const fnr = fn / (tp + fn);
-    const fpr = fp / (fp + tn);
-    const domain = cm.domain;
-    const _ref3 = Flow.HTML.template('table.flow-matrix', 'tbody', 'tr', 'td.strong.flow-center', 'td', 'td.bg-yellow');
-    const table = _ref3[0];
-    const tbody = _ref3[1];
-    const tr = _ref3[2];
-    const strong = _ref3[3];
-    const normal = _ref3[4];
-    const yellow = _ref3[5];
-    return table([tbody([tr([strong('Actual/Predicted'), strong(domain[0]), strong(domain[1]), strong('Error'), strong('Rate')]), tr([strong(domain[0]), yellow(tn), normal(fp), normal(format4f(fpr)), normal(`${ fp } / ${ fp + tn }`)]), tr([strong(domain[1]), normal(fn), yellow(tp), normal(format4f(fnr)), normal(`${ fn } / ${ tp + fn }`)]), tr([strong('Total'), strong(tn + fn), strong(tp + fp), strong(format4f((fn + fp) / (fp + tn + tp + fn))), strong(`${ fn }${ fp } / ${ fp + tn + tp + fn }`)])])]);
-  }
-
-  function convertColumnToVector(column, data) {
-    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-
-    const createVector = lightning.createVector;
-    const createFactor = lightning.createFactor;
-    const createList = lightning.createList;
-
-    switch (column.type) {
-      case 'byte':
-      case 'short':
-      case 'int':
-      case 'integer':
-      case 'long':
-        return createVector(column.name, 'Number', parseNumbers(data));
-      case 'float':
-      case 'double':
-        return createVector(column.name, 'Number', parseNumbers(data), format4f);
-      case 'string':
-        return createFactor(column.name, 'String', data);
-      case 'matrix':
-        return createList(column.name, data, formatConfusionMatrix);
-      default:
-        return createList(column.name, data);
-    }
-  }
-
-  function convertTableToFrame(table, tableName, metadata) {
-    const lodash = window._;
-
-    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-
-    const createDataframe = lightning.createFrame;
-
-    // TODO handle format strings and description
-    let column;
-    let i;
-    const vectors = (() => {
-      let _i;
-      let _len;
-      const _ref = table.columns;
-      const _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        column = _ref[i];
-        _results.push(convertColumnToVector(column, table.data[i]));
-      }
-      return _results;
-    })();
-    return createDataframe(tableName, vectors, lodash.range(table.rowcount), null, metadata);
-  }
-
   function getTwoDimData(table, columnName) {
     const lodash = window._;
     const columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
@@ -1899,6 +1805,100 @@
       scores.data.push(cms);
     }
     return metrics;
+  }
+
+  function parseNumbers(source) {
+    let i;
+    let value;
+    let _i;
+    let _len;
+    const target = new Array(source.length);
+    for (i = _i = 0, _len = source.length; _i < _len; i = ++_i) {
+      value = source[i];
+      // TODO handle formatting
+      target[i] = value === 'NaN' ? void 0 : value === 'Infinity' ? Number.POSITIVE_INFINITY : value === '-Infinity' ? Number.NEGATIVE_INFINITY : value;
+    }
+    return target;
+  }
+
+  function formatConfusionMatrix(cm) {
+    const Flow = window.Flow;
+    const _ref = cm.matrix;
+    const _ref1 = _ref[0];
+    const tn = _ref1[0];
+    const fp = _ref1[1];
+    const _ref2 = _ref[1];
+    const fn = _ref2[0];
+    const tp = _ref2[1];
+    const fnr = fn / (tp + fn);
+    const fpr = fp / (fp + tn);
+    const domain = cm.domain;
+    const _ref3 = Flow.HTML.template('table.flow-matrix', 'tbody', 'tr', 'td.strong.flow-center', 'td', 'td.bg-yellow');
+    const table = _ref3[0];
+    const tbody = _ref3[1];
+    const tr = _ref3[2];
+    const strong = _ref3[3];
+    const normal = _ref3[4];
+    const yellow = _ref3[5];
+    return table([tbody([tr([strong('Actual/Predicted'), strong(domain[0]), strong(domain[1]), strong('Error'), strong('Rate')]), tr([strong(domain[0]), yellow(tn), normal(fp), normal(format4f(fpr)), normal(`${ fp } / ${ fp + tn }`)]), tr([strong(domain[1]), normal(fn), yellow(tp), normal(format4f(fnr)), normal(`${ fn } / ${ tp + fn }`)]), tr([strong('Total'), strong(tn + fn), strong(tp + fp), strong(format4f((fn + fp) / (fp + tn + tp + fn))), strong(`${ fn }${ fp } / ${ fp + tn + tp + fn }`)])])]);
+  }
+
+  function convertColumnToVector(column, data) {
+    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+    if (lightning.settings) {
+      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
+    }
+
+    const createVector = lightning.createVector;
+    const createFactor = lightning.createFactor;
+    const createList = lightning.createList;
+
+    switch (column.type) {
+      case 'byte':
+      case 'short':
+      case 'int':
+      case 'integer':
+      case 'long':
+        return createVector(column.name, 'Number', parseNumbers(data));
+      case 'float':
+      case 'double':
+        return createVector(column.name, 'Number', parseNumbers(data), format4f);
+      case 'string':
+        return createFactor(column.name, 'String', data);
+      case 'matrix':
+        return createList(column.name, data, formatConfusionMatrix);
+      default:
+        return createList(column.name, data);
+    }
+  }
+
+  function convertTableToFrame(table, tableName, metadata) {
+    const lodash = window._;
+
+    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+    if (lightning.settings) {
+      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
+    }
+
+    const createDataframe = lightning.createFrame;
+
+    // TODO handle format strings and description
+    let column;
+    let i;
+    const vectors = (() => {
+      let _i;
+      let _len;
+      const _ref = table.columns;
+      const _results = [];
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        column = _ref[i];
+        _results.push(convertColumnToVector(column, table.data[i]));
+      }
+      return _results;
+    })();
+    return createDataframe(tableName, vectors, lodash.range(table.rowcount), null, metadata);
   }
 
   function inspectTwoDimTable_(origin, tableName, table) {
@@ -2884,6 +2884,15 @@
     return render_(_, logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
   }
 
+  function inspectNetworkTestResult(testResult) {
+    return function () {
+      return convertTableToFrame(testResult.table, testResult.table.name, {
+        description: testResult.table.name,
+        origin: 'testNetwork'
+      });
+    };
+  }
+
   const flowPrelude$15 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -3043,7 +3052,6 @@
         return _hasSelectedFrames(checkedViews.length > 0);
       });
       const columnLabels = lodash.head(lodash.map(frame.columns, column => column.label), 15);
-      console.log('columnLabels from h2oFramesOutput', columnLabels);
       const view = () => {
         if (frame.is_text) {
           return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$16.stringify(frame.frame_id.name) } ]`);
@@ -5922,7 +5930,6 @@
       let initAssistanceSparklingWater;
       let inspectFrameColumns;
       let inspectFrameData;
-      let inspectNetworkTestResult;
       let loadScript;
       let mergeFrames;
       let name;
@@ -6013,10 +6020,6 @@
       };
       // depends on `plot`
       grid = f => plot(g => g(g.select(), g.from(f)));
-      inspectNetworkTestResult = testResult => () => convertTableToFrame(testResult.table, testResult.table.name, {
-        description: testResult.table.name,
-        origin: 'testNetwork'
-      });
       extendNetworkTest = testResult => {
         inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
         return render_(_, testResult, h2oNetworkTestOutput, testResult);
