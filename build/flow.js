@@ -3043,6 +3043,7 @@
         return _hasSelectedFrames(checkedViews.length > 0);
       });
       const columnLabels = lodash.head(lodash.map(frame.columns, column => column.label), 15);
+      console.log('columnLabels from h2oFramesOutput', columnLabels);
       const view = () => {
         if (frame.is_text) {
           return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$16.stringify(frame.frame_id.name) } ]`);
