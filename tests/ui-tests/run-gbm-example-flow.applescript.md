@@ -1,7 +1,9 @@
 tell application "Google Chrome"
   tell (make new window)
-    set URL of active tab to "http://172.16.2.26:54321/flow/index.html#"
-    set bounds to {1400, 22, 3840, 2200}
+    set URL of active tab to "http://localhost:54321/flow/index.html#"
+    -- set URL of active tab to "http://localhost:54321/flow/index.html#"
+    set bounds to {1400, 22, 3840, 2200} -- 4k
+    -- set bounds to {0, 22, 1920, 1200}
   end tell
   activate
 end tell
@@ -31,6 +33,6 @@ tell application "Google Chrome" to tell active tab of window 1
   delay 1.5
   execute javascript "document.querySelectorAll('i.fa-step-forward')[0].click()" -- predict
   execute javascript "document.querySelectorAll('i.fa-step-forward')[0].click()" -- predict model
-  delay 1.5
+  delay 0.25
   execute javascript "document.querySelectorAll('i.fa-step-forward')[0].click()" -- get prediction frame
 end tell
