@@ -5447,12 +5447,6 @@
     };
   }
 
-  function h2oExportFrameOutput(_, _go, result) {
-    const lodash = window._;
-    lodash.defer(_go);
-    return { template: 'flow-export-frame-output' };
-  }
-
   function h2oExportModelOutput(_, _go, result) {
     const lodash = window._;
     lodash.defer(_go);
@@ -6622,7 +6616,6 @@
       let extendAsDataFrame;
       let extendAsH2OFrame;
       let extendDataFrames;
-      let extendExportFrame;
       let extendExportModel;
       let extendGrid;
       let extendImportModel;
@@ -6853,7 +6846,6 @@
       //
       //
       //
-      extendExportFrame = result => render_(_, result, h2oExportFrameOutput, result);
       requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
         if (error) {
           return go(error);

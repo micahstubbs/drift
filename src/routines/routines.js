@@ -59,7 +59,6 @@ import { h2oGridOutput } from '../h2oGridOutput';
 import { h2oPredictsOutput } from '../h2oPredictsOutput';
 import { h2oH2OFrameOutput } from '../h2oH2OFrameOutput';
 import { h2oFrameOutput } from '../h2oFrameOutput';
-import { h2oExportFrameOutput } from '../h2oExportFrameOutput';
 import { h2oExportModelOutput } from '../h2oExportModelOutput';
 import { h2oImportFilesOutput } from '../h2oImportFilesOutput';
 import { h2oRDDsOutput } from '../h2oRDDsOutput';
@@ -126,7 +125,6 @@ export function routines() {
     let extendAsDataFrame;
     let extendAsH2OFrame;
     let extendDataFrames;
-    let extendExportFrame;
     let extendExportModel;
     let extendGrid;
     let extendImportModel;
@@ -365,7 +363,6 @@ export function routines() {
     //
     //
     //
-    extendExportFrame = result => render_(_,  result, h2oExportFrameOutput, result);
     requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
       if (error) {
         return go(error);
