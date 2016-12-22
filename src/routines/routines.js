@@ -42,6 +42,7 @@ import { extendCancelJob } from './extendCancelJob';
 import { extendDeletedKeys } from './extendDeletedKeys';
 import { extendModel } from './extendModel';
 import { extendModels } from './extendModels';
+import { read } from './read';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -178,7 +179,6 @@ export function routines() {
     let parseFiles;
     let plot;
     let predict;
-    let read;
     let requestAsDataFrame;
     let requestAsH2OFrameFromDF;
     let requestAsH2OFrameFromRDD;
@@ -280,12 +280,6 @@ export function routines() {
     //
     //
     //
-    read = value => {
-      if (value === 'NaN') {
-        return null;
-      }
-      return value;
-    };
     extendPredictions = (opts, predictions) => {
       render_(_,  predictions, h2oPredictsOutput, opts, predictions);
       return predictions;

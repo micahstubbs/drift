@@ -5936,7 +5936,6 @@
       let parseFiles;
       let plot;
       let predict;
-      let read;
       let requestAsDataFrame;
       let requestAsH2OFrameFromDF;
       let requestAsH2OFrameFromRDD;
@@ -6038,12 +6037,6 @@
       //
       //
       //
-      read = value => {
-        if (value === 'NaN') {
-          return null;
-        }
-        return value;
-      };
       extendPredictions = (opts, predictions) => {
         render_(_, predictions, h2oPredictsOutput, opts, predictions);
         return predictions;
