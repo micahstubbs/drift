@@ -4957,6 +4957,15 @@
     });
   }
 
+  function requestDeleteModel(_, modelKey, go) {
+    return _.requestDeleteModel(modelKey, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDeletedKeys(_, [modelKey]));
+    });
+  }
+
   const flowPrelude$28 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6534,7 +6543,6 @@
       let requestCancelJob;
       let requestCloud;
       let requestDataFrames;
-      let requestDeleteModel;
       let requestDeleteModels;
       let requestExportModel;
       let requestGrid;
@@ -6756,6 +6764,20 @@
             return assist(getGrid);
         }
       };
+      // depends on `assist`
+      imputeColumn = opts => {
+        if (opts && opts.frame && opts.column && opts.method) {
+          return _fork(requestImputeColumn, _, opts);
+        }
+        return assist(imputeColumn, opts);
+      };
+      // depends on `assist`
+      changeColumnType = opts => {
+        if (opts && opts.frame && opts.column && opts.type) {
+          return _fork(requestChangeColumnType, _, opts);
+        }
+        return assist(changeColumnType, opts);
+      };
       //
       //
       //
@@ -6764,27 +6786,9 @@
       //
       //
       // depends on `assist`
-      imputeColumn = opts => {
-        if (opts && opts.frame && opts.column && opts.method) {
-          return _fork(requestImputeColumn, _, opts);
-        }
-        return assist(imputeColumn, opts);
-      };
-      changeColumnType = opts => {
-        if (opts && opts.frame && opts.column && opts.type) {
-          return _fork(requestChangeColumnType, _, opts);
-        }
-        return assist(changeColumnType, opts);
-      };
-      requestDeleteModel = (modelKey, go) => _.requestDeleteModel(modelKey, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys(_, [modelKey]));
-      });
       deleteModel = modelKey => {
         if (modelKey) {
-          return _fork(requestDeleteModel, modelKey);
+          return _fork(requestDeleteModel, _, modelKey);
         }
         return assist(deleteModel);
       };
@@ -6795,6 +6799,7 @@
         }
         return go(null, extendImportModel(result));
       });
+      // depends on `assist`
       importModel = (path, opts) => {
         if (path && path.length) {
           return _fork(requestImportModel, path, opts);
@@ -6808,6 +6813,7 @@
         }
         return go(null, extendExportModel(result));
       });
+      // depends on `assist`
       exportModel = (modelKey, path, opts) => {
         if (modelKey && path) {
           return _fork(requestExportModel, modelKey, path, opts);
@@ -6816,7 +6822,7 @@
       };
       requestDeleteModels = (modelKeys, go) => {
         let futures;
-        futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, modelKey));
+        futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, _, modelKey));
         return Flow.Async.join(futures, (error, results) => {
           if (error) {
             return go(error);
@@ -6824,6 +6830,7 @@
           return go(null, extendDeletedKeys(_, modelKeys));
         });
       };
+      // depends on `assist`
       deleteModels = modelKeys => {
         switch (modelKeys.length) {
           case 0:
@@ -6847,6 +6854,7 @@
         return go(null, extendJobs(_, jobs));
       });
       getJobs = () => _fork(requestJobs);
+      // depends on `assist`
       getJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {
           case 'String':
@@ -6867,6 +6875,7 @@
         }
         return go(null, extendCancelJob(_, {}));
       });
+      // depends on `assist`
       cancelJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {
           case 'String':
@@ -6882,6 +6891,7 @@
         }
         return go(null, extendImportResults(importResults));
       });
+      // depends on `assist`
       importFiles = paths => {
         switch (flowPrelude$5.typeOf(paths)) {
           case 'Array':
@@ -6910,6 +6920,7 @@
         }
         return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
       });
+      // depends on `assist`
       setupParse = args => {
         if (args.paths && lodash.isArray(args.paths)) {
           return _fork(requestImportAndParseSetup, args.paths);
@@ -7004,12 +7015,14 @@
           return go(null, extendJob(_, result.job));
         });
       };
+      // depends on `assist`
       buildAutoModel = opts => {
         if (opts && lodash.keys(opts).length > 1) {
           return _fork(requestAutoModelBuild, opts);
         }
         return assist(buildAutoModel, opts);
       };
+      // depends on `assist`
       buildModel = (algo, opts) => {
         if (algo && opts && lodash.keys(opts).length > 1) {
           return _fork(requestModelBuild, algo, opts);

@@ -52,6 +52,7 @@ import { requestExportFrame } from './requestExportFrame';
 import { requestModel } from './requestModel';
 import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
+import { requestDeleteModel } from './requestDeleteModel';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -178,7 +179,6 @@ export function routines() {
     let requestCancelJob;
     let requestCloud;
     let requestDataFrames;
-    let requestDeleteModel;
     let requestDeleteModels;
     let requestExportModel;
     let requestGrid;
@@ -429,16 +429,10 @@ export function routines() {
     //
     //
     //
-    requestDeleteModel = (modelKey, go) => _.requestDeleteModel(modelKey, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendDeletedKeys(_, [modelKey]));
-    });
     // depends on `assist`
     deleteModel = modelKey => {
       if (modelKey) {
-        return _fork(requestDeleteModel, modelKey);
+        return _fork(requestDeleteModel, _, modelKey);
       }
       return assist(deleteModel);
     };
@@ -472,7 +466,7 @@ export function routines() {
     };
     requestDeleteModels = (modelKeys, go) => {
       let futures;
-      futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, modelKey));
+      futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, _, modelKey));
       return Flow.Async.join(futures, (error, results) => {
         if (error) {
           return go(error);
