@@ -43,11 +43,11 @@ import { read } from './read';
 import { extendPrediction } from './extendPrediction';
 import { inspectFrameColumns } from './inspectFrameColumns';
 import { inspectFrameData } from './inspectFrameData';
-import { extendFrameSummary } from './extendFrameSummary';
 import { extendColumnSummary } from './extendColumnSummary';
 import { requestFrame } from './requestFrame';
 import { requestFrameData } from './requestFrameData';
 import { requestFrameSummarySlice } from './requestFrameSummarySlice';
+import { requestFrameSummary } from './requestFrameSummary';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -192,7 +192,6 @@ export function routines() {
     let requestDeleteModels;
     let requestExportFrame;
     let requestExportModel;
-    let requestFrameSummary;
     let requestFrames;
     let requestGrid;
     let requestGrids;
@@ -283,12 +282,6 @@ export function routines() {
     //
     //
     //
-    requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendFrameSummary(_, frameKey, frame));
-    });
     requestColumnSummary = (frameKey, columnName, go) => _.requestColumnSummary(frameKey, columnName, (error, frame) => {
       if (error) {
         return go(error);
@@ -503,7 +496,7 @@ export function routines() {
     getFrameSummary = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
-          return _fork(requestFrameSummary, frameKey);
+          return _fork(requestFrameSummary, _, frameKey);
         default:
           return assist(getFrameSummary);
       }

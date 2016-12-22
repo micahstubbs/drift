@@ -4483,155 +4483,6 @@
 
   const flowPrelude$25 = flowPreludeFunction();
 
-  function h2oFrameOutput(_, _go, _frame) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    let _lastUsedSearchTerm;
-    const MaxItemsPerPage = 20;
-    const _grid = Flow.Dataflow.signal(null);
-    const _chunkSummary = Flow.Dataflow.signal(null);
-    const _distributionSummary = Flow.Dataflow.signal(null);
-    const _columnNameSearchTerm = Flow.Dataflow.signal(null);
-    const _currentPage = Flow.Dataflow.signal(0);
-    const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
-    const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
-    const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-    const renderPlot = (container, render) => render((error, vis) => {
-      if (error) {
-        return console.debug(error);
-      }
-      return container(vis.element);
-    });
-    const renderGrid = render => render((error, vis) => {
-      if (error) {
-        return console.debug(error);
-      }
-      $('a', vis.element).on('click', e => {
-        const $a = $(e.target);
-        switch ($a.attr('data-type')) {
-          case 'summary-link':
-            return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$25.stringify(_frame.frame_id.name) }, ${ flowPrelude$25.stringify($a.attr('data-key')) }`);
-          case 'as-factor-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$25.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$25.stringify($a.attr('data-key')) }, type: \'enum\'`);
-          case 'as-numeric-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$25.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$25.stringify($a.attr('data-key')) }, type: \'int\'`);
-          default:
-          // do nothing
-        }
-      });
-      return _grid(vis.element);
-    });
-    const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$25.stringify(_frame.frame_id.name) }`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$25.stringify(_frame.frame_id.name) }`);
-    const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$25.stringify(_frame.frame_id.name) }`);
-    const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$25.stringify(_frame.frame_id.name) }`);
-    const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$25.stringify(_frame.frame_id.name) }`);
-    const download = () => window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
-    const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$25.stringify(_frame.frame_id.name) }`);
-    const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
-      acceptCaption: 'Delete Frame',
-      declineCaption: 'Cancel'
-    }, accept => {
-      if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$25.stringify(_frame.frame_id.name) }`);
-      }
-    });
-    const renderFrame = frame => {
-      renderGrid(_.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
-      renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
-      return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
-    };
-    _lastUsedSearchTerm = null;
-    const refreshColumns = pageIndex => {
-      const searchTerm = _columnNameSearchTerm();
-      if (searchTerm !== _lastUsedSearchTerm) {
-        pageIndex = 0;
-      }
-      const startIndex = pageIndex * MaxItemsPerPage;
-      const itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-      return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
-        if (error) {
-          // empty
-          // TODO
-        } else {
-          _lastUsedSearchTerm = searchTerm;
-          _currentPage(pageIndex);
-          return renderFrame(frame);
-        }
-      });
-    };
-    const goToPreviousPage = () => {
-      const currentPage = _currentPage();
-      if (currentPage > 0) {
-        refreshColumns(currentPage - 1);
-      }
-    };
-    const goToNextPage = () => {
-      const currentPage = _currentPage();
-      if (currentPage < _maxPages() - 1) {
-        refreshColumns(currentPage + 1);
-      }
-    };
-    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
-    renderFrame(_frame);
-    lodash.defer(_go);
-    return {
-      key: _frame.frame_id.name,
-      rowCount: _frame.rows,
-      columnCount: _frame.total_column_count,
-      size: Flow.Util.formatBytes(_frame.byte_size),
-      chunkSummary: _chunkSummary,
-      distributionSummary: _distributionSummary,
-      columnNameSearchTerm: _columnNameSearchTerm,
-      grid: _grid,
-      inspect,
-      createModel,
-      inspectData,
-      splitFrame,
-      predict,
-      download,
-      exportFrame,
-      canGoToPreviousPage: _canGoToPreviousPage,
-      canGoToNextPage: _canGoToNextPage,
-      goToPreviousPage,
-      goToNextPage,
-      deleteFrame,
-      template: 'flow-frame-output'
-    };
-  }
-
-  const flowPrelude$24 = flowPreludeFunction();
-
-  function extendFrameSummary(_, frameKey, frame) {
-    let column;
-    // let enumColumns;
-    const inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
-    const enumColumns = (() => {
-      let _i;
-      let _len;
-      const _ref1 = frame.columns;
-      const _results = [];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        column = _ref1[_i];
-        if (column.type === 'enum') {
-          _results.push(column);
-        }
-      }
-      return _results;
-    })();
-    if (enumColumns.length > 0) {
-      inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
-    }
-    const origin = `getFrameSummary ${ flowPrelude$24.stringify(frameKey) }`;
-    inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
-    inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
-    inspect_(frame, inspections);
-    return render_(_, frame, h2oFrameOutput, frame);
-  }
-
-  const flowPrelude$27 = flowPreludeFunction();
-
   function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -4663,8 +4514,8 @@
     if (table) {
       renderPlot(_domainPlot, _.plot(g => g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000))));
     }
-    const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$27.stringify(frameKey) }, column: ${ flowPrelude$27.stringify(columnName) }`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`);
+    const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$25.stringify(frameKey) }, column: ${ flowPrelude$25.stringify(columnName) }`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$25.stringify(frameKey) }, ${ flowPrelude$25.stringify(columnName) }`);
     lodash.defer(_go);
     return {
       label: column.label,
@@ -4678,7 +4529,7 @@
     };
   }
 
-  const flowPrelude$26 = flowPreludeFunction();
+  const flowPrelude$24 = flowPreludeFunction();
 
   function extendColumnSummary(_, frameKey, frame, columnName) {
     const lodash = window._;
@@ -4697,7 +4548,7 @@
       const vectors = [createVector('percentile', 'Number', frame.default_percentiles), createVector('value', 'Number', column.percentiles)];
       return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
         description: `Percentiles for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspectDistribution = () => {
@@ -4767,8 +4618,8 @@
       const vectors = [createFactor('interval', 'String', intervalData), createVector('width', 'Number', widthData), createVector('count', 'Number', countData)];
       return createDataframe('distribution', vectors, lodash.range(binCount), null, {
         description: `Distribution for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`,
-        plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`,
+        plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspectCharacteristics = () => {
@@ -4797,8 +4648,8 @@
       const vectors = [createFactor('characteristic', 'String', characteristicData), createVector('count', 'Number', countData), createVector('percent', 'Number', percentData)];
       return createDataframe('characteristics', vectors, lodash.range(characteristicData.length), null, {
         description: `Characteristics for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`,
-        plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`,
+        plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspectSummary = () => {
@@ -4814,8 +4665,8 @@
       const vectors = [createFactor('column', 'String', [columnName]), createVector('mean', 'Number', [mean]), createVector('q1', 'Number', [q1]), createVector('q2', 'Number', [q2]), createVector('q3', 'Number', [q3]), createVector('min', 'Number', [minimum]), createVector('max', 'Number', [maximum])];
       return createDataframe('summary', vectors, lodash.range(1), null, {
         description: `Summary for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`,
-        plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`,
+        plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspectDomain = () => {
@@ -4841,8 +4692,8 @@
       const vectors = [createFactor('label', 'String', labels), createVector('count', 'Number', counts), createVector('percent', 'Number', percents)];
       return createDataframe('domain', vectors, lodash.range(sortedLevels.length), null, {
         description: `Domain for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`,
-        plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$26.stringify(frameKey) }, ${ flowPrelude$26.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`,
+        plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspections = { characteristics: inspectCharacteristics };
@@ -4869,7 +4720,127 @@
     return render_(_, frame, h2oColumnSummaryOutput, frameKey, frame, columnName);
   }
 
-  const flowPrelude$28 = flowPreludeFunction();
+  const flowPrelude$27 = flowPreludeFunction();
+
+  function h2oFrameOutput(_, _go, _frame) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    let _lastUsedSearchTerm;
+    const MaxItemsPerPage = 20;
+    const _grid = Flow.Dataflow.signal(null);
+    const _chunkSummary = Flow.Dataflow.signal(null);
+    const _distributionSummary = Flow.Dataflow.signal(null);
+    const _columnNameSearchTerm = Flow.Dataflow.signal(null);
+    const _currentPage = Flow.Dataflow.signal(0);
+    const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
+    const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
+    const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
+    const renderPlot = (container, render) => render((error, vis) => {
+      if (error) {
+        return console.debug(error);
+      }
+      return container(vis.element);
+    });
+    const renderGrid = render => render((error, vis) => {
+      if (error) {
+        return console.debug(error);
+      }
+      $('a', vis.element).on('click', e => {
+        const $a = $(e.target);
+        switch ($a.attr('data-type')) {
+          case 'summary-link':
+            return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$27.stringify(_frame.frame_id.name) }, ${ flowPrelude$27.stringify($a.attr('data-key')) }`);
+          case 'as-factor-link':
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$27.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$27.stringify($a.attr('data-key')) }, type: \'enum\'`);
+          case 'as-numeric-link':
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$27.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$27.stringify($a.attr('data-key')) }, type: \'int\'`);
+          default:
+          // do nothing
+        }
+      });
+      return _grid(vis.element);
+    });
+    const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$27.stringify(_frame.frame_id.name) }`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$27.stringify(_frame.frame_id.name) }`);
+    const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$27.stringify(_frame.frame_id.name) }`);
+    const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$27.stringify(_frame.frame_id.name) }`);
+    const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$27.stringify(_frame.frame_id.name) }`);
+    const download = () => window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
+    const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$27.stringify(_frame.frame_id.name) }`);
+    const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
+      acceptCaption: 'Delete Frame',
+      declineCaption: 'Cancel'
+    }, accept => {
+      if (accept) {
+        return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$27.stringify(_frame.frame_id.name) }`);
+      }
+    });
+    const renderFrame = frame => {
+      renderGrid(_.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
+      renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
+      return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
+    };
+    _lastUsedSearchTerm = null;
+    const refreshColumns = pageIndex => {
+      const searchTerm = _columnNameSearchTerm();
+      if (searchTerm !== _lastUsedSearchTerm) {
+        pageIndex = 0;
+      }
+      const startIndex = pageIndex * MaxItemsPerPage;
+      const itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
+      return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
+        if (error) {
+          // empty
+          // TODO
+        } else {
+          _lastUsedSearchTerm = searchTerm;
+          _currentPage(pageIndex);
+          return renderFrame(frame);
+        }
+      });
+    };
+    const goToPreviousPage = () => {
+      const currentPage = _currentPage();
+      if (currentPage > 0) {
+        refreshColumns(currentPage - 1);
+      }
+    };
+    const goToNextPage = () => {
+      const currentPage = _currentPage();
+      if (currentPage < _maxPages() - 1) {
+        refreshColumns(currentPage + 1);
+      }
+    };
+    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
+    renderFrame(_frame);
+    lodash.defer(_go);
+    return {
+      key: _frame.frame_id.name,
+      rowCount: _frame.rows,
+      columnCount: _frame.total_column_count,
+      size: Flow.Util.formatBytes(_frame.byte_size),
+      chunkSummary: _chunkSummary,
+      distributionSummary: _distributionSummary,
+      columnNameSearchTerm: _columnNameSearchTerm,
+      grid: _grid,
+      inspect,
+      createModel,
+      inspectData,
+      splitFrame,
+      predict,
+      download,
+      exportFrame,
+      canGoToPreviousPage: _canGoToPreviousPage,
+      canGoToNextPage: _canGoToNextPage,
+      goToPreviousPage,
+      goToNextPage,
+      deleteFrame,
+      template: 'flow-frame-output'
+    };
+  }
+
+  const flowPrelude$26 = flowPreludeFunction();
 
   function extendFrame(_, frameKey, frame) {
     let column;
@@ -4893,7 +4864,7 @@
     if (enumColumns.length > 0) {
       inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
     }
-    const origin = `getFrameSummary ${ flowPrelude$28.stringify(frameKey) }`;
+    const origin = `getFrameSummary ${ flowPrelude$26.stringify(frameKey) }`;
     inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
     inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
     inspect_(frame, inspections);
@@ -4909,11 +4880,11 @@
     });
   }
 
-  const flowPrelude$29 = flowPreludeFunction();
+  const flowPrelude$28 = flowPreludeFunction();
 
   function extendFrameData(_, frameKey, frame) {
     const inspections = { data: inspectFrameData(frameKey, frame) };
-    const origin = `getFrameData ${ flowPrelude$29.stringify(frameKey) }`;
+    const origin = `getFrameData ${ flowPrelude$28.stringify(frameKey) }`;
     inspect_(frame, inspections);
     return render_(_, frame, h2oFrameDataOutput, frame);
   }
@@ -4927,8 +4898,46 @@
     });
   }
 
+  const flowPrelude$29 = flowPreludeFunction();
+
+  function extendFrameSummary(_, frameKey, frame) {
+    let column;
+    // let enumColumns;
+    const inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
+    const enumColumns = (() => {
+      let _i;
+      let _len;
+      const _ref1 = frame.columns;
+      const _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        column = _ref1[_i];
+        if (column.type === 'enum') {
+          _results.push(column);
+        }
+      }
+      return _results;
+    })();
+    if (enumColumns.length > 0) {
+      inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
+    }
+    const origin = `getFrameSummary ${ flowPrelude$29.stringify(frameKey) }`;
+    inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
+    inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
+    inspect_(frame, inspections);
+    return render_(_, frame, h2oFrameOutput, frame);
+  }
+
   function requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, go) {
     return _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrameSummary(_, frameKey, frame));
+    });
+  }
+
+  function requestFrameSummary(_, frameKey, go) {
+    return _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
       if (error) {
         return go(error);
       }
@@ -6546,7 +6555,6 @@
       let requestDeleteModels;
       let requestExportFrame;
       let requestExportModel;
-      let requestFrameSummary;
       let requestFrames;
       let requestGrid;
       let requestGrids;
@@ -6637,12 +6645,6 @@
       //
       //
       //
-      requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrameSummary(_, frameKey, frame));
-      });
       requestColumnSummary = (frameKey, columnName, go) => _.requestColumnSummary(frameKey, columnName, (error, frame) => {
         if (error) {
           return go(error);
@@ -6840,7 +6842,7 @@
       getFrameSummary = frameKey => {
         switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
-            return _fork(requestFrameSummary, frameKey);
+            return _fork(requestFrameSummary, _, frameKey);
           default:
             return assist(getFrameSummary);
         }
