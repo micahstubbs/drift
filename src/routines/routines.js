@@ -449,13 +449,7 @@ export function routines() {
           return _fork(requestDeleteModels, _, modelKeys);
       }
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
+    // blocked by CoffeeScript codecell `_` issue
     getJobs = () => _fork(requestJobs, _);
     // depends on `assist`
     getJob = arg => {
@@ -472,6 +466,13 @@ export function routines() {
           return assist(getJob);
       }
     };
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     requestCancelJob = (key, go) => _.requestCancelJob(key, error => {
       if (error) {
         return go(error);
