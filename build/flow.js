@@ -4843,6 +4843,20 @@
     });
   }
 
+  function requestCreateFrame(_, opts, go) {
+    return _.requestCreateFrame(opts, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return _.requestJob(result.key.name, (error, job) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendJob(_, job));
+      });
+    });
+  }
+
   const flowPrelude$29 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6444,7 +6458,6 @@
       let requestCancelJob;
       let requestChangeColumnType;
       let requestCloud;
-      let requestCreateFrame;
       let requestDataFrames;
       let requestDeleteFrame;
       let requestDeleteFrames;
@@ -6541,17 +6554,6 @@
       //
       //
       //
-      requestCreateFrame = (opts, go) => _.requestCreateFrame(opts, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return _.requestJob(result.key.name, (error, job) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(_, job));
-        });
-      });
       requestPartialDependence = (opts, go) => _.requestPartialDependence(opts, (error, result) => {
         if (error) {
           return go(error);
@@ -6676,7 +6678,7 @@
       };
       createFrame = opts => {
         if (opts) {
-          return _fork(requestCreateFrame, opts);
+          return _fork(requestCreateFrame, _, opts);
         }
         return assist(createFrame);
       };

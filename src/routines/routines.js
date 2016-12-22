@@ -47,6 +47,7 @@ import { requestFrameData } from './requestFrameData';
 import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummary } from './requestFrameSummary';
 import { requestColumnSummary } from './requestColumnSummary';
+import { requestCreateFrame } from './requestCreateFrame';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -182,7 +183,6 @@ export function routines() {
     let requestCancelJob;
     let requestChangeColumnType;
     let requestCloud;
-    let requestCreateFrame;
     let requestDataFrames;
     let requestDeleteFrame;
     let requestDeleteFrames;
@@ -279,17 +279,6 @@ export function routines() {
     //
     //
     //
-    requestCreateFrame = (opts, go) => _.requestCreateFrame(opts, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return _.requestJob(result.key.name, (error, job) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendJob(_, job));
-      });
-    });
     requestPartialDependence = (opts, go) => _.requestPartialDependence(opts, (error, result) => {
       if (error) {
         return go(error);
@@ -423,7 +412,7 @@ export function routines() {
     };
     createFrame = opts => {
       if (opts) {
-        return _fork(requestCreateFrame, opts);
+        return _fork(requestCreateFrame, _, opts);
       }
       return assist(createFrame);
     };
