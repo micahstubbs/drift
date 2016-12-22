@@ -281,6 +281,10 @@ export function routines() {
     //
     //
     //
+    // start refactoring here
+    //
+    //
+    //
     requestFrame = (frameKey, go) => _.requestFrameSlice(frameKey, void 0, 0, 20, (error, frame) => {
       if (error) {
         return go(error);
