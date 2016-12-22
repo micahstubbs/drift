@@ -55,6 +55,7 @@ import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
 import { requestDeleteModel } from './requestDeleteModel';
 import { requestImportModel } from './requestImportModel';
+import { requestJobs } from './requestJobs';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -182,7 +183,6 @@ export function routines() {
     let requestImportAndParseFiles;
     let requestImportAndParseSetup;
     let requestImportFiles;
-    let requestJobs;
     let requestLogFile;
     let requestModelBuild;
     let requestNetworkTest;
@@ -456,13 +456,7 @@ export function routines() {
     //
     //
     //
-    requestJobs = go => _.requestJobs((error, jobs) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendJobs(_, jobs));
-    });
-    getJobs = () => _fork(requestJobs);
+    getJobs = () => _fork(requestJobs, _);
     // depends on `assist`
     getJob = arg => {
       switch (flowPrelude.typeOf(arg)) {

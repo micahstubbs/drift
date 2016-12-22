@@ -5238,6 +5238,15 @@
     });
   }
 
+  function requestJobs(_, go) {
+    return _.requestJobs((error, jobs) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendJobs(_, jobs));
+    });
+  }
+
   const flowPrelude$30 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6811,7 +6820,6 @@
       let requestImportAndParseFiles;
       let requestImportAndParseSetup;
       let requestImportFiles;
-      let requestJobs;
       let requestLogFile;
       let requestModelBuild;
       let requestNetworkTest;
@@ -7077,13 +7085,7 @@
       //
       //
       //
-      requestJobs = go => _.requestJobs((error, jobs) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendJobs(_, jobs));
-      });
-      getJobs = () => _fork(requestJobs);
+      getJobs = () => _fork(requestJobs, _);
       // depends on `assist`
       getJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {
