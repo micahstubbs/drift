@@ -319,6 +319,11 @@ export function routines() {
       }
       return assist(getPartialDependence);
     };
+    // abstracting this out causes a bug
+    // need to figure out how to insert a `_` variable
+    // into coffeescript that is then executed
+    // so that `_`'s meaning is preserved
+    // rather that being stringified into [object Object]
     getFrames = () => _fork(requestFrames, _);
     // depends on `assist`
     getFrame = frameKey => {
