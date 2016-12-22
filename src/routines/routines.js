@@ -47,6 +47,7 @@ import { extendFrameSummary } from './extendFrameSummary';
 import { extendColumnSummary } from './extendColumnSummary';
 import { requestFrame } from './requestFrame';
 import { requestFrameData } from './requestFrameData';
+import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -192,7 +193,6 @@ export function routines() {
     let requestExportFrame;
     let requestExportModel;
     let requestFrameSummary;
-    let requestFrameSummarySlice;
     let requestFrames;
     let requestGrid;
     let requestGrids;
@@ -283,13 +283,7 @@ export function routines() {
     //
     //
     //
-    requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendFrameSummary(_, frameKey, frame));
-    });
-    requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(frameKey, void 0, 0, 20, (error, frame) => {
+    requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
       if (error) {
         return go(error);
       }
