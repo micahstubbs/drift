@@ -48,6 +48,7 @@ import { requestColumnSummary } from './requestColumnSummary';
 import { requestCreateFrame } from './requestCreateFrame';
 import { requestSplitFrame } from './requestSplitFrame';
 import { requestMergeFrames } from './requestMergeFrames';
+import { getFrames } from './getFrames'; 
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -144,7 +145,6 @@ export function routines() {
     let getFrame;
     let getFrameData;
     let getFrameSummary;
-    let getFrames;
     let getGrid;
     let getGrids;
     let getJob;
@@ -263,19 +263,14 @@ export function routines() {
       render_(_,  predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
-    //
-    //
-    //
-    // start refactoring here
-    //
-    //
-    //
+    // depends on `assist`
     createFrame = opts => {
       if (opts) {
         return _fork(requestCreateFrame, _, opts);
       }
       return assist(createFrame);
     };
+    // depends on `assist`
     splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
       if (seed == null) {
         seed = -1;
@@ -319,7 +314,13 @@ export function routines() {
       }
       return assist(getPartialDependence);
     };
-    getFrames = () => _fork(requestFrames, _);
+    //
+    //
+    //
+    // start refactoring here
+    //
+    //
+    //
     // depends on `assist`
     getFrame = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
