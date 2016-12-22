@@ -5278,6 +5278,22 @@
     return render_(_, parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
   }
 
+  function requestImportAndParseSetup(_, paths, go) {
+    const lodash = window._;
+    return _.requestImportFiles(paths, (error, importResults) => {
+      if (error) {
+        return go(error);
+      }
+      const sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
+      return _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendParseSetupResults(_, { paths }, parseSetupResults));
+      });
+    });
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6814,7 +6830,6 @@
       let requestDataFrames;
       let requestGrid;
       let requestImportAndParseFiles;
-      let requestImportAndParseSetup;
       let requestImportFiles;
       let requestLogFile;
       let requestModelBuild;
@@ -7125,19 +7140,6 @@
       //
       //
       //
-      requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
-        let sourceKeys;
-        if (error) {
-          return go(error);
-        }
-        sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-        return _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendParseSetupResults(_, { paths }, parseSetupResults));
-        });
-      });
       requestParseSetup = (sourceKeys, go) => _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
         if (error) {
           return go(error);
@@ -7147,7 +7149,7 @@
       // depends on `assist`
       setupParse = args => {
         if (args.paths && lodash.isArray(args.paths)) {
-          return _fork(requestImportAndParseSetup, args.paths);
+          return _fork(requestImportAndParseSetup, _, args.paths);
         } else if (args.source_frames && lodash.isArray(args.source_frames)) {
           return _fork(requestParseSetup, args.source_frames);
         }

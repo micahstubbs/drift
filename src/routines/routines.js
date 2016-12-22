@@ -57,6 +57,7 @@ import { requestImportModel } from './requestImportModel';
 import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
 import { extendParseSetupResults } from './extendParseSetupResults';
+import { requestImportAndParseSetup } from './requestImportAndParseSetup';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -178,7 +179,6 @@ export function routines() {
     let requestDataFrames;
     let requestGrid;
     let requestImportAndParseFiles;
-    let requestImportAndParseSetup;
     let requestImportFiles;
     let requestLogFile;
     let requestModelBuild;
@@ -497,19 +497,6 @@ export function routines() {
     //
     //
     //
-    requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
-      let sourceKeys;
-      if (error) {
-        return go(error);
-      }
-      sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-      return _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendParseSetupResults(_, { paths }, parseSetupResults));
-      });
-    });
     requestParseSetup = (sourceKeys, go) => _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
       if (error) {
         return go(error);
@@ -519,7 +506,7 @@ export function routines() {
     // depends on `assist`
     setupParse = args => {
       if (args.paths && lodash.isArray(args.paths)) {
-        return _fork(requestImportAndParseSetup, args.paths);
+        return _fork(requestImportAndParseSetup, _, args.paths);
       } else if (args.source_frames && lodash.isArray(args.source_frames)) {
         return _fork(requestParseSetup, args.source_frames);
       }
