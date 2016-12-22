@@ -48,7 +48,6 @@ import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
 import { h2oGridOutput } from '../h2oGridOutput';
-import { h2oGridsOutput } from '../h2oGridsOutput';
 import { h2oModelsOutput } from '../h2oModelsOutput';
 import { h2oPredictsOutput } from '../h2oPredictsOutput';
 import { h2oPredictOutput } from '../h2oPredictOutput';
@@ -133,7 +132,6 @@ export function routines() {
     let extendFrameData;
     let extendFrameSummary;
     let extendGrid;
-    let extendGrids;
     let extendImportModel;
     let extendImportResults;
     let extendModels;
@@ -266,10 +264,6 @@ export function routines() {
     };
     // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
-
-    //
-    //
-    //
     // depends on `grid`
     extendGrid = (grid, opts) => {
       let inspections;
@@ -285,7 +279,9 @@ export function routines() {
       inspect_(grid, inspections);
       return render_(_,  grid, h2oGridOutput, grid);
     };
-    extendGrids = grids => render_(_,  grids, h2oGridsOutput, grids);
+    //
+    //
+    //
     extendModels = models => {
       let algos;
       let inspections;
@@ -1226,7 +1222,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendGrids(grids));
+      return go(null, extendGrids(_, grids));
     });
     getGrids = () => _fork(requestGrids);
     requestModel = (modelKey, go) => _.requestModel(modelKey, (error, model) => {
