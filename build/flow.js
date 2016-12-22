@@ -4966,6 +4966,11 @@
     });
   }
 
+  function extendImportModel(_, result) {
+    const H2O = window.H2O;
+    return render_(_, result, H2O.ImportModelOutput, result);
+  }
+
   const flowPrelude$28 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6494,7 +6499,6 @@
       let extendDataFrames;
       let extendExportModel;
       let extendGrid;
-      let extendImportModel;
       let extendImportResults;
       let extendParseResult;
       let extendParseSetupResults;
@@ -6778,13 +6782,6 @@
         }
         return assist(changeColumnType, opts);
       };
-      //
-      //
-      //
-      // v  start abstracting out here  v
-      //
-      //
-      //
       // depends on `assist`
       deleteModel = modelKey => {
         if (modelKey) {
@@ -6792,12 +6789,18 @@
         }
         return assist(deleteModel);
       };
-      extendImportModel = result => render_(_, result, H2O.ImportModelOutput, result);
+      //
+      //
+      //
+      // v  start abstracting out here  v
+      //
+      //
+      //
       requestImportModel = (path, opts, go) => _.requestImportModel(path, opts.overwrite, (error, result) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendImportModel(result));
+        return go(null, extendImportModel(_, result));
       });
       // depends on `assist`
       importModel = (path, opts) => {

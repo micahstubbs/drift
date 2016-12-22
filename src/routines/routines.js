@@ -53,6 +53,7 @@ import { requestModel } from './requestModel';
 import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
 import { requestDeleteModel } from './requestDeleteModel';
+import { extendImportModel } from './extendImportModel';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -130,7 +131,6 @@ export function routines() {
     let extendDataFrames;
     let extendExportModel;
     let extendGrid;
-    let extendImportModel;
     let extendImportResults;
     let extendParseResult;
     let extendParseSetupResults;
@@ -422,13 +422,6 @@ export function routines() {
       }
       return assist(changeColumnType, opts);
     };
-    //
-    //
-    //
-    // v  start abstracting out here  v
-    //
-    //
-    //
     // depends on `assist`
     deleteModel = modelKey => {
       if (modelKey) {
@@ -436,12 +429,18 @@ export function routines() {
       }
       return assist(deleteModel);
     };
-    extendImportModel = result => render_(_,  result, H2O.ImportModelOutput, result);
+    //
+    //
+    //
+    // v  start abstracting out here  v
+    //
+    //
+    //
     requestImportModel = (path, opts, go) => _.requestImportModel(path, opts.overwrite, (error, result) => {
       if (error) {
         return go(error);
       }
-      return go(null, extendImportModel(result));
+      return go(null, extendImportModel(_, result));
     });
     // depends on `assist`
     importModel = (path, opts) => {
