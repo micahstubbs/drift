@@ -32,7 +32,6 @@ import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
 import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
-import { extendFrames } from './extendFrames';
 import { extendJob } from './extendJob';
 import { extendJobs } from './extendJobs';
 import { extendCancelJob } from './extendCancelJob';
@@ -191,7 +190,6 @@ export function routines() {
     let requestDeleteModels;
     let requestExportFrame;
     let requestExportModel;
-    let requestFrames;
     let requestGrid;
     let requestGrids;
     let requestImportAndParseFiles;
@@ -281,12 +279,6 @@ export function routines() {
     //
     //
     //
-    requestFrames = go => _.requestFrames((error, frames) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendFrames(_, frames));
-    });
     requestCreateFrame = (opts, go) => _.requestCreateFrame(opts, (error, result) => {
       if (error) {
         return go(error);
@@ -476,7 +468,7 @@ export function routines() {
       }
       return assist(getPartialDependence);
     };
-    getFrames = () => _fork(requestFrames);
+    getFrames = () => _fork(requestFrames, _);
     getFrame = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
