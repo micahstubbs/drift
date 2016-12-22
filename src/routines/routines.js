@@ -44,6 +44,7 @@ import { extendPrediction } from './extendPrediction';
 import { inspectFrameColumns } from './inspectFrameColumns';
 import { inspectFrameData } from './inspectFrameData';
 import { extendFrameData } from './extendFrameData';
+import { extendFrame } from './extendFrame';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -128,7 +129,6 @@ export function routines() {
     let extendDataFrames;
     let extendExportFrame;
     let extendExportModel;
-    let extendFrame;
     let extendFrameSummary;
     let extendGrid;
     let extendImportModel;
@@ -282,39 +282,6 @@ export function routines() {
     //
     //
     //
-    extendFrame = (frameKey, frame) => {
-      let column;
-      let enumColumns;
-      let inspections;
-      let origin;
-      inspections = {
-        columns: inspectFrameColumns('columns', frameKey, frame, frame.columns),
-        data: inspectFrameData(frameKey, frame)
-      };
-      enumColumns = (() => {
-        let _i;
-        let _len;
-        let _ref1;
-        let _results;
-        _ref1 = frame.columns;
-        _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          column = _ref1[_i];
-          if (column.type === 'enum') {
-            _results.push(column);
-          }
-        }
-        return _results;
-      })();
-      if (enumColumns.length > 0) {
-        inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
-      }
-      origin = `getFrameSummary ${flowPrelude.stringify(frameKey)}`;
-      inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
-      inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
-      inspect_(frame, inspections);
-      return render_(_,  frame, h2oFrameOutput, frame);
-    };
     extendFrameSummary = (frameKey, frame) => {
       let column;
       let enumColumns;
@@ -591,7 +558,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendFrame(frameKey, frame));
+      return go(null, extendFrame(_, frameKey, frame));
     });
     requestFrameData = (frameKey, searchTerm, offset, count, go) => _.requestFrameSlice(frameKey, searchTerm, offset, count, (error, frame) => {
       if (error) {
