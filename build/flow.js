@@ -6689,18 +6689,6 @@
       //
       //
       //
-      findColumnIndicesByColumnLabels = (frame, columnLabels) => {
-        let columnLabel;
-        let _i;
-        let _len;
-        let _results;
-        _results = [];
-        for (_i = 0, _len = columnLabels.length; _i < _len; _i++) {
-          columnLabel = columnLabels[_i];
-          _results.push(findColumnIndexByColumnLabel(frame, columnLabel));
-        }
-        return _results;
-      };
       requestImputeColumn = (opts, go) => {
         let column;
         let combineMethod;
