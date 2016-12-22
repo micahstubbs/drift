@@ -6550,7 +6550,6 @@
       let requestCloud;
       let requestDataFrames;
       let requestDeleteModels;
-      let requestExportModel;
       let requestGrid;
       let requestImportAndParseFiles;
       let requestImportAndParseSetup;
@@ -6797,6 +6796,13 @@
         }
         return assist(importModel, path, opts);
       };
+      // depends on `assist`
+      exportModel = (modelKey, path, opts) => {
+        if (modelKey && path) {
+          return _fork(requestExportModel, _, modelKey, path, opts);
+        }
+        return assist(exportModel, modelKey, path, opts);
+      };
       //
       //
       //
@@ -6804,19 +6810,6 @@
       //
       //
       //
-      requestExportModel = (modelKey, path, opts, go) => _.requestExportModel(modelKey, path, opts.overwrite, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendExportModel(_, result));
-      });
-      // depends on `assist`
-      exportModel = (modelKey, path, opts) => {
-        if (modelKey && path) {
-          return _fork(requestExportModel, modelKey, path, opts);
-        }
-        return assist(exportModel, modelKey, path, opts);
-      };
       requestDeleteModels = (modelKeys, go) => {
         let futures;
         futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, _, modelKey));
