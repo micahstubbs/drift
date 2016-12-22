@@ -5337,12 +5337,6 @@
     };
   }
 
-  function h2oExportModelOutput(_, _go, result) {
-    const lodash = window._;
-    lodash.defer(_go);
-    return { template: 'flow-export-model-output' };
-  }
-
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oImportFilesOutput(_, _go, _importResults) {
@@ -6506,7 +6500,6 @@
       let extendAsDataFrame;
       let extendAsH2OFrame;
       let extendDataFrames;
-      let extendExportModel;
       let extendGrid;
       let extendImportResults;
       let extendParseResult;
@@ -6797,13 +6790,6 @@
         }
         return assist(deleteModel);
       };
-      //
-      //
-      //
-      // v  start abstracting out here  v
-      //
-      //
-      //
       // depends on `assist`
       importModel = (path, opts) => {
         if (path && path.length) {
@@ -6811,12 +6797,18 @@
         }
         return assist(importModel, path, opts);
       };
-      extendExportModel = result => render_(_, result, h2oExportModelOutput, result);
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
       requestExportModel = (modelKey, path, opts, go) => _.requestExportModel(modelKey, path, opts.overwrite, (error, result) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendExportModel(result));
+        return go(null, extendExportModel(_, result));
       });
       // depends on `assist`
       exportModel = (modelKey, path, opts) => {

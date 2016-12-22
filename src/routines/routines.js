@@ -63,7 +63,6 @@ import { h2oGridOutput } from '../h2oGridOutput';
 import { h2oPredictsOutput } from '../h2oPredictsOutput';
 import { h2oH2OFrameOutput } from '../h2oH2OFrameOutput';
 import { h2oFrameOutput } from '../h2oFrameOutput';
-import { h2oExportModelOutput } from '../h2oExportModelOutput';
 import { h2oImportFilesOutput } from '../h2oImportFilesOutput';
 import { h2oRDDsOutput } from '../h2oRDDsOutput';
 import { h2oDataFramesOutput } from '../h2oDataFramesOutput';
@@ -129,7 +128,6 @@ export function routines() {
     let extendAsDataFrame;
     let extendAsH2OFrame;
     let extendDataFrames;
-    let extendExportModel;
     let extendGrid;
     let extendImportResults;
     let extendParseResult;
@@ -438,16 +436,15 @@ export function routines() {
     //
     //
     //
-    // v  start abstracting out here  v
+    //  v  start abstracting out here  v
     //
     //
     //
-    extendExportModel = result => render_(_,  result, h2oExportModelOutput, result);
     requestExportModel = (modelKey, path, opts, go) => _.requestExportModel(modelKey, path, opts.overwrite, (error, result) => {
       if (error) {
         return go(error);
       }
-      return go(null, extendExportModel(result));
+      return go(null, extendExportModel(_, result));
     });
     // depends on `assist`
     exportModel = (modelKey, path, opts) => {
