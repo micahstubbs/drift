@@ -6439,7 +6439,6 @@
       let requestDeleteModels;
       let requestExportModel;
       let requestGrid;
-      let requestGrids;
       let requestImportAndParseFiles;
       let requestImportAndParseSetup;
       let requestImportFiles;
@@ -6623,13 +6622,7 @@
       };
       // blocked by CoffeeScript codecell `_` issue
       getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
-      //
-      //
-      //
-      // v  start abstracting out here  v
-      //
-      //
-      //
+      // blocked by CoffeeScript codecell `_` issue
       getModels = modelKeys => {
         if (lodash.isArray(modelKeys)) {
           if (modelKeys.length) {
@@ -6639,13 +6632,14 @@
         }
         return _fork(requestModels, _);
       };
-      requestGrids = go => _.requestGrids((error, grids) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendGrids(_, grids));
-      });
-      getGrids = () => _fork(requestGrids);
+      //
+      //
+      //
+      // v  start abstracting out here  v
+      //
+      //
+      //
+      getGrids = () => _fork(requestGrids, _);
       requestModel = (modelKey, go) => _.requestModel(modelKey, (error, model) => {
         if (error) {
           return go(error);

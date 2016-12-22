@@ -183,7 +183,6 @@ export function routines() {
     let requestDeleteModels;
     let requestExportModel;
     let requestGrid;
-    let requestGrids;
     let requestImportAndParseFiles;
     let requestImportAndParseSetup;
     let requestImportFiles;
@@ -392,13 +391,7 @@ export function routines() {
     //
     //
     //
-    requestGrids = go => _.requestGrids((error, grids) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendGrids(_, grids));
-    });
-    getGrids = () => _fork(requestGrids);
+    getGrids = () => _fork(requestGrids, _);
     requestModel = (modelKey, go) => _.requestModel(modelKey, (error, model) => {
       if (error) {
         return go(error);
