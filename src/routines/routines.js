@@ -1,10 +1,7 @@
 /* eslint-disable */
-import { format4f } from './format4f';
 import { getTwoDimData } from './getTwoDimData';
 import { format6fi } from './format6fi';
 import { createArrays } from './createArrays';
-import { parseNaNs } from './parseNaNs';
-import { parseNulls } from './parseNulls';
 import { parseAndFormatArray } from './parseAndFormatArray';
 import { parseAndFormatObjectArray } from './parseAndFormatObjectArray';
 import { _fork } from './_fork';
@@ -171,7 +168,6 @@ export function routines() {
     let importModel;
     let imputeColumn;
     let initAssistanceSparklingWater;
-    let inspectFrameData;
     let loadScript;
     let mergeFrames;
     let name;
@@ -285,71 +281,6 @@ export function routines() {
     //
     //
     //
-    inspectFrameData = (frameKey, frame) => () => {
-      let column;
-      let domain;
-      let frameColumns;
-      let index;
-      let rowIndex;
-      let vectors;
-      frameColumns = frame.columns;
-      vectors = (() => {
-        let _i;
-        let _len;
-        let _results;
-        _results = [];
-        for (_i = 0, _len = frameColumns.length; _i < _len; _i++) {
-          column = frameColumns[_i];
-          switch (column.type) {
-            case 'int':
-            case 'real':
-              _results.push(createVector(column.label, 'Number', parseNaNs(column.data), format4f));
-              break;
-            case 'enum':
-              domain = column.domain;
-              _results.push(createFactor(column.label, 'String', (() => {
-                let _j;
-                let _len1;
-                let _ref1;
-                let _results1;
-                _ref1 = column.data;
-                _results1 = [];
-                for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-                  index = _ref1[_j];
-                  _results1.push(index != null ? domain[index] : void 0);
-                }
-                return _results1;
-              })()));
-              break;
-            case 'time':
-              _results.push(createVector(column.label, 'Number', parseNaNs(column.data)));
-              break;
-            case 'string':
-            case 'uuid':
-              _results.push(createList(column.label, parseNulls(column.string_data)));
-              break;
-            default:
-              _results.push(createList(column.label, parseNulls(column.data)));
-          }
-        }
-        return _results;
-      })();
-      vectors.unshift(createVector('Row', 'Number', (() => {
-        let _i;
-        let _ref1;
-        let _ref2;
-        let _results;
-        _results = [];
-        for (rowIndex = _i = _ref1 = frame.row_offset, _ref2 = frame.row_count; _ref1 <= _ref2 ? _i < _ref2 : _i > _ref2; rowIndex = _ref1 <= _ref2 ? ++_i : --_i) {
-          _results.push(rowIndex + 1);
-        }
-        return _results;
-      })()));
-      return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
-        description: 'A partial list of rows in the H2O Frame.',
-        origin: `getFrameData ${flowPrelude.stringify(frameKey)}`
-      });
-    };
     extendFrameData = (frameKey, frame) => {
       let inspections;
       let origin;
