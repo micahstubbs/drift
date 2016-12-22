@@ -5081,6 +5081,15 @@
     });
   }
 
+  function requestDeleteFrame(_, frameKey, go) {
+    return _.requestDeleteFrame(frameKey, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDeletedKeys(_, [frameKey]));
+    });
+  }
+
   const flowPrelude$30 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6668,7 +6677,6 @@
       let requestChangeColumnType;
       let requestCloud;
       let requestDataFrames;
-      let requestDeleteFrame;
       let requestDeleteFrames;
       let requestDeleteModel;
       let requestDeleteModels;
@@ -6831,19 +6839,20 @@
             return assist(getFrameSummary);
         }
       };
-      requestDeleteFrame = (frameKey, go) => _.requestDeleteFrame(frameKey, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys(_, [frameKey]));
-      });
       // depends on `assist`
       deleteFrame = frameKey => {
         if (frameKey) {
-          return _fork(requestDeleteFrame, frameKey);
+          return _fork(requestDeleteFrame, _, frameKey);
         }
         return assist(deleteFrame);
       };
+      //
+      //
+      //
+      // v  start abstracting out here  v
+      //
+      //
+      //
       extendExportFrame = result => render_(_, result, h2oExportFrameOutput, result);
       requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
         if (error) {
@@ -6867,7 +6876,7 @@
       };
       requestDeleteFrames = (frameKeys, go) => {
         let futures;
-        futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, frameKey));
+        futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, _, frameKey));
         return Flow.Async.join(futures, (error, results) => {
           if (error) {
             return go(error);

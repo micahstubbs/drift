@@ -49,6 +49,7 @@ import { requestCreateFrame } from './requestCreateFrame';
 import { requestSplitFrame } from './requestSplitFrame';
 import { requestMergeFrames } from './requestMergeFrames';
 import { requestFrames } from './requestFrames';
+import { requestDeleteFrame } from './requestDeleteFrame';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -180,7 +181,6 @@ export function routines() {
     let requestChangeColumnType;
     let requestCloud;
     let requestDataFrames;
-    let requestDeleteFrame;
     let requestDeleteFrames;
     let requestDeleteModel;
     let requestDeleteModels;
@@ -351,6 +351,13 @@ export function routines() {
           return assist(getFrameSummary);
       }
     };
+    // depends on `assist`
+    deleteFrame = frameKey => {
+      if (frameKey) {
+        return _fork(requestDeleteFrame, _, frameKey);
+      }
+      return assist(deleteFrame);
+    };
     //
     //
     //
@@ -358,19 +365,6 @@ export function routines() {
     //
     //
     //
-    requestDeleteFrame = (frameKey, go) => _.requestDeleteFrame(frameKey, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendDeletedKeys(_, [frameKey]));
-    });
-    // depends on `assist`
-    deleteFrame = frameKey => {
-      if (frameKey) {
-        return _fork(requestDeleteFrame, frameKey);
-      }
-      return assist(deleteFrame);
-    };
     extendExportFrame = result => render_(_,  result, h2oExportFrameOutput, result);
     requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
       if (error) {
@@ -394,7 +388,7 @@ export function routines() {
     };
     requestDeleteFrames = (frameKeys, go) => {
       let futures;
-      futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, frameKey));
+      futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, _, frameKey));
       return Flow.Async.join(futures, (error, results) => {
         if (error) {
           return go(error);
