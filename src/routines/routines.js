@@ -43,11 +43,11 @@ import { read } from './read';
 import { extendPrediction } from './extendPrediction';
 import { inspectFrameColumns } from './inspectFrameColumns';
 import { inspectFrameData } from './inspectFrameData';
-import { extendColumnSummary } from './extendColumnSummary';
 import { requestFrame } from './requestFrame';
 import { requestFrameData } from './requestFrameData';
 import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummary } from './requestFrameSummary';
+import { requestColumnSummary } from './requestColumnSummary';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -183,7 +183,6 @@ export function routines() {
     let requestCancelJob;
     let requestChangeColumnType;
     let requestCloud;
-    let requestColumnSummary;
     let requestCreateFrame;
     let requestDataFrames;
     let requestDeleteFrame;
@@ -282,12 +281,6 @@ export function routines() {
     //
     //
     //
-    requestColumnSummary = (frameKey, columnName, go) => _.requestColumnSummary(frameKey, columnName, (error, frame) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendColumnSummary(_, frameKey, frame, columnName));
-    });
     requestFrames = go => _.requestFrames((error, frames) => {
       if (error) {
         return go(error);
@@ -563,7 +556,7 @@ export function routines() {
           return _fork(requestDeleteFrames, frameKeys);
       }
     };
-    getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, frameKey, columnName);
+    getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
     requestModels = go => _.requestModels((error, models) => {
       if (error) {
         return go(error);
@@ -689,7 +682,7 @@ export function routines() {
           if (error) {
             return go(error);
           }
-          return requestColumnSummary(frame, column, go);
+          return requestColumnSummary(_, frame, column, go);
         });
       });
     };
@@ -713,7 +706,7 @@ export function routines() {
           if (error) {
             return go(error);
           }
-          return requestColumnSummary(frame, column, go);
+          return requestColumnSummary(_, frame, column, go);
         });
       });
     };
