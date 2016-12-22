@@ -4647,7 +4647,6 @@
     let column;
     let enumColumns;
     let inspections;
-    let origin;
     inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
     enumColumns = (() => {
       let _i;
@@ -4667,7 +4666,7 @@
     if (enumColumns.length > 0) {
       inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
     }
-    origin = `getFrameSummary ${ flowPrelude$27.stringify(frameKey) }`;
+    const origin = `getFrameSummary ${ flowPrelude$27.stringify(frameKey) }`;
     inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
     inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
     inspect_(frame, inspections);
