@@ -375,13 +375,7 @@ export function routines() {
     };
     // blocked by CoffeeScript codecell `_` issue
     getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
-    //
-    //
-    //
-    // v  start abstracting out here  v
-    //
-    //
-    //
+    // blocked by CoffeeScript codecell `_` issue
     getModels = modelKeys => {
       if (lodash.isArray(modelKeys)) {
         if (modelKeys.length) {
@@ -391,6 +385,13 @@ export function routines() {
       }
       return _fork(requestModels, _);
     };
+    //
+    //
+    //
+    // v  start abstracting out here  v
+    //
+    //
+    //
     requestGrids = go => _.requestGrids((error, grids) => {
       if (error) {
         return go(error);
