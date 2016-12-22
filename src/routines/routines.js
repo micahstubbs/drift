@@ -177,7 +177,6 @@ export function routines() {
     let requestCancelJob;
     let requestCloud;
     let requestDataFrames;
-    let requestDeleteModels;
     let requestGrid;
     let requestImportAndParseFiles;
     let requestImportAndParseSetup;
@@ -446,16 +445,6 @@ export function routines() {
     //
     //
     //
-    requestDeleteModels = (modelKeys, go) => {
-      let futures;
-      futures = lodash.map(modelKeys, modelKey => _fork(_.requestDeleteModel, _, modelKey));
-      return Flow.Async.join(futures, (error, results) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys(_, modelKeys));
-      });
-    };
     // depends on `assist`
     deleteModels = modelKeys => {
       switch (modelKeys.length) {
@@ -464,7 +453,7 @@ export function routines() {
         case 1:
           return deleteModel(lodash.head(modelKeys));
         default:
-          return _fork(requestDeleteModels, modelKeys);
+          return _fork(requestDeleteModels, _, modelKeys);
       }
     };
     requestJob = (key, go) => _.requestJob(key, (error, job) => {
