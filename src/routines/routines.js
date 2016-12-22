@@ -14,7 +14,6 @@ import { inspect } from './inspect';
 import { render_ } from './render_';
 import { ls } from './ls';
 import { transformBinomialMetrics } from './transformBinomialMetrics';
-import { extendPartialDependence } from './extendPartialDependence';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { getModelParameterValue } from './getModelParameterValue';
 import { inspectRawObject_ } from './inspectRawObject_';
@@ -208,7 +207,6 @@ export function routines() {
     let requestNetworkTest;
     let requestParseFiles;
     let requestParseSetup;
-    let requestPartialDependenceData;
     let requestPredict;
     let requestPrediction;
     let requestPredictions;
@@ -278,12 +276,6 @@ export function routines() {
     //
     //
     //
-    requestPartialDependenceData = (key, go) => _.requestPartialDependenceData(key, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendPartialDependence(_, result));
-    });
     computeSplits = (ratios, keys) => {
       let i;
       let key;
@@ -441,7 +433,7 @@ export function routines() {
     };
     getPartialDependence = destinationKey => {
       if (destinationKey) {
-        return _fork(requestPartialDependenceData, destinationKey);
+        return _fork(requestPartialDependenceData, _, destinationKey);
       }
       return assist(getPartialDependence);
     };
