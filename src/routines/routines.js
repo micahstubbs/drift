@@ -24,7 +24,6 @@ import { proceed } from './proceed';
 import { gui } from './gui';
 import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
-import { createTempKey } from './createTempKey';
 import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
@@ -47,6 +46,7 @@ import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummary } from './requestFrameSummary';
 import { requestColumnSummary } from './requestColumnSummary';
 import { requestCreateFrame } from './requestCreateFrame';
+import { requestSplitFrame } from './requestSplitFrame';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -86,7 +86,6 @@ export function routines() {
   let createDataframe;
   let createFactor;
   let createList;
-  let createTempKey;
   let createVector;
   let lightning;
   const __slice = [].slice;
@@ -111,7 +110,6 @@ export function routines() {
     let buildPartialDependence;
     let cancelJob;
     let changeColumnType;
-    let computeSplits;
     let createFrame;
     let deleteAll;
     let deleteFrame;
@@ -213,7 +211,6 @@ export function routines() {
     let requestRemoveAll;
     let requestScalaCode;
     let requestScalaIntp;
-    let requestSplitFrame;
     let requestStackTrace;
     let requestTimeline;
     let routines;
@@ -273,50 +270,6 @@ export function routines() {
     //
     //
     //
-    requestSplitFrame = (frameKey, splitRatios, splitKeys, seed, go) => {
-      let g;
-      let i;
-      let l;
-      let part;
-      let randomVecKey;
-      let sliceExpr;
-      let splits;
-      let statements;
-      let _i;
-      let _len;
-      if (splitRatios.length === splitKeys.length - 1) {
-        splits = computeSplits(splitRatios, splitKeys);
-        randomVecKey = createTempKey();
-        statements = [];
-        statements.push(`(tmp= ${randomVecKey} (h2o.runif ${frameKey} ${seed}))`);
-        for (i = _i = 0, _len = splits.length; _i < _len; i = ++_i) {
-          part = splits[i];
-          g = i !== 0 ? `(> ${randomVecKey} ${part.min})` : null;
-          l = i !== splits.length - 1 ? `(<= ${randomVecKey} ${part.max})` : null;
-          if (g && l) {
-            sliceExpr = `(& ${g} ${l})`;
-          } else {
-            if (l) {
-              sliceExpr = l;
-            } else {
-              sliceExpr = g;
-            }
-          }
-          statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);
-        }
-        statements.push(`(rm ${randomVecKey})`);
-        return _.requestExec(`(, ${statements.join(' ')})`, (error, result) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendSplitFrameResult(_, {
-            keys: splitKeys,
-            ratios: splitRatios
-          }));
-        });
-      }
-      return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));
-    };
     requestMergeFrames = (
       destinationKey,
       leftFrameKey,
@@ -351,7 +304,7 @@ export function routines() {
         seed = -1;
       }
       if (frameKey && splitRatios && splitKeys) {
-        return _fork(requestSplitFrame, frameKey, splitRatios, splitKeys, seed);
+        return _fork(requestSplitFrame, _, frameKey, splitRatios, splitKeys, seed);
       }
       return assist(splitFrame);
     };
@@ -370,6 +323,7 @@ export function routines() {
       return assist(mergeFrames);
     };
 
+    // depends on `assist`
     // define the function that is called when 
     // the Partial Dependence plot input form
     // is submitted
@@ -381,6 +335,7 @@ export function routines() {
       // provides malformed input
       return assist(buildPartialDependence);
     };
+    // depends on `assist`
     getPartialDependence = destinationKey => {
       if (destinationKey) {
         return _fork(requestPartialDependenceData, _, destinationKey);
@@ -388,6 +343,7 @@ export function routines() {
       return assist(getPartialDependence);
     };
     getFrames = () => _fork(requestFrames, _);
+    // depends on `assist`
     getFrame = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
@@ -397,6 +353,7 @@ export function routines() {
       }
     };
     bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
+    // depends on `assist`
     getFrameSummary = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
@@ -405,6 +362,7 @@ export function routines() {
           return assist(getFrameSummary);
       }
     };
+    // depends on `assist`
     getFrameData = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
@@ -419,6 +377,7 @@ export function routines() {
       }
       return go(null, extendDeletedKeys(_, [frameKey]));
     });
+    // depends on `assist`
     deleteFrame = frameKey => {
       if (frameKey) {
         return _fork(requestDeleteFrame, frameKey);
