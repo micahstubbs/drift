@@ -20,7 +20,6 @@ import { transformBinomialMetrics } from './transformBinomialMetrics';
 import { extendPartialDependence } from './extendPartialDependence';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { getModelParameterValue } from './getModelParameterValue';
-import { inspectParametersAcrossModels } from './inspectParametersAcrossModels';
 import { inspectRawObject_ } from './inspectRawObject_';
 import { inspectRawArray_ } from './inspectRawArray_';
 import { inspectObjectArray_ } from './inspectObjectArray_';
@@ -42,13 +41,13 @@ import { extendJobs } from './extendJobs';
 import { extendCancelJob } from './extendCancelJob';
 import { extendDeletedKeys } from './extendDeletedKeys';
 import { extendModel } from './extendModel';
+import { extendModels } from './extendModels';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
 import { h2oGridOutput } from '../h2oGridOutput';
-import { h2oModelsOutput } from '../h2oModelsOutput';
 import { h2oPredictsOutput } from '../h2oPredictsOutput';
 import { h2oPredictOutput } from '../h2oPredictOutput';
 import { h2oH2OFrameOutput } from '../h2oH2OFrameOutput';
@@ -134,7 +133,6 @@ export function routines() {
     let extendGrid;
     let extendImportModel;
     let extendImportResults;
-    let extendModels;
     let extendParseResult;
     let extendParseSetupResults;
     let extendPrediction;
@@ -282,36 +280,6 @@ export function routines() {
     //
     //
     //
-    extendModels = models => {
-      let algos;
-      let inspections;
-      let model;
-      inspections = {};
-      algos = lodash.unique((() => {
-        let _i;
-        let _len;
-        let _results;
-        _results = [];
-        for (_i = 0, _len = models.length; _i < _len; _i++) {
-          model = models[_i];
-          _results.push(model.algo);
-        }
-        return _results;
-      })());
-      if (algos.length === 1) {
-        inspections.parameters = inspectParametersAcrossModels(models);
-      }
-
-      // modelCategories = unique (model.output.model_category for model in models)
-      //
-      // TODO implement model comparision after 2d table cleanup for model metrics
-      //
-      // if modelCategories.length is 1
-      //  inspections.outputs = inspectOutputsAcrossModels (head modelCategories), models
-
-      inspect_(models, inspections);
-      return render_(_,  models, h2oModelsOutput, models);
-    };
     read = value => {
       if (value === 'NaN') {
         return null;
@@ -1197,7 +1165,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendModels(models));
+      return go(null, extendModels(_, models));
     });
     requestModelsByKeys = (modelKeys, go) => {
       let futures;
@@ -1206,7 +1174,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendModels(models));
+        return go(null, extendModels(_, models));
       });
     };
     getModels = modelKeys => {

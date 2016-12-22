@@ -2008,103 +2008,6 @@
     }
   }
 
-  const flowPrelude$11 = flowPreludeFunction();
-
-  function inspectParametersAcrossModels(models) {
-    return function () {
-      const lodash = window._;
-
-      const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-      if (lightning.settings) {
-        lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-        lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-      }
-      const createVector = lightning.createVector;
-      const createFactor = lightning.createFactor;
-      const createList = lightning.createList;
-      const createDataframe = lightning.createFrame;
-
-      let data;
-      let i;
-      let model;
-      let parameter;
-      const leader = lodash.head(models);
-      const vectors = (() => {
-        let _i;
-        let _len;
-        const _ref1 = leader.parameters || [];
-        const _results = [];
-        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-          parameter = _ref1[i];
-          data = (() => {
-            let _j;
-            let _len1;
-            const _results1 = [];
-            for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
-              model = models[_j];
-              _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actual_value));
-            }
-            return _results1;
-          })();
-          switch (parameter.type) {
-            case 'enum':
-            case 'Frame':
-            case 'string':
-              _results.push(createFactor(parameter.label, 'String', data));
-              break;
-            case 'byte':
-            case 'short':
-            case 'int':
-            case 'long':
-            case 'float':
-            case 'double':
-              _results.push(createVector(parameter.label, 'Number', data));
-              break;
-            case 'string[]':
-            case 'byte[]':
-            case 'short[]':
-            case 'int[]':
-            case 'long[]':
-            case 'float[]':
-            case 'double[]':
-              _results.push(createList(parameter.label, data, a => {
-                if (a) {
-                  return a;
-                }
-                return void 0;
-              }));
-              break;
-            case 'boolean':
-              _results.push(createList(parameter.label, data, a => {
-                if (a) {
-                  return 'true';
-                }
-                return 'false';
-              }));
-              break;
-            default:
-              _results.push(createList(parameter.label, data));
-          }
-        }
-        return _results;
-      })();
-      const modelKeys = (() => {
-        let _i;
-        let _len;
-        const _results = [];
-        for (_i = 0, _len = models.length; _i < _len; _i++) {
-          model = models[_i];
-          _results.push(model.model_id.name);
-        }
-        return _results;
-      })();
-      return createDataframe('parameters', vectors, lodash.range(models.length), null, {
-        description: `Parameters for models ${ modelKeys.join(', ') }`,
-        origin: `getModels ${ flowPrelude$11.stringify(modelKeys) }`
-      });
-    };
-  }
-
   function inspectRawObject_(name, origin, description, obj) {
     return function () {
       const lodash = window._;
@@ -2215,7 +2118,7 @@
     return transforms;
   }
 
-  const flowPrelude$13 = flowPreludeFunction();
+  const flowPrelude$12 = flowPreludeFunction();
 
   function blacklistedAttributesBySchema() {
     let attrs;
@@ -2231,7 +2134,7 @@
         attrs = _schemaHacks[schema];
         dicts[schema] = dict = { __meta: true };
         if (attrs.fields) {
-          _ref1 = flowPrelude$13.words(attrs.fields);
+          _ref1 = flowPrelude$12.words(attrs.fields);
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             field = _ref1[_i];
             dict[field] = true;
@@ -2242,7 +2145,7 @@
     return dicts;
   }
 
-  const flowPrelude$12 = flowPreludeFunction();
+  const flowPrelude$11 = flowPreludeFunction();
 
   function inspectObject(inspections, name, origin, obj) {
     const lodash = window._;
@@ -2281,11 +2184,11 @@
                 meta = v.__meta;
                 if (meta) {
                   if (meta.schema_type === 'Key<Frame>') {
-                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$12.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$11.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
                   } else if (meta.schema_type === 'Key<Model>') {
-                    record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$12.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$11.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
                   } else if (meta.schema_type === 'Frame') {
-                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$12.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$11.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
                   } else {
                     inspectObject(inspections, `${ name } - ${ k }`, origin, v);
                   }
@@ -2927,7 +2830,7 @@
     return render_(_, profile, h2oProfileOutput, profile);
   }
 
-  const flowPrelude$14 = flowPreludeFunction();
+  const flowPrelude$13 = flowPreludeFunction();
 
   function h2oFramesOutput(_, _go, _frames) {
     const lodash = window._;
@@ -2975,13 +2878,13 @@
       const columnLabels = lodash.head(lodash.map(frame.columns, column => column.label), 15);
       const view = () => {
         if (frame.is_text) {
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$14.stringify(frame.frame_id.name) } ]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$13.stringify(frame.frame_id.name) } ]`);
         }
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$14.stringify(frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$13.stringify(frame.frame_id.name) }`);
       };
-      const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$14.stringify(frame.frame_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$14.stringify(frame.frame_id.name) }`);
-      const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$14.stringify(frame.frame_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$13.stringify(frame.frame_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$13.stringify(frame.frame_id.name) }`);
+      const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$13.stringify(frame.frame_id.name) }`);
       return {
         key: frame.frame_id.name,
         isChecked: _isChecked,
@@ -3010,13 +2913,13 @@
       }
       return _results;
     };
-    const predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$14.stringify(collectSelectedKeys()) }`);
+    const predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$13.stringify(collectSelectedKeys()) }`);
     const deleteFrames = () => _.confirm('Are you sure you want to delete these frames?', {
       acceptCaption: 'Delete Frames',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$14.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$13.stringify(collectSelectedKeys()) }`);
       }
     });
     _frameViews(lodash.map(_frames, createFrameView));
@@ -3043,7 +2946,7 @@
     return render_(_, job, H2O.JobOutput, job);
   }
 
-  const flowPrelude$15 = flowPreludeFunction();
+  const flowPrelude$14 = flowPreludeFunction();
 
   function h2oJobsOutput(_, _go, jobs) {
     const lodash = window._;
@@ -3054,7 +2957,7 @@
     const _isBusy = Flow.Dataflow.signal(false);
     const _exception = Flow.Dataflow.signal(null);
     const createJobView = job => {
-      const view = () => _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$15.stringify(job.key.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$14.stringify(job.key.name) }`);
       const type = (() => {
         switch (job.dest.type) {
           case 'Key<Frame>':
@@ -3152,7 +3055,7 @@
     return render_(_, keys, h2oDeleteObjectsOutput, keys);
   }
 
-  const flowPrelude$17 = flowPreludeFunction();
+  const flowPrelude$16 = flowPreludeFunction();
 
   function inspectModelParameters(model) {
     return function () {
@@ -3191,12 +3094,12 @@
       })();
       return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
         description: `Parameters for model \'${ model.model_id.name }\'`, // TODO frame model_id
-        origin: `getModel ${ flowPrelude$17.stringify(model.model_id.name) }`
+        origin: `getModel ${ flowPrelude$16.stringify(model.model_id.name) }`
       });
     };
   }
 
-  const flowPrelude$18 = flowPreludeFunction();
+  const flowPrelude$17 = flowPreludeFunction();
 
   function h2oModelOutput(_, _go, _model, refresh) {
     const lodash = window._;
@@ -3382,9 +3285,9 @@
             const $a = $(e.target);
             switch ($a.attr('data-type')) {
               case 'frame':
-                return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$18.stringify($a.attr('data-key')) }`);
+                return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$17.stringify($a.attr('data-key')) }`);
               case 'model':
-                return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$18.stringify($a.attr('data-key')) }`);
+                return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$17.stringify($a.attr('data-key')) }`);
               default:
               // do nothing
             }
@@ -3822,8 +3725,8 @@
       const toggle = () => _isExpanded(!_isExpanded());
 
       const cloneModel = () => alert('Not implemented');
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$18.stringify(_model.model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$18.stringify(_model.model_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$17.stringify(_model.model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$17.stringify(_model.model_id.name) }`);
       const previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
@@ -3832,13 +3735,13 @@
       });
       const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
       const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
-      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$18.stringify(_model.model_id.name) }`);
+      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$17.stringify(_model.model_id.name) }`);
       const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
         acceptCaption: 'Delete Model',
         declineCaption: 'Cancel'
       }, accept => {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$18.stringify(_model.model_id.name) }`);
+          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$17.stringify(_model.model_id.name) }`);
         }
       });
       return {
@@ -3887,7 +3790,7 @@
     };
   }
 
-  const flowPrelude$16 = flowPreludeFunction();
+  const flowPrelude$15 = flowPreludeFunction();
 
   function extendModel(_, model) {
     const lodash = window._;
@@ -3899,7 +3802,7 @@
       let _ref1;
       const inspections = {};
       inspections.parameters = inspectModelParameters(model);
-      const origin = `getModel ${ flowPrelude$16.stringify(model.model_id.name) }`;
+      const origin = `getModel ${ flowPrelude$15.stringify(model.model_id.name) }`;
       inspectObject(inspections, 'output', origin, model.output);
 
       // Obviously, an array of 2d tables calls for a megahack.
@@ -3926,7 +3829,256 @@
     return render_(_, model, h2oModelOutput, model, refresh);
   }
 
+  const flowPrelude$18 = flowPreludeFunction();
+
+  function inspectParametersAcrossModels(models) {
+    return function () {
+      const lodash = window._;
+
+      const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+      if (lightning.settings) {
+        lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
+        lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
+      }
+      const createVector = lightning.createVector;
+      const createFactor = lightning.createFactor;
+      const createList = lightning.createList;
+      const createDataframe = lightning.createFrame;
+
+      let data;
+      let i;
+      let model;
+      let parameter;
+      const leader = lodash.head(models);
+      const vectors = (() => {
+        let _i;
+        let _len;
+        const _ref1 = leader.parameters || [];
+        const _results = [];
+        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+          parameter = _ref1[i];
+          data = (() => {
+            let _j;
+            let _len1;
+            const _results1 = [];
+            for (_j = 0, _len1 = models.length; _j < _len1; _j++) {
+              model = models[_j];
+              _results1.push(getModelParameterValue(parameter.type, model.parameters[i].actual_value));
+            }
+            return _results1;
+          })();
+          switch (parameter.type) {
+            case 'enum':
+            case 'Frame':
+            case 'string':
+              _results.push(createFactor(parameter.label, 'String', data));
+              break;
+            case 'byte':
+            case 'short':
+            case 'int':
+            case 'long':
+            case 'float':
+            case 'double':
+              _results.push(createVector(parameter.label, 'Number', data));
+              break;
+            case 'string[]':
+            case 'byte[]':
+            case 'short[]':
+            case 'int[]':
+            case 'long[]':
+            case 'float[]':
+            case 'double[]':
+              _results.push(createList(parameter.label, data, a => {
+                if (a) {
+                  return a;
+                }
+                return void 0;
+              }));
+              break;
+            case 'boolean':
+              _results.push(createList(parameter.label, data, a => {
+                if (a) {
+                  return 'true';
+                }
+                return 'false';
+              }));
+              break;
+            default:
+              _results.push(createList(parameter.label, data));
+          }
+        }
+        return _results;
+      })();
+      const modelKeys = (() => {
+        let _i;
+        let _len;
+        const _results = [];
+        for (_i = 0, _len = models.length; _i < _len; _i++) {
+          model = models[_i];
+          _results.push(model.model_id.name);
+        }
+        return _results;
+      })();
+      return createDataframe('parameters', vectors, lodash.range(models.length), null, {
+        description: `Parameters for models ${ modelKeys.join(', ') }`,
+        origin: `getModels ${ flowPrelude$18.stringify(modelKeys) }`
+      });
+    };
+  }
+
   const flowPrelude$19 = flowPreludeFunction();
+
+  function h2oModelsOutput(_, _go, _models) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _modelViews = Flow.Dataflow.signal([]);
+    const _checkAllModels = Flow.Dataflow.signal(false);
+    const _checkedModelCount = Flow.Dataflow.signal(0);
+    const _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 1);
+    const _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
+    let _isCheckingAll = false;
+    Flow.Dataflow.react(_checkAllModels, checkAll => {
+      let view;
+      let _i;
+      let _len;
+      _isCheckingAll = true;
+      const views = _modelViews();
+      for (_i = 0, _len = views.length; _i < _len; _i++) {
+        view = views[_i];
+        view.isChecked(checkAll);
+      }
+      _checkedModelCount(checkAll ? views.length : 0);
+      _isCheckingAll = false;
+    });
+    const createModelView = model => {
+      const _isChecked = Flow.Dataflow.signal(false);
+      Flow.Dataflow.react(_isChecked, () => {
+        let view;
+        if (_isCheckingAll) {
+          return;
+        }
+        const checkedViews = (() => {
+          let _i;
+          let _len;
+          const _ref = _modelViews();
+          const _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            view = _ref[_i];
+            if (view.isChecked()) {
+              _results.push(view);
+            }
+          }
+          return _results;
+        })();
+        return _checkedModelCount(checkedViews.length);
+      });
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$19.stringify(model.model_id.name) }`);
+      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
+      alert('Not implemented');
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$19.stringify(model.model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$19.stringify(model.model_id.name) }`);
+      return {
+        key: model.model_id.name,
+        algo: model.algo_full_name,
+        isChecked: _isChecked,
+        predict,
+        clone: cloneModel,
+        inspect,
+        view
+      };
+    };
+    const buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
+    const collectSelectedKeys = () => {
+      let view;
+      let _i;
+      let _len;
+      const _ref = _modelViews();
+      const _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        view = _ref[_i];
+        if (view.isChecked()) {
+          _results.push(view.key);
+        }
+      }
+      return _results;
+    };
+    const compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$19.stringify(collectSelectedKeys()) }`);
+    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$19.stringify(collectSelectedKeys()) }`);
+    const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
+      acceptCaption: 'Delete Models',
+      declineCaption: 'Cancel'
+    }, accept => {
+      if (accept) {
+        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$19.stringify(collectSelectedKeys()) }`);
+      }
+    });
+    const inspectAll = () => {
+      let view;
+      const allKeys = (() => {
+        let _i;
+        let _len;
+        const _ref = _modelViews();
+        const _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          view = _ref[_i];
+          _results.push(view.key);
+        }
+        return _results;
+      })();
+      // TODO use table origin
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$19.stringify(allKeys) }`);
+    };
+    const initialize = models => {
+      _modelViews(lodash.map(models, createModelView));
+      return lodash.defer(_go);
+    };
+    initialize(_models);
+    return {
+      modelViews: _modelViews,
+      hasModels: _models.length > 0,
+      buildModel,
+      compareModels,
+      predictUsingModels,
+      deleteModels,
+      checkedModelCount: _checkedModelCount,
+      canCompareModels: _canCompareModels,
+      hasSelectedModels: _hasSelectedModels,
+      checkAllModels: _checkAllModels,
+      inspect: inspectAll,
+      template: 'flow-models-output'
+    };
+  }
+
+  function extendModels(_, models) {
+    const lodash = window._;
+    let model;
+    const inspections = {};
+    const algos = lodash.unique((() => {
+      let _i;
+      let _len;
+      const _results = [];
+      for (_i = 0, _len = models.length; _i < _len; _i++) {
+        model = models[_i];
+        _results.push(model.algo);
+      }
+      return _results;
+    })());
+    if (algos.length === 1) {
+      inspections.parameters = inspectParametersAcrossModels(models);
+    }
+
+    // modelCategories = unique (model.output.model_category for model in models)
+    //
+    // TODO implement model comparision after 2d table cleanup for model metrics
+    //
+    // if modelCategories.length is 1
+    //  inspections.outputs = inspectOutputsAcrossModels (head modelCategories), models
+
+    inspect_(models, inspections);
+    return render_(_, models, h2oModelsOutput, models);
+  }
+
+  const flowPrelude$20 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
     const Flow = window.Flow;
@@ -3953,7 +4105,7 @@
     const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
     const plot = () => {
       const color = _color();
-      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$19.stringify(_x()) }, ${ flowPrelude$19.stringify(_y()) }\n    g.color ${ flowPrelude$19.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$19.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$19.stringify(_x()) }, ${ flowPrelude$19.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$19.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$20.stringify(_x()) }, ${ flowPrelude$20.stringify(_y()) }\n    g.color ${ flowPrelude$20.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$20.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$20.stringify(_x()) }, ${ flowPrelude$20.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$20.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
       return _.insertAndExecuteCell('cs', command);
     };
     lodash.defer(_go);
@@ -3970,7 +4122,7 @@
     };
   }
 
-  const flowPrelude$20 = flowPreludeFunction();
+  const flowPrelude$21 = flowPreludeFunction();
 
   function h2oGridOutput(_, _go, _grid) {
     const lodash = window._;
@@ -4024,11 +4176,11 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$20.stringify(model_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$21.stringify(model_id.name) }`);
       const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
       alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$20.stringify(model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$20.stringify(model_id.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$21.stringify(model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$21.stringify(model_id.name) }`);
       return {
         key: model_id.name,
         isChecked: _isChecked,
@@ -4053,14 +4205,14 @@
       }
       return _results;
     };
-    const compareModels = () => _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$20.stringify(collectSelectedKeys()) }`);
-    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$20.stringify(collectSelectedKeys()) }`);
+    const compareModels = () => _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$21.stringify(collectSelectedKeys()) }`);
+    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$21.stringify(collectSelectedKeys()) }`);
     const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
       acceptCaption: 'Delete Models',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$20.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$21.stringify(collectSelectedKeys()) }`);
       }
     });
     const inspect = () => {
@@ -4085,7 +4237,7 @@
         return _results;
       })();
       // TODO use table origin
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$20.stringify(allKeys) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$21.stringify(allKeys) }`);
     };
     const initialize = grid => {
       let i;
@@ -4125,129 +4277,6 @@
       inspectHistory,
       inspectAll,
       template: 'flow-grid-output'
-    };
-  }
-
-  const flowPrelude$21 = flowPreludeFunction();
-
-  function h2oModelsOutput(_, _go, _models) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const _modelViews = Flow.Dataflow.signal([]);
-    const _checkAllModels = Flow.Dataflow.signal(false);
-    const _checkedModelCount = Flow.Dataflow.signal(0);
-    const _canCompareModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 1);
-    const _hasSelectedModels = Flow.Dataflow.lift(_checkedModelCount, count => count > 0);
-    let _isCheckingAll = false;
-    Flow.Dataflow.react(_checkAllModels, checkAll => {
-      let view;
-      let _i;
-      let _len;
-      _isCheckingAll = true;
-      const views = _modelViews();
-      for (_i = 0, _len = views.length; _i < _len; _i++) {
-        view = views[_i];
-        view.isChecked(checkAll);
-      }
-      _checkedModelCount(checkAll ? views.length : 0);
-      _isCheckingAll = false;
-    });
-    const createModelView = model => {
-      const _isChecked = Flow.Dataflow.signal(false);
-      Flow.Dataflow.react(_isChecked, () => {
-        let view;
-        if (_isCheckingAll) {
-          return;
-        }
-        const checkedViews = (() => {
-          let _i;
-          let _len;
-          const _ref = _modelViews();
-          const _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            view = _ref[_i];
-            if (view.isChecked()) {
-              _results.push(view);
-            }
-          }
-          return _results;
-        })();
-        return _checkedModelCount(checkedViews.length);
-      });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$21.stringify(model.model_id.name) }`);
-      const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
-      alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$21.stringify(model.model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$21.stringify(model.model_id.name) }`);
-      return {
-        key: model.model_id.name,
-        algo: model.algo_full_name,
-        isChecked: _isChecked,
-        predict,
-        clone: cloneModel,
-        inspect,
-        view
-      };
-    };
-    const buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
-    const collectSelectedKeys = () => {
-      let view;
-      let _i;
-      let _len;
-      const _ref = _modelViews();
-      const _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        view = _ref[_i];
-        if (view.isChecked()) {
-          _results.push(view.key);
-        }
-      }
-      return _results;
-    };
-    const compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$21.stringify(collectSelectedKeys()) }`);
-    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$21.stringify(collectSelectedKeys()) }`);
-    const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
-      acceptCaption: 'Delete Models',
-      declineCaption: 'Cancel'
-    }, accept => {
-      if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$21.stringify(collectSelectedKeys()) }`);
-      }
-    });
-    const inspectAll = () => {
-      let view;
-      const allKeys = (() => {
-        let _i;
-        let _len;
-        const _ref = _modelViews();
-        const _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          view = _ref[_i];
-          _results.push(view.key);
-        }
-        return _results;
-      })();
-      // TODO use table origin
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$21.stringify(allKeys) }`);
-    };
-    const initialize = models => {
-      _modelViews(lodash.map(models, createModelView));
-      return lodash.defer(_go);
-    };
-    initialize(_models);
-    return {
-      modelViews: _modelViews,
-      hasModels: _models.length > 0,
-      buildModel,
-      compareModels,
-      predictUsingModels,
-      deleteModels,
-      checkedModelCount: _checkedModelCount,
-      canCompareModels: _canCompareModels,
-      hasSelectedModels: _hasSelectedModels,
-      checkAllModels: _checkAllModels,
-      inspect: inspectAll,
-      template: 'flow-models-output'
     };
   }
 
@@ -5862,7 +5891,6 @@
       let extendGrid;
       let extendImportModel;
       let extendImportResults;
-      let extendModels;
       let extendParseResult;
       let extendParseSetupResults;
       let extendPrediction;
@@ -6010,36 +6038,6 @@
       //
       //
       //
-      extendModels = models => {
-        let algos;
-        let inspections;
-        let model;
-        inspections = {};
-        algos = lodash.unique((() => {
-          let _i;
-          let _len;
-          let _results;
-          _results = [];
-          for (_i = 0, _len = models.length; _i < _len; _i++) {
-            model = models[_i];
-            _results.push(model.algo);
-          }
-          return _results;
-        })());
-        if (algos.length === 1) {
-          inspections.parameters = inspectParametersAcrossModels(models);
-        }
-
-        // modelCategories = unique (model.output.model_category for model in models)
-        //
-        // TODO implement model comparision after 2d table cleanup for model metrics
-        //
-        // if modelCategories.length is 1
-        //  inspections.outputs = inspectOutputsAcrossModels (head modelCategories), models
-
-        inspect_(models, inspections);
-        return render_(_, models, h2oModelsOutput, models);
-      };
       read = value => {
         if (value === 'NaN') {
           return null;
@@ -6861,7 +6859,7 @@
         if (error) {
           return go(error);
         }
-        return go(null, extendModels(models));
+        return go(null, extendModels(_, models));
       });
       requestModelsByKeys = (modelKeys, go) => {
         let futures;
@@ -6870,7 +6868,7 @@
           if (error) {
             return go(error);
           }
-          return go(null, extendModels(models));
+          return go(null, extendModels(_, models));
         });
       };
       getModels = modelKeys => {
