@@ -6483,7 +6483,6 @@
       let requestNetworkTest;
       let requestParseFiles;
       let requestParseSetup;
-      let requestPartialDependence;
       let requestPartialDependenceData;
       let requestPredict;
       let requestPrediction;
@@ -6554,17 +6553,6 @@
       //
       //
       //
-      requestPartialDependence = (opts, go) => _.requestPartialDependence(opts, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return _.requestJob(result.key.name, (error, job) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendJob(_, job));
-        });
-      });
       requestPartialDependenceData = (key, go) => _.requestPartialDependenceData(key, (error, result) => {
         if (error) {
           return go(error);
@@ -6703,7 +6691,7 @@
       // is submitted
       buildPartialDependence = opts => {
         if (opts) {
-          return _fork(requestPartialDependence, opts);
+          return _fork(requestPartialDependence, _, opts);
         }
         // specify function to call if user
         // provides malformed input
