@@ -4645,9 +4645,9 @@
 
   function extendFrameSummary(_, frameKey, frame) {
     let column;
-    let enumColumns;
+    // let enumColumns;
     const inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
-    enumColumns = (() => {
+    const enumColumns = (() => {
       let _i;
       let _len;
       const _ref1 = frame.columns;
