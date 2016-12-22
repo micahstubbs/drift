@@ -408,13 +408,6 @@ export function routines() {
           return assist(getGrid);
       }
     };
-    //
-    //
-    //
-    // v  start abstracting out here  v
-    //
-    //
-    //
     // depends on `assist`
     imputeColumn = opts => {
       if (opts && opts.frame && opts.column && opts.method) {
@@ -422,18 +415,27 @@ export function routines() {
       }
       return assist(imputeColumn, opts);
     };
+    // depends on `assist`
     changeColumnType = opts => {
       if (opts && opts.frame && opts.column && opts.type) {
         return _fork(requestChangeColumnType, _, opts);
       }
       return assist(changeColumnType, opts);
     };
+    //
+    //
+    //
+    // v  start abstracting out here  v
+    //
+    //
+    //
     requestDeleteModel = (modelKey, go) => _.requestDeleteModel(modelKey, (error, result) => {
       if (error) {
         return go(error);
       }
       return go(null, extendDeletedKeys(_, [modelKey]));
     });
+    // depends on `assist`
     deleteModel = modelKey => {
       if (modelKey) {
         return _fork(requestDeleteModel, modelKey);
@@ -447,6 +449,7 @@ export function routines() {
       }
       return go(null, extendImportModel(result));
     });
+    // depends on `assist`
     importModel = (path, opts) => {
       if (path && path.length) {
         return _fork(requestImportModel, path, opts);
@@ -460,6 +463,7 @@ export function routines() {
       }
       return go(null, extendExportModel(result));
     });
+    // depends on `assist`
     exportModel = (modelKey, path, opts) => {
       if (modelKey && path) {
         return _fork(requestExportModel, modelKey, path, opts);
@@ -476,6 +480,7 @@ export function routines() {
         return go(null, extendDeletedKeys(_, modelKeys));
       });
     };
+    // depends on `assist`
     deleteModels = modelKeys => {
       switch (modelKeys.length) {
         case 0:
@@ -499,6 +504,7 @@ export function routines() {
       return go(null, extendJobs(_, jobs));
     });
     getJobs = () => _fork(requestJobs);
+    // depends on `assist`
     getJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
         case 'String':
@@ -519,6 +525,7 @@ export function routines() {
       }
       return go(null, extendCancelJob(_, {}));
     });
+    // depends on `assist`
     cancelJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
         case 'String':
@@ -534,6 +541,7 @@ export function routines() {
       }
       return go(null, extendImportResults(importResults));
     });
+    // depends on `assist`
     importFiles = paths => {
       switch (flowPrelude.typeOf(paths)) {
         case 'Array':
@@ -562,6 +570,7 @@ export function routines() {
       }
       return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
     });
+    // depends on `assist`
     setupParse = args => {
       if (args.paths && lodash.isArray(args.paths)) {
         return _fork(requestImportAndParseSetup, args.paths);
@@ -682,12 +691,14 @@ export function routines() {
         return go(null, extendJob(_, result.job));
       });
     };
+    // depends on `assist`
     buildAutoModel = opts => {
       if (opts && lodash.keys(opts).length > 1) {
         return _fork(requestAutoModelBuild, opts);
       }
       return assist(buildAutoModel, opts);
     };
+    // depends on `assist`
     buildModel = (algo, opts) => {
       if (algo && opts && lodash.keys(opts).length > 1) {
         return _fork(requestModelBuild, algo, opts);
