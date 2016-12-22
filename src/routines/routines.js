@@ -42,6 +42,8 @@ import { extendModels } from './extendModels';
 import { read } from './read';
 import { extendPrediction } from './extendPrediction';
 import { inspectFrameColumns } from './inspectFrameColumns';
+import { inspectFrameData } from './inspectFrameData';
+import { extendFrameData } from './extendFrameData';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -127,7 +129,6 @@ export function routines() {
     let extendExportFrame;
     let extendExportModel;
     let extendFrame;
-    let extendFrameData;
     let extendFrameSummary;
     let extendGrid;
     let extendImportModel;
@@ -281,14 +282,6 @@ export function routines() {
     //
     //
     //
-    extendFrameData = (frameKey, frame) => {
-      let inspections;
-      let origin;
-      inspections = { data: inspectFrameData(frameKey, frame) };
-      origin = `getFrameData ${flowPrelude.stringify(frameKey)}`;
-      inspect_(frame, inspections);
-      return render_(_,  frame, h2oFrameDataOutput, frame);
-    };
     extendFrame = (frameKey, frame) => {
       let column;
       let enumColumns;
@@ -604,7 +597,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendFrameData(frameKey, frame));
+      return go(null, extendFrameData(_, frameKey, frame));
     });
     requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
       if (error) {
