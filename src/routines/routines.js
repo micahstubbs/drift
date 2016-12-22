@@ -53,7 +53,7 @@ import { requestModel } from './requestModel';
 import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
 import { requestDeleteModel } from './requestDeleteModel';
-import { extendImportModel } from './extendImportModel';
+import { requestImportModel } from './requestImportModel';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -185,7 +185,6 @@ export function routines() {
     let requestImportAndParseFiles;
     let requestImportAndParseSetup;
     let requestImportFiles;
-    let requestImportModel;
     let requestJob;
     let requestJobs;
     let requestLogFile;
@@ -436,16 +435,10 @@ export function routines() {
     //
     //
     //
-    requestImportModel = (path, opts, go) => _.requestImportModel(path, opts.overwrite, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendImportModel(_, result));
-    });
     // depends on `assist`
     importModel = (path, opts) => {
       if (path && path.length) {
-        return _fork(requestImportModel, path, opts);
+        return _fork(requestImportModel, _, path, opts);
       }
       return assist(importModel, path, opts);
     };

@@ -4971,6 +4971,15 @@
     return render_(_, result, H2O.ImportModelOutput, result);
   }
 
+  function requestImportModel(_, path, opts, go) {
+    return _.requestImportModel(path, opts.overwrite, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendImportModel(_, result));
+    });
+  }
+
   const flowPrelude$28 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6553,7 +6562,6 @@
       let requestImportAndParseFiles;
       let requestImportAndParseSetup;
       let requestImportFiles;
-      let requestImportModel;
       let requestJob;
       let requestJobs;
       let requestLogFile;
@@ -6796,16 +6804,10 @@
       //
       //
       //
-      requestImportModel = (path, opts, go) => _.requestImportModel(path, opts.overwrite, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendImportModel(_, result));
-      });
       // depends on `assist`
       importModel = (path, opts) => {
         if (path && path.length) {
-          return _fork(requestImportModel, path, opts);
+          return _fork(requestImportModel, _, path, opts);
         }
         return assist(importModel, path, opts);
       };
