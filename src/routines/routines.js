@@ -50,8 +50,8 @@ import { requestFrames } from './requestFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestExportFrame } from './requestExportFrame';
 import { requestModel } from './requestModel';
-import { findColumnIndexByColumnLabel } from './findColumnIndexByColumnLabel';
 import { requestImputeColumn } from './requestImputeColumn';
+import { requestChangeColumnType } from './requestChangeColumnType';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -176,7 +176,6 @@ export function routines() {
     let requestAsH2OFrameFromRDD;
     let requestAutoModelBuild;
     let requestCancelJob;
-    let requestChangeColumnType;
     let requestCloud;
     let requestDataFrames;
     let requestDeleteModel;
@@ -416,30 +415,6 @@ export function routines() {
     //
     //
     //
-    requestChangeColumnType = (opts, go) => {
-      let column;
-      let frame;
-      let method;
-      let type;
-      frame = opts.frame, column = opts.column, type = opts.type;
-      method = type === 'enum' ? 'as.factor' : 'as.numeric';
-      return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-        let columnIndex;
-        let columnKeyError;
-        try {
-          columnIndex = findColumnIndexByColumnLabel(result, column);
-        } catch (_error) {
-          columnKeyError = _error;
-          return go(columnKeyError);
-        }
-        return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`, (error, result) => {
-          if (error) {
-            return go(error);
-          }
-          return requestColumnSummary(_, frame, column, go);
-        });
-      });
-    };
     // depends on `assist`
     imputeColumn = opts => {
       if (opts && opts.frame && opts.column && opts.method) {
@@ -449,7 +424,7 @@ export function routines() {
     };
     changeColumnType = opts => {
       if (opts && opts.frame && opts.column && opts.type) {
-        return _fork(requestChangeColumnType, opts);
+        return _fork(requestChangeColumnType, _, opts);
       }
       return assist(changeColumnType, opts);
     };
