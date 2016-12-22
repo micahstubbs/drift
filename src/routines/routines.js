@@ -47,6 +47,7 @@ import { requestFrameSummary } from './requestFrameSummary';
 import { requestColumnSummary } from './requestColumnSummary';
 import { requestCreateFrame } from './requestCreateFrame';
 import { requestSplitFrame } from './requestSplitFrame';
+import { requestMergeFrames } from './requestMergeFrames';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -194,7 +195,6 @@ export function routines() {
     let requestJob;
     let requestJobs;
     let requestLogFile;
-    let requestMergeFrames;
     let requestModel;
     let requestModelBuild;
     let requestModels;
@@ -270,29 +270,6 @@ export function routines() {
     //
     //
     //
-    requestMergeFrames = (
-      destinationKey,
-      leftFrameKey,
-      leftColumnIndex,
-      includeAllLeftRows,
-      rightFrameKey,
-      rightColumnIndex,
-      includeAllRightRows,
-      go
-    ) => {
-      let lr;
-      let rr;
-      let statement;
-      lr = includeAllLeftRows ? 'TRUE' : 'FALSE';
-      rr = includeAllRightRows ? 'TRUE' : 'FALSE';
-      statement = `(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;
-      return _.requestExec(statement, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendMergeFramesResult(_, { key: destinationKey }));
-      });
-    };
     createFrame = opts => {
       if (opts) {
         return _fork(requestCreateFrame, _, opts);
@@ -318,7 +295,7 @@ export function routines() {
       includeAllRightRows
     ) => {
       if (destinationKey && leftFrameKey && rightFrameKey) {
-        return _fork(requestMergeFrames, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
+        return _fork(requestMergeFrames, _, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
       }
       return assist(mergeFrames);
     };
