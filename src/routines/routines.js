@@ -351,6 +351,13 @@ export function routines() {
           return assist(getFrameSummary);
       }
     };
+    //
+    //
+    //
+    // v  start abstracting out here  v
+    //
+    //
+    //
     requestDeleteFrame = (frameKey, go) => _.requestDeleteFrame(frameKey, (error, result) => {
       if (error) {
         return go(error);
