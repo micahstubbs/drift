@@ -6684,7 +6684,6 @@
       let requestChangeColumnType;
       let requestCloud;
       let requestDataFrames;
-      let requestDeleteFrames;
       let requestDeleteModel;
       let requestDeleteModels;
       let requestExportModel;
@@ -6852,13 +6851,7 @@
         }
         return assist(deleteFrame);
       };
-      //
-      //
-      //
-      // v  start abstracting out here  v
-      //
-      //
-      //
+      // depends on `assist`
       exportFrame = (frameKey, path, opts) => {
         if (opts == null) {
           opts = {};
@@ -6868,16 +6861,13 @@
         }
         return assist(exportFrame, frameKey, path, opts);
       };
-      requestDeleteFrames = (frameKeys, go) => {
-        let futures;
-        futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, _, frameKey));
-        return Flow.Async.join(futures, (error, results) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendDeletedKeys(_, frameKeys));
-        });
-      };
+      //
+      //
+      //
+      // v  start abstracting out here  v
+      //
+      //
+      //
       deleteFrames = frameKeys => {
         switch (frameKeys.length) {
           case 0:
@@ -6885,7 +6875,7 @@
           case 1:
             return deleteFrame(lodash.head(frameKeys));
           default:
-            return _fork(requestDeleteFrames, frameKeys);
+            return _fork(requestDeleteFrames, _, frameKeys);
         }
       };
       getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
