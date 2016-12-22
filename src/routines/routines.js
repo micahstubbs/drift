@@ -34,7 +34,6 @@ import { extendJob } from './extendJob';
 import { extendJobs } from './extendJobs';
 import { extendCancelJob } from './extendCancelJob';
 import { extendDeletedKeys } from './extendDeletedKeys';
-import { extendModel } from './extendModel';
 import { read } from './read';
 import { extendPrediction } from './extendPrediction';
 import { inspectFrameColumns } from './inspectFrameColumns';
@@ -50,6 +49,7 @@ import { requestMergeFrames } from './requestMergeFrames';
 import { requestFrames } from './requestFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestExportFrame } from './requestExportFrame';
+import { requestModel } from './requestModel';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -191,7 +191,6 @@ export function routines() {
     let requestJob;
     let requestJobs;
     let requestLogFile;
-    let requestModel;
     let requestModelBuild;
     let requestNetworkTest;
     let requestParseFiles;
@@ -393,17 +392,11 @@ export function routines() {
     //
     //
     //
-    requestModel = (modelKey, go) => _.requestModel(modelKey, (error, model) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendModel(_, model));
-    });
     // depends on `assist`
     getModel = modelKey => {
       switch (flowPrelude.typeOf(modelKey)) {
         case 'String':
-          return _fork(requestModel, modelKey);
+          return _fork(requestModel, _, modelKey);
         default:
           return assist(getModel);
       }
