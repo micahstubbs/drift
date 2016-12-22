@@ -21,7 +21,6 @@ import { extendPartialDependence } from './extendPartialDependence';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { getModelParameterValue } from './getModelParameterValue';
 import { inspectParametersAcrossModels } from './inspectParametersAcrossModels';
-import { inspectModelParameters } from './inspectModelParameters';
 import { inspectRawObject_ } from './inspectRawObject_';
 import { inspectRawArray_ } from './inspectRawArray_';
 import { inspectObjectArray_ } from './inspectObjectArray_';
@@ -42,12 +41,12 @@ import { extendJob } from './extendJob';
 import { extendJobs } from './extendJobs';
 import { extendCancelJob } from './extendCancelJob';
 import { extendDeletedKeys } from './extendDeletedKeys';
+import { extendModel } from './extendModel';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
-import { h2oModelOutput } from '../h2oModelOutput';
 import { h2oGridOutput } from '../h2oGridOutput';
 import { h2oGridsOutput } from '../h2oGridsOutput';
 import { h2oModelsOutput } from '../h2oModelsOutput';
@@ -137,7 +136,6 @@ export function routines() {
     let extendGrids;
     let extendImportModel;
     let extendImportResults;
-    let extendModel;
     let extendModels;
     let extendParseResult;
     let extendParseSetupResults;
@@ -272,44 +270,7 @@ export function routines() {
     //
     //
     //
-    extendModel = model => {
-      let refresh;
-      lodash.extend = model => {
-        let inspections;
-        let origin;
-        let table;
-        let tableName;
-        let _i;
-        let _len;
-        let _ref1;
-        inspections = {};
-        inspections.parameters = inspectModelParameters(model);
-        origin = `getModel ${flowPrelude.stringify(model.model_id.name)}`;
-        inspectObject(inspections, 'output', origin, model.output);
-
-        // Obviously, an array of 2d tables calls for a megahack.
-        if (model.__meta.schema_type === 'NaiveBayesModel') {
-          if (lodash.isArray(model.output.pcond)) {
-            _ref1 = model.output.pcond;
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              table = _ref1[_i];
-              tableName = `output - pcond - ${table.name}`;
-              inspections[tableName] = inspectTwoDimTable_(origin, tableName, table);
-            }
-          }
-        }
-        inspect_(model, inspections);
-        return model;
-      };
-      refresh = go => _.requestModel(model.model_id.name, (error, model) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, lodash.extend(model));
-      });
-      lodash.extend(model);
-      return render_(_,  model, h2oModelOutput, model, refresh);
-    };
+    // depends on `grid`
     extendGrid = (grid, opts) => {
       let inspections;
       let origin;
@@ -1272,7 +1233,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendModel(model));
+      return go(null, extendModel(_, model));
     });
     getModel = modelKey => {
       switch (flowPrelude.typeOf(modelKey)) {
