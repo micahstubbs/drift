@@ -50,6 +50,7 @@ import { requestFrames } from './requestFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestExportFrame } from './requestExportFrame';
 import { requestModel } from './requestModel';
+import { findColumnIndexByColumnLabel } from './findColumnIndexByColumnLabel';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -136,7 +137,6 @@ export function routines() {
     let extendScalaCode;
     let extendScalaIntp;
     let f;
-    let findColumnIndexByColumnLabel;
     let findColumnIndicesByColumnLabels;
     let getCloud;
     let getColumnSummary;
@@ -417,21 +417,6 @@ export function routines() {
     //
     //
     //
-    findColumnIndexByColumnLabel = (frame, columnLabel) => {
-      let column;
-      let i;
-      let _i;
-      let _len;
-      let _ref1;
-      _ref1 = frame.columns;
-      for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-        column = _ref1[i];
-        if (column.label === columnLabel) {
-          return i;
-        }
-      }
-      throw new Flow.Error(`Column [${columnLabel}] not found in frame`);
-    };
     findColumnIndicesByColumnLabels = (frame, columnLabels) => {
       let columnLabel;
       let _i;

@@ -4864,6 +4864,22 @@
     });
   }
 
+  function findColumnIndexByColumnLabel(frame, columnLabel) {
+    const Flow = window.Flow;
+    let column;
+    let i;
+    let _i;
+    let _len;
+    const _ref1 = frame.columns;
+    for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+      column = _ref1[i];
+      if (column.label === columnLabel) {
+        return i;
+      }
+    }
+    throw new Flow.Error(`Column [${ columnLabel }] not found in frame`);
+  }
+
   const flowPrelude$28 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6401,7 +6417,6 @@
       let extendScalaCode;
       let extendScalaIntp;
       let f;
-      let findColumnIndexByColumnLabel;
       let findColumnIndicesByColumnLabels;
       let getCloud;
       let getColumnSummary;
@@ -6642,13 +6657,6 @@
       };
       // blocked by CoffeeScript codecell `_` issue
       getGrids = () => _fork(requestGrids, _);
-      //
-      //
-      //
-      // v  start abstracting out here  v
-      //
-      //
-      //
       // depends on `assist`
       getModel = modelKey => {
         switch (flowPrelude$5.typeOf(modelKey)) {
@@ -6658,12 +6666,14 @@
             return assist(getModel);
         }
       };
+      // depends on `extendGrid`
       requestGrid = (gridKey, opts, go) => _.requestGrid(gridKey, opts, (error, grid) => {
         if (error) {
           return go(error);
         }
         return go(null, extendGrid(grid, opts));
       });
+      // depends on `assist`
       getGrid = (gridKey, opts) => {
         switch (flowPrelude$5.typeOf(gridKey)) {
           case 'String':
@@ -6672,21 +6682,13 @@
             return assist(getGrid);
         }
       };
-      findColumnIndexByColumnLabel = (frame, columnLabel) => {
-        let column;
-        let i;
-        let _i;
-        let _len;
-        let _ref1;
-        _ref1 = frame.columns;
-        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-          column = _ref1[i];
-          if (column.label === columnLabel) {
-            return i;
-          }
-        }
-        throw new Flow.Error(`Column [${ columnLabel }] not found in frame`);
-      };
+      //
+      //
+      //
+      // v  start abstracting out here  v
+      //
+      //
+      //
       findColumnIndicesByColumnLabels = (frame, columnLabels) => {
         let columnLabel;
         let _i;
