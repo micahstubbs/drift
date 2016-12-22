@@ -48,6 +48,7 @@ import { requestColumnSummary } from './requestColumnSummary';
 import { requestCreateFrame } from './requestCreateFrame';
 import { requestSplitFrame } from './requestSplitFrame';
 import { requestMergeFrames } from './requestMergeFrames';
+import { requestFrames } from './requestFrames';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -263,19 +264,14 @@ export function routines() {
       render_(_,  predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
-    //
-    //
-    //
-    // start refactoring here
-    //
-    //
-    //
+    // depends on `assist`
     createFrame = opts => {
       if (opts) {
         return _fork(requestCreateFrame, _, opts);
       }
       return assist(createFrame);
     };
+    // depends on `assist`
     splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
       if (seed == null) {
         seed = -1;
@@ -285,6 +281,7 @@ export function routines() {
       }
       return assist(splitFrame);
     };
+    // depends on `assist`
     mergeFrames = (
       destinationKey,
       leftFrameKey,
@@ -334,6 +331,7 @@ export function routines() {
           return assist(getFrame);
       }
     };
+    // blocked by CoffeeScript codecell `_` issue
     bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
     // depends on `assist`
     getFrameSummary = frameKey => {
