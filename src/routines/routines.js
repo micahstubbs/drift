@@ -43,6 +43,7 @@ import { extendDeletedKeys } from './extendDeletedKeys';
 import { extendModel } from './extendModel';
 import { extendModels } from './extendModels';
 import { read } from './read';
+import { extendPrediction } from './extendPrediction';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -50,7 +51,6 @@ import { h2oCloudOutput } from '../h2oCloudOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
 import { h2oGridOutput } from '../h2oGridOutput';
 import { h2oPredictsOutput } from '../h2oPredictsOutput';
-import { h2oPredictOutput } from '../h2oPredictOutput';
 import { h2oH2OFrameOutput } from '../h2oH2OFrameOutput';
 import { h2oFrameOutput } from '../h2oFrameOutput';
 import { h2oColumnSummaryOutput } from '../h2oColumnSummaryOutput';
@@ -136,7 +136,6 @@ export function routines() {
     let extendImportResults;
     let extendParseResult;
     let extendParseSetupResults;
-    let extendPrediction;
     let extendPredictions;
     let extendRDDs;
     let extendScalaCode;
@@ -277,34 +276,15 @@ export function routines() {
       inspect_(grid, inspections);
       return render_(_,  grid, h2oGridOutput, grid);
     };
-    //
-    //
-    //
+    // abstracting this out produces an error
+    // defer for now
     extendPredictions = (opts, predictions) => {
       render_(_,  predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
-    extendPrediction = result => {
-      let frameKey;
-      let inspections;
-      let modelKey;
-      let prediction;
-      let predictionFrame;
-      let _ref1;
-      modelKey = result.model.name;
-      frameKey = (_ref1 = result.frame) != null ? _ref1.name : void 0;
-      prediction = lodash.head(result.model_metrics);
-      predictionFrame = result.predictions_frame;
-      inspections = {};
-      if (prediction) {
-        inspectObject(inspections, 'Prediction', `getPrediction model: ${flowPrelude.stringify(modelKey)}, frame: ${flowPrelude.stringify(frameKey)}`, prediction);
-      } else {
-        prediction = {};
-        inspectObject(inspections, 'Prediction', `getPrediction model: ${flowPrelude.stringify(modelKey)}, frame: ${flowPrelude.stringify(frameKey)}`, { prediction_frame: predictionFrame });
-      }
-      inspect_(prediction, inspections);
-      return render_(_,  prediction, h2oPredictOutput, prediction);
-    };
+    //
+    //
+    //
     inspectFrameColumns = (tableLabel, frameKey, frame, frameColumns) => () => {
       let actionsData;
       let attr;
@@ -1591,7 +1571,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendPrediction(result));
+      return go(null, extendPrediction(_, result));
     };
     requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(go));
     requestPredicts = (opts, go) => {
