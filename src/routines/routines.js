@@ -385,13 +385,6 @@ export function routines() {
     };
     // blocked by CoffeeScript codecell `_` issue
     getGrids = () => _fork(requestGrids, _);
-    //
-    //
-    //
-    // v  start abstracting out here  v
-    //
-    //
-    //
     // depends on `assist`
     getModel = modelKey => {
       switch (flowPrelude.typeOf(modelKey)) {
@@ -401,12 +394,14 @@ export function routines() {
           return assist(getModel);
       }
     };
+    // depends on `extendGrid`
     requestGrid = (gridKey, opts, go) => _.requestGrid(gridKey, opts, (error, grid) => {
       if (error) {
         return go(error);
       }
       return go(null, extendGrid(grid, opts));
     });
+    // depends on `assist`
     getGrid = (gridKey, opts) => {
       switch (flowPrelude.typeOf(gridKey)) {
         case 'String':
@@ -415,6 +410,13 @@ export function routines() {
           return assist(getGrid);
       }
     };
+    //
+    //
+    //
+    // v  start abstracting out here  v
+    //
+    //
+    //
     findColumnIndexByColumnLabel = (frame, columnLabel) => {
       let column;
       let i;
