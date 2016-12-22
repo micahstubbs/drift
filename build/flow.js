@@ -6699,7 +6699,6 @@
       let requestLogFile;
       let requestModel;
       let requestModelBuild;
-      let requestModels;
       let requestModelsByKeys;
       let requestNetworkTest;
       let requestParseFiles;
@@ -6861,13 +6860,7 @@
         }
         return assist(exportFrame, frameKey, path, opts);
       };
-      //
-      //
-      //
-      // v  start abstracting out here  v
-      //
-      //
-      //
+      // depends on `assist`
       deleteFrames = frameKeys => {
         switch (frameKeys.length) {
           case 0:
@@ -6878,13 +6871,15 @@
             return _fork(requestDeleteFrames, _, frameKeys);
         }
       };
+      // blocked by CoffeeScript codecell `_` issue
       getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
-      requestModels = go => _.requestModels((error, models) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendModels(_, models));
-      });
+      //
+      //
+      //
+      // v  start abstracting out here  v
+      //
+      //
+      //
       requestModelsByKeys = (modelKeys, go) => {
         let futures;
         futures = lodash.map(modelKeys, key => _fork(_.requestModel, key));
@@ -6900,9 +6895,9 @@
           if (modelKeys.length) {
             return _fork(requestModelsByKeys, modelKeys);
           }
-          return _fork(requestModels);
+          return _fork(requestModels, _);
         }
-        return _fork(requestModels);
+        return _fork(requestModels, _);
       };
       requestGrids = go => _.requestGrids((error, grids) => {
         if (error) {
