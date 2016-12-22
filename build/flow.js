@@ -2882,16 +2882,6 @@
     return render_(_, jobs, h2oJobsOutput, jobs);
   }
 
-  function h2oCancelJobOutput(_, _go, _cancellation) {
-    const lodash = window._;
-    lodash.defer(_go);
-    return { template: 'flow-cancel-job-output' };
-  }
-
-  function extendCancelJob(_, cancellation) {
-    return render_(_, cancellation, h2oCancelJobOutput, cancellation);
-  }
-
   function h2oDeleteObjectsOutput(_, _go, _keys) {
     const lodash = window._;
     lodash.defer(_go);
@@ -6813,7 +6803,6 @@
       let requestAsH2OFrameFromDF;
       let requestAsH2OFrameFromRDD;
       let requestAutoModelBuild;
-      let requestCancelJob;
       let requestCloud;
       let requestDataFrames;
       let requestGrid;
@@ -7078,13 +7067,7 @@
             return _fork(requestDeleteModels, _, modelKeys);
         }
       };
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
+      // blocked by CoffeeScript codecell `_` issue
       getJobs = () => _fork(requestJobs, _);
       // depends on `assist`
       getJob = arg => {
@@ -7101,17 +7084,18 @@
             return assist(getJob);
         }
       };
-      requestCancelJob = (key, go) => _.requestCancelJob(key, error => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendCancelJob(_, {}));
-      });
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
       // depends on `assist`
       cancelJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {
           case 'String':
-            return _fork(requestCancelJob, arg);
+            return _fork(requestCancelJob, _, arg);
           default:
             return assist(cancelJob);
         }

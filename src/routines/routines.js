@@ -32,7 +32,6 @@ import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
 import { extendJob } from './extendJob';
 import { extendJobs } from './extendJobs';
-import { extendCancelJob } from './extendCancelJob';
 import { extendDeletedKeys } from './extendDeletedKeys';
 import { read } from './read';
 import { extendPrediction } from './extendPrediction';
@@ -176,7 +175,6 @@ export function routines() {
     let requestAsH2OFrameFromDF;
     let requestAsH2OFrameFromRDD;
     let requestAutoModelBuild;
-    let requestCancelJob;
     let requestCloud;
     let requestDataFrames;
     let requestGrid;
@@ -473,17 +471,11 @@ export function routines() {
     //
     //
     //
-    requestCancelJob = (key, go) => _.requestCancelJob(key, error => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendCancelJob(_, {}));
-    });
     // depends on `assist`
     cancelJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
         case 'String':
-          return _fork(requestCancelJob, arg);
+          return _fork(requestCancelJob, _, arg);
         default:
           return assist(cancelJob);
       }
