@@ -4880,6 +4880,60 @@
     throw new Flow.Error(`Column [${ columnLabel }] not found in frame`);
   }
 
+  function findColumnIndicesByColumnLabels(frame, columnLabels) {
+    let columnLabel;
+    let _i;
+    let _len;
+    const _results = [];
+    for (_i = 0, _len = columnLabels.length; _i < _len; _i++) {
+      columnLabel = columnLabels[_i];
+      _results.push(findColumnIndexByColumnLabel(frame, columnLabel));
+    }
+    return _results;
+  }
+
+  function requestImputeColumn(_, opts, go) {
+    let combineMethod;
+    const frame = opts.frame;
+    const column = opts.column;
+    const method = opts.method;
+    combineMethod = opts.combineMethod;
+    const groupByColumns = opts.groupByColumns;
+    combineMethod = combineMethod != null ? combineMethod : 'interpolate';
+    return _.requestFrameSummaryWithoutData(frame, (error, result) => {
+      let columnIndex;
+      let columnIndicesError;
+      let columnKeyError;
+      let groupByColumnIndices;
+      if (error) {
+        return go(error);
+      }
+      try {
+        columnIndex = findColumnIndexByColumnLabel(result, column);
+      } catch (_error) {
+        columnKeyError = _error;
+        return go(columnKeyError);
+      }
+      if (groupByColumns && groupByColumns.length) {
+        try {
+          groupByColumnIndices = findColumnIndicesByColumnLabels(result, groupByColumns);
+        } catch (_error) {
+          columnIndicesError = _error;
+          return go(columnIndicesError);
+        }
+      } else {
+        groupByColumnIndices = null;
+      }
+      const groupByArg = groupByColumnIndices ? `[${ groupByColumnIndices.join(' ') }]` : '[]';
+      return _.requestExec(`(h2o.impute ${ frame } ${ columnIndex } ${ JSON.stringify(method) } ${ JSON.stringify(combineMethod) } ${ groupByArg } _ _)`, (error, result) => {
+        if (error) {
+          return go(error);
+        }
+        return requestColumnSummary(_, frame, column, go);
+      });
+    });
+  }
+
   const flowPrelude$28 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6417,7 +6471,6 @@
       let extendScalaCode;
       let extendScalaIntp;
       let f;
-      let findColumnIndicesByColumnLabels;
       let getCloud;
       let getColumnSummary;
       let getDataFrames;
@@ -6467,7 +6520,6 @@
       let requestImportAndParseSetup;
       let requestImportFiles;
       let requestImportModel;
-      let requestImputeColumn;
       let requestJob;
       let requestJobs;
       let requestLogFile;
@@ -6689,48 +6741,6 @@
       //
       //
       //
-      requestImputeColumn = (opts, go) => {
-        let column;
-        let combineMethod;
-        let frame;
-        let groupByColumns;
-        let method;
-        frame = opts.frame, column = opts.column, method = opts.method, combineMethod = opts.combineMethod, groupByColumns = opts.groupByColumns;
-        combineMethod = combineMethod != null ? combineMethod : 'interpolate';
-        return _.requestFrameSummaryWithoutData(frame, (error, result) => {
-          let columnIndex;
-          let columnIndicesError;
-          let columnKeyError;
-          let groupByArg;
-          let groupByColumnIndices;
-          if (error) {
-            return go(error);
-          }
-          try {
-            columnIndex = findColumnIndexByColumnLabel(result, column);
-          } catch (_error) {
-            columnKeyError = _error;
-            return go(columnKeyError);
-          }
-          if (groupByColumns && groupByColumns.length) {
-            try {
-              groupByColumnIndices = findColumnIndicesByColumnLabels(result, groupByColumns);
-            } catch (_error) {
-              columnIndicesError = _error;
-              return go(columnIndicesError);
-            }
-          } else {
-            groupByColumnIndices = null;
-          }
-          groupByArg = groupByColumnIndices ? `[${ groupByColumnIndices.join(' ') }]` : '[]';
-          return _.requestExec(`(h2o.impute ${ frame } ${ columnIndex } ${ JSON.stringify(method) } ${ JSON.stringify(combineMethod) } ${ groupByArg } _ _)`, (error, result) => {
-            if (error) {
-              return go(error);
-            }
-            return requestColumnSummary(_, frame, column, go);
-          });
-        });
-      };
       requestChangeColumnType = (opts, go) => {
         let column;
         let frame;
@@ -6758,7 +6768,7 @@
       // depends on `assist`
       imputeColumn = opts => {
         if (opts && opts.frame && opts.column && opts.method) {
-          return _fork(requestImputeColumn, opts);
+          return _fork(requestImputeColumn, _, opts);
         }
         return assist(imputeColumn, opts);
       };
