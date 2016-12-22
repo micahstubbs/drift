@@ -50,6 +50,7 @@ import { requestSplitFrame } from './requestSplitFrame';
 import { requestMergeFrames } from './requestMergeFrames';
 import { requestFrames } from './requestFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
+import { requestExportFrame } from './requestExportFrame';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -182,7 +183,6 @@ export function routines() {
     let requestDeleteFrames;
     let requestDeleteModel;
     let requestDeleteModels;
-    let requestExportFrame;
     let requestExportModel;
     let requestGrid;
     let requestGrids;
@@ -363,23 +363,12 @@ export function routines() {
     //
     //
     //
-    requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return _.requestJob(result.job.key.name, (error, job) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendJob(_, job));
-      });
-    });
     exportFrame = (frameKey, path, opts) => {
       if (opts == null) {
         opts = {};
       }
       if (frameKey && path) {
-        return _fork(requestExportFrame, frameKey, path, opts);
+        return _fork(requestExportFrame, _, frameKey, path, opts);
       }
       return assist(exportFrame, frameKey, path, opts);
     };
