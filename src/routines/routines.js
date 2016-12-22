@@ -44,9 +44,9 @@ import { extendPrediction } from './extendPrediction';
 import { inspectFrameColumns } from './inspectFrameColumns';
 import { inspectFrameData } from './inspectFrameData';
 import { extendFrameData } from './extendFrameData';
-import { extendFrame } from './extendFrame';
 import { extendFrameSummary } from './extendFrameSummary';
 import { extendColumnSummary } from './extendColumnSummary';
+import { requestFrame } from './requestFrame';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -191,7 +191,6 @@ export function routines() {
     let requestDeleteModels;
     let requestExportFrame;
     let requestExportModel;
-    let requestFrame;
     let requestFrameData;
     let requestFrameSummary;
     let requestFrameSummarySlice;
@@ -285,12 +284,6 @@ export function routines() {
     //
     //
     //
-    requestFrame = (frameKey, go) => _.requestFrameSlice(frameKey, void 0, 0, 20, (error, frame) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendFrame(_, frameKey, frame));
-    });
     requestFrameData = (frameKey, searchTerm, offset, count, go) => _.requestFrameSlice(frameKey, searchTerm, offset, count, (error, frame) => {
       if (error) {
         return go(error);
@@ -514,7 +507,7 @@ export function routines() {
     getFrame = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
-          return _fork(requestFrame, frameKey);
+          return _fork(requestFrame, _, frameKey);
         default:
           return assist(getFrame);
       }

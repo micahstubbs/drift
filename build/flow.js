@@ -4612,12 +4612,10 @@
 
   const flowPrelude$25 = flowPreludeFunction();
 
-  function extendFrame(_, frameKey, frame) {
+  function extendFrameSummary(_, frameKey, frame) {
     let column;
-    const inspections = {
-      columns: inspectFrameColumns('columns', frameKey, frame, frame.columns),
-      data: inspectFrameData(frameKey, frame)
-    };
+    // let enumColumns;
+    const inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
     const enumColumns = (() => {
       let _i;
       let _len;
@@ -4641,36 +4639,7 @@
     return render_(_, frame, h2oFrameOutput, frame);
   }
 
-  const flowPrelude$27 = flowPreludeFunction();
-
-  function extendFrameSummary(_, frameKey, frame) {
-    let column;
-    // let enumColumns;
-    const inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
-    const enumColumns = (() => {
-      let _i;
-      let _len;
-      const _ref1 = frame.columns;
-      const _results = [];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        column = _ref1[_i];
-        if (column.type === 'enum') {
-          _results.push(column);
-        }
-      }
-      return _results;
-    })();
-    if (enumColumns.length > 0) {
-      inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
-    }
-    const origin = `getFrameSummary ${ flowPrelude$27.stringify(frameKey) }`;
-    inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
-    inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
-    inspect_(frame, inspections);
-    return render_(_, frame, h2oFrameOutput, frame);
-  }
-
-  const flowPrelude$29 = flowPreludeFunction();
+  const flowPrelude$28 = flowPreludeFunction();
 
   function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
     const lodash = window._;
@@ -4703,8 +4672,8 @@
     if (table) {
       renderPlot(_domainPlot, _.plot(g => g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000))));
     }
-    const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$29.stringify(frameKey) }, column: ${ flowPrelude$29.stringify(columnName) }`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$29.stringify(frameKey) }, ${ flowPrelude$29.stringify(columnName) }`);
+    const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$28.stringify(frameKey) }, column: ${ flowPrelude$28.stringify(columnName) }`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`);
     lodash.defer(_go);
     return {
       label: column.label,
@@ -4718,7 +4687,7 @@
     };
   }
 
-  const flowPrelude$28 = flowPreludeFunction();
+  const flowPrelude$27 = flowPreludeFunction();
 
   function extendColumnSummary(_, frameKey, frame, columnName) {
     const lodash = window._;
@@ -4737,7 +4706,7 @@
       const vectors = [createVector('percentile', 'Number', frame.default_percentiles), createVector('value', 'Number', column.percentiles)];
       return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
         description: `Percentiles for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`
       });
     };
     const inspectDistribution = () => {
@@ -4807,8 +4776,8 @@
       const vectors = [createFactor('interval', 'String', intervalData), createVector('width', 'Number', widthData), createVector('count', 'Number', countData)];
       return createDataframe('distribution', vectors, lodash.range(binCount), null, {
         description: `Distribution for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`,
-        plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`,
+        plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`
       });
     };
     const inspectCharacteristics = () => {
@@ -4837,8 +4806,8 @@
       const vectors = [createFactor('characteristic', 'String', characteristicData), createVector('count', 'Number', countData), createVector('percent', 'Number', percentData)];
       return createDataframe('characteristics', vectors, lodash.range(characteristicData.length), null, {
         description: `Characteristics for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`,
-        plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`,
+        plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`
       });
     };
     const inspectSummary = () => {
@@ -4854,8 +4823,8 @@
       const vectors = [createFactor('column', 'String', [columnName]), createVector('mean', 'Number', [mean]), createVector('q1', 'Number', [q1]), createVector('q2', 'Number', [q2]), createVector('q3', 'Number', [q3]), createVector('min', 'Number', [minimum]), createVector('max', 'Number', [maximum])];
       return createDataframe('summary', vectors, lodash.range(1), null, {
         description: `Summary for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`,
-        plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`,
+        plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`
       });
     };
     const inspectDomain = () => {
@@ -4881,8 +4850,8 @@
       const vectors = [createFactor('label', 'String', labels), createVector('count', 'Number', counts), createVector('percent', 'Number', percents)];
       return createDataframe('domain', vectors, lodash.range(sortedLevels.length), null, {
         description: `Domain for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`,
-        plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$28.stringify(frameKey) }, ${ flowPrelude$28.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`,
+        plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$27.stringify(frameKey) }, ${ flowPrelude$27.stringify(columnName) }`
       });
     };
     const inspections = { characteristics: inspectCharacteristics };
@@ -4907,6 +4876,46 @@
     }
     inspect_(frame, inspections);
     return render_(_, frame, h2oColumnSummaryOutput, frameKey, frame, columnName);
+  }
+
+  const flowPrelude$29 = flowPreludeFunction();
+
+  function extendFrame(_, frameKey, frame) {
+    let column;
+    const inspections = {
+      columns: inspectFrameColumns('columns', frameKey, frame, frame.columns),
+      data: inspectFrameData(frameKey, frame)
+    };
+    const enumColumns = (() => {
+      let _i;
+      let _len;
+      const _ref1 = frame.columns;
+      const _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        column = _ref1[_i];
+        if (column.type === 'enum') {
+          _results.push(column);
+        }
+      }
+      return _results;
+    })();
+    if (enumColumns.length > 0) {
+      inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
+    }
+    const origin = `getFrameSummary ${ flowPrelude$29.stringify(frameKey) }`;
+    inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
+    inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
+    inspect_(frame, inspections);
+    return render_(_, frame, h2oFrameOutput, frame);
+  }
+
+  function requestFrame(_, frameKey, go) {
+    return _.requestFrameSlice(frameKey, void 0, 0, 20, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrame(_, frameKey, frame));
+    });
   }
 
   const flowPrelude$30 = flowPreludeFunction();
@@ -6519,7 +6528,6 @@
       let requestDeleteModels;
       let requestExportFrame;
       let requestExportModel;
-      let requestFrame;
       let requestFrameData;
       let requestFrameSummary;
       let requestFrameSummarySlice;
@@ -6609,12 +6617,10 @@
       //
       //
       //
-      requestFrame = (frameKey, go) => _.requestFrameSlice(frameKey, void 0, 0, 20, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrame(_, frameKey, frame));
-      });
+      // start refactoring here
+      //
+      //
+      //
       requestFrameData = (frameKey, searchTerm, offset, count, go) => _.requestFrameSlice(frameKey, searchTerm, offset, count, (error, frame) => {
         if (error) {
           return go(error);
@@ -6821,7 +6827,7 @@
       getFrame = frameKey => {
         switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
-            return _fork(requestFrame, frameKey);
+            return _fork(requestFrame, _, frameKey);
           default:
             return assist(getFrame);
         }
