@@ -428,13 +428,6 @@ export function routines() {
       }
       return assist(deleteModel);
     };
-    //
-    //
-    //
-    // v  start abstracting out here  v
-    //
-    //
-    //
     // depends on `assist`
     importModel = (path, opts) => {
       if (path && path.length) {
@@ -442,6 +435,13 @@ export function routines() {
       }
       return assist(importModel, path, opts);
     };
+    //
+    //
+    //
+    // v  start abstracting out here  v
+    //
+    //
+    //
     extendExportModel = result => render_(_,  result, h2oExportModelOutput, result);
     requestExportModel = (modelKey, path, opts, go) => _.requestExportModel(modelKey, path, opts.overwrite, (error, result) => {
       if (error) {
