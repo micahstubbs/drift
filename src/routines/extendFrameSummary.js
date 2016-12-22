@@ -16,8 +16,7 @@ export function extendFrameSummary(_, frameKey, frame) {
   enumColumns = (() => {
     let _i;
     let _len;
-    let _ref1;
-    _ref1 = frame.columns;
+    const _ref1 = frame.columns;
     const _results = [];
     for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
       column = _ref1[_i];
