@@ -472,13 +472,9 @@ export function routines() {
           return assist(cancelJob);
       }
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
+    // some weird recursion and function scope things happening here
+    // abstracting this out causes an error
+    // defer for now
     requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
       if (error) {
         return go(error);
@@ -494,6 +490,13 @@ export function routines() {
           return assist(importFiles);
       }
     };
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     extendParseSetupResults = (args, parseSetupResults) => render_(_,  parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
     requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
       let sourceKeys;
