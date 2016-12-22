@@ -41,12 +41,12 @@ import { extendFrames } from './extendFrames';
 import { extendJob } from './extendJob';
 import { extendJobs } from './extendJobs';
 import { extendCancelJob } from './extendCancelJob';
+import { extendDeletedKeys } from './extendDeletedKeys';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
 import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
-import { h2oDeleteObjectsOutput } from '../h2oDeleteObjectsOutput';
 import { h2oModelOutput } from '../h2oModelOutput';
 import { h2oGridOutput } from '../h2oGridOutput';
 import { h2oGridsOutput } from '../h2oGridsOutput';
@@ -128,7 +128,6 @@ export function routines() {
     let extendBindFrames;
     let extendColumnSummary;
     let extendDataFrames;
-    let extendDeletedKeys;
     let extendExportFrame;
     let extendExportModel;
     let extendFrame;
@@ -273,7 +272,6 @@ export function routines() {
     //
     //
     //
-    extendDeletedKeys = keys => render_(_,  keys, h2oDeleteObjectsOutput, keys);
     extendModel = model => {
       let refresh;
       lodash.extend = model => {
@@ -1187,7 +1185,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendDeletedKeys([frameKey]));
+      return go(null, extendDeletedKeys(_, [frameKey]));
     });
     deleteFrame = frameKey => {
       if (frameKey) {
@@ -1224,7 +1222,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendDeletedKeys(frameKeys));
+        return go(null, extendDeletedKeys(_, frameKeys));
       });
     };
     deleteFrames = frameKeys => {
@@ -1408,7 +1406,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendDeletedKeys([modelKey]));
+      return go(null, extendDeletedKeys(_, [modelKey]));
     });
     deleteModel = modelKey => {
       if (modelKey) {
@@ -1449,7 +1447,7 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendDeletedKeys(modelKeys));
+        return go(null, extendDeletedKeys(_, modelKeys));
       });
     };
     deleteModels = modelKeys => {
@@ -1867,7 +1865,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendDeletedKeys([]));
+      return go(null, extendDeletedKeys(_, []));
     });
     deleteAll = () => _fork(requestRemoveAll);
     extendRDDs = rdds => {
