@@ -365,13 +365,7 @@ export function routines() {
       }
       return assist(exportFrame, frameKey, path, opts);
     };
-    //
-    //
-    //
-    // v  start abstracting out here  v
-    //
-    //
-    //
+    // depends on `assist`
     deleteFrames = frameKeys => {
       switch (frameKeys.length) {
         case 0:
@@ -382,7 +376,15 @@ export function routines() {
           return _fork(requestDeleteFrames, _, frameKeys);
       }
     };
+    // blocked by CoffeeScript codecell `_` issue
     getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
+    //
+    //
+    //
+    // v  start abstracting out here  v
+    //
+    //
+    //
     requestModels = go => _.requestModels((error, models) => {
       if (error) {
         return go(error);
