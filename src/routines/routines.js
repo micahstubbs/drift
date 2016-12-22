@@ -44,6 +44,7 @@ import { extendModel } from './extendModel';
 import { extendModels } from './extendModels';
 import { read } from './read';
 import { extendPrediction } from './extendPrediction';
+import { inspectFrameColumns } from './inspectFrameColumns';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -170,7 +171,6 @@ export function routines() {
     let importModel;
     let imputeColumn;
     let initAssistanceSparklingWater;
-    let inspectFrameColumns;
     let inspectFrameData;
     let loadScript;
     let mergeFrames;
@@ -285,172 +285,6 @@ export function routines() {
     //
     //
     //
-    inspectFrameColumns = (tableLabel, frameKey, frame, frameColumns) => () => {
-      let actionsData;
-      let attr;
-      let attrs;
-      let column;
-      let i;
-      let labelVector;
-      let title;
-      let toColumnSummaryLink;
-      let toConversionLink;
-      let typeVector;
-      let vectors;
-      attrs = [
-        'label',
-        'type',
-        'missing_count|Missing',
-        'zero_count|Zeros',
-        'positive_infinity_count|+Inf',
-        'negative_infinity_count|-Inf',
-        'min',
-        'max',
-        'mean',
-        'sigma',
-        'cardinality'
-      ];
-      toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${flowPrelude.stringify(label)}>${lodash.escape(label)}</a>`;
-      toConversionLink = value => {
-        let label;
-        let type;
-        let _ref1;
-        _ref1 = value.split('\0'), type = _ref1[0], label = _ref1[1];
-        switch (type) {
-          case 'enum':
-            return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${flowPrelude.stringify(label)}>Convert to numeric</a>`;
-          case 'int':
-          case 'string':
-            return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude.stringify(label)}>Convert to enum</a>'`;
-          default:
-            return void 0;
-        }
-      };
-      vectors = (() => {
-        // XXX format functions
-        let _i;
-        let _len;
-        let _ref1;
-        let _results;
-        _results = [];
-        for (_i = 0, _len = attrs.length; _i < _len; _i++) {
-          attr = attrs[_i];
-          _ref1 = attr.split('|'), name = _ref1[0], title = _ref1[1];
-          title = title != null ? title : name;
-          switch (name) {
-            case 'min':
-              _results.push(createVector(title, 'Number', (() => {
-                let _j;
-                let _len1;
-                let _results1;
-                _results1 = [];
-                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                  column = frameColumns[_j];
-                  _results1.push(lodash.head(column.mins));
-                }
-                return _results1;
-              })(), format4f));
-              break;
-            case 'max':
-              _results.push(createVector(title, 'Number', (() => {
-                let _j;
-                let _len1;
-                let _results1;
-                _results1 = [];
-                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                  column = frameColumns[_j];
-                  _results1.push(lodash.head(column.maxs));
-                }
-                return _results1;
-              })(), format4f));
-              break;
-            case 'cardinality':
-              _results.push(createVector(title, 'Number', (() => {
-                let _j;
-                let _len1;
-                let _results1;
-                _results1 = [];
-                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                  column = frameColumns[_j];
-                  _results1.push(column.type === 'enum' ? column.domain_cardinality : void 0);
-                }
-                return _results1;
-              })()));
-              break;
-            case 'label':
-              _results.push(createFactor(title, 'String', (() => {
-                let _j;
-                let _len1;
-                let _results1;
-                _results1 = [];
-                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                  column = frameColumns[_j];
-                  _results1.push(column[name]);
-                }
-                return _results1;
-              })(), null, toColumnSummaryLink));
-              break;
-            case 'type':
-              _results.push(createFactor(title, 'String', (() => {
-                let _j;
-                let _len1;
-                let _results1;
-                _results1 = [];
-                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                  column = frameColumns[_j];
-                  _results1.push(column[name]);
-                }
-                return _results1;
-              })()));
-              break;
-            case 'mean':
-            case 'sigma':
-              _results.push(createVector(title, 'Number', (() => {
-                let _j;
-                let _len1;
-                let _results1;
-                _results1 = [];
-                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                  column = frameColumns[_j];
-                  _results1.push(column[name]);
-                }
-                return _results1;
-              })(), format4f));
-              break;
-            default:
-              _results.push(createVector(title, 'Number', (() => {
-                let _j;
-                let _len1;
-                let _results1;
-                _results1 = [];
-                for (_j = 0, _len1 = frameColumns.length; _j < _len1; _j++) {
-                  column = frameColumns[_j];
-                  _results1.push(column[name]);
-                }
-                return _results1;
-              })()));
-          }
-        }
-        return _results;
-      })();
-      labelVector = vectors[0], typeVector = vectors[1];
-      actionsData = (() => {
-        let _i;
-        let _ref1;
-        let _results;
-        _results = [];
-        for (i = _i = 0, _ref1 = frameColumns.length; _ref1 >= 0 ? _i < _ref1 : _i > _ref1; i = _ref1 >= 0 ? ++_i : --_i) {
-          _results.push(`${typeVector.valueAt(i)}\0${labelVector.valueAt(i)}`);
-        }
-        return _results;
-      })();
-      vectors.push(createFactor('Actions', 'String', actionsData, null, toConversionLink));
-      return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
-        description: `A list of ${tableLabel} in the H2O Frame.`,
-        origin: `getFrameSummary ${flowPrelude.stringify(frameKey)}`,
-        plot: `plot inspect \'${tableLabel}\', getFrameSummary ${flowPrelude.stringify(frameKey)}`
-      });
-    };
     inspectFrameData = (frameKey, frame) => () => {
       let column;
       let domain;
