@@ -57,7 +57,6 @@ import { h2oPredictsOutput } from '../h2oPredictsOutput';
 import { h2oH2OFrameOutput } from '../h2oH2OFrameOutput';
 import { h2oFrameOutput } from '../h2oFrameOutput';
 import { h2oExportFrameOutput } from '../h2oExportFrameOutput';
-import { h2oBindFramesOutput } from '../h2oBindFramesOutput';
 import { h2oExportModelOutput } from '../h2oExportModelOutput';
 import { h2oImportFilesOutput } from '../h2oImportFilesOutput';
 import { h2oRDDsOutput } from '../h2oRDDsOutput';
@@ -125,7 +124,6 @@ export function routines() {
     let exportModel;
     let extendAsDataFrame;
     let extendAsH2OFrame;
-    let extendBindFrames;
     let extendDataFrames;
     let extendExportFrame;
     let extendExportModel;
@@ -178,7 +176,6 @@ export function routines() {
     let requestAsH2OFrameFromDF;
     let requestAsH2OFrameFromRDD;
     let requestAutoModelBuild;
-    let requestBindFrames;
     let requestCancelJob;
     let requestChangeColumnType;
     let requestCloud;
@@ -276,12 +273,6 @@ export function routines() {
     //
     //
     //
-    requestBindFrames = (key, sourceKeys, go) => _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendBindFrames(key, result));
-    });
     requestSplitFrame = (frameKey, splitRatios, splitKeys, seed, go) => {
       let g;
       let i;
@@ -405,7 +396,7 @@ export function routines() {
           return assist(getFrame);
       }
     };
-    bindFrames = (key, sourceKeys) => _fork(requestBindFrames, key, sourceKeys);
+    bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
     getFrameSummary = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
@@ -435,7 +426,6 @@ export function routines() {
       return assist(deleteFrame);
     };
     extendExportFrame = result => render_(_,  result, h2oExportFrameOutput, result);
-    extendBindFrames = (key, result) => render_(_,  result, h2oBindFramesOutput, key, result);
     requestExportFrame = (frameKey, path, opts, go) => _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
       if (error) {
         return go(error);
