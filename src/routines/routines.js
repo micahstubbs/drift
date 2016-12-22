@@ -55,6 +55,7 @@ import { requestChangeColumnType } from './requestChangeColumnType';
 import { requestDeleteModel } from './requestDeleteModel';
 import { requestImportModel } from './requestImportModel';
 import { requestJobs } from './requestJobs';
+import { extendImportResults } from './extendImportResults';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -64,7 +65,6 @@ import { h2oGridOutput } from '../h2oGridOutput';
 import { h2oPredictsOutput } from '../h2oPredictsOutput';
 import { h2oH2OFrameOutput } from '../h2oH2OFrameOutput';
 import { h2oFrameOutput } from '../h2oFrameOutput';
-import { h2oImportFilesOutput } from '../h2oImportFilesOutput';
 import { h2oRDDsOutput } from '../h2oRDDsOutput';
 import { h2oDataFramesOutput } from '../h2oDataFramesOutput';
 import { h2oScalaCodeOutput } from '../h2oScalaCodeOutput';
@@ -130,7 +130,6 @@ export function routines() {
     let extendAsH2OFrame;
     let extendDataFrames;
     let extendGrid;
-    let extendImportResults;
     let extendParseResult;
     let extendParseSetupResults;
     let extendPredictions;
@@ -464,13 +463,6 @@ export function routines() {
           return assist(getJob);
       }
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
     // depends on `assist`
     cancelJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
@@ -480,12 +472,18 @@ export function routines() {
           return assist(cancelJob);
       }
     };
-    extendImportResults = importResults => render_(_,  importResults, h2oImportFilesOutput, importResults);
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
       if (error) {
         return go(error);
       }
-      return go(null, extendImportResults(importResults));
+      return go(null, extendImportResults(_, importResults));
     });
     // depends on `assist`
     importFiles = paths => {

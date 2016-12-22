@@ -5239,6 +5239,42 @@
 
   const flowPrelude$30 = flowPreludeFunction();
 
+  function h2oImportFilesOutput(_, _go, _importResults) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, result => result.destination_frames)));
+    const _canParse = _allFrames.length > 0;
+    const _title = `${ _allFrames.length } / ${ _importResults.length } files imported.`;
+    const createImportView = result => ({
+      // TODO dels?
+      // TODO fails?
+      files: result.files,
+      template: 'flow-import-file-output'
+    });
+    const _importViews = lodash.map(_importResults, createImportView);
+    const parse = () => {
+      const paths = lodash.map(_allFrames, flowPrelude$30.stringify);
+      return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ paths.join(',') } ]`);
+    };
+    lodash.defer(_go);
+    return {
+      title: _title,
+      importViews: _importViews,
+      canParse: _canParse,
+      parse,
+      template: 'flow-import-files-output',
+      templateOf(view) {
+        return view.template;
+      }
+    };
+  }
+
+  function extendImportResults(_, importResults) {
+    return render_(_, importResults, h2oImportFilesOutput, importResults);
+  }
+
+  const flowPrelude$31 = flowPreludeFunction();
+
   function h2oPlotInput(_, _go, _frame) {
     const Flow = window.Flow;
     const lodash = window._;
@@ -5264,7 +5300,7 @@
     const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
     const plot = () => {
       const color = _color();
-      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$30.stringify(_x()) }, ${ flowPrelude$30.stringify(_y()) }\n    g.color ${ flowPrelude$30.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$30.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$30.stringify(_x()) }, ${ flowPrelude$30.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$30.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$31.stringify(_x()) }, ${ flowPrelude$31.stringify(_y()) }\n    g.color ${ flowPrelude$31.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$31.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$31.stringify(_x()) }, ${ flowPrelude$31.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$31.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
       return _.insertAndExecuteCell('cs', command);
     };
     lodash.defer(_go);
@@ -5281,9 +5317,9 @@
     };
   }
 
-  const flowPrelude$31 = flowPreludeFunction();
-
   const flowPrelude$32 = flowPreludeFunction();
+
+  const flowPrelude$33 = flowPreludeFunction();
 
   function h2oGridOutput(_, _go, _grid) {
     const lodash = window._;
@@ -5337,11 +5373,11 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$32.stringify(model_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$33.stringify(model_id.name) }`);
       const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
       alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$32.stringify(model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$32.stringify(model_id.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$33.stringify(model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$33.stringify(model_id.name) }`);
       return {
         key: model_id.name,
         isChecked: _isChecked,
@@ -5366,14 +5402,14 @@
       }
       return _results;
     };
-    const compareModels = () => _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$32.stringify(collectSelectedKeys()) }`);
-    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$32.stringify(collectSelectedKeys()) }`);
+    const compareModels = () => _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$33.stringify(collectSelectedKeys()) }`);
+    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$33.stringify(collectSelectedKeys()) }`);
     const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
       acceptCaption: 'Delete Models',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$32.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$33.stringify(collectSelectedKeys()) }`);
       }
     });
     const inspect = () => {
@@ -5398,7 +5434,7 @@
         return _results;
       })();
       // TODO use table origin
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$32.stringify(allKeys) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$33.stringify(allKeys) }`);
     };
     const initialize = grid => {
       let i;
@@ -5441,7 +5477,7 @@
     };
   }
 
-  const flowPrelude$33 = flowPreludeFunction();
+  const flowPrelude$34 = flowPreludeFunction();
 
   function h2oPredictsOutput(_, _go, opts, _predictions) {
     const lodash = window._;
@@ -5499,12 +5535,12 @@
       });
       const view = () => {
         if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$33.stringify(_modelKey) }, frame: ${ flowPrelude$33.stringify(_frameKey) }`);
+          return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$34.stringify(_modelKey) }, frame: ${ flowPrelude$34.stringify(_frameKey) }`);
         }
       };
       const inspect = () => {
         if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$33.stringify(_modelKey) }, frame: ${ flowPrelude$33.stringify(_frameKey) }`);
+          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$34.stringify(_modelKey) }, frame: ${ flowPrelude$34.stringify(_frameKey) }`);
         }
       };
       return {
@@ -5538,7 +5574,7 @@
         }
         return _results;
       })();
-      return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$33.stringify(selectedKeys) }`);
+      return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$34.stringify(selectedKeys) }`);
     };
     const plotPredictions = () => _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
     const plotScores = () => _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
@@ -5591,38 +5627,6 @@
     return {
       h2oframeView: _h2oframeView,
       template: 'flow-h2oframe-output'
-    };
-  }
-
-  const flowPrelude$34 = flowPreludeFunction();
-
-  function h2oImportFilesOutput(_, _go, _importResults) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const _allFrames = lodash.flatten(lodash.compact(lodash.map(_importResults, result => result.destination_frames)));
-    const _canParse = _allFrames.length > 0;
-    const _title = `${ _allFrames.length } / ${ _importResults.length } files imported.`;
-    const createImportView = result => ({
-      // TODO dels?
-      // TODO fails?
-      files: result.files,
-      template: 'flow-import-file-output'
-    });
-    const _importViews = lodash.map(_importResults, createImportView);
-    const parse = () => {
-      const paths = lodash.map(_allFrames, flowPrelude$34.stringify);
-      return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ paths.join(',') } ]`);
-    };
-    lodash.defer(_go);
-    return {
-      title: _title,
-      importViews: _importViews,
-      canParse: _canParse,
-      parse,
-      template: 'flow-import-files-output',
-      templateOf(view) {
-        return view.template;
-      }
     };
   }
 
@@ -6758,7 +6762,6 @@
       let extendAsH2OFrame;
       let extendDataFrames;
       let extendGrid;
-      let extendImportResults;
       let extendParseResult;
       let extendParseSetupResults;
       let extendPredictions;
@@ -7084,13 +7087,6 @@
             return assist(getJob);
         }
       };
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
       // depends on `assist`
       cancelJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {
@@ -7100,12 +7096,18 @@
             return assist(cancelJob);
         }
       };
-      extendImportResults = importResults => render_(_, importResults, h2oImportFilesOutput, importResults);
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
       requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendImportResults(importResults));
+        return go(null, extendImportResults(_, importResults));
       });
       // depends on `assist`
       importFiles = paths => {
