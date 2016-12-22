@@ -50,6 +50,7 @@ import { requestFrames } from './requestFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestExportFrame } from './requestExportFrame';
 import { requestModel } from './requestModel';
+import { requestModels } from './requestModels';
 import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
 import { requestDeleteModel } from './requestDeleteModel';
@@ -181,7 +182,6 @@ export function routines() {
     let requestImportAndParseFiles;
     let requestImportAndParseSetup;
     let requestImportFiles;
-    let requestJob;
     let requestJobs;
     let requestLogFile;
     let requestModelBuild;
@@ -438,13 +438,6 @@ export function routines() {
       }
       return assist(exportModel, modelKey, path, opts);
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
     // depends on `assist`
     deleteModels = modelKeys => {
       switch (modelKeys.length) {
@@ -456,12 +449,13 @@ export function routines() {
           return _fork(requestDeleteModels, _, modelKeys);
       }
     };
-    requestJob = (key, go) => _.requestJob(key, (error, job) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendJob(_, job));
-    });
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     requestJobs = go => _.requestJobs((error, jobs) => {
       if (error) {
         return go(error);
@@ -473,7 +467,7 @@ export function routines() {
     getJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
         case 'String':
-          return _fork(requestJob, arg);
+          return _fork(requestJob, _, arg);
         case 'Object':
           if (arg.key != null) {
             return getJob(arg.key);
