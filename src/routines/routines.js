@@ -35,7 +35,6 @@ import { extendJobs } from './extendJobs';
 import { extendCancelJob } from './extendCancelJob';
 import { extendDeletedKeys } from './extendDeletedKeys';
 import { extendModel } from './extendModel';
-import { extendModels } from './extendModels';
 import { read } from './read';
 import { extendPrediction } from './extendPrediction';
 import { inspectFrameColumns } from './inspectFrameColumns';
@@ -195,7 +194,6 @@ export function routines() {
     let requestLogFile;
     let requestModel;
     let requestModelBuild;
-    let requestModelsByKeys;
     let requestNetworkTest;
     let requestParseFiles;
     let requestParseSetup;
@@ -384,20 +382,10 @@ export function routines() {
     //
     //
     //
-    requestModelsByKeys = (modelKeys, go) => {
-      let futures;
-      futures = lodash.map(modelKeys, key => _fork(_.requestModel, key));
-      return Flow.Async.join(futures, (error, models) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendModels(_, models));
-      });
-    };
     getModels = modelKeys => {
       if (lodash.isArray(modelKeys)) {
         if (modelKeys.length) {
-          return _fork(requestModelsByKeys, modelKeys);
+          return _fork(requestModelsByKeys, _, modelKeys);
         }
         return _fork(requestModels, _);
       }
