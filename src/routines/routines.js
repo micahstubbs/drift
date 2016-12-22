@@ -384,6 +384,8 @@ export function routines() {
       }
       return _fork(requestModels, _);
     };
+    // blocked by CoffeeScript codecell `_` issue
+    getGrids = () => _fork(requestGrids, _);
     //
     //
     //
@@ -391,13 +393,13 @@ export function routines() {
     //
     //
     //
-    getGrids = () => _fork(requestGrids, _);
     requestModel = (modelKey, go) => _.requestModel(modelKey, (error, model) => {
       if (error) {
         return go(error);
       }
       return go(null, extendModel(_, model));
     });
+    // depends on `assist`
     getModel = modelKey => {
       switch (flowPrelude.typeOf(modelKey)) {
         case 'String':
