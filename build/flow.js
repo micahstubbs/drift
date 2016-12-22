@@ -5273,6 +5273,11 @@
     return render_(_, importResults, h2oImportFilesOutput, importResults);
   }
 
+  function extendParseSetupResults(_, args, parseSetupResults) {
+    const H2O = window.H2O;
+    return render_(_, parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6763,7 +6768,6 @@
       let extendDataFrames;
       let extendGrid;
       let extendParseResult;
-      let extendParseSetupResults;
       let extendPredictions;
       let extendRDDs;
       let extendScalaCode;
@@ -7096,13 +7100,9 @@
             return assist(cancelJob);
         }
       };
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
+      // some weird recursion and function scope things happening here
+      // abstracting this out causes an error
+      // defer for now
       requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
         if (error) {
           return go(error);
@@ -7118,7 +7118,13 @@
             return assist(importFiles);
         }
       };
-      extendParseSetupResults = (args, parseSetupResults) => render_(_, parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
       requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
         let sourceKeys;
         if (error) {
@@ -7129,14 +7135,14 @@
           if (error) {
             return go(error);
           }
-          return go(null, extendParseSetupResults({ paths }, parseSetupResults));
+          return go(null, extendParseSetupResults(_, { paths }, parseSetupResults));
         });
       });
       requestParseSetup = (sourceKeys, go) => _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
+        return go(null, extendParseSetupResults(_, { source_frames: sourceKeys }, parseSetupResults));
       });
       // depends on `assist`
       setupParse = args => {

@@ -56,6 +56,7 @@ import { requestDeleteModel } from './requestDeleteModel';
 import { requestImportModel } from './requestImportModel';
 import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
+import { extendParseSetupResults } from './extendParseSetupResults';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -131,7 +132,6 @@ export function routines() {
     let extendDataFrames;
     let extendGrid;
     let extendParseResult;
-    let extendParseSetupResults;
     let extendPredictions;
     let extendRDDs;
     let extendScalaCode;
@@ -497,7 +497,6 @@ export function routines() {
     //
     //
     //
-    extendParseSetupResults = (args, parseSetupResults) => render_(_,  parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
     requestImportAndParseSetup = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
       let sourceKeys;
       if (error) {
@@ -508,14 +507,14 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendParseSetupResults({ paths }, parseSetupResults));
+        return go(null, extendParseSetupResults(_, { paths }, parseSetupResults));
       });
     });
     requestParseSetup = (sourceKeys, go) => _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
       if (error) {
         return go(error);
       }
-      return go(null, extendParseSetupResults({ source_frames: sourceKeys }, parseSetupResults));
+      return go(null, extendParseSetupResults(_, { source_frames: sourceKeys }, parseSetupResults));
     });
     // depends on `assist`
     setupParse = args => {
