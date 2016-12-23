@@ -5324,6 +5324,32 @@
     });
   }
 
+  function requestModelBuild(_, algo, opts, go) {
+    return _.requestModelBuild(algo, opts, (error, result) => {
+      const Flow = window.Flow;
+      let messages;
+      let validation;
+      if (error) {
+        return go(error);
+      }
+      if (result.error_count > 0) {
+        messages = (() => {
+          let _i;
+          let _len;
+          const _ref1 = result.messages;
+          const _results = [];
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            validation = _ref1[_i];
+            _results.push(validation.message);
+          }
+          return _results;
+        })();
+        return go(new Flow.Error(`Model build failure: ${ messages.join('; ') }`));
+      }
+      return go(null, extendJob(_, result.job));
+    });
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6860,7 +6886,6 @@
       let requestGrid;
       let requestImportFiles;
       let requestLogFile;
-      let requestModelBuild;
       let requestNetworkTest;
       let requestPredict;
       let requestPrediction;
@@ -7168,13 +7193,7 @@
         }
         return assist(setupParse);
       };
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
+      // blocked by CoffeeScript codecell `_` issue
       parseFiles = opts => {
         let checkHeader;
         let chunkSize;
@@ -7201,30 +7220,13 @@
         }
         return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       };
-      requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
-        let messages;
-        let validation;
-        if (error) {
-          return go(error);
-        }
-        if (result.error_count > 0) {
-          messages = (() => {
-            let _i;
-            let _len;
-            let _ref1;
-            let _results;
-            _ref1 = result.messages;
-            _results = [];
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              validation = _ref1[_i];
-              _results.push(validation.message);
-            }
-            return _results;
-          })();
-          return go(new Flow.Error(`Model build failure: ${ messages.join('; ') }`));
-        }
-        return go(null, extendJob(_, result.job));
-      });
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
       requestAutoModelBuild = (opts, go) => {
         let params;
         params = {
@@ -7251,7 +7253,7 @@
       // depends on `assist`
       buildModel = (algo, opts) => {
         if (algo && opts && lodash.keys(opts).length > 1) {
-          return _fork(requestModelBuild, algo, opts);
+          return _fork(requestModelBuild, _, algo, opts);
         }
         return assist(buildModel, algo, opts);
       };

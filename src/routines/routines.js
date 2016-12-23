@@ -59,6 +59,7 @@ import { extendImportResults } from './extendImportResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
 import { requestImportAndParseFiles } from './requestImportAndParseFiles';
 import { requestParseFiles } from './requestParseFiles';
+import { requestModelBuild } from './requestModelBuild'; 
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -180,7 +181,6 @@ export function routines() {
     let requestGrid;
     let requestImportFiles;
     let requestLogFile;
-    let requestModelBuild;
     let requestNetworkTest;
     let requestPredict;
     let requestPrediction;
@@ -530,30 +530,6 @@ export function routines() {
     //
     //
     //
-    requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
-      let messages;
-      let validation;
-      if (error) {
-        return go(error);
-      }
-      if (result.error_count > 0) {
-        messages = (() => {
-          let _i;
-          let _len;
-          let _ref1;
-          let _results;
-          _ref1 = result.messages;
-          _results = [];
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            validation = _ref1[_i];
-            _results.push(validation.message);
-          }
-          return _results;
-        })();
-        return go(new Flow.Error(`Model build failure: ${messages.join('; ')}`));
-      }
-      return go(null, extendJob(_, result.job));
-    });
     requestAutoModelBuild = (opts, go) => {
       let params;
       params = {
@@ -580,7 +556,7 @@ export function routines() {
     // depends on `assist`
     buildModel = (algo, opts) => {
       if (algo && opts && lodash.keys(opts).length > 1) {
-        return _fork(requestModelBuild, algo, opts);
+        return _fork(requestModelBuild, _, algo, opts);
       }
       return assist(buildModel, algo, opts);
     };
