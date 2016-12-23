@@ -30,7 +30,6 @@ import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
 import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
-import { extendJob } from './extendJob';
 import { extendJobs } from './extendJobs';
 import { extendDeletedKeys } from './extendDeletedKeys';
 import { read } from './read';
@@ -175,7 +174,6 @@ export function routines() {
     let requestAsDataFrame;
     let requestAsH2OFrameFromDF;
     let requestAsH2OFrameFromRDD;
-    let requestAutoModelBuild;
     let requestCloud;
     let requestDataFrames;
     let requestGrid;
@@ -530,26 +528,10 @@ export function routines() {
     //
     //
     //
-    requestAutoModelBuild = (opts, go) => {
-      let params;
-      params = {
-        input_spec: {
-          training_frame: opts.frame,
-          response_column: opts.column
-        },
-        build_control: { stopping_criteria: { max_runtime_secs: opts.maxRunTime } }
-      };
-      return _.requestAutoModelBuild(params, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendJob(_, result.job));
-      });
-    };
     // depends on `assist`
     buildAutoModel = opts => {
       if (opts && lodash.keys(opts).length > 1) {
-        return _fork(requestAutoModelBuild, opts);
+        return _fork(requestAutoModelBuild, _, opts);
       }
       return assist(buildAutoModel, opts);
     };
