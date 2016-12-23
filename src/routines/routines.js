@@ -58,7 +58,8 @@ import { extendImportResults } from './extendImportResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
 import { requestImportAndParseFiles } from './requestImportAndParseFiles';
 import { requestParseFiles } from './requestParseFiles';
-import { requestModelBuild } from './requestModelBuild'; 
+import { requestModelBuild } from './requestModelBuild';
+import { unwrapPrediction } from './unwrapPrediction'; 
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -197,7 +198,6 @@ export function routines() {
     let setupParse;
     let splitFrame;
     let testNetwork;
-    let unwrapPrediction;
 
     // TODO move these into Flow.Async
     let _async;
@@ -542,13 +542,7 @@ export function routines() {
     //
     //
     //
-    unwrapPrediction = go => (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendPrediction(_, result));
-    };
-    requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(go));
+    requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(_, go));
     requestPredicts = (opts, go) => {
       let futures;
       futures = lodash.map(opts, opt => {
@@ -630,7 +624,7 @@ export function routines() {
         frame
       });
     };
-    requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(go));
+    requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
     requestPredictions = (opts, go) => {
       let frameKey;
       let futures;

@@ -5350,6 +5350,15 @@
     });
   }
 
+  function unwrapPrediction(_, go) {
+    return function (error, result) {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendPrediction(_, result));
+    };
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6903,7 +6912,6 @@
       let setupParse;
       let splitFrame;
       let testNetwork;
-      let unwrapPrediction;
 
       // TODO move these into Flow.Async
       let _async;
@@ -7219,13 +7227,6 @@
         }
         return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       };
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
       // depends on `assist`
       buildAutoModel = opts => {
         if (opts && lodash.keys(opts).length > 1) {
@@ -7240,13 +7241,14 @@
         }
         return assist(buildModel, algo, opts);
       };
-      unwrapPrediction = go => (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendPrediction(_, result));
-      };
-      requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(go));
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
+      requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(_, go));
       requestPredicts = (opts, go) => {
         let futures;
         futures = lodash.map(opts, opt => {
@@ -7328,7 +7330,7 @@
           frame
         });
       };
-      requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(go));
+      requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
       requestPredictions = (opts, go) => {
         let frameKey;
         let futures;
