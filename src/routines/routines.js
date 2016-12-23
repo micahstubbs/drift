@@ -57,8 +57,8 @@ import { requestImportModel } from './requestImportModel';
 import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
-import { extendParseResult } from './extendParseResult';
 import { requestImportAndParseFiles } from './requestImportAndParseFiles';
+import { requestParseFiles } from './requestParseFiles';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -182,7 +182,6 @@ export function routines() {
     let requestLogFile;
     let requestModelBuild;
     let requestNetworkTest;
-    let requestParseFiles;
     let requestPredict;
     let requestPrediction;
     let requestPredictions;
@@ -504,25 +503,6 @@ export function routines() {
     //
     //
     //
-    requestParseFiles = (
-      sourceKeys,
-      destinationKey,
-      parseType,
-      separator,
-      columnCount,
-      useSingleQuotes,
-      columnNames,
-      columnTypes,
-      deleteOnDone,
-      checkHeader,
-      chunkSize,
-      go
-    ) => _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendParseResult(_, parseResult));
-    });
     parseFiles = opts => {
       let checkHeader;
       let chunkSize;
@@ -547,7 +527,7 @@ export function routines() {
       if (opts.paths) {
         return _fork(requestImportAndParseFiles, _, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       }
-      return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
+      return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
     };
     requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
       let messages;

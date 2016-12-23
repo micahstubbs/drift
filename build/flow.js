@@ -5315,6 +5315,15 @@
     });
   }
 
+  function requestParseFiles(_, sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
+    return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendParseResult(_, parseResult));
+    });
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6853,7 +6862,6 @@
       let requestLogFile;
       let requestModelBuild;
       let requestNetworkTest;
-      let requestParseFiles;
       let requestPredict;
       let requestPrediction;
       let requestPredictions;
@@ -7167,12 +7175,6 @@
       //
       //
       //
-      requestParseFiles = (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendParseResult(_, parseResult));
-      });
       parseFiles = opts => {
         let checkHeader;
         let chunkSize;
@@ -7197,7 +7199,7 @@
         if (opts.paths) {
           return _fork(requestImportAndParseFiles, _, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
         }
-        return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
+        return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       };
       requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
         let messages;
