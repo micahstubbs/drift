@@ -24,7 +24,6 @@ import { proceed } from './proceed';
 import { gui } from './gui';
 import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
-import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
@@ -61,6 +60,7 @@ import { requestParseFiles } from './requestParseFiles';
 import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
 import { requestPrediction } from './requestPrediction';
+import { requestCloud } from './requestCloud';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -176,7 +176,6 @@ export function routines() {
     let requestAsDataFrame;
     let requestAsH2OFrameFromDF;
     let requestAsH2OFrameFromRDD;
-    let requestCloud;
     let requestDataFrames;
     let requestGrid;
     let requestImportFiles;
@@ -678,13 +677,7 @@ export function routines() {
     //
     //
     //
-    requestCloud = go => _.requestCloud((error, cloud) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendCloud(_, cloud));
-    });
-    getCloud = () => _fork(requestCloud);
+    getCloud = () => _fork(requestCloud, _);
     requestTimeline = go => _.requestTimeline((error, timeline) => {
       if (error) {
         return go(error);
@@ -699,7 +692,7 @@ export function routines() {
       return go(null, extendStackTrace(_, stackTrace));
     });
     getStackTrace = () => _fork(requestStackTrace);
-    requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
+    requestLogFile = (nodeIndex, fileType, go) => _.requestCloud(_, (error, cloud) => {
       let NODE_INDEX_SELF;
       if (error) {
         return go(error);
