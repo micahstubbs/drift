@@ -58,6 +58,7 @@ import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
 import { extendParseResult } from './extendParseResult';
+import { requestImportAndParseFiles } from './requestImportAndParseFiles';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -177,7 +178,6 @@ export function routines() {
     let requestCloud;
     let requestDataFrames;
     let requestGrid;
-    let requestImportAndParseFiles;
     let requestImportFiles;
     let requestLogFile;
     let requestModelBuild;
@@ -504,32 +504,6 @@ export function routines() {
     //
     //
     //
-    requestImportAndParseFiles = (
-      paths,
-      destinationKey,
-      parseType,
-      separator,
-      columnCount,
-      useSingleQuotes,
-      columnNames,
-      columnTypes,
-      deleteOnDone,
-      checkHeader,
-      chunkSize,
-      go
-    ) => _.requestImportFiles(paths, (error, importResults) => {
-      let sourceKeys;
-      if (error) {
-        return go(error);
-      }
-      sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-      return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendParseResult(_, parseResult));
-      }); 
-    });
     requestParseFiles = (
       sourceKeys,
       destinationKey,
@@ -571,7 +545,7 @@ export function routines() {
       checkHeader = opts.check_header;
       chunkSize = opts.chunk_size;
       if (opts.paths) {
-        return _fork(requestImportAndParseFiles, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
+        return _fork(requestImportAndParseFiles, _, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       }
       return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
     };

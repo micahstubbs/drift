@@ -5299,6 +5299,22 @@
     return render_(_, parseResult, H2O.JobOutput, parseResult.job);
   }
 
+  function requestImportAndParseFiles(_, paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
+    return _.requestImportFiles(paths, (error, importResults) => {
+      const lodash = window._;
+      if (error) {
+        return go(error);
+      }
+      const sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
+      return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendParseResult(_, parseResult));
+      });
+    });
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6833,7 +6849,6 @@
       let requestCloud;
       let requestDataFrames;
       let requestGrid;
-      let requestImportAndParseFiles;
       let requestImportFiles;
       let requestLogFile;
       let requestModelBuild;
@@ -7152,19 +7167,6 @@
       //
       //
       //
-      requestImportAndParseFiles = (paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestImportFiles(paths, (error, importResults) => {
-        let sourceKeys;
-        if (error) {
-          return go(error);
-        }
-        sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-        return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendParseResult(_, parseResult));
-        });
-      });
       requestParseFiles = (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
         if (error) {
           return go(error);
@@ -7193,7 +7195,7 @@
         checkHeader = opts.check_header;
         chunkSize = opts.chunk_size;
         if (opts.paths) {
-          return _fork(requestImportAndParseFiles, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
+          return _fork(requestImportAndParseFiles, _, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
         }
         return _fork(requestParseFiles, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       };
