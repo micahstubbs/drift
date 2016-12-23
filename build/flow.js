@@ -5359,6 +5359,10 @@
     };
   }
 
+  function requestPredict(_, destinationKey, modelKey, frameKey, options, go) {
+    return _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(_, go));
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6895,7 +6899,6 @@
       let requestImportFiles;
       let requestLogFile;
       let requestNetworkTest;
-      let requestPredict;
       let requestPrediction;
       let requestPredictions;
       let requestPredicts;
@@ -7248,7 +7251,6 @@
       //
       //
       //
-      requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(_, go));
       requestPredicts = (opts, go) => {
         let futures;
         futures = lodash.map(opts, opt => {
@@ -7256,7 +7258,7 @@
           let modelKey;
           let options;
           modelKey = opt.model, frameKey = opt.frame, options = opt.options;
-          return _fork(_.requestPredict, null, modelKey, frameKey, options || {});
+          return _fork(_.requestPredict, _, null, modelKey, frameKey, options || {});
         });
         return Flow.Async.join(futures, (error, predictions) => {
           if (error) {
@@ -7316,13 +7318,13 @@
           });
         }
         if (model && frame) {
-          return _fork(requestPredict, predictions_frame, model, frame, {
+          return _fork(requestPredict, _, predictions_frame, model, frame, {
             reconstruction_error,
             deep_features_hidden_layer,
             leaf_node_assignment
           });
         } else if (model && exemplar_index !== void 0) {
-          return _fork(requestPredict, predictions_frame, model, null, { exemplar_index });
+          return _fork(requestPredict, _, predictions_frame, model, null, { exemplar_index });
         }
         return assist(predict, {
           predictions_frame,

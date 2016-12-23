@@ -59,7 +59,8 @@ import { requestImportAndParseSetup } from './requestImportAndParseSetup';
 import { requestImportAndParseFiles } from './requestImportAndParseFiles';
 import { requestParseFiles } from './requestParseFiles';
 import { requestModelBuild } from './requestModelBuild';
-import { unwrapPrediction } from './unwrapPrediction'; 
+import { unwrapPrediction } from './unwrapPrediction';
+import { requestPredict } from './requestPredict';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -181,7 +182,6 @@ export function routines() {
     let requestImportFiles;
     let requestLogFile;
     let requestNetworkTest;
-    let requestPredict;
     let requestPrediction;
     let requestPredictions;
     let requestPredicts;
@@ -542,7 +542,6 @@ export function routines() {
     //
     //
     //
-    requestPredict = (destinationKey, modelKey, frameKey, options, go) => _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(_, go));
     requestPredicts = (opts, go) => {
       let futures;
       futures = lodash.map(opts, opt => {
@@ -550,7 +549,7 @@ export function routines() {
         let modelKey;
         let options;
         modelKey = opt.model, frameKey = opt.frame, options = opt.options;
-        return _fork(_.requestPredict, null, modelKey, frameKey, options || {});
+        return _fork(_.requestPredict, _, null, modelKey, frameKey, options || {});
       });
       return Flow.Async.join(futures, (error, predictions) => {
         if (error) {
@@ -610,13 +609,13 @@ export function routines() {
         });
       }
       if (model && frame) {
-        return _fork(requestPredict, predictions_frame, model, frame, {
+        return _fork(requestPredict, _, predictions_frame, model, frame, {
           reconstruction_error,
           deep_features_hidden_layer,
           leaf_node_assignment
         });
       } else if (model && exemplar_index !== void 0) {
-        return _fork(requestPredict, predictions_frame, model, null, { exemplar_index });
+        return _fork(requestPredict, _, predictions_frame, model, null, { exemplar_index });
       }
       return assist(predict, {
         predictions_frame,
