@@ -5363,6 +5363,10 @@
     return _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(_, go));
   }
 
+  function requestPrediction(_, modelKey, frameKey, go) {
+    return _.requestPrediction(_, modelKey, frameKey, unwrapPrediction(_, go));
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6899,7 +6903,6 @@
       let requestImportFiles;
       let requestLogFile;
       let requestNetworkTest;
-      let requestPrediction;
       let requestPredictions;
       let requestPredicts;
       let requestProfile;
@@ -7244,13 +7247,7 @@
         }
         return assist(buildModel, algo, opts);
       };
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
+      // depends on `extendPredictions`
       requestPredicts = (opts, go) => {
         let futures;
         futures = lodash.map(opts, opt => {
@@ -7267,6 +7264,7 @@
           return go(null, extendPredictions(opts, predictions));
         });
       };
+      // depends on `assist`
       predict = opts => {
         let combos;
         let deep_features_hidden_layer;
@@ -7332,7 +7330,13 @@
           frame
         });
       };
-      requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
       requestPredictions = (opts, go) => {
         let frameKey;
         let futures;
@@ -7370,7 +7374,7 @@
         }
         predictions_frame = opts.predictions_frame, model = opts.model, frame = opts.frame;
         if (model && frame) {
-          return _fork(requestPrediction, model, frame);
+          return _fork(requestPrediction, _, model, frame);
         }
         return assist(getPrediction, {
           predictions_frame,

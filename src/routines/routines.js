@@ -59,8 +59,8 @@ import { requestImportAndParseSetup } from './requestImportAndParseSetup';
 import { requestImportAndParseFiles } from './requestImportAndParseFiles';
 import { requestParseFiles } from './requestParseFiles';
 import { requestModelBuild } from './requestModelBuild';
-import { unwrapPrediction } from './unwrapPrediction';
 import { requestPredict } from './requestPredict';
+import { requestPrediction } from './requestPrediction';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -182,7 +182,6 @@ export function routines() {
     let requestImportFiles;
     let requestLogFile;
     let requestNetworkTest;
-    let requestPrediction;
     let requestPredictions;
     let requestPredicts;
     let requestProfile;
@@ -625,7 +624,6 @@ export function routines() {
     //
     //
     //
-    requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
     requestPredictions = (opts, go) => {
       let frameKey;
       let futures;
@@ -663,7 +661,7 @@ export function routines() {
       }
       predictions_frame = opts.predictions_frame, model = opts.model, frame = opts.frame;
       if (model && frame) {
-        return _fork(requestPrediction, model, frame);
+        return _fork(requestPrediction, _, model, frame);
       }
       return assist(getPrediction, {
         predictions_frame,
