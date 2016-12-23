@@ -24,6 +24,7 @@ import { proceed } from './proceed';
 import { gui } from './gui';
 import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
+import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
 import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
@@ -59,7 +60,6 @@ import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
 import { requestPrediction } from './requestPrediction';
 import { requestCloud } from './requestCloud';
-import { requestStackTrace } from './requestStackTrace';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -187,6 +187,7 @@ export function routines() {
     let requestRemoveAll;
     let requestScalaCode;
     let requestScalaIntp;
+    let requestStackTrace;
     let routines;
     let routinesOnSw;
     let runScalaCode;
