@@ -7302,14 +7302,11 @@
       getCloud = () => _fork(requestCloud, _);
       // blocked by CoffeeScript codecell `_` issue
       getTimeline = () => _fork(requestTimeline, _);
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
+      // blocked by CoffeeScript codecell `_` issue
       getStackTrace = () => _fork(_, requestStackTrace);
+      // attempting to abstract this out creates a bug
+      // Uncaught TypeError: go is not a function(…)
+      // defer for now
       requestLogFile = (nodeIndex, fileType, go) => _.requestCloud(_, (error, cloud) => {
         let NODE_INDEX_SELF;
         if (error) {
@@ -7326,6 +7323,13 @@
           return go(null, extendLogFile(_, cloud, nodeIndex, fileType, logFile));
         });
       });
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
       getLogFile = (nodeIndex, fileType) => {
         if (nodeIndex == null) {
           nodeIndex = -1;

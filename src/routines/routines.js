@@ -671,14 +671,11 @@ export function routines() {
     getCloud = () => _fork(requestCloud, _);
     // blocked by CoffeeScript codecell `_` issue
     getTimeline = () => _fork(requestTimeline, _);
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
+    // blocked by CoffeeScript codecell `_` issue
     getStackTrace = () => _fork(_, requestStackTrace);
+    // attempting to abstract this out creates a bug
+    // Uncaught TypeError: go is not a function(…)
+    // defer for now
     requestLogFile = (nodeIndex, fileType, go) => _.requestCloud(_, (error, cloud) => {
       let NODE_INDEX_SELF;
       if (error) {
@@ -695,6 +692,7 @@ export function routines() {
         return go(null, extendLogFile(_, cloud, nodeIndex, fileType, logFile));
       });
     });
+    // blocked by CoffeeScript codecell `_` issue
     getLogFile = (nodeIndex, fileType) => {
       if (nodeIndex == null) {
         nodeIndex = -1;
@@ -704,6 +702,13 @@ export function routines() {
       }
       return _fork(requestLogFile, nodeIndex, fileType);
     };
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     requestNetworkTest = go => _.requestNetworkTest((error, result) => {
       if (error) {
         return go(error);
