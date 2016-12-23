@@ -670,6 +670,8 @@ export function routines() {
       }
       return _fork(requestPredictions, opts);
     };
+    // blocked by CoffeeScript codecell `_` issue
+    getCloud = () => _fork(requestCloud, _);
     //
     //
     //
@@ -677,7 +679,6 @@ export function routines() {
     //
     //
     //
-    getCloud = () => _fork(requestCloud, _);
     requestTimeline = go => _.requestTimeline((error, timeline) => {
       if (error) {
         return go(error);
