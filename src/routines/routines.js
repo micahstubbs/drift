@@ -57,6 +57,7 @@ import { requestImportModel } from './requestImportModel';
 import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
+import { extendParseResult } from './extendParseResult';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -131,7 +132,6 @@ export function routines() {
     let extendAsH2OFrame;
     let extendDataFrames;
     let extendGrid;
-    let extendParseResult;
     let extendPredictions;
     let extendRDDs;
     let extendScalaCode;
@@ -504,7 +504,6 @@ export function routines() {
     //
     //
     //
-    extendParseResult = parseResult => render_(_,  parseResult, H2O.JobOutput, parseResult.job);
     requestImportAndParseFiles = (
       paths,
       destinationKey,
@@ -528,8 +527,8 @@ export function routines() {
         if (error) {
           return go(error);
         }
-        return go(null, extendParseResult(parseResult));
-      });
+        return go(null, extendParseResult(_, parseResult));
+      }); 
     });
     requestParseFiles = (
       sourceKeys,
@@ -548,7 +547,7 @@ export function routines() {
       if (error) {
         return go(error);
       }
-      return go(null, extendParseResult(parseResult));
+      return go(null, extendParseResult(_, parseResult));
     });
     parseFiles = opts => {
       let checkHeader;

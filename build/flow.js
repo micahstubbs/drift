@@ -5294,6 +5294,11 @@
     });
   }
 
+  function extendParseResult(_, parseResult) {
+    const H2O = window.H2O;
+    return render_(_, parseResult, H2O.JobOutput, parseResult.job);
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6783,7 +6788,6 @@
       let extendAsH2OFrame;
       let extendDataFrames;
       let extendGrid;
-      let extendParseResult;
       let extendPredictions;
       let extendRDDs;
       let extendScalaCode;
@@ -7132,13 +7136,6 @@
             return assist(importFiles);
         }
       };
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
       // depends on `assist`
       setupParse = args => {
         if (args.paths && lodash.isArray(args.paths)) {
@@ -7148,7 +7145,13 @@
         }
         return assist(setupParse);
       };
-      extendParseResult = parseResult => render_(_, parseResult, H2O.JobOutput, parseResult.job);
+      //
+      //
+      //
+      //  v  start abstracting out here  v
+      //
+      //
+      //
       requestImportAndParseFiles = (paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestImportFiles(paths, (error, importResults) => {
         let sourceKeys;
         if (error) {
@@ -7159,14 +7162,14 @@
           if (error) {
             return go(error);
           }
-          return go(null, extendParseResult(parseResult));
+          return go(null, extendParseResult(_, parseResult));
         });
       });
       requestParseFiles = (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendParseResult(parseResult));
+        return go(null, extendParseResult(_, parseResult));
       });
       parseFiles = opts => {
         let checkHeader;
