@@ -521,13 +521,6 @@ export function routines() {
       }
       return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
     // depends on `assist`
     buildAutoModel = opts => {
       if (opts && lodash.keys(opts).length > 1) {
@@ -542,6 +535,13 @@ export function routines() {
       }
       return assist(buildModel, algo, opts);
     };
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     unwrapPrediction = go => (error, result) => {
       if (error) {
         return go(error);
