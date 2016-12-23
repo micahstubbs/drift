@@ -24,7 +24,6 @@ import { proceed } from './proceed';
 import { gui } from './gui';
 import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
-import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
 import { extendNetworkTest } from './extendNetworkTest';
@@ -189,7 +188,6 @@ export function routines() {
     let requestScalaCode;
     let requestScalaIntp;
     let requestStackTrace;
-    let requestTimeline;
     let routines;
     let routinesOnSw;
     let runScalaCode;
@@ -679,13 +677,7 @@ export function routines() {
     //
     //
     //
-    requestTimeline = go => _.requestTimeline((error, timeline) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendTimeline(_, timeline));
-    });
-    getTimeline = () => _fork(requestTimeline);
+    getTimeline = () => _fork(requestTimeline, _);
     requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
       if (error) {
         return go(error);
