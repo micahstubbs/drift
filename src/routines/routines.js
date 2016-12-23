@@ -617,13 +617,7 @@ export function routines() {
         frame
       });
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
+    // depends on `extendPredictions`
     requestPredictions = (opts, go) => {
       let frameKey;
       let futures;
@@ -652,6 +646,7 @@ export function routines() {
         return go(null, extendPredictions(opts, predictions));
       });
     };
+    // blocked by CoffeeScript codecell `_` issue
     getPrediction = opts => {
       let frame;
       let model;
@@ -669,12 +664,20 @@ export function routines() {
         frame
       });
     };
+    // blocked by CoffeeScript codecell `_` issue
     getPredictions = opts => {
       if (opts == null) {
         opts = {};
       }
       return _fork(requestPredictions, opts);
     };
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     requestCloud = go => _.requestCloud((error, cloud) => {
       if (error) {
         return go(error);
