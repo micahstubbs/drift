@@ -6835,7 +6835,6 @@
       let requestModelBuild;
       let requestNetworkTest;
       let requestParseFiles;
-      let requestParseSetup;
       let requestPredict;
       let requestPrediction;
       let requestPredictions;
@@ -7140,18 +7139,12 @@
       //
       //
       //
-      requestParseSetup = (sourceKeys, go) => _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendParseSetupResults(_, { source_frames: sourceKeys }, parseSetupResults));
-      });
       // depends on `assist`
       setupParse = args => {
         if (args.paths && lodash.isArray(args.paths)) {
           return _fork(requestImportAndParseSetup, _, args.paths);
         } else if (args.source_frames && lodash.isArray(args.source_frames)) {
-          return _fork(requestParseSetup, args.source_frames);
+          return _fork(requestParseSetup, _, args.source_frames);
         }
         return assist(setupParse);
       };

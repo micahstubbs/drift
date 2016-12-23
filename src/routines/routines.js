@@ -56,7 +56,6 @@ import { requestDeleteModel } from './requestDeleteModel';
 import { requestImportModel } from './requestImportModel';
 import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
-import { extendParseSetupResults } from './extendParseSetupResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
@@ -184,7 +183,6 @@ export function routines() {
     let requestModelBuild;
     let requestNetworkTest;
     let requestParseFiles;
-    let requestParseSetup;
     let requestPredict;
     let requestPrediction;
     let requestPredictions;
@@ -497,18 +495,12 @@ export function routines() {
     //
     //
     //
-    requestParseSetup = (sourceKeys, go) => _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendParseSetupResults(_, { source_frames: sourceKeys }, parseSetupResults));
-    });
     // depends on `assist`
     setupParse = args => {
       if (args.paths && lodash.isArray(args.paths)) {
         return _fork(requestImportAndParseSetup, _, args.paths);
       } else if (args.source_frames && lodash.isArray(args.source_frames)) {
-        return _fork(requestParseSetup, args.source_frames);
+        return _fork(requestParseSetup, _, args.source_frames);
       }
       return assist(setupParse);
     };
