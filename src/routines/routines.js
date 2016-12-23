@@ -488,13 +488,6 @@ export function routines() {
           return assist(importFiles);
       }
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
     // depends on `assist`
     setupParse = args => {
       if (args.paths && lodash.isArray(args.paths)) {
@@ -504,6 +497,13 @@ export function routines() {
       }
       return assist(setupParse);
     };
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     extendParseResult = parseResult => render_(_,  parseResult, H2O.JobOutput, parseResult.job);
     requestImportAndParseFiles = (
       paths,
