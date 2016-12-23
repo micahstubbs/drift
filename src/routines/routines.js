@@ -496,13 +496,7 @@ export function routines() {
       }
       return assist(setupParse);
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
+    // blocked by CoffeeScript codecell `_` issue
     parseFiles = opts => {
       let checkHeader;
       let chunkSize;
@@ -529,6 +523,13 @@ export function routines() {
       }
       return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
     };
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     requestModelBuild = (algo, opts, go) => _.requestModelBuild(algo, opts, (error, result) => {
       let messages;
       let validation;
