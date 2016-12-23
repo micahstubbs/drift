@@ -535,13 +535,7 @@ export function routines() {
       }
       return assist(buildModel, algo, opts);
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
+    // depends on `extendPredictions`
     requestPredicts = (opts, go) => {
       let futures;
       futures = lodash.map(opts, opt => {
@@ -558,6 +552,7 @@ export function routines() {
         return go(null, extendPredictions(opts, predictions));
       });
     };
+    // depends on `assist`
     predict = opts => {
       let combos;
       let deep_features_hidden_layer;
@@ -623,6 +618,13 @@ export function routines() {
         frame
       });
     };
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     requestPrediction = (modelKey, frameKey, go) => _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
     requestPredictions = (opts, go) => {
       let frameKey;
