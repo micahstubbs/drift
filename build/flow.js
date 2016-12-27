@@ -2898,117 +2898,6 @@
 
   const flowPrelude$13 = flowPreludeFunction();
 
-  function h2oPredictOutput(_, _go, prediction) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    let frame;
-    let model;
-    let table;
-    let tableName;
-    let _i;
-    let _len;
-    let _ref;
-    let _ref1;
-    if (prediction) {
-      frame = prediction.frame;
-      model = prediction.model;
-    }
-    const _plots = Flow.Dataflow.signals([]);
-    const _canInspect = prediction.__meta;
-    const renderPlot = (title, prediction, render) => {
-      const container = Flow.Dataflow.signal(null);
-      const combineWithFrame = () => {
-        const predictionsFrameName = prediction.predictions.frame_id.name;
-        const targetFrameName = `combined-${ predictionsFrameName }`;
-        return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$13.stringify(targetFrameName) }, [ ${ flowPrelude$13.stringify(predictionsFrameName) }, ${ flowPrelude$13.stringify(frame.name) } ]`);
-      };
-      render((error, vis) => {
-        if (error) {
-          return console.debug(error);
-        }
-        $('a', vis.element).on('click', e => {
-          const $a = $(e.target);
-          switch ($a.attr('data-type')) {
-            case 'frame':
-              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$13.stringify($a.attr('data-key')) }`);
-            case 'model':
-              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$13.stringify($a.attr('data-key')) }`);
-            default:
-            // do nothing
-          }
-        });
-        return container(vis.element);
-      });
-      return _plots.push({
-        title,
-        plot: container,
-        combineWithFrame,
-        canCombineWithFrame: title === 'Prediction'
-      });
-    };
-    if (prediction) {
-      _ref = prediction.__meta;
-      switch (_ref != null ? _ref.schema_type : void 0) {
-        case 'ModelMetricsBinomial':
-          table = _.inspect('Prediction - Metrics for Thresholds', prediction);
-          if (table) {
-            renderPlot('ROC Curve', prediction, _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1))));
-          }
-          break;
-        default:
-        // do nothing
-      }
-      _ref1 = _.ls(prediction);
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        tableName = _ref1[_i];
-        table = _.inspect(tableName, prediction);
-        if (table) {
-          if (table.indices.length > 1) {
-            renderPlot(tableName, prediction, _.plot(g => g(g.select(), g.from(table))));
-          } else {
-            renderPlot(tableName, prediction, _.plot(g => g(g.select(0), g.from(table))));
-          }
-        }
-      }
-    }
-    const inspect = () => {
-      // eslint-disable-line
-      // XXX get this from prediction table
-      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$13.stringify(model.name) }, frame: ${ flowPrelude$13.stringify(frame.name) }`);
-    };
-    lodash.defer(_go);
-    return {
-      plots: _plots,
-      inspect,
-      canInspect: _canInspect,
-      template: 'flow-predict-output'
-    };
-  }
-
-  const flowPrelude$12 = flowPreludeFunction();
-
-  function extendPrediction(_, result) {
-    const lodash = window._;
-    let prediction;
-    const modelKey = result.model.name;
-    const _ref1 = result.frame;
-    const frameKey = _ref1 != null ? _ref1.name : void 0;
-    prediction = lodash.head(result.model_metrics);
-    const predictionFrame = result.predictions_frame;
-    const inspections = {};
-    if (prediction) {
-      inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$12.stringify(modelKey) }, frame: ${ flowPrelude$12.stringify(frameKey) }`, prediction);
-    } else {
-      prediction = {};
-      inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$12.stringify(modelKey) }, frame: ${ flowPrelude$12.stringify(frameKey) }`, { prediction_frame: predictionFrame });
-    }
-    inspect_(prediction, inspections);
-    return render_(_, prediction, h2oPredictOutput, prediction);
-  }
-
-  const flowPrelude$14 = flowPreludeFunction();
-
   function inspectFrameColumns(tableLabel, frameKey, frame, frameColumns) {
     return function () {
       const lodash = window._;
@@ -3026,17 +2915,17 @@
       let i;
       let title;
       const attrs = ['label', 'type', 'missing_count|Missing', 'zero_count|Zeros', 'positive_infinity_count|+Inf', 'negative_infinity_count|-Inf', 'min', 'max', 'mean', 'sigma', 'cardinality'];
-      const toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${ flowPrelude$14.stringify(label) }>${ lodash.escape(label) }</a>`;
+      const toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${ flowPrelude$13.stringify(label) }>${ lodash.escape(label) }</a>`;
       const toConversionLink = value => {
         const _ref1 = value.split('\0');
         const type = _ref1[0];
         const label = _ref1[1];
         switch (type) {
           case 'enum':
-            return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${ flowPrelude$14.stringify(label) }>Convert to numeric</a>`;
+            return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${ flowPrelude$13.stringify(label) }>Convert to numeric</a>`;
           case 'int':
           case 'string':
-            return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${ flowPrelude$14.stringify(label) }>Convert to enum</a>'`;
+            return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${ flowPrelude$13.stringify(label) }>Convert to enum</a>'`;
           default:
             return void 0;
         }
@@ -3156,10 +3045,270 @@
       vectors.push(createFactor('Actions', 'String', actionsData, null, toConversionLink));
       return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
         description: `A list of ${ tableLabel } in the H2O Frame.`,
-        origin: `getFrameSummary ${ flowPrelude$14.stringify(frameKey) }`,
-        plot: `plot inspect \'${ tableLabel }\', getFrameSummary ${ flowPrelude$14.stringify(frameKey) }`
+        origin: `getFrameSummary ${ flowPrelude$13.stringify(frameKey) }`,
+        plot: `plot inspect \'${ tableLabel }\', getFrameSummary ${ flowPrelude$13.stringify(frameKey) }`
       });
     };
+  }
+
+  const flowPrelude$14 = flowPreludeFunction();
+
+  function h2oFrameOutput(_, _go, _frame) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    let _lastUsedSearchTerm;
+    const MaxItemsPerPage = 20;
+    const _grid = Flow.Dataflow.signal(null);
+    const _chunkSummary = Flow.Dataflow.signal(null);
+    const _distributionSummary = Flow.Dataflow.signal(null);
+    const _columnNameSearchTerm = Flow.Dataflow.signal(null);
+    const _currentPage = Flow.Dataflow.signal(0);
+    const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
+    const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
+    const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
+    const renderPlot = (container, render) => render((error, vis) => {
+      if (error) {
+        return console.debug(error);
+      }
+      return container(vis.element);
+    });
+    const renderGrid = render => render((error, vis) => {
+      if (error) {
+        return console.debug(error);
+      }
+      $('a', vis.element).on('click', e => {
+        const $a = $(e.target);
+        switch ($a.attr('data-type')) {
+          case 'summary-link':
+            return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$14.stringify(_frame.frame_id.name) }, ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
+          case 'as-factor-link':
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$14.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$14.stringify($a.attr('data-key')) }, type: \'enum\'`);
+          case 'as-numeric-link':
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$14.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$14.stringify($a.attr('data-key')) }, type: \'int\'`);
+          default:
+          // do nothing
+        }
+      });
+      return _grid(vis.element);
+    });
+    const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$14.stringify(_frame.frame_id.name) }`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$14.stringify(_frame.frame_id.name) }`);
+    const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$14.stringify(_frame.frame_id.name) }`);
+    const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$14.stringify(_frame.frame_id.name) }`);
+    const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$14.stringify(_frame.frame_id.name) }`);
+    const download = () => window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
+    const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$14.stringify(_frame.frame_id.name) }`);
+    const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
+      acceptCaption: 'Delete Frame',
+      declineCaption: 'Cancel'
+    }, accept => {
+      if (accept) {
+        return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$14.stringify(_frame.frame_id.name) }`);
+      }
+    });
+    const renderFrame = frame => {
+      renderGrid(_.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
+      renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
+      return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
+    };
+    _lastUsedSearchTerm = null;
+    const refreshColumns = pageIndex => {
+      const searchTerm = _columnNameSearchTerm();
+      if (searchTerm !== _lastUsedSearchTerm) {
+        pageIndex = 0;
+      }
+      const startIndex = pageIndex * MaxItemsPerPage;
+      const itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
+      return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
+        if (error) {
+          // empty
+          // TODO
+        } else {
+          _lastUsedSearchTerm = searchTerm;
+          _currentPage(pageIndex);
+          return renderFrame(frame);
+        }
+      });
+    };
+    const goToPreviousPage = () => {
+      const currentPage = _currentPage();
+      if (currentPage > 0) {
+        refreshColumns(currentPage - 1);
+      }
+    };
+    const goToNextPage = () => {
+      const currentPage = _currentPage();
+      if (currentPage < _maxPages() - 1) {
+        refreshColumns(currentPage + 1);
+      }
+    };
+    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
+    renderFrame(_frame);
+    lodash.defer(_go);
+    return {
+      key: _frame.frame_id.name,
+      rowCount: _frame.rows,
+      columnCount: _frame.total_column_count,
+      size: Flow.Util.formatBytes(_frame.byte_size),
+      chunkSummary: _chunkSummary,
+      distributionSummary: _distributionSummary,
+      columnNameSearchTerm: _columnNameSearchTerm,
+      grid: _grid,
+      inspect,
+      createModel,
+      inspectData,
+      splitFrame,
+      predict,
+      download,
+      exportFrame,
+      canGoToPreviousPage: _canGoToPreviousPage,
+      canGoToNextPage: _canGoToNextPage,
+      goToPreviousPage,
+      goToNextPage,
+      deleteFrame,
+      template: 'flow-frame-output'
+    };
+  }
+
+  const flowPrelude$12 = flowPreludeFunction();
+
+  function extendFrameSummary(_, frameKey, frame) {
+    let column;
+    // let enumColumns;
+    const inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
+    const enumColumns = (() => {
+      let _i;
+      let _len;
+      const _ref1 = frame.columns;
+      const _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        column = _ref1[_i];
+        if (column.type === 'enum') {
+          _results.push(column);
+        }
+      }
+      return _results;
+    })();
+    if (enumColumns.length > 0) {
+      inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
+    }
+    const origin = `getFrameSummary ${ flowPrelude$12.stringify(frameKey) }`;
+    inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
+    inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
+    inspect_(frame, inspections);
+    return render_(_, frame, h2oFrameOutput, frame);
+  }
+
+  const flowPrelude$16 = flowPreludeFunction();
+
+  function h2oPredictOutput(_, _go, prediction) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    let frame;
+    let model;
+    let table;
+    let tableName;
+    let _i;
+    let _len;
+    let _ref;
+    let _ref1;
+    if (prediction) {
+      frame = prediction.frame;
+      model = prediction.model;
+    }
+    const _plots = Flow.Dataflow.signals([]);
+    const _canInspect = prediction.__meta;
+    const renderPlot = (title, prediction, render) => {
+      const container = Flow.Dataflow.signal(null);
+      const combineWithFrame = () => {
+        const predictionsFrameName = prediction.predictions.frame_id.name;
+        const targetFrameName = `combined-${ predictionsFrameName }`;
+        return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$16.stringify(targetFrameName) }, [ ${ flowPrelude$16.stringify(predictionsFrameName) }, ${ flowPrelude$16.stringify(frame.name) } ]`);
+      };
+      render((error, vis) => {
+        if (error) {
+          return console.debug(error);
+        }
+        $('a', vis.element).on('click', e => {
+          const $a = $(e.target);
+          switch ($a.attr('data-type')) {
+            case 'frame':
+              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$16.stringify($a.attr('data-key')) }`);
+            case 'model':
+              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$16.stringify($a.attr('data-key')) }`);
+            default:
+            // do nothing
+          }
+        });
+        return container(vis.element);
+      });
+      return _plots.push({
+        title,
+        plot: container,
+        combineWithFrame,
+        canCombineWithFrame: title === 'Prediction'
+      });
+    };
+    if (prediction) {
+      _ref = prediction.__meta;
+      switch (_ref != null ? _ref.schema_type : void 0) {
+        case 'ModelMetricsBinomial':
+          table = _.inspect('Prediction - Metrics for Thresholds', prediction);
+          if (table) {
+            renderPlot('ROC Curve', prediction, _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1))));
+          }
+          break;
+        default:
+        // do nothing
+      }
+      _ref1 = _.ls(prediction);
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        tableName = _ref1[_i];
+        table = _.inspect(tableName, prediction);
+        if (table) {
+          if (table.indices.length > 1) {
+            renderPlot(tableName, prediction, _.plot(g => g(g.select(), g.from(table))));
+          } else {
+            renderPlot(tableName, prediction, _.plot(g => g(g.select(0), g.from(table))));
+          }
+        }
+      }
+    }
+    const inspect = () => {
+      // eslint-disable-line
+      // XXX get this from prediction table
+      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$16.stringify(model.name) }, frame: ${ flowPrelude$16.stringify(frame.name) }`);
+    };
+    lodash.defer(_go);
+    return {
+      plots: _plots,
+      inspect,
+      canInspect: _canInspect,
+      template: 'flow-predict-output'
+    };
+  }
+
+  const flowPrelude$15 = flowPreludeFunction();
+
+  function extendPrediction(_, result) {
+    const lodash = window._;
+    let prediction;
+    const modelKey = result.model.name;
+    const _ref1 = result.frame;
+    const frameKey = _ref1 != null ? _ref1.name : void 0;
+    prediction = lodash.head(result.model_metrics);
+    const predictionFrame = result.predictions_frame;
+    const inspections = {};
+    if (prediction) {
+      inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$15.stringify(modelKey) }, frame: ${ flowPrelude$15.stringify(frameKey) }`, prediction);
+    } else {
+      prediction = {};
+      inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$15.stringify(modelKey) }, frame: ${ flowPrelude$15.stringify(frameKey) }`, { prediction_frame: predictionFrame });
+    }
+    inspect_(prediction, inspections);
+    return render_(_, prediction, h2oPredictOutput, prediction);
   }
 
   function parseNulls(source) {
@@ -3188,7 +3337,7 @@
     return target;
   }
 
-  const flowPrelude$15 = flowPreludeFunction();
+  const flowPrelude$17 = flowPreludeFunction();
 
   function inspectFrameData(frameKey, frame) {
     return function () {
@@ -3257,132 +3406,12 @@
       })()));
       return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
         description: 'A partial list of rows in the H2O Frame.',
-        origin: `getFrameData ${ flowPrelude$15.stringify(frameKey) }`
+        origin: `getFrameData ${ flowPrelude$17.stringify(frameKey) }`
       });
     };
   }
 
-  const flowPrelude$17 = flowPreludeFunction();
-
-  function h2oFrameOutput(_, _go, _frame) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    let _lastUsedSearchTerm;
-    const MaxItemsPerPage = 20;
-    const _grid = Flow.Dataflow.signal(null);
-    const _chunkSummary = Flow.Dataflow.signal(null);
-    const _distributionSummary = Flow.Dataflow.signal(null);
-    const _columnNameSearchTerm = Flow.Dataflow.signal(null);
-    const _currentPage = Flow.Dataflow.signal(0);
-    const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
-    const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
-    const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-    const renderPlot = (container, render) => render((error, vis) => {
-      if (error) {
-        return console.debug(error);
-      }
-      return container(vis.element);
-    });
-    const renderGrid = render => render((error, vis) => {
-      if (error) {
-        return console.debug(error);
-      }
-      $('a', vis.element).on('click', e => {
-        const $a = $(e.target);
-        switch ($a.attr('data-type')) {
-          case 'summary-link':
-            return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$17.stringify(_frame.frame_id.name) }, ${ flowPrelude$17.stringify($a.attr('data-key')) }`);
-          case 'as-factor-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$17.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$17.stringify($a.attr('data-key')) }, type: \'enum\'`);
-          case 'as-numeric-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$17.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$17.stringify($a.attr('data-key')) }, type: \'int\'`);
-          default:
-          // do nothing
-        }
-      });
-      return _grid(vis.element);
-    });
-    const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$17.stringify(_frame.frame_id.name) }`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$17.stringify(_frame.frame_id.name) }`);
-    const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$17.stringify(_frame.frame_id.name) }`);
-    const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$17.stringify(_frame.frame_id.name) }`);
-    const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$17.stringify(_frame.frame_id.name) }`);
-    const download = () => window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
-    const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$17.stringify(_frame.frame_id.name) }`);
-    const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
-      acceptCaption: 'Delete Frame',
-      declineCaption: 'Cancel'
-    }, accept => {
-      if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$17.stringify(_frame.frame_id.name) }`);
-      }
-    });
-    const renderFrame = frame => {
-      renderGrid(_.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
-      renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
-      return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
-    };
-    _lastUsedSearchTerm = null;
-    const refreshColumns = pageIndex => {
-      const searchTerm = _columnNameSearchTerm();
-      if (searchTerm !== _lastUsedSearchTerm) {
-        pageIndex = 0;
-      }
-      const startIndex = pageIndex * MaxItemsPerPage;
-      const itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-      return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
-        if (error) {
-          // empty
-          // TODO
-        } else {
-          _lastUsedSearchTerm = searchTerm;
-          _currentPage(pageIndex);
-          return renderFrame(frame);
-        }
-      });
-    };
-    const goToPreviousPage = () => {
-      const currentPage = _currentPage();
-      if (currentPage > 0) {
-        refreshColumns(currentPage - 1);
-      }
-    };
-    const goToNextPage = () => {
-      const currentPage = _currentPage();
-      if (currentPage < _maxPages() - 1) {
-        refreshColumns(currentPage + 1);
-      }
-    };
-    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
-    renderFrame(_frame);
-    lodash.defer(_go);
-    return {
-      key: _frame.frame_id.name,
-      rowCount: _frame.rows,
-      columnCount: _frame.total_column_count,
-      size: Flow.Util.formatBytes(_frame.byte_size),
-      chunkSummary: _chunkSummary,
-      distributionSummary: _distributionSummary,
-      columnNameSearchTerm: _columnNameSearchTerm,
-      grid: _grid,
-      inspect,
-      createModel,
-      inspectData,
-      splitFrame,
-      predict,
-      download,
-      exportFrame,
-      canGoToPreviousPage: _canGoToPreviousPage,
-      canGoToNextPage: _canGoToNextPage,
-      goToPreviousPage,
-      goToNextPage,
-      deleteFrame,
-      template: 'flow-frame-output'
-    };
-  }
-
-  const flowPrelude$16 = flowPreludeFunction();
+  const flowPrelude$18 = flowPreludeFunction();
 
   function extendFrame(_, frameKey, frame) {
     let column;
@@ -3406,7 +3435,7 @@
     if (enumColumns.length > 0) {
       inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
     }
-    const origin = `getFrameSummary ${ flowPrelude$16.stringify(frameKey) }`;
+    const origin = `getFrameSummary ${ flowPrelude$18.stringify(frameKey) }`;
     inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
     inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
     inspect_(frame, inspections);
@@ -3422,11 +3451,11 @@
     });
   }
 
-  const flowPrelude$18 = flowPreludeFunction();
+  const flowPrelude$19 = flowPreludeFunction();
 
   function extendFrameData(_, frameKey, frame) {
     const inspections = { data: inspectFrameData(frameKey, frame) };
-    const origin = `getFrameData ${ flowPrelude$18.stringify(frameKey) }`;
+    const origin = `getFrameData ${ flowPrelude$19.stringify(frameKey) }`;
     inspect_(frame, inspections);
     return render_(_, frame, h2oFrameDataOutput, frame);
   }
@@ -3437,53 +3466,6 @@
         return go(error);
       }
       return go(null, extendFrameData(_, frameKey, frame));
-    });
-  }
-
-  const flowPrelude$19 = flowPreludeFunction();
-
-  function extendFrameSummary(_, frameKey, frame) {
-    let column;
-    // let enumColumns;
-    const inspections = { columns: inspectFrameColumns('columns', frameKey, frame, frame.columns) };
-    const enumColumns = (() => {
-      let _i;
-      let _len;
-      const _ref1 = frame.columns;
-      const _results = [];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        column = _ref1[_i];
-        if (column.type === 'enum') {
-          _results.push(column);
-        }
-      }
-      return _results;
-    })();
-    if (enumColumns.length > 0) {
-      inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
-    }
-    const origin = `getFrameSummary ${ flowPrelude$19.stringify(frameKey) }`;
-    inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
-    inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
-    inspect_(frame, inspections);
-    return render_(_, frame, h2oFrameOutput, frame);
-  }
-
-  function requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, go) {
-    return _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendFrameSummary(_, frameKey, frame));
-    });
-  }
-
-  function requestFrameSummary(_, frameKey, go) {
-    return _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendFrameSummary(_, frameKey, frame));
     });
   }
 
@@ -6899,6 +6881,8 @@
       let requestAsH2OFrameFromRDD;
       let requestCloud;
       let requestDataFrames;
+      let requestFrameSummary;
+      let requestFrameSummarySlice;
       let requestGrid;
       let requestImportFiles;
       let requestLogFile;
@@ -6961,6 +6945,18 @@
         render_(_, predictions, h2oPredictsOutput, opts, predictions);
         return predictions;
       };
+      requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendFrameSummary(_, frameKey, frame));
+      });
+      requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(frameKey, void 0, 0, 20, (error, frame) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendFrameSummary(_, frameKey, frame));
+      });
       // depends on `assist`
       createFrame = opts => {
         if (opts) {
@@ -7026,7 +7022,7 @@
       getFrameSummary = frameKey => {
         switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
-            return _fork(requestFrameSummary, _, frameKey);
+            return _fork(requestFrameSummary, frameKey);
           default:
             return assist(getFrameSummary);
         }

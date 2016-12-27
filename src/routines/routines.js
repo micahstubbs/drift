@@ -32,14 +32,14 @@ import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
 import { extendJobs } from './extendJobs';
 import { extendDeletedKeys } from './extendDeletedKeys';
+import { extendFrameSummary } from './extendFrameSummary';
 import { read } from './read';
 import { extendPrediction } from './extendPrediction';
 import { inspectFrameColumns } from './inspectFrameColumns';
 import { inspectFrameData } from './inspectFrameData';
 import { requestFrame } from './requestFrame';
 import { requestFrameData } from './requestFrameData';
-import { requestFrameSummarySlice } from './requestFrameSummarySlice';
-import { requestFrameSummary } from './requestFrameSummary';
+
 import { requestColumnSummary } from './requestColumnSummary';
 import { requestCreateFrame } from './requestCreateFrame';
 import { requestSplitFrame } from './requestSplitFrame';
@@ -178,6 +178,8 @@ export function routines() {
     let requestAsH2OFrameFromRDD;
     let requestCloud;
     let requestDataFrames;
+    let requestFrameSummary;
+    let requestFrameSummarySlice;
     let requestGrid;
     let requestImportFiles;
     let requestLogFile;
@@ -240,6 +242,18 @@ export function routines() {
       render_(_,  predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
+    requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrameSummary(_, frameKey, frame));
+    });
+    requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(frameKey, void 0, 0, 20, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrameSummary(_, frameKey, frame));
+    });
     // depends on `assist`
     createFrame = opts => {
       if (opts) {
@@ -313,7 +327,7 @@ export function routines() {
     getFrameSummary = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
-          return _fork(requestFrameSummary, _, frameKey);
+          return _fork(requestFrameSummary, frameKey);
         default:
           return assist(getFrameSummary);
       }
