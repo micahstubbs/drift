@@ -673,6 +673,7 @@ export function routines() {
     // blocked by CoffeeScript codecell `_` issue
     getTimeline = () => _fork(requestTimeline, _);
     // abstracting this out produces an error
+    // calls _.self
     requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
       if (error) {
         return go(error);
@@ -681,13 +682,7 @@ export function routines() {
     });
     // depends on requestStackTrace
     getStackTrace = () => _fork(requestStackTrace);
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
+    // calls _.self
     requestLogFile = (nodeIndex, fileType, go) => _.requestCloud(_, (error, cloud) => {
       let NODE_INDEX_SELF;
       if (error) {
@@ -721,6 +716,7 @@ export function routines() {
     //
     //
     //
+    // calls _.self
     requestNetworkTest = go => _.requestNetworkTest((error, result) => {
       if (error) {
         return go(error);
@@ -728,6 +724,7 @@ export function routines() {
       return go(null, extendNetworkTest(_, result));
     });
     testNetwork = () => _fork(requestNetworkTest);
+    // calls _.self
     requestRemoveAll = go => _.requestRemoveAll((error, result) => {
       if (error) {
         return go(error);
@@ -739,6 +736,7 @@ export function routines() {
       render_(_,  rdds, h2oRDDsOutput, rdds);
       return rdds;
     };
+    // calls _.self
     requestRDDs = go => _.requestRDDs((error, result) => {
       if (error) {
         return go(error);
@@ -750,6 +748,7 @@ export function routines() {
       render_(_,  dataframes, h2oDataFramesOutput, dataframes);
       return dataframes;
     };
+    // calls _.self
     requestDataFrames = go => _.requestDataFrames((error, result) => {
       if (error) {
         return go(error);
@@ -761,6 +760,7 @@ export function routines() {
       render_(_,  result, h2oH2OFrameOutput, result);
       return result;
     };
+    // calls _.self
     requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
       if (error) {
         return go(error);
@@ -773,6 +773,7 @@ export function routines() {
       }
       return _fork(requestAsH2OFrameFromRDD, rddId, name);
     };
+    // calls _.self
     requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
       if (error) {
         return go(error);
@@ -789,6 +790,7 @@ export function routines() {
       render_(_,  result, h2oDataFrameOutput, result);
       return result;
     };
+    // calls _.self
     requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
       if (error) {
         return go(error);
@@ -801,6 +803,7 @@ export function routines() {
       }
       return _fork(requestAsDataFrame, hfId, name);
     };
+    // calls _.self
     requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
       if (error) {
         return go(error);
@@ -812,6 +815,7 @@ export function routines() {
       return result;
     };
     runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
+    // calls _.self
     requestScalaIntp = go => _.requestScalaIntp((error, result) => {
       if (error) {
         return go(error);
