@@ -24,6 +24,8 @@ import { proceed } from './proceed';
 import { gui } from './gui';
 import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
+import { extendCloud } from './extendCloud';
+import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
 import { extendNetworkTest } from './extendNetworkTest';
@@ -59,7 +61,6 @@ import { requestParseFiles } from './requestParseFiles';
 import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
 import { requestPrediction } from './requestPrediction';
-import { requestCloud } from './requestCloud';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -175,6 +176,7 @@ export function routines() {
     let requestAsDataFrame;
     let requestAsH2OFrameFromDF;
     let requestAsH2OFrameFromRDD;
+    let requestCloud;
     let requestDataFrames;
     let requestGrid;
     let requestImportFiles;
@@ -668,12 +670,24 @@ export function routines() {
       }
       return _fork(requestPredictions, opts);
     };
-    // blocked by CoffeeScript codecell `_` issue
-    getCloud = () => _fork(requestCloud, _);
-    // blocked by CoffeeScript codecell `_` issue
-    getTimeline = () => _fork(requestTimeline, _);
-    // abstracting this out produces an error
     // calls _.self
+    requestCloud = go => _.requestCloud((error, cloud) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendCloud(_, cloud));
+    });
+    // blocked by CoffeeScript codecell `_` issue
+    getCloud = () => _fork(requestCloud);
+    // calls _.self
+    requestTimeline = go => _.requestTimeline((error, timeline) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendTimeline(_, timeline));
+    });
+    // blocked by CoffeeScript codecell `_` issue
+    getTimeline = () => _fork(requestTimeline);
     requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
       if (error) {
         return go(error);
@@ -683,7 +697,7 @@ export function routines() {
     // depends on requestStackTrace
     getStackTrace = () => _fork(requestStackTrace);
     // calls _.self
-    requestLogFile = (nodeIndex, fileType, go) => _.requestCloud(_, (error, cloud) => {
+    requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
       let NODE_INDEX_SELF;
       if (error) {
         return go(error);
