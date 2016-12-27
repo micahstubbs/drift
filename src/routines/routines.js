@@ -672,13 +672,6 @@ export function routines() {
     getCloud = () => _fork(requestCloud, _);
     // blocked by CoffeeScript codecell `_` issue
     getTimeline = () => _fork(requestTimeline, _);
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
     // abstracting this out produces an error
     requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
       if (error) {
@@ -686,7 +679,15 @@ export function routines() {
       }
       return go(null, extendStackTrace(_, stackTrace));
     });
+    // depends on requestStackTrace
     getStackTrace = () => _fork(requestStackTrace);
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
     requestLogFile = (nodeIndex, fileType, go) => _.requestCloud(_, (error, cloud) => {
       let NODE_INDEX_SELF;
       if (error) {
