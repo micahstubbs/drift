@@ -60,7 +60,7 @@ import { requestImportAndParseFiles } from './requestImportAndParseFiles';
 import { requestParseFiles } from './requestParseFiles';
 import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
-import { requestPrediction } from './requestPrediction';
+import { unwrapPrediction } from './unwrapPrediction';
 
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
@@ -184,6 +184,7 @@ export function routines() {
     let requestImportFiles;
     let requestLogFile;
     let requestNetworkTest;
+    let requestPrediction;
     let requestPredictions;
     let requestPredicts;
     let requestProfile;
@@ -236,6 +237,9 @@ export function routines() {
       inspect_(grid, inspections);
       return render_(_,  grid, h2oGridOutput, grid);
     };
+    requestPrediction = (modelKey, frameKey, go) => {
+      return _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
+    }
     // abstracting this out produces an error
     // defer for now
     extendPredictions = (opts, predictions) => {
@@ -670,7 +674,7 @@ export function routines() {
       }
       predictions_frame = opts.predictions_frame, model = opts.model, frame = opts.frame;
       if (model && frame) {
-        return _fork(requestPrediction, _, model, frame);
+        return _fork(requestPrediction, model, frame);
       }
       return assist(getPrediction, {
         predictions_frame,

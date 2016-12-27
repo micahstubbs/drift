@@ -5345,10 +5345,6 @@
     return _.requestPredict(destinationKey, modelKey, frameKey, options, unwrapPrediction(_, go));
   }
 
-  function requestPrediction(_, modelKey, frameKey, go) {
-    return _.requestPrediction(_, modelKey, frameKey, unwrapPrediction(_, go));
-  }
-
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6887,6 +6883,7 @@
       let requestImportFiles;
       let requestLogFile;
       let requestNetworkTest;
+      let requestPrediction;
       let requestPredictions;
       let requestPredicts;
       let requestProfile;
@@ -6938,6 +6935,9 @@
         };
         inspect_(grid, inspections);
         return render_(_, grid, h2oGridOutput, grid);
+      };
+      requestPrediction = (modelKey, frameKey, go) => {
+        return _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
       };
       // abstracting this out produces an error
       // defer for now
@@ -7365,7 +7365,7 @@
         }
         predictions_frame = opts.predictions_frame, model = opts.model, frame = opts.frame;
         if (model && frame) {
-          return _fork(requestPrediction, _, model, frame);
+          return _fork(requestPrediction, model, frame);
         }
         return assist(getPrediction, {
           predictions_frame,
