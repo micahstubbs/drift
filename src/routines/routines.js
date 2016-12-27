@@ -190,6 +190,7 @@ export function routines() {
     let requestScalaCode;
     let requestScalaIntp;
     let requestStackTrace;
+    let requestTimeline;
     let routines;
     let routinesOnSw;
     let runScalaCode;
