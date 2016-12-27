@@ -5072,7 +5072,7 @@
     const Flow = window.Flow;
     const moment = window.moment;
     const d3 = window.d3;
-    let _isHealthy;
+    let _isHealthy = Flow.Dataflow.signal();
     // TODO Display in .jade
     const _exception = Flow.Dataflow.signal(null);
     const _isLive = Flow.Dataflow.signal(false);
@@ -7294,21 +7294,17 @@
       getCloud = () => _fork(requestCloud, _);
       // blocked by CoffeeScript codecell `_` issue
       getTimeline = () => _fork(requestTimeline, _);
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
       // abstracting this out produces an error
+      // calls _.self
       requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
         if (error) {
           return go(error);
         }
         return go(null, extendStackTrace(_, stackTrace));
       });
+      // depends on requestStackTrace
       getStackTrace = () => _fork(requestStackTrace);
+      // calls _.self
       requestLogFile = (nodeIndex, fileType, go) => _.requestCloud(_, (error, cloud) => {
         let NODE_INDEX_SELF;
         if (error) {
@@ -7342,6 +7338,7 @@
       //
       //
       //
+      // calls _.self
       requestNetworkTest = go => _.requestNetworkTest((error, result) => {
         if (error) {
           return go(error);
@@ -7349,6 +7346,7 @@
         return go(null, extendNetworkTest(_, result));
       });
       testNetwork = () => _fork(requestNetworkTest);
+      // calls _.self
       requestRemoveAll = go => _.requestRemoveAll((error, result) => {
         if (error) {
           return go(error);
@@ -7360,6 +7358,7 @@
         render_(_, rdds, h2oRDDsOutput, rdds);
         return rdds;
       };
+      // calls _.self
       requestRDDs = go => _.requestRDDs((error, result) => {
         if (error) {
           return go(error);
@@ -7371,6 +7370,7 @@
         render_(_, dataframes, h2oDataFramesOutput, dataframes);
         return dataframes;
       };
+      // calls _.self
       requestDataFrames = go => _.requestDataFrames((error, result) => {
         if (error) {
           return go(error);
@@ -7382,6 +7382,7 @@
         render_(_, result, h2oH2OFrameOutput, result);
         return result;
       };
+      // calls _.self
       requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
         if (error) {
           return go(error);
@@ -7394,6 +7395,7 @@
         }
         return _fork(requestAsH2OFrameFromRDD, rddId, name);
       };
+      // calls _.self
       requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
         if (error) {
           return go(error);
@@ -7410,6 +7412,7 @@
         render_(_, result, h2oDataFrameOutput, result);
         return result;
       };
+      // calls _.self
       requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
         if (error) {
           return go(error);
@@ -7422,6 +7425,7 @@
         }
         return _fork(requestAsDataFrame, hfId, name);
       };
+      // calls _.self
       requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
         if (error) {
           return go(error);
@@ -7433,6 +7437,7 @@
         return result;
       };
       runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
+      // calls _.self
       requestScalaIntp = go => _.requestScalaIntp((error, result) => {
         if (error) {
           return go(error);
