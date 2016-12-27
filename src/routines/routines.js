@@ -672,11 +672,21 @@ export function routines() {
     getCloud = () => _fork(requestCloud, _);
     // blocked by CoffeeScript codecell `_` issue
     getTimeline = () => _fork(requestTimeline, _);
-    // blocked by CoffeeScript codecell `_` issue
-    getStackTrace = () => _fork(_, requestStackTrace);
-    // attempting to abstract this out creates a bug
-    // Uncaught TypeError: go is not a function(…)
-    // defer for now
+    //
+    //
+    //
+    //  v  start abstracting out here  v
+    //
+    //
+    //
+    // abstracting this out produces an error
+    requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendStackTrace(_, stackTrace));
+    });
+    getStackTrace = () => _fork(requestStackTrace);
     requestLogFile = (nodeIndex, fileType, go) => _.requestCloud(_, (error, cloud) => {
       let NODE_INDEX_SELF;
       if (error) {
