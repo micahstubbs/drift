@@ -45,6 +45,7 @@ import { requestMergeFrames } from './requestMergeFrames';
 import { requestFrames } from './requestFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestExportFrame } from './requestExportFrame';
+import { requestGrids } from './requestGrids';
 import { requestModel } from './requestModel';
 import { requestModels } from './requestModels';
 import { requestImputeColumn } from './requestImputeColumn';
