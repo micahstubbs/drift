@@ -10,7 +10,6 @@ import { _call } from './_call';
 import { _apply } from './_apply';
 import { inspect_ } from './inspect_';
 import { flow_ } from './flow_';
-import { inspect } from './inspect';
 import { render_ } from './render_';
 import { ls } from './ls';
 import { transformBinomialMetrics } from './transformBinomialMetrics';
@@ -39,7 +38,6 @@ import { inspectFrameColumns } from './inspectFrameColumns';
 import { inspectFrameData } from './inspectFrameData';
 import { requestFrame } from './requestFrame';
 import { requestFrameData } from './requestFrameData';
-
 import { requestColumnSummary } from './requestColumnSummary';
 import { requestCreateFrame } from './requestCreateFrame';
 import { requestSplitFrame } from './requestSplitFrame';
@@ -62,6 +60,8 @@ import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
 import { unwrapPrediction } from './unwrapPrediction';
 
+import { h2oInspectsOutput } from '../h2oInspectsOutput';
+import { h2oInspectOutput } from '../h2oInspectOutput';
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
 import { h2oCloudOutput } from '../h2oCloudOutput';
@@ -167,12 +167,19 @@ export function routines() {
     let importModel;
     let imputeColumn;
     let initAssistanceSparklingWater;
+    let inspect;
+    let inspect$1;
+    let inspect$2;
+
+
+ 
     let loadScript;
     let mergeFrames;
     let name;
     let parseFiles;
     let plot;
     let predict;
+    let render_;
     let requestAsDataFrame;
     let requestAsH2OFrameFromDF;
     let requestAsH2OFrameFromRDD;
@@ -211,7 +218,79 @@ export function routines() {
     _async = Flow.Async.async;
     _get = Flow.Async.get;
 
-    // depends on `assist`
+    render_ = function () {
+      let args;
+      let raw;
+      let render;
+      raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
+      // Prepend current context (_) and a continuation (go)
+      flow_(raw).render = go => render(...[
+        _,
+        go
+      ].concat(args));
+      return raw;
+    };
+    inspect = function (a, b) {
+      if (arguments.length === 1) {
+        return inspect$1(a);
+      }
+      return inspect$2(a, b);
+    };
+    inspect$1 = obj => {
+      let attr;
+      let inspections;
+      let inspectors;
+      let _ref1;
+      if (_isFuture(obj)) {
+        return _async(inspect, obj);
+      }
+      if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
+        inspections = [];
+        for (attr in inspectors) {
+          if ({}.hasOwnProperty.call(inspectors, attr)) {
+            f = inspectors[attr];
+            inspections.push(inspect$2(attr, obj));
+          }
+        }
+        render_(inspections, h2oInspectsOutput, inspections);
+        return inspections;
+      }
+      return {};
+    };
+    inspect$2 = (attr, obj) => {
+      let cached;
+      let inspection;
+      let inspectors;
+      let key;
+      let root;
+      if (!attr) {
+        return;
+      }
+      if (_isFuture(obj)) {
+        return _async(inspect, attr, obj);
+      }
+      if (!obj) {
+        return;
+      }
+      if (!(root = obj._flow_)) {
+        return;
+      }
+      if (!(inspectors = root.inspect)) {
+        return;
+      }
+      if (cached = root._cache_[key = `inspect_${attr}`]) {
+        return cached;
+      }
+      if (!(f = inspectors[attr])) {
+        return;
+      }
+      if (!lodash.isFunction(f)) {
+        return;
+      }
+      root._cache_[key] = inspection = f();
+      render_(inspection, h2oInspectOutput, inspection);
+      return inspection;
+    };
     plot = f => {
       if (_isFuture(f)) {
         return _fork(proceed, h2oPlotInput, f);
@@ -222,6 +301,7 @@ export function routines() {
     };
     // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
+
     // depends on `grid`
     extendGrid = (grid, opts) => {
       let inspections;
@@ -235,17 +315,20 @@ export function routines() {
         scoring_history: inspectTwoDimTable_(origin, 'scoring_history', grid.scoring_history)
       };
       inspect_(grid, inspections);
-      return render_(_,  grid, h2oGridOutput, grid);
+      return render_(grid, h2oGridOutput, grid);
     };
+
     requestPrediction = (modelKey, frameKey, go) => {
       return _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
     }
     // abstracting this out produces an error
     // defer for now
+
     extendPredictions = (opts, predictions) => {
-      render_(_,  predictions, h2oPredictsOutput, opts, predictions);
+      render_(predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
+
     requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
       if (error) {
         return go(error);
@@ -352,6 +435,7 @@ export function routines() {
       }
       return assist(deleteFrame);
     };
+
     // depends on `assist`
     exportFrame = (frameKey, path, opts) => {
       if (opts == null) {
@@ -433,6 +517,7 @@ export function routines() {
       }
       return assist(deleteModel);
     };
+
     // depends on `assist`
     importModel = (path, opts) => {
       if (path && path.length) {
@@ -440,6 +525,7 @@ export function routines() {
       }
       return assist(importModel, path, opts);
     };
+
     // depends on `assist`
     exportModel = (modelKey, path, opts) => {
       if (modelKey && path) {
@@ -484,6 +570,7 @@ export function routines() {
           return assist(cancelJob);
       }
     };
+
     // some weird recursion and function scope things happening here
     // abstracting this out causes an error
     // defer for now
@@ -502,6 +589,7 @@ export function routines() {
           return assist(importFiles);
       }
     };
+
     // depends on `assist`
     setupParse = args => {
       if (args.paths && lodash.isArray(args.paths)) {
@@ -511,6 +599,7 @@ export function routines() {
       }
       return assist(setupParse);
     };
+
     // blocked by CoffeeScript codecell `_` issue
     parseFiles = opts => {
       let checkHeader;
@@ -766,7 +855,7 @@ export function routines() {
     });
     deleteAll = () => _fork(requestRemoveAll);
     extendRDDs = rdds => {
-      render_(_,  rdds, h2oRDDsOutput, rdds);
+      render_(rdds, h2oRDDsOutput, rdds);
       return rdds;
     };
     // calls _.self
@@ -778,7 +867,7 @@ export function routines() {
     });
     getRDDs = () => _fork(requestRDDs);
     extendDataFrames = dataframes => {
-      render_(_,  dataframes, h2oDataFramesOutput, dataframes);
+      render_(dataframes, h2oDataFramesOutput, dataframes);
       return dataframes;
     };
     // calls _.self
@@ -790,7 +879,7 @@ export function routines() {
     });
     getDataFrames = () => _fork(requestDataFrames);
     extendAsH2OFrame = result => {
-      render_(_,  result, h2oH2OFrameOutput, result);
+      render_(result, h2oH2OFrameOutput, result);
       return result;
     };
     // calls _.self
@@ -820,7 +909,7 @@ export function routines() {
       return _fork(requestAsH2OFrameFromDF, dfId, name);
     };
     extendAsDataFrame = result => {
-      render_(_,  result, h2oDataFrameOutput, result);
+      render_(result, h2oDataFrameOutput, result);
       return result;
     };
     // calls _.self
@@ -844,7 +933,7 @@ export function routines() {
       return go(null, extendScalaCode(result));
     });
     extendScalaCode = result => {
-      render_(_,  result, h2oScalaCodeOutput, result);
+      render_(result, h2oScalaCodeOutput, result);
       return result;
     };
     runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
@@ -856,7 +945,7 @@ export function routines() {
       return go(null, extendScalaIntp(result));
     });
     extendScalaIntp = result => {
-      render_(_,  result, h2oScalaIntpOutput, result);
+      render_(result, h2oScalaIntpOutput, result);
       return result;
     };
     getScalaIntp = () => _fork(requestScalaIntp);
@@ -887,7 +976,7 @@ export function routines() {
         result = {};
       }
       console.debug(result);
-      return go(null, render_(_,  result, Flow.objectBrowser, 'dump', result));
+      return go(null, render_(result, Flow.objectBrowser, 'dump', result));
     };
     dump = f => {
       if (f != null ? f.isFuture : void 0) {

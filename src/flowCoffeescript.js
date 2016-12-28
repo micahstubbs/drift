@@ -36,11 +36,11 @@ export function flowCoffeescript(_, guid, sandbox) {
     const evaluate = ft => {
       if (ft != null ? ft.isFuture : void 0) {
         return ft((error, result) => {
+          const _ref = result._flow_;
           if (error) {
             output.error(new Flow.Error('Error evaluating cell', error));
             return output.end();
           }
-          const _ref = result._flow_;
           if (result != null ? _ref != null ? _ref.render : void 0 : void 0) {
             return output.data(result._flow_.render(() => output.end()));
           }
