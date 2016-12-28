@@ -832,13 +832,6 @@ export function routines() {
       }
       return _fork(requestLogFile, nodeIndex, fileType);
     };
-    //
-    //
-    //
-    //  v  start abstracting out here  v
-    //
-    //
-    //
     // calls _.self
     requestNetworkTest = go => _.requestNetworkTest((error, result) => {
       if (error) {
@@ -846,6 +839,13 @@ export function routines() {
       }
       return go(null, extendNetworkTest(_, result));
     });
+    //
+    //
+    //
+    //  v  continue abstracting out here  v
+    //
+    //
+    //
     testNetwork = () => _fork(requestNetworkTest);
     // calls _.self
     requestRemoveAll = go => _.requestRemoveAll((error, result) => {
