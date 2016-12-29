@@ -17,15 +17,25 @@ export function inspectObject(inspections, name, origin, obj) {
   let _ref2;
   const _ref1 = obj.__meta;
   const schemaType = (_ref1) != null ? _ref1.schema_type : void 0;
+  console.log('schemaType from inspectObject', schemaType);
+  console.log('blacklistedAttributesBySchema() from inspectObject', blacklistedAttributesBySchema());
   const attrs = blacklistedAttributesBySchema()[schemaType];
-  const blacklistedAttributes = schemaType ? attrs : {};
+  console.log('attrs from inspectObject', attrs);
+  let blacklistedAttributes;
+  if (schemaType) {
+    blacklistedAttributes = attrs;
+  } else {
+    blacklistedAttributes = {};
+  }
   const transform = schemaTransforms[schemaType];
+  console.log('blacklistedAttributes from inspectObject', blacklistedAttributes);
   if (transform) {
     obj = transform(obj);
   }
   const record = {};
   inspections[name] = inspectRawObject_(name, origin, name, record);
   for (k in obj) {
+    console.log('k from inspectObject for loop', k);
     if ({}.hasOwnProperty.call(obj, k)) {
       v = obj[k];
       if (!blacklistedAttributes[k]) {

@@ -27,6 +27,8 @@ export function flowCoffeescript(_, guid, sandbox) {
 
   // XXX special-case functions so that bodies are not printed with the raw renderer.
   const render = (input, output) => {
+    console.log('input from flowCoffeescript render', input);
+    console.log('output from flowCoffeescript render', output);
     let cellResult;
     let outputBuffer;
     sandbox.results[guid] = cellResult = {
@@ -36,6 +38,8 @@ export function flowCoffeescript(_, guid, sandbox) {
     const evaluate = ft => {
       if (ft != null ? ft.isFuture : void 0) {
         return ft((error, result) => {
+          console.log('error from flowCoffeescript render evalutate ft', error);
+          console.log('result from flowCoffeescript render evalutate ft', result);
           const _ref = result._flow_;
           if (error) {
             output.error(new Flow.Error('Error evaluating cell', error));

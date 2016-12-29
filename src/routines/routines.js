@@ -46,7 +46,6 @@ import { requestFrames } from './requestFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestExportFrame } from './requestExportFrame';
 import { requestGrids } from './requestGrids';
-import { requestModel } from './requestModel';
 import { requestModels } from './requestModels';
 import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
@@ -60,6 +59,7 @@ import { requestParseFiles } from './requestParseFiles';
 import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
 import { unwrapPrediction } from './unwrapPrediction';
+import { inspectModelParameters } from './inspectModelParameters';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -87,6 +87,7 @@ import { h2oExportFrameInput } from '../h2oExportFrameInput';
 import { h2oImportModelInput } from '../h2oImportModelInput';
 import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
+import { h2oModelOutput } from '../h2oModelOutput';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -137,6 +138,7 @@ export function routines() {
     let extendAsH2OFrame;
     let extendDataFrames;
     let extendGrid;
+    let extendModel;
     let extendPlot;
     let extendPredictions;
     let extendRDDs;
@@ -173,9 +175,6 @@ export function routines() {
     let inspect;
     let inspect$1;
     let inspect$2;
-
-
- 
     let loadScript;
     let mergeFrames;
     let name;
@@ -193,6 +192,7 @@ export function routines() {
     let requestGrid;
     let requestImportFiles;
     let requestLogFile;
+    let requestModel;
     let requestNetworkTest;
     let requestPrediction;
     let requestPredictions;
@@ -233,6 +233,49 @@ export function routines() {
       ].concat(args));
       return raw;
     };
+    extendModel = (model) => {
+      lodash.extend = model => {
+        let table;
+        let tableName;
+        let _i;
+        let _len;
+        let _ref1;
+        const inspections = {};
+        inspections.parameters = inspectModelParameters(model);
+        const origin = `getModel ${flowPrelude.stringify(model.model_id.name)}`;
+        inspectObject(inspections, 'output', origin, model.output);
+
+        // Obviously, an array of 2d tables calls for a megahack.
+        if (model.__meta.schema_type === 'NaiveBayesModel') {
+          if (lodash.isArray(model.output.pcond)) {
+            _ref1 = model.output.pcond;
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+              table = _ref1[_i];
+              tableName = `output - pcond - ${table.name}`;
+              inspections[tableName] = inspectTwoDimTable_(origin, tableName, table);
+            }
+          }
+        }
+        inspect_(model, inspections);
+        return model;
+      };
+      const refresh = go => _.requestModel(model.model_id.name, (error, model) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, lodash.extend(model));
+      });
+      lodash.extend(model);
+      return render_(model, h2oModelOutput, model, refresh);
+    }
+    requestModel = (modelKey, go) => {
+      return _.requestModel(modelKey, (error, model) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendModel(model));
+      });
+    }
     extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
     createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
       if (error) {
@@ -485,7 +528,7 @@ export function routines() {
     getModel = modelKey => {
       switch (flowPrelude.typeOf(modelKey)) {
         case 'String':
-          return _fork(requestModel, _, modelKey);
+          return _fork(requestModel, modelKey);
         default:
           return assist(getModel);
       }

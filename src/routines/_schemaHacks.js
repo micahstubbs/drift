@@ -8,6 +8,7 @@ export const _schemaHacks = {
   DeepLearningModelOutput: { fields: 'names domains help' },
   NaiveBayesOutput: { fields: 'names domains help pcond' },
   PCAOutput: { fields: 'names domains help' },
+  GLRMOutput: { fields: 'names domains help' },
   ModelMetricsBinomialGLM: {
     fields: null,
     transform: transformBinomialMetrics,
@@ -22,5 +23,7 @@ export const _schemaHacks = {
   ModelMetricsRegression: { fields: null },
   ModelMetricsClustering: { fields: null },
   ModelMetricsAutoEncoder: { fields: null },
+  ModelMetricsPCA: { fields: null },
+  ModelMetricsGLRM: { fields: null },
   ConfusionMatrix: { fields: null },
 };
