@@ -372,7 +372,7 @@ export function h2oProxy(_) {
         params.decreasing = opts.decreasing;
       }
     }
-    return doGet(composePath(`/99/Grids/' + ${encodeURIComponent(key)}`, params), go);
+    return doGet(composePath(`/99/Grids/${encodeURIComponent(key)}`, params), go);
   };
   const requestModel = (key, go) => doGet(`/3/Models/${encodeURIComponent(key)}`, (error, result) => {
     if (error) {

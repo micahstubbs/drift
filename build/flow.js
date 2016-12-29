@@ -6433,7 +6433,6 @@
             renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
           }
           output = _model.output;
-          console.log('output', output);
           if (output) {
             if (output.model_category === 'Multinomial') {
               _ref6 = output.training_metrics;
@@ -6449,12 +6448,10 @@
                 renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
               }
               _ref10 = output.cross_validation_metrics;
-              console.log('_ref10', _ref10);
               if (_ref10 !== null) {
                 _ref11 = _ref10.cm;
               }
               confusionMatrix = _ref10 != null ? _ref11 != null ? _ref11.table : void 0 : void 0;
-              console.log('confusionMatrix', confusionMatrix);
               if (confusionMatrix) {
                 renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
               }
@@ -10091,6 +10088,8 @@
       const evaluate = ft => {
         if (ft != null ? ft.isFuture : void 0) {
           return ft((error, result) => {
+            console.log('error from flowCoffeescript render evaluate', error);
+            console.log('result from flowCoffeescript render evaluate', result);
             const _ref = result._flow_;
             if (error) {
               output.error(new Flow.Error('Error evaluating cell', error));
@@ -12107,7 +12106,7 @@
           params.decreasing = opts.decreasing;
         }
       }
-      return doGet(composePath(`/99/Grids/' + ${ encodeURIComponent(key) }`, params), go);
+      return doGet(composePath(`/99/Grids/${ encodeURIComponent(key) }`, params), go);
     };
     const requestModel = (key, go) => doGet(`/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
       if (error) {
