@@ -2011,10 +2011,7 @@
     let _ref2;
     const _ref1 = obj.__meta;
     const schemaType = _ref1 != null ? _ref1.schema_type : void 0;
-    console.log('schemaType from inspectObject', schemaType);
-    console.log('blacklistedAttributesBySchema() from inspectObject', blacklistedAttributesBySchema());
     const attrs = blacklistedAttributesBySchema()[schemaType];
-    console.log('attrs from inspectObject', attrs);
     let blacklistedAttributes;
     if (schemaType) {
       blacklistedAttributes = attrs;
@@ -2022,14 +2019,12 @@
       blacklistedAttributes = {};
     }
     const transform = schemaTransforms[schemaType];
-    console.log('blacklistedAttributes from inspectObject', blacklistedAttributes);
     if (transform) {
       obj = transform(obj);
     }
     const record = {};
     inspections[name] = inspectRawObject_(name, origin, name, record);
     for (k in obj) {
-      console.log('k from inspectObject for loop', k);
       if ({}.hasOwnProperty.call(obj, k)) {
         v = obj[k];
         if (!blacklistedAttributes[k]) {
@@ -6438,6 +6433,7 @@
             renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
           }
           output = _model.output;
+          console.log('output', output);
           if (output) {
             if (output.model_category === 'Multinomial') {
               _ref6 = output.training_metrics;
@@ -6453,8 +6449,12 @@
                 renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
               }
               _ref10 = output.cross_validation_metrics;
-              _ref11 = _ref10.cm;
+              console.log('_ref10', _ref10);
+              if (_ref10 !== null) {
+                _ref11 = _ref10.cm;
+              }
               confusionMatrix = _ref10 != null ? _ref11 != null ? _ref11.table : void 0 : void 0;
+              console.log('confusionMatrix', confusionMatrix);
               if (confusionMatrix) {
                 renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
               }
@@ -10082,8 +10082,6 @@
 
     // XXX special-case functions so that bodies are not printed with the raw renderer.
     const render = (input, output) => {
-      console.log('input from flowCoffeescript render', input);
-      console.log('output from flowCoffeescript render', output);
       let cellResult;
       let outputBuffer;
       sandbox.results[guid] = cellResult = {
@@ -10093,8 +10091,6 @@
       const evaluate = ft => {
         if (ft != null ? ft.isFuture : void 0) {
           return ft((error, result) => {
-            console.log('error from flowCoffeescript render evalutate ft', error);
-            console.log('result from flowCoffeescript render evalutate ft', result);
             const _ref = result._flow_;
             if (error) {
               output.error(new Flow.Error('Error evaluating cell', error));

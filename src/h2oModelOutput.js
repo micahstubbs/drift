@@ -427,6 +427,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
           renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
         }
         output = _model.output;
+        console.log('output', output);
         if (output) {
           if (output.model_category === 'Multinomial') {
             _ref6 = output.training_metrics;
@@ -442,8 +443,12 @@ export function h2oModelOutput(_, _go, _model, refresh) {
               renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref10 = output.cross_validation_metrics;
-            _ref11 = _ref10.cm;
+            console.log('_ref10', _ref10);
+            if(_ref10 !== null) {
+              _ref11 = _ref10.cm;
+            }
             confusionMatrix = _ref10 != null ? _ref11 != null ? _ref11.table : void 0 : void 0;
+            console.log('confusionMatrix', confusionMatrix);
             if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
             }
