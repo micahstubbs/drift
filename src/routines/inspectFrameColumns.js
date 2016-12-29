@@ -42,7 +42,7 @@ export function inspectFrameColumns(tableLabel, frameKey, frame, frameColumns) {
           return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${flowPrelude.stringify(label)}>Convert to numeric</a>`;
         case 'int':
         case 'string':
-          return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude.stringify(label)}>Convert to enum</a>'`;
+          return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${flowPrelude.stringify(label)}>Convert to enum</a>`;
         default:
           return void 0;
       }
