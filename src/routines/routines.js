@@ -8,6 +8,7 @@ import { _fork } from './_fork';
 import { _join } from './_join';
 import { _call } from './_call';
 import { _apply } from './_apply';
+import { _plot } from './_plot';
 import { inspect_ } from './inspect_';
 import { flow_ } from './flow_';
 import { render_ } from './render_';
@@ -21,7 +22,6 @@ import { inspectObjectArray_ } from './inspectObjectArray_';
 import { inspectObject } from './inspectObject';
 import { proceed } from './proceed';
 import { gui } from './gui';
-import { createPlot } from './createPlot';
 import { _assistance } from './_assistance';
 import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
@@ -123,6 +123,7 @@ export function routines() {
     let cancelJob;
     let changeColumnType;
     let createFrame;
+    let createPlot;
     let deleteAll;
     let deleteFrame;
     let deleteFrames;
@@ -136,6 +137,7 @@ export function routines() {
     let extendAsH2OFrame;
     let extendDataFrames;
     let extendGrid;
+    let extendPlot;
     let extendPredictions;
     let extendRDDs;
     let extendScalaCode;
@@ -231,6 +233,13 @@ export function routines() {
       ].concat(args));
       return raw;
     };
+    extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
+    createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendPlot(vis));
+    });
     inspect = function (a, b) {
       if (arguments.length === 1) {
         return inspect$1(a);
@@ -296,7 +305,7 @@ export function routines() {
       if (_isFuture(f)) {
         return _fork(proceed, h2oPlotInput, f);
       } else if (lodash.isFunction(f)) {
-        return _fork(_, createPlot, f);
+        return _fork(createPlot, f);
       }
       return assist(plot);
     };

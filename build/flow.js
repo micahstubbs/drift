@@ -1620,6 +1620,16 @@
     return Flow.Async.join(args, go);
   }
 
+  function _plot(render, go) {
+    const Flow = window.Flow;
+    return render((error, vis) => {
+      if (error) {
+        return go(new Flow.Error('Error rendering vis.', error));
+      }
+      return go(null, vis);
+    });
+  }
+
   function flow_(raw) {
     if (!raw._flow_) {
       raw._flow_ = { _cache_: {} };
@@ -2074,43 +2084,6 @@
         gui[nameThing] = f;
       }
     }
-  }
-
-  function _plot(render, go) {
-    const Flow = window.Flow;
-    return render((error, vis) => {
-      if (error) {
-        return go(new Flow.Error('Error rendering vis.', error));
-      }
-      return go(null, vis);
-    });
-  }
-
-  function h2oPlotOutput(_, _go, _plot) {
-    const lodash = window._;
-    lodash.defer(_go);
-    return {
-      plot: _plot,
-      template: 'flow-plot-output'
-    };
-  }
-
-  function extendPlot(_, vis) {
-    render_(_, vis, h2oPlotOutput, vis.element);
-  }
-
-  function createPlot(_, f, go) {
-    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
-    if (lightning.settings) {
-      lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
-      lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
-    }
-    return _plot(f(lightning), (error, vis) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendPlot(_, vis));
-    });
   }
 
   const _assistance = {
@@ -5312,6 +5285,15 @@
     };
   }
 
+  function h2oPlotOutput(_, _go, _plot) {
+    const lodash = window._;
+    lodash.defer(_go);
+    return {
+      plot: _plot,
+      template: 'flow-plot-output'
+    };
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
@@ -6788,6 +6770,7 @@
       let cancelJob;
       let changeColumnType;
       let createFrame;
+      let createPlot;
       let deleteAll;
       let deleteFrame;
       let deleteFrames;
@@ -6801,6 +6784,7 @@
       let extendAsH2OFrame;
       let extendDataFrames;
       let extendGrid;
+      let extendPlot;
       let extendPredictions;
       let extendRDDs;
       let extendScalaCode;
@@ -6891,6 +6875,13 @@
         flow_(raw).render = go => render(...[_, go].concat(args));
         return raw;
       };
+      extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
+      createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendPlot(vis));
+      });
       inspect = function (a, b) {
         if (arguments.length === 1) {
           return inspect$1(a);
@@ -6956,7 +6947,7 @@
         if (_isFuture(f)) {
           return _fork(proceed, h2oPlotInput, f);
         } else if (lodash.isFunction(f)) {
-          return _fork(_, createPlot, f);
+          return _fork(createPlot, f);
         }
         return assist(plot);
       };
@@ -7484,13 +7475,6 @@
         }
         return _fork(requestLogFile, nodeIndex, fileType);
       };
-      //
-      //
-      //
-      //  v  start abstracting out here  v
-      //
-      //
-      //
       // calls _.self
       requestNetworkTest = go => _.requestNetworkTest((error, result) => {
         if (error) {
@@ -7498,6 +7482,13 @@
         }
         return go(null, extendNetworkTest(_, result));
       });
+      //
+      //
+      //
+      //  v  continue abstracting out here  v
+      //
+      //
+      //
       testNetwork = () => _fork(requestNetworkTest);
       // calls _.self
       requestRemoveAll = go => _.requestRemoveAll((error, result) => {
