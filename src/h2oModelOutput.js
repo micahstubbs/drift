@@ -625,7 +625,6 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       }
     }
     const toggle = () => _isExpanded(!_isExpanded());
-
     const cloneModel = () => alert('Not implemented');
     const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(_model.model_id.name)}`);
     const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_model.model_id.name)}`);

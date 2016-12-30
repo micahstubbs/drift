@@ -354,7 +354,7 @@ export function routines() {
     };
     // depends on `plot`
     grid = f => plot(g => g(g.select(), g.from(f)));
-
+    
     // depends on `grid`
     extendGrid = (grid, opts) => {
       let inspections;
