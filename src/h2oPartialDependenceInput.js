@@ -14,7 +14,7 @@ export function h2oPartialDependenceInput(_, _go) {
   const _selectedFrame = Flow.Dataflow.signal(null);
   const _nbins = Flow.Dataflow.signal(20);
 
-  //  a conditional check that makes sure that 
+  //  a conditional check that makes sure that
   //  all fields in the form are filled in
   //  before the button is shown as active
   const _canCompute = Flow.Dataflow.lift(_destinationKey, _selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
@@ -37,7 +37,7 @@ export function h2oPartialDependenceInput(_, _go) {
     // along with the options to pass in
     const cs = `buildPartialDependence ${flowPrelude.stringify(opts)}`;
 
-    // insert a cell with the expression `cs` 
+    // insert a cell with the expression `cs`
     // into the current Flow notebook
     // and run the cell
     return _.insertAndExecuteCell('cs', cs);

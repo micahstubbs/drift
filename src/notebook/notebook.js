@@ -90,7 +90,7 @@ export function notebook() {
     const _dialogs = Flow.dialogs(_);
 
     // initialize the interpreter when the notebook is created
-    // one interpreter is shared by all scala cells  
+    // one interpreter is shared by all scala cells
     const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
       if (error) {
         // Handle the error
@@ -356,7 +356,7 @@ export function notebook() {
       _selectedCell.execute(() => insertNewCellBelow());
       return false;
     };
-    // ipython has inconsistent behavior here. 
+    // ipython has inconsistent behavior here.
     // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
     const runCellAndSelectBelow = () => {
       _selectedCell.execute(() => selectNextCell());
@@ -446,7 +446,7 @@ export function notebook() {
       _areInputsHidden(!wereHidden);
       //
       // If cells are generated while inputs are hidden, the input boxes
-      //   do not resize to fit contents. So explicitly ask all cells 
+      //   do not resize to fit contents. So explicitly ask all cells
       //   to resize themselves.
       //
       if (wereHidden) {
@@ -859,13 +859,13 @@ export function notebook() {
     // (From IPython Notebook keyboard shortcuts dialog)
     //
     // The IPython Notebook has two different keyboard input modes.
-    // Edit mode allows you to type code/text into a cell 
+    // Edit mode allows you to type code/text into a cell
     // and is indicated by a green cell border.
-    // Command mode binds the keyboard to notebook level 
+    // Command mode binds the keyboard to notebook level
     // actions and is indicated by a grey cell border.
     //
     // Command Mode (press Esc to enable)
-    //   
+    //
     const normalModeKeyboardShortcuts = [
       [
         'enter',
@@ -1026,7 +1026,7 @@ export function notebook() {
     }
 
     //
-    // Edit Mode (press Enter to enable) 
+    // Edit Mode (press Enter to enable)
     //
     const editModeKeyboardShortcuts = [
       // Tab : code completion or indent

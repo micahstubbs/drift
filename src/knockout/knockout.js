@@ -11,20 +11,20 @@
 //   Update the DOM element based on the supplied values here.
 //
 // Registering a callback on the disposal of an element
-// 
-// To register a function to run when a node is removed, 
-// you can call ko.utils.domNodeDisposal.addDisposeCallback(node, callback). 
-// As an example, suppose you create a custom binding to instantiate a widget. 
-// When the element with the binding is removed, 
+//
+// To register a function to run when a node is removed,
+// you can call ko.utils.domNodeDisposal.addDisposeCallback(node, callback).
+// As an example, suppose you create a custom binding to instantiate a widget.
+// When the element with the binding is removed,
 // you may want to call the destroy method of the widget:
-// 
+//
 // ko.bindingHandlers.myWidget = {
 //     init: function(element, valueAccessor) {
 //         var options = ko.unwrap(valueAccessor()),
 //             $el = $(element);
-//  
+//
 //         $el.myWidget(options);
-//  
+//
 //         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
 //             // This will be called when the element is removed by Knockout or
 //             // if some other part of your code calls ko.removeNode(element)
@@ -42,7 +42,7 @@ export function knockout() {
   const marked = window.marked;
   if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
     return;
-  } 
+  }
   ko.bindingHandlers.raw = {
     update(element, valueAccessor, allBindings, viewModel, bindingContext) {
       let $element;
@@ -113,8 +113,8 @@ export function knockout() {
     init(element, valueAccessor, allBindings, viewModel, bindingContext) {
       const arg = ko.unwrap(valueAccessor());
       if (arg) {
-        // Bit of a hack. 
-        // Attaches a method to the bound object that returns the cursor position. 
+        // Bit of a hack.
+        // Attaches a method to the bound object that returns the cursor position.
         // Uses dwieeb/jquery-textrange.
         arg.getCursorPosition = () => $(element).textrange('get', 'position');
       }

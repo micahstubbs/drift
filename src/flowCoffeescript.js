@@ -36,6 +36,8 @@ export function flowCoffeescript(_, guid, sandbox) {
     const evaluate = ft => {
       if (ft != null ? ft.isFuture : void 0) {
         return ft((error, result) => {
+          console.log('error from flowCoffeescript render evaluate', error);
+          console.log('result from flowCoffeescript render evaluate', result);
           const _ref = result._flow_;
           if (error) {
             output.error(new Flow.Error('Error evaluating cell', error));

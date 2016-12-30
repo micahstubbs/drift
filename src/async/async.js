@@ -144,7 +144,7 @@ export function async() {
       }
     }));
   }
-  // Like _.compose, but async. 
+  // Like _.compose, but async.
   // Equivalent to caolan/async.waterfall()
   const pipe = tasks => {
     const _tasks = tasks.slice(0);

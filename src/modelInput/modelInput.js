@@ -67,8 +67,8 @@ export function modelInput() {
       default:
         // do nothing
     }
-    const _ref = parameter.actualValue;
-    const _ref1 = parameter.actualValue;
+    const _ref = parameter.actual_value;
+    const _ref1 = parameter.actual_value;
     const _text = Flow.Dataflow.signal(isArrayValued ? (_ref != null ? _ref : []).join(', ') : _ref1 != null ? _ref1 : '');
     const _textGrided = Flow.Dataflow.signal(`${_text()};`);
     const textToValues = text => {
@@ -131,7 +131,7 @@ export function modelInput() {
     value: Flow.Dataflow.signal(true),
   }));
   const createDropdownControl = parameter => {
-    const _value = Flow.Dataflow.signal(parameter.actualValue);
+    const _value = Flow.Dataflow.signal(parameter.actual_value);
     const control = createControl('dropdown', parameter);
     control.values = Flow.Dataflow.signals(parameter.values);
     control.value = _value;
@@ -283,7 +283,7 @@ export function modelInput() {
     return control;
   };
   const createCheckboxControl = parameter => {
-    const _value = Flow.Dataflow.signal(parameter.actualValue);
+    const _value = Flow.Dataflow.signal(parameter.actual_value);
     const control = createControl('checkbox', parameter);
     control.clientId = lodash.uniqueId();
     control.value = _value;
@@ -548,7 +548,7 @@ export function modelInput() {
                 }
                 break;
               default:
-                // checkbox 
+                // checkbox
                 hyperParameters[control.name] = [
                   true,
                   false,
@@ -556,6 +556,7 @@ export function modelInput() {
             }
           } else {
             value = control.value();
+            console.log('control from modelInput', control);
             if (control.isVisible() && (includeUnchangedParameters || control.isRequired || control.defaultValue !== value)) {
               switch (control.kind) {
                 case 'dropdown':
@@ -620,15 +621,15 @@ export function modelInput() {
       return parameters;
     };
     //
-    // The 'checkForErrors' parameter exists so that we can conditionally choose 
-    // to ignore validation errors. This is because we need the show/hide states 
-    // for each field the first time around, but not the errors/warnings/info 
-    // messages. 
+    // The 'checkForErrors' parameter exists so that we can conditionally choose
+    // to ignore validation errors. This is because we need the show/hide states
+    // for each field the first time around, but not the errors/warnings/info
+    // messages.
     //
-    // Thus, when this function is called during form init, checkForErrors is 
-    //  passed in as 'false', and during form submission, checkForErrors is 
+    // Thus, when this function is called during form init, checkForErrors is
+    //  passed in as 'false', and during form submission, checkForErrors is
     //  passsed in as 'true'.
-    //  
+    //
     const performValidations = (checkForErrors, go) => {
       _exception(null);
       const parameters = collectParameters(true);
@@ -771,8 +772,8 @@ export function modelInput() {
     const _modelForm = Flow.Dataflow.signal(null);
     const populateFramesAndColumns = (frameKey, algorithm, parameters, go) => {
       const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
-      if (destinationKeyParameter && !destinationKeyParameter.actualValue) {
-        destinationKeyParameter.actualValue = `${algorithm}-${Flow.Util.uuid()}`;
+      if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
+        destinationKeyParameter.actual_value = `${algorithm}-${Flow.Util.uuid()}`;
       }
 
       //
@@ -780,7 +781,7 @@ export function modelInput() {
       //
       const classificationParameter = lodash.find(parameters, parameter => parameter.name === 'do_classification');
       if (classificationParameter) {
-        classificationParameter.actualValue = true;
+        classificationParameter.actual_value = true;
       }
       return _.requestFrames((error, frames) => {
         let frame;
@@ -811,9 +812,9 @@ export function modelInput() {
             // TODO HACK
             if (parameter.name === 'training_frame') {
               if (frameKey) {
-                parameter.actualValue = frameKey;
+                parameter.actual_value = frameKey;
               } else {
-                frameKey = parameter.actualValue;
+                frameKey = parameter.actual_value;
               }
             }
           }

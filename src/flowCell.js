@@ -52,7 +52,7 @@ export function flowCell(_, _renderers, type, input) {
 
   // tied to mouse-clicks on the cell
   const select = () => {
-    // pass scrollIntoView=false, 
+    // pass scrollIntoView=false,
     // otherwise mouse actions like clicking on a form field will cause scrolling.
     _.selectCell(self, false);
     // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up

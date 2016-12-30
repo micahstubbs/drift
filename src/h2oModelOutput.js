@@ -52,8 +52,8 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     // TODO use _.enumerate()
     const _inputParameters = lodash.map(_model.parameters, parameter => {
       const type = parameter.type;
-      const defaultValue = parameter.defaultValue;
-      const actualValue = parameter.actualValue;
+      const defaultValue = parameter.default_value;
+      const actualValue = parameter.actual_value;
       const label = parameter.label;
       const help = parameter.help;
       const value = (() => {
@@ -160,7 +160,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     };
 
     // TODO Mega-hack alert
-    // Last arg thresholdsAndCriteria applicable only to 
+    // Last arg thresholdsAndCriteria applicable only to
     // ROC charts for binomial models.
     const renderPlot = (title, isCollapsed, render, thresholdsAndCriteria) => {
       let rocPanel;
@@ -323,7 +323,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - Scoring History', _model);
         if (table) {
           lambdaSearchParameter = lodash.find(_model.parameters, parameter => parameter.name === 'lambda_search');
-          if (lambdaSearchParameter != null ? lambdaSearchParameter.actualValue : void 0) {
+          if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
             renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
           } else {
             renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
@@ -398,7 +398,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -407,7 +407,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -416,7 +416,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -442,7 +442,9 @@ export function h2oModelOutput(_, _go, _model, refresh) {
               renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref10 = output.cross_validation_metrics;
-            _ref11 = _ref10.cm;
+            if(_ref10 !== null) {
+              _ref11 = _ref10.cm;
+            }
             confusionMatrix = _ref10 != null ? _ref11 != null ? _ref11.table : void 0 : void 0;
             if (confusionMatrix) {
               renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
@@ -471,7 +473,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -480,7 +482,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -489,7 +491,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-        
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -529,7 +531,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -538,7 +540,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -547,7 +549,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
         if (table) {
           plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-          
+
           // TODO Mega-hack alert.
           // Last arg thresholdsAndCriteria applicable only to
           // ROC charts for binomial models.
@@ -584,7 +586,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       default:
         // do nothing
     }
-    // end of stackedensemble 
+    // end of stackedensemble
 
     table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
     if (table) {
