@@ -54,6 +54,7 @@ export function h2oPredictOutput(_, _go, prediction) {
     _ref = prediction.__meta;
     switch (_ref != null ? _ref.schema_type : void 0) {
       case 'ModelMetricsBinomial':
+      case 'ModelMetricsBinomialGLM':
         table = _.inspect('Prediction - Metrics for Thresholds', prediction);
         if (table) {
           renderPlot('ROC Curve', prediction, _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1))));
