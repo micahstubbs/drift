@@ -1,4 +1,5 @@
 import { download } from './download';
+import { optsToString } from './optsToString';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -11,17 +12,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const optsToString = opts => {
-    let str;
-    if (opts != null) {
-      str = ` with opts ${JSON.stringify(opts)}`;
-      if (str.length > 50) {
-        return `${str.substr(0, 50)}...`;
-      }
-      return str;
-    }
-    return '';
-  };
   const http = (method, path, opts, go) => {
     if (path.substring(0, 1) === '/') {
       path = window.Flow.ContextPath + path.substring(1);
