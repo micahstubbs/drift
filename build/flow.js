@@ -3117,6 +3117,7 @@
       _ref = prediction.__meta;
       switch (_ref != null ? _ref.schema_type : void 0) {
         case 'ModelMetricsBinomial':
+        case 'ModelMetricsBinomialGLM':
           table = _.inspect('Prediction - Metrics for Thresholds', prediction);
           if (table) {
             renderPlot('ROC Curve', prediction, _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1))));
@@ -6631,7 +6632,6 @@
         }
       }
       const toggle = () => _isExpanded(!_isExpanded());
-
       const cloneModel = () => alert('Not implemented');
       const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$43.stringify(_model.model_id.name) }`);
       const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$43.stringify(_model.model_id.name) }`);
