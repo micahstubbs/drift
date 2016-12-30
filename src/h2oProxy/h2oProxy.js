@@ -1,4 +1,4 @@
-import { flowPreludeFunction } from './flowPreludeFunction';
+import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oProxy(_) {
