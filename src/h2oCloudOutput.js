@@ -3,7 +3,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
   const Flow = window.Flow;
   const moment = window.moment;
   const d3 = window.d3;
-  let _isHealthy = Flow.Dataflow.signal();
+  const _isHealthy = Flow.Dataflow.signal();
   // TODO Display in .jade
   const _exception = Flow.Dataflow.signal(null);
   const _isLive = Flow.Dataflow.signal(false);
