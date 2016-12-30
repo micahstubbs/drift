@@ -14,4 +14,4 @@ export function download(type, url, go) {
       return go(new Flow.Error(error));
     },
   });
-};
+}

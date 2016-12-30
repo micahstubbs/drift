@@ -442,7 +442,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
               renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref10 = output.cross_validation_metrics;
-            if(_ref10 !== null) {
+            if (_ref10 !== null) {
               _ref11 = _ref10.cm;
             }
             confusionMatrix = _ref10 != null ? _ref11 != null ? _ref11.table : void 0 : void 0;
