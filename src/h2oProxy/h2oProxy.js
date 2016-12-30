@@ -1,3 +1,5 @@
+import { download } from './download';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -9,21 +11,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const download = (type, url, go) => {
-    if (url.substring(0, 1) === '/') {
-      url = window.Flow.ContextPath + url.substring(1);
-    }
-    return $.ajax({
-      dataType: type,
-      url,
-      success(data, status, xhr) {
-        return go(null, data);
-      },
-      error(xhr, status, error) {
-        return go(new Flow.Error(error));
-      },
-    });
-  };
   const optsToString = opts => {
     let str;
     if (opts != null) {
