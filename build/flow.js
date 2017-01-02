@@ -11880,6 +11880,10 @@
     return http(_, 'POST', path, opts, go);
   }
 
+  function doPostJSON(_, path, opts, go) {
+    return http(_, 'POSTJSON', path, opts, go);
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -11890,7 +11894,6 @@
     let __modelBuilderEndpoints;
     let __modelBuilders;
     let _storageConfiguration;
-    const doPostJSON = (path, opts, go) => http(_, 'POSTJSON', path, opts, go);
     const doPut = (path, opts, go) => http(_, 'PUT', path, opts, go);
     const doUpload = (path, formData, go) => http(_, 'UPLOAD', path, formData, go);
     const doDelete = (path, go) => http(_, 'DELETE', path, null, go);
@@ -12232,7 +12235,7 @@
       }
       return doPost(_, getModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
     };
-    const requestAutoModelBuild = (parameters, go) => doPostJSON('/3/AutoMLBuilder', parameters, go);
+    const requestAutoModelBuild = (parameters, go) => doPostJSON(_, '/3/AutoMLBuilder', parameters, go);
     const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
       let opt;
       const opts = {};

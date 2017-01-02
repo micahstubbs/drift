@@ -2,6 +2,7 @@ import { download } from './download';
 import { http } from './http';
 import { doGet } from './doGet';
 import { doPost } from './doPost';
+import { doPostJSON } from './doPostJSON';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -14,7 +15,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const doPostJSON = (path, opts, go) => http(_, 'POSTJSON', path, opts, go);
   const doPut = (path, opts, go) => http(_, 'PUT', path, opts, go);
   const doUpload = (path, formData, go) => http(_, 'UPLOAD', path, formData, go);
   const doDelete = (path, go) => http(_, 'DELETE', path, null, go);
@@ -372,7 +372,7 @@ export function h2oProxy(_) {
     }
     return doPost(_, getModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
   };
-  const requestAutoModelBuild = (parameters, go) => doPostJSON('/3/AutoMLBuilder', parameters, go);
+  const requestAutoModelBuild = (parameters, go) => doPostJSON(_, '/3/AutoMLBuilder', parameters, go);
   const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
     let opt;
     const opts = {};
