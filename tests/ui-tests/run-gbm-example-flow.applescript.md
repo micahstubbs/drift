@@ -33,6 +33,19 @@ tell application "Google Chrome" to tell active tab of window 1
   delay 1.5
   execute javascript "document.querySelectorAll('i.fa-step-forward')[0].click()" -- predict
   execute javascript "document.querySelectorAll('i.fa-step-forward')[0].click()" -- predict model
-  delay 0.25
+  delay 1.5
   execute javascript "document.querySelectorAll('i.fa-step-forward')[0].click()" -- get prediction frame
+  -- delay 1
+  -- execute javascript "window.scroll(0,200)" -- scroll down
+end tell
+
+tell application "System Events"
+  -- tell application process "Google Chrome"
+  -- click at {2764, 200} -- click to activate pane for scrolling
+  -- end tell delay 0.25
+  -- tell application "Google Chrome" to tell active tab of window 1 to execute javascript "window.scroll(0,200)" -- scroll down
+  -- tell application "System Events" to key code 119 -- send End
+  tell application "Google Chrome" to activate
+  keystroke "j" using {option down, command down} -- open Chrome devtools
+  tell application "Google Chrome" to tell active tab of window 1 to execute javascript "document.querySelectorAll('i.fa-angle-double-right')[0].click()" -- close help pane
 end tell
