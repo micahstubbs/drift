@@ -4,6 +4,7 @@ import { doGet } from './doGet';
 import { doPost } from './doPost';
 import { doPostJSON } from './doPostJSON';
 import { doUpload } from './doUpload';
+import { doDelete } from './doDelete';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -16,7 +17,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const doDelete = (path, go) => http(_, 'DELETE', path, null, go);
   const mapWithKey = (obj, f) => {
     let key;
     let value;
@@ -119,7 +119,7 @@ export function h2oProxy(_) {
     }
     return go(null, lodash.head(result.frames));
   });
-  const requestDeleteFrame = (key, go) => doDelete(`/3/Frames/${encodeURIComponent(key)}`, go);
+  const requestDeleteFrame = (key, go) => doDelete(_, `/3/Frames/${encodeURIComponent(key)}`, go);
   const requestExportFrame = (key, path, overwrite, go) => {
     const params = {
       path,
@@ -268,7 +268,7 @@ export function h2oProxy(_) {
     return go(error, lodash.head(result.models));
   });
   const requestPojoPreview = (key, go) => download('text', `/3/Models.java/${encodeURIComponent(key)}/preview`, go);
-  const requestDeleteModel = (key, go) => doDelete(`/3/Models/${encodeURIComponent(key)}`, go);
+  const requestDeleteModel = (key, go) => doDelete(_, `/3/Models/${encodeURIComponent(key)}`, go);
   const requestImportModel = (path, overwrite, go) => {
     const opts = {
       dir: path,
@@ -468,7 +468,7 @@ export function h2oProxy(_) {
   const requestObjects = (type, go) => doGet(_, `/3/NodePersistentStorage/${encodeURIComponent(type)}`, unwrap(go, result => result.entries));
   const requestObjectExists = (type, name, go) => doGet(_, `/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`, (error, result) => go(null, error ? false : result.exists));
   const requestObject = (type, name, go) => doGet(_, `/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, unwrap(go, result => JSON.parse(result.value)));
-  const requestDeleteObject = (type, name, go) => doDelete(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, go);
+  const requestDeleteObject = (type, name, go) => doDelete(_, `/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, go);
   const requestPutObject = (type, name, value, go) => {
     let uri;
     uri = `/3/NodePersistentStorage/${encodeURIComponent(type)}`;
@@ -490,7 +490,7 @@ export function h2oProxy(_) {
   const requestTimeline = go => doGet(_, '/3/Timeline', go);
   const requestProfile = (depth, go) => doGet(_, `/3/Profiler?depth=${depth}`, go);
   const requestStackTrace = go => doGet(_, '/3/JStack', go);
-  const requestRemoveAll = go => doDelete('/3/DKV', go);
+  const requestRemoveAll = go => doDelete(_, '/3/DKV', go);
   const requestEcho = (message, go) => doPost(_, '/3/LogAndEcho', { message }, go);
   const requestLogFile = (nodeIndex, fileType, go) => doGet(_, `/3/Logs/nodes/${nodeIndex}/files/${fileType}`, go);
   const requestNetworkTest = go => doGet(_, '/3/NetworkTest', go);
