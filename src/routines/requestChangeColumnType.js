@@ -1,5 +1,6 @@
 import { requestColumnSummary } from './requestColumnSummary';
 import { findColumnIndexByColumnLabel } from './findColumnIndexByColumnLabel';
+import { requestExec } from '../h2oProxy/requestExec';
 
 export function requestChangeColumnType(_, opts, go) {
   const frame = opts.frame;
@@ -15,7 +16,7 @@ export function requestChangeColumnType(_, opts, go) {
       columnKeyError = _error;
       return go(columnKeyError);
     }
-    return _.requestExec(`(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`, (error, result) => {
+    return requestExec(_, `(assign ${frame} (:= ${frame} (${method} (cols ${frame} ${columnIndex})) ${columnIndex} [0:${result.rows}]))`, (error, result) => {
       if (error) {
         return go(error);
       }

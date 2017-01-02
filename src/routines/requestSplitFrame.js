@@ -1,6 +1,7 @@
 import { extendSplitFrameResult } from './extendSplitFrameResult';
 import { createTempKey } from './createTempKey';
 import { computeSplits } from './computeSplits';
+import { requestExec } from '../h2oProxy/requestExec';
 
 export function requestSplitFrame(_, frameKey, splitRatios, splitKeys, seed, go) {
   const Flow = window.Flow;
@@ -35,7 +36,7 @@ export function requestSplitFrame(_, frameKey, splitRatios, splitKeys, seed, go)
       statements.push(`(assign ${part.key} (rows ${frameKey} ${sliceExpr}))`);
     }
     statements.push(`(rm ${randomVecKey})`);
-    return _.requestExec(`(, ${statements.join(' ')})`, (error, result) => {
+    return requestExec(_, `(, ${statements.join(' ')})`, (error, result) => {
       if (error) {
         return go(error);
       }

@@ -1,4 +1,5 @@
 import { extendMergeFramesResult } from './extendMergeFramesResult';
+import { requestExec } from '../h2oProxy/requestExec';
 
 export function requestMergeFrames(
   _,
@@ -14,7 +15,7 @@ export function requestMergeFrames(
   const lr = includeAllLeftRows ? 'TRUE' : 'FALSE';
   const rr = includeAllRightRows ? 'TRUE' : 'FALSE';
   const statement = `(assign ${destinationKey} (merge ${leftFrameKey} ${rightFrameKey} ${lr} ${rr} ${leftColumnIndex} ${rightColumnIndex} "radix"))`;
-  return _.requestExec(statement, (error, result) => {
+  return requestExec(_, statement, (error, result) => {
     if (error) {
       return go(error);
     }

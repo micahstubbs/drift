@@ -67,7 +67,6 @@ export function h2oApplicationContext(_) {
   _.requestFlow = Flow.Dataflow.slot();
   _.requestHelpIndex = Flow.Dataflow.slot();
   _.requestHelpContent = Flow.Dataflow.slot();
-  _.requestExec = Flow.Dataflow.slot();
   _.ls = Flow.Dataflow.slot();
   _.inspect = Flow.Dataflow.slot();
   _.plot = Flow.Dataflow.slot();

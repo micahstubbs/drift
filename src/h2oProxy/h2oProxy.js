@@ -23,23 +23,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
 
-  // abstracting out `requestExec` prevents the 
-  // help menu pane from rendering
-  // likely some scope issue with 
-  // passing `_` in as an argument 
-  // when the function `requestExec` itself 
-  // is a property of the `_` object
-  // defer for now
-  const requestExec = (ast, go) => doPost(_, '/99/Rapids', { ast }, (error, result) => {
-    if (error) {
-      return go(error);
-    }
-    // TODO HACK - this api returns a 200 OK on failures
-    if (result.error) {
-      return go(new Flow.Error(result.error));
-    }
-    return go(null, result);
-  });
   const requestInspect = (key, go) => {
     const opts = { key: encodeURIComponent(key) };
     return requestWithOpts(_, '/3/Inspect', opts, go);
@@ -551,7 +534,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFlow, requestFlow);
   Flow.Dataflow.link(_.requestHelpIndex, requestHelpIndex);
   Flow.Dataflow.link(_.requestHelpContent, requestHelpContent);
-  Flow.Dataflow.link(_.requestExec, requestExec);
   //
   // Sparkling-Water
   //
