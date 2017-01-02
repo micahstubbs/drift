@@ -9,6 +9,7 @@ import { composePath } from './composePath';
 import { requestWithOpts } from './requestWithOpts';
 import { encodeArrayForPost } from './encodeArrayForPost';
 import { encodeObjectForPost } from './encodeObjectForPost';
+import { unwrap } from './unwrap';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -21,12 +22,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const unwrap = (go, transform) => (error, result) => {
-    if (error) {
-      return go(error);
-    }
-    return go(null, transform(result));
-  };
   const requestExec = (ast, go) => doPost(_, '/99/Rapids', { ast }, (error, result) => {
     if (error) {
       return go(error);
