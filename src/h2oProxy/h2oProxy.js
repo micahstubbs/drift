@@ -6,6 +6,7 @@ import { doPostJSON } from './doPostJSON';
 import { doUpload } from './doUpload';
 import { doDelete } from './doDelete';
 import { composePath } from './composePath';
+import { requestWithOpts } from './requestWithOpts';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -18,7 +19,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const requestWithOpts = (path, opts, go) => doGet(_, composePath(path, opts), go);
   const encodeArrayForPost = array => {
     if (array) {
       if (array.length === 0) {
@@ -70,7 +70,7 @@ export function h2oProxy(_) {
   });
   const requestInspect = (key, go) => {
     const opts = { key: encodeURIComponent(key) };
-    return requestWithOpts('/3/Inspect', opts, go);
+    return requestWithOpts(_, '/3/Inspect', opts, go);
   };
   const requestCreateFrame = (opts, go) => doPost(_, '/3/CreateFrame', opts, go);
   const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
@@ -132,7 +132,7 @@ export function h2oProxy(_) {
       src: encodeURIComponent(path),
       limit,
     };
-    return requestWithOpts('/3/Typeahead/files', opts, go);
+    return requestWithOpts(_, '/3/Typeahead/files', opts, go);
   };
   const requestImportFiles = (paths, go) => {
     const tasks = lodash.map(paths, path => go => requestImportFile(path, go));
@@ -140,7 +140,7 @@ export function h2oProxy(_) {
   };
   const requestImportFile = (path, go) => {
     const opts = { path: encodeURIComponent(path) };
-    return requestWithOpts('/3/ImportFiles', opts, go);
+    return requestWithOpts(_, '/3/ImportFiles', opts, go);
   };
   const requestParseSetup = (sourceKeys, go) => {
     const opts = { source_frames: encodeArrayForPost(sourceKeys) };
@@ -222,7 +222,7 @@ export function h2oProxy(_) {
     }
     return go(error, result.grids);
   });
-  const requestModels = (go, opts) => requestWithOpts('/3/Models', opts, (error, result) => {
+  const requestModels = (go, opts) => requestWithOpts(_, '/3/Models', opts, (error, result) => {
     if (error) {
       return go(error, result);
     }

@@ -11914,6 +11914,10 @@
     return path;
   }
 
+  function requestWithOpts(_, path, opts, go) {
+    return doGet(_, composePath(path, opts), go);
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -11924,7 +11928,6 @@
     let __modelBuilderEndpoints;
     let __modelBuilders;
     let _storageConfiguration;
-    const requestWithOpts = (path, opts, go) => doGet(_, composePath(path, opts), go);
     const encodeArrayForPost = array => {
       if (array) {
         if (array.length === 0) {
@@ -11980,7 +11983,7 @@
     });
     const requestInspect = (key, go) => {
       const opts = { key: encodeURIComponent(key) };
-      return requestWithOpts('/3/Inspect', opts, go);
+      return requestWithOpts(_, '/3/Inspect', opts, go);
     };
     const requestCreateFrame = (opts, go) => doPost(_, '/3/CreateFrame', opts, go);
     const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
@@ -12043,7 +12046,7 @@
         src: encodeURIComponent(path),
         limit
       };
-      return requestWithOpts('/3/Typeahead/files', opts, go);
+      return requestWithOpts(_, '/3/Typeahead/files', opts, go);
     };
     const requestImportFiles = (paths, go) => {
       const tasks = lodash.map(paths, path => go => requestImportFile(path, go));
@@ -12051,7 +12054,7 @@
     };
     const requestImportFile = (path, go) => {
       const opts = { path: encodeURIComponent(path) };
-      return requestWithOpts('/3/ImportFiles', opts, go);
+      return requestWithOpts(_, '/3/ImportFiles', opts, go);
     };
     const requestParseSetup = (sourceKeys, go) => {
       const opts = { source_frames: encodeArrayForPost(sourceKeys) };
@@ -12112,7 +12115,7 @@
       }
       return go(error, result.grids);
     });
-    const requestModels = (go, opts) => requestWithOpts('/3/Models', opts, (error, result) => {
+    const requestModels = (go, opts) => requestWithOpts(_, '/3/Models', opts, (error, result) => {
       if (error) {
         return go(error, result);
       }
