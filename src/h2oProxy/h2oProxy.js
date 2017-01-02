@@ -5,6 +5,7 @@ import { doPost } from './doPost';
 import { doPostJSON } from './doPostJSON';
 import { doUpload } from './doUpload';
 import { doDelete } from './doDelete';
+import { mapWithKey } from './mapWithKey';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -17,18 +18,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const mapWithKey = (obj, f) => {
-    let key;
-    let value;
-    const result = [];
-    for (key in obj) {
-      if ({}.hasOwnProperty.call(obj, key)) {
-        value = obj[key];
-        result.push(f(value, key));
-      }
-    }
-    return result;
-  };
   const composePath = (path, opts) => {
     let params;
     if (opts) {

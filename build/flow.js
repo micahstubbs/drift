@@ -11892,6 +11892,19 @@
     return http(_, 'DELETE', path, null, go);
   }
 
+  function mapWithKey(obj, f) {
+    let key;
+    let value;
+    const result = [];
+    for (key in obj) {
+      if ({}.hasOwnProperty.call(obj, key)) {
+        value = obj[key];
+        result.push(f(value, key));
+      }
+    }
+    return result;
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -11902,18 +11915,6 @@
     let __modelBuilderEndpoints;
     let __modelBuilders;
     let _storageConfiguration;
-    const mapWithKey = (obj, f) => {
-      let key;
-      let value;
-      const result = [];
-      for (key in obj) {
-        if ({}.hasOwnProperty.call(obj, key)) {
-          value = obj[key];
-          result.push(f(value, key));
-        }
-      }
-      return result;
-    };
     const composePath = (path, opts) => {
       let params;
       if (opts) {
