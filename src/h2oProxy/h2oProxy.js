@@ -1,5 +1,6 @@
 import { download } from './download';
 import { http } from './http';
+import { doGet } from './doGet';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -12,7 +13,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const doGet = (path, go) => http(_, 'GET', path, null, go);
   const doPost = (path, opts, go) => http(_, 'POST', path, opts, go);
   const doPostJSON = (path, opts, go) => http(_, 'POSTJSON', path, opts, go);
   const doPut = (path, opts, go) => http(_, 'PUT', path, opts, go);
@@ -38,7 +38,7 @@ export function h2oProxy(_) {
     }
     return path;
   };
-  const requestWithOpts = (path, opts, go) => doGet(composePath(path, opts), go);
+  const requestWithOpts = (path, opts, go) => doGet(_, composePath(path, opts), go);
   const encodeArrayForPost = array => {
     if (array) {
       if (array.length === 0) {
@@ -101,20 +101,20 @@ export function h2oProxy(_) {
     };
     return doPost('/3/SplitFrame', opts, go);
   };
-  const requestFrames = go => doGet('/3/Frames', (error, result) => {
+  const requestFrames = go => doGet(_, '/3/Frames', (error, result) => {
     if (error) {
       return go(error);
     }
     return go(null, result.frames);
   });
-  const requestFrame = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}`, unwrap(go, result => lodash.head(result.frames)));
+  const requestFrame = (key, go) => doGet(_, `/3/Frames/${encodeURIComponent(key)}`, unwrap(go, result => lodash.head(result.frames)));
   const requestFrameSlice = (key, searchTerm, offset, count, go) => { // eslint-disable-line
     // TODO send search term
-    return doGet(`/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, result => lodash.head(result.frames)));
+    return doGet(_, `/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, result => lodash.head(result.frames)));
   };
-  const requestFrameSummary = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary`, unwrap(go, result => lodash.head(result.frames)));
-  const requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary?column_offset=${offset}&column_count=${count}&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
-  const requestFrameSummaryWithoutData = (key, go) => doGet(`/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
+  const requestFrameSummary = (key, go) => doGet(_, `/3/Frames/${encodeURIComponent(key)}/summary`, unwrap(go, result => lodash.head(result.frames)));
+  const requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(_, `/3/Frames/${encodeURIComponent(key)}/summary?column_offset=${offset}&column_count=${count}&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
+  const requestFrameSummaryWithoutData = (key, go) => doGet(_, `/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
     if (error) {
       return go(error);
     }
@@ -128,14 +128,14 @@ export function h2oProxy(_) {
     };
     return doPost(`/3/Frames/${encodeURIComponent(key)}/export`, params, go);
   };
-  const requestColumnSummary = (frameKey, column, go) => doGet(`/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`, unwrap(go, result => lodash.head(result.frames)));
-  const requestJobs = go => doGet('/3/Jobs', (error, result) => {
+  const requestColumnSummary = (frameKey, column, go) => doGet(_, `/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`, unwrap(go, result => lodash.head(result.frames)));
+  const requestJobs = go => doGet(_, '/3/Jobs', (error, result) => {
     if (error) {
       return go(new Flow.Error('Error fetching jobs', error));
     }
     return go(null, result.jobs);
   });
-  const requestJob = (key, go) => doGet(`/3/Jobs/${encodeURIComponent(key)}`, (error, result) => {
+  const requestJob = (key, go) => doGet(_, `/3/Jobs/${encodeURIComponent(key)}`, (error, result) => {
     if (error) {
       return go(new Flow.Error(`Error fetching job \'${key}\'`, error));
     }
@@ -230,13 +230,13 @@ export function h2oProxy(_) {
   // subject to the other options `opts`
   //
   // returns a json response that contains the data
-  const requestPartialDependenceData = (key, go) => doGet(`/3/PartialDependence/${encodeURIComponent(key)}`, (error, result) => {
+  const requestPartialDependenceData = (key, go) => doGet(_, `/3/PartialDependence/${encodeURIComponent(key)}`, (error, result) => {
     if (error) {
       return go(error, result);
     }
     return go(error, result);
   });
-  const requestGrids = (go, opts) => doGet('/99/Grids', (error, result) => {
+  const requestGrids = (go, opts) => doGet(_, '/99/Grids', (error, result) => {
     if (error) {
       return go(error, result);
     }
@@ -260,9 +260,9 @@ export function h2oProxy(_) {
         params.decreasing = opts.decreasing;
       }
     }
-    return doGet(composePath(`/99/Grids/${encodeURIComponent(key)}`, params), go);
+    return doGet(_, composePath(`/99/Grids/${encodeURIComponent(key)}`, params), go);
   };
-  const requestModel = (key, go) => doGet(`/3/Models/${encodeURIComponent(key)}`, (error, result) => {
+  const requestModel = (key, go) => doGet(_, `/3/Models/${encodeURIComponent(key)}`, (error, result) => {
     if (error) {
       return go(error, result);
     }
@@ -277,10 +277,10 @@ export function h2oProxy(_) {
     };
     return doPost('/99/Models.bin/not_in_use', opts, go);
   };
-  const requestExportModel = (key, path, overwrite, go) => doGet(`/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`, go);
+  const requestExportModel = (key, path, overwrite, go) => doGet(_, `/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`, go);
 
   // TODO Obsolete
-  const requestModelBuildersVisibility = go => doGet('/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
+  const requestModelBuildersVisibility = go => doGet(_, '/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
   __modelBuilders = null;
   __modelBuilderEndpoints = null;
   __gridModelBuilderEndpoints = null;
@@ -309,7 +309,7 @@ export function h2oProxy(_) {
       return go(null, modelBuilders);
     }
     const visibility = 'Stable';
-    return doGet('/3/ModelBuilders', unwrap(go, result => {
+    return doGet(_, '/3/ModelBuilders', unwrap(go, result => {
       let algo;
       let builder;
       const builders = (() => {
@@ -358,7 +358,7 @@ export function h2oProxy(_) {
       return cacheModelBuilders(availableBuilders);
     }));
   };
-  const requestModelBuilder = (algo, go) => doGet(getModelBuilderEndpoint(algo), go);
+  const requestModelBuilder = (algo, go) => doGet(_, getModelBuilderEndpoint(algo), go);
   const requestModelInputValidation = (algo, parameters, go) => doPost(`${getModelBuilderEndpoint(algo)}/parameters`, encodeObjectForPost(parameters), go);
   const requestModelBuild = (algo, parameters, go) => {
     _.trackEvent('model', algo);
@@ -402,7 +402,7 @@ export function h2oProxy(_) {
       return go(null, result);
     });
   };
-  const requestPrediction = (modelKey, frameKey, go) => doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, (error, result) => {
+  const requestPrediction = (modelKey, frameKey, go) => doGet(_, `/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, (error, result) => {
     if (error) {
       return go(error);
     }
@@ -448,27 +448,27 @@ export function h2oProxy(_) {
       })());
     };
     if (modelKey && frameKey) {
-      return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/'${encodeURIComponent(frameKey)}`, go);
+      return doGet(_, `/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/'${encodeURIComponent(frameKey)}`, go);
     } else if (modelKey) {
-      return doGet(`/3/ModelMetrics/models/${encodeURIComponent(modelKey)}`, go);
+      return doGet(_, `/3/ModelMetrics/models/${encodeURIComponent(modelKey)}`, go);
     } else if (frameKey) {
-      return doGet(`/3/ModelMetrics/frames/${encodeURIComponent(frameKey)}`, go);
+      return doGet(_, `/3/ModelMetrics/frames/${encodeURIComponent(frameKey)}`, go);
     }
-    return doGet('/3/ModelMetrics', go);
+    return doGet(_, '/3/ModelMetrics', go);
   };
   _storageConfiguration = null;
   const requestIsStorageConfigured = go => {
     if (_storageConfiguration) {
       return go(null, _storageConfiguration.isConfigured);
     }
-    return doGet('/3/NodePersistentStorage/configured', (error, result) => {
+    return doGet(_, '/3/NodePersistentStorage/configured', (error, result) => {
       _storageConfiguration = { isConfigured: error ? false : result.configured };
       return go(null, _storageConfiguration.isConfigured);
     });
   };
-  const requestObjects = (type, go) => doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}`, unwrap(go, result => result.entries));
-  const requestObjectExists = (type, name, go) => doGet(`/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`, (error, result) => go(null, error ? false : result.exists));
-  const requestObject = (type, name, go) => doGet(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, unwrap(go, result => JSON.parse(result.value)));
+  const requestObjects = (type, go) => doGet(_, `/3/NodePersistentStorage/${encodeURIComponent(type)}`, unwrap(go, result => result.entries));
+  const requestObjectExists = (type, name, go) => doGet(_, `/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`, (error, result) => go(null, error ? false : result.exists));
+  const requestObject = (type, name, go) => doGet(_, `/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, unwrap(go, result => JSON.parse(result.value)));
   const requestDeleteObject = (type, name, go) => doDelete(`/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, go);
   const requestPutObject = (type, name, value, go) => {
     let uri;
@@ -487,20 +487,20 @@ export function h2oProxy(_) {
     return doUpload(uri, formData, unwrap(go, result => result.name));
   };
   const requestUploadFile = (key, formData, go) => doUpload(`/3/PostFile?destination_frame=${encodeURIComponent(key)}`, formData, go);
-  const requestCloud = go => doGet('/3/Cloud', go);
-  const requestTimeline = go => doGet('/3/Timeline', go);
-  const requestProfile = (depth, go) => doGet(`/3/Profiler?depth=${depth}`, go);
-  const requestStackTrace = go => doGet('/3/JStack', go);
+  const requestCloud = go => doGet(_, '/3/Cloud', go);
+  const requestTimeline = go => doGet(_, '/3/Timeline', go);
+  const requestProfile = (depth, go) => doGet(_, `/3/Profiler?depth=${depth}`, go);
+  const requestStackTrace = go => doGet(_, '/3/JStack', go);
   const requestRemoveAll = go => doDelete('/3/DKV', go);
   const requestEcho = (message, go) => doPost('/3/LogAndEcho', { message }, go);
-  const requestLogFile = (nodeIndex, fileType, go) => doGet(`/3/Logs/nodes/${nodeIndex}/files/${fileType}`, go);
-  const requestNetworkTest = go => doGet('/3/NetworkTest', go);
-  const requestAbout = go => doGet('/3/About', go);
+  const requestLogFile = (nodeIndex, fileType, go) => doGet(_, `/3/Logs/nodes/${nodeIndex}/files/${fileType}`, go);
+  const requestNetworkTest = go => doGet(_, '/3/NetworkTest', go);
+  const requestAbout = go => doGet(_, '/3/About', go);
   const requestShutdown = go => doPost('/3/Shutdown', {}, go);
-  const requestEndpoints = go => doGet('/3/Metadata/endpoints', go);
-  const requestEndpoint = (index, go) => doGet(`/3/Metadata/endpoints/${index}`, go);
-  const requestSchemas = go => doGet('/3/Metadata/schemas', go);
-  const requestSchema = (name, go) => doGet(`/3/Metadata/schemas/${encodeURIComponent(name)}`, go);
+  const requestEndpoints = go => doGet(_, '/3/Metadata/endpoints', go);
+  const requestEndpoint = (index, go) => doGet(_, `/3/Metadata/endpoints/${index}`, go);
+  const requestSchemas = go => doGet(_, '/3/Metadata/schemas', go);
+  const requestSchema = (name, go) => doGet(_, `/3/Metadata/schemas/${encodeURIComponent(name)}`, go);
   const getLines = data => lodash.filter(data.split('\n'), line => {
     if (line.trim()) {
       return true;
@@ -512,8 +512,8 @@ export function h2oProxy(_) {
   const requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${encodeURIComponent(packName)}/${encodeURIComponent(flowName)}`, go);
   const requestHelpIndex = go => download('json', '/flow/help/catalog.json', go);
   const requestHelpContent = (name, go) => download('text', `/flow/help/${name}.html`, go);
-  const requestRDDs = go => doGet('/3/RDDs', go);
-  const requestDataFrames = go => doGet('/3/dataframes', go);
+  const requestRDDs = go => doGet(_, '/3/RDDs', go);
+  const requestDataFrames = go => doGet(_, '/3/dataframes', go);
   const requestScalaIntp = go => doPost('/3/scalaint', {}, go);
   const requestScalaCode = (sessionId, code, go) => doPost(`/3/scalaint/${sessionId}`, { code }, go);
   const requestAsH2OFrameFromRDD = (rddId, name, go) => {
