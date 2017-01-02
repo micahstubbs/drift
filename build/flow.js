@@ -11918,6 +11918,21 @@
     return doGet(_, composePath(path, opts), go);
   }
 
+  function encodeArrayForPost(array) {
+    const lodash = window._;
+    if (array) {
+      if (array.length === 0) {
+        return null;
+      }
+      return `[${ lodash.map(array, element => {
+        if (lodash.isNumber(element)) {
+          return element;
+        }return `"${ element }"`;
+      }).join(',') } ]`;
+    }
+    return null;
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -11928,19 +11943,6 @@
     let __modelBuilderEndpoints;
     let __modelBuilders;
     let _storageConfiguration;
-    const encodeArrayForPost = array => {
-      if (array) {
-        if (array.length === 0) {
-          return null;
-        }
-        return `[${ lodash.map(array, element => {
-          if (lodash.isNumber(element)) {
-            return element;
-          }return `"${ element }"`;
-        }).join(',') } ]`;
-      }
-      return null;
-    };
     const encodeObject = source => {
       let k;
       let v;
