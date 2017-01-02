@@ -22,11 +22,7 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-
-  const requestInspect = (key, go) => {
-    const opts = { key: encodeURIComponent(key) };
-    return requestWithOpts(_, '/3/Inspect', opts, go);
-  };
+  let _storageConfigurations;
   const requestCreateFrame = (opts, go) => doPost(_, '/3/CreateFrame', opts, go);
   const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
     const opts = {
@@ -469,7 +465,6 @@ export function h2oProxy(_) {
     }
     return doPost(_, `/3/h2oframes/${hfId}/dataframe`, { dataframe_id: name }, go);
   };
-  Flow.Dataflow.link(_.requestInspect, requestInspect);
   Flow.Dataflow.link(_.requestCreateFrame, requestCreateFrame);
   Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame);
   Flow.Dataflow.link(_.requestFrames, requestFrames);

@@ -11791,7 +11791,6 @@
     _.requestImportFile = Flow.Dataflow.slot();
     _.requestImportFiles = Flow.Dataflow.slot();
     _.requestParseFiles = Flow.Dataflow.slot();
-    _.requestInspect = Flow.Dataflow.slot();
     _.requestParseSetup = Flow.Dataflow.slot();
     _.requestParseSetupPreview = Flow.Dataflow.slot();
     _.requestFrames = Flow.Dataflow.slot();
@@ -11979,18 +11978,7 @@
     let __modelBuilderEndpoints;
     let __modelBuilders;
     let _storageConfiguration;
-
-    // abstracting out `requestExec` prevents the 
-    // help menu pane from rendering
-    // likely some scope issue with 
-    // passing `_` in as an argument 
-    // when the function `requestExec` itself 
-    // is a property of the `_` object
-    // defer for now
-    const requestInspect = (key, go) => {
-      const opts = { key: encodeURIComponent(key) };
-      return requestWithOpts(_, '/3/Inspect', opts, go);
-    };
+    let _storageConfigurations;
     const requestCreateFrame = (opts, go) => doPost(_, '/3/CreateFrame', opts, go);
     const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
       const opts = {
@@ -12413,7 +12401,6 @@
       }
       return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
     };
-    Flow.Dataflow.link(_.requestInspect, requestInspect);
     Flow.Dataflow.link(_.requestCreateFrame, requestCreateFrame);
     Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame);
     Flow.Dataflow.link(_.requestFrames, requestFrames);
