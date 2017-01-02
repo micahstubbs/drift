@@ -23,7 +23,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestCreateFrame = (opts, go) => doPost(_, '/3/CreateFrame', opts, go);
   const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
     const opts = {
       dataset: frameKey,
@@ -465,7 +464,6 @@ export function h2oProxy(_) {
     }
     return doPost(_, `/3/h2oframes/${hfId}/dataframe`, { dataframe_id: name }, go);
   };
-  Flow.Dataflow.link(_.requestCreateFrame, requestCreateFrame);
   Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame);
   Flow.Dataflow.link(_.requestFrames, requestFrames);
   Flow.Dataflow.link(_.requestFrame, requestFrame);
