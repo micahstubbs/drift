@@ -8,6 +8,7 @@ import { doDelete } from './doDelete';
 import { composePath } from './composePath';
 import { requestWithOpts } from './requestWithOpts';
 import { encodeArrayForPost } from './encodeArrayForPost';
+import { encodeObjectForPost } from './encodeObjectForPost';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -20,18 +21,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const encodeObjectForPost = source => {
-    let k;
-    let v;
-    const target = {};
-    for (k in source) {
-      if ({}.hasOwnProperty.call(source, k)) {
-        v = source[k];
-        target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
-      }
-    }
-    return target;
-  };
   const unwrap = (go, transform) => (error, result) => {
     if (error) {
       return go(error);

@@ -11933,6 +11933,20 @@
     return null;
   }
 
+  function encodeObjectForPost(source) {
+    const lodash = window._;
+    let k;
+    let v;
+    const target = {};
+    for (k in source) {
+      if ({}.hasOwnProperty.call(source, k)) {
+        v = source[k];
+        target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
+      }
+    }
+    return target;
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -11943,18 +11957,6 @@
     let __modelBuilderEndpoints;
     let __modelBuilders;
     let _storageConfiguration;
-    const encodeObjectForPost = source => {
-      let k;
-      let v;
-      const target = {};
-      for (k in source) {
-        if ({}.hasOwnProperty.call(source, k)) {
-          v = source[k];
-          target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
-        }
-      }
-      return target;
-    };
     const unwrap = (go, transform) => (error, result) => {
       if (error) {
         return go(error);
