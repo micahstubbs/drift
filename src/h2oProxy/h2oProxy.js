@@ -15,7 +15,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const doPut = (path, opts, go) => http(_, 'PUT', path, opts, go);
   const doUpload = (path, formData, go) => http(_, 'UPLOAD', path, formData, go);
   const doDelete = (path, go) => http(_, 'DELETE', path, null, go);
   const mapWithKey = (obj, f) => {
