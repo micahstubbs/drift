@@ -22,6 +22,13 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
+  // abstracting this out prevents the
+  // help menu pane from rendering
+  // likely some scope issue with
+  // passing `_` in as an argument
+  // when the function `requestExec` itself
+  // is a property of the `_` object
+  // defer for now
   const requestExec = (ast, go) => doPost(_, '/99/Rapids', { ast }, (error, result) => {
     if (error) {
       return go(error);
