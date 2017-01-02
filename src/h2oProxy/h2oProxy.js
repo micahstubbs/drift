@@ -5,7 +5,7 @@ import { doPost } from './doPost';
 import { doPostJSON } from './doPostJSON';
 import { doUpload } from './doUpload';
 import { doDelete } from './doDelete';
-import { mapWithKey } from './mapWithKey';
+import { composePath } from './composePath';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -18,14 +18,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const composePath = (path, opts) => {
-    let params;
-    if (opts) {
-      params = mapWithKey(opts, (v, k) => `${k}=${v}`);
-      return `${path}?${params.join('&')}`;
-    }
-    return path;
-  };
   const requestWithOpts = (path, opts, go) => doGet(_, composePath(path, opts), go);
   const encodeArrayForPost = array => {
     if (array) {

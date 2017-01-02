@@ -11905,6 +11905,15 @@
     return result;
   }
 
+  function composePath(path, opts) {
+    let params;
+    if (opts) {
+      params = mapWithKey(opts, (v, k) => `${ k }=${ v }`);
+      return `${ path }?${ params.join('&') }`;
+    }
+    return path;
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -11915,14 +11924,6 @@
     let __modelBuilderEndpoints;
     let __modelBuilders;
     let _storageConfiguration;
-    const composePath = (path, opts) => {
-      let params;
-      if (opts) {
-        params = mapWithKey(opts, (v, k) => `${ k }=${ v }`);
-        return `${ path }?${ params.join('&') }`;
-      }
-      return path;
-    };
     const requestWithOpts = (path, opts, go) => doGet(_, composePath(path, opts), go);
     const encodeArrayForPost = array => {
       if (array) {
