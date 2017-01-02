@@ -1,6 +1,7 @@
 import { download } from './download';
 import { http } from './http';
 import { doGet } from './doGet';
+import { doPost } from './doPost';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -13,7 +14,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const doPost = (path, opts, go) => http(_, 'POST', path, opts, go);
   const doPostJSON = (path, opts, go) => http(_, 'POSTJSON', path, opts, go);
   const doPut = (path, opts, go) => http(_, 'PUT', path, opts, go);
   const doUpload = (path, formData, go) => http(_, 'UPLOAD', path, formData, go);
@@ -78,7 +78,7 @@ export function h2oProxy(_) {
     }
     return go(null, transform(result));
   };
-  const requestExec = (ast, go) => doPost('/99/Rapids', { ast }, (error, result) => {
+  const requestExec = (ast, go) => doPost(_, '/99/Rapids', { ast }, (error, result) => {
     if (error) {
       return go(error);
     }
@@ -92,14 +92,14 @@ export function h2oProxy(_) {
     const opts = { key: encodeURIComponent(key) };
     return requestWithOpts('/3/Inspect', opts, go);
   };
-  const requestCreateFrame = (opts, go) => doPost('/3/CreateFrame', opts, go);
+  const requestCreateFrame = (opts, go) => doPost(_, '/3/CreateFrame', opts, go);
   const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
     const opts = {
       dataset: frameKey,
       ratios: encodeArrayForPost(splitRatios),
       dest_keys: encodeArrayForPost(splitKeys),
     };
-    return doPost('/3/SplitFrame', opts, go);
+    return doPost(_, '/3/SplitFrame', opts, go);
   };
   const requestFrames = go => doGet(_, '/3/Frames', (error, result) => {
     if (error) {
@@ -126,7 +126,7 @@ export function h2oProxy(_) {
       path,
       force: overwrite ? 'true' : 'false',
     };
-    return doPost(`/3/Frames/${encodeURIComponent(key)}/export`, params, go);
+    return doPost(_, `/3/Frames/${encodeURIComponent(key)}/export`, params, go);
   };
   const requestColumnSummary = (frameKey, column, go) => doGet(_, `/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`, unwrap(go, result => lodash.head(result.frames)));
   const requestJobs = go => doGet(_, '/3/Jobs', (error, result) => {
@@ -141,7 +141,7 @@ export function h2oProxy(_) {
     }
     return go(null, lodash.head(result.jobs));
   });
-  const requestCancelJob = (key, go) => doPost(`/3/Jobs/${encodeURIComponent(key)}/cancel`, {}, (error, result) => {
+  const requestCancelJob = (key, go) => doPost(_, `/3/Jobs/${encodeURIComponent(key)}/cancel`, {}, (error, result) => {
     if (error) {
       return go(new Flow.Error(`Error canceling job \'${key}\'`, error));
     }
@@ -164,7 +164,7 @@ export function h2oProxy(_) {
   };
   const requestParseSetup = (sourceKeys, go) => {
     const opts = { source_frames: encodeArrayForPost(sourceKeys) };
-    return doPost('/3/ParseSetup', opts, go);
+    return doPost(_, '/3/ParseSetup', opts, go);
   };
   const requestParseSetupPreview = (
     sourceKeys,
@@ -183,7 +183,7 @@ export function h2oProxy(_) {
       check_header: checkHeader,
       column_types: encodeArrayForPost(columnTypes),
     };
-    return doPost('/3/ParseSetup', opts, go);
+    return doPost(_, '/3/ParseSetup', opts, go);
   };
   const requestParseFiles = (
     sourceKeys,
@@ -212,7 +212,7 @@ export function h2oProxy(_) {
       delete_on_done: deleteOnDone,
       chunk_size: chunkSize,
     };
-    return doPost('/3/Parse', opts, go);
+    return doPost(_, '/3/Parse', opts, go);
   };
 
   // Create data for partial dependence plot(s)
@@ -223,7 +223,7 @@ export function h2oProxy(_) {
   // subject to the other options `opts`
   //
   // returns a job
-  const requestPartialDependence = (opts, go) => doPost('/3/PartialDependence/', opts, go);
+  const requestPartialDependence = (opts, go) => doPost(_, '/3/PartialDependence/', opts, go);
 
   // make a post request to h2o-3 to do request
   // the data about the specified model and frame
@@ -275,7 +275,7 @@ export function h2oProxy(_) {
       dir: path,
       force: overwrite,
     };
-    return doPost('/99/Models.bin/not_in_use', opts, go);
+    return doPost(_, '/99/Models.bin/not_in_use', opts, go);
   };
   const requestExportModel = (key, path, overwrite, go) => doGet(_, `/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`, go);
 
@@ -359,7 +359,7 @@ export function h2oProxy(_) {
     }));
   };
   const requestModelBuilder = (algo, go) => doGet(_, getModelBuilderEndpoint(algo), go);
-  const requestModelInputValidation = (algo, parameters, go) => doPost(`${getModelBuilderEndpoint(algo)}/parameters`, encodeObjectForPost(parameters), go);
+  const requestModelInputValidation = (algo, parameters, go) => doPost(_, `${getModelBuilderEndpoint(algo)}/parameters`, encodeObjectForPost(parameters), go);
   const requestModelBuild = (algo, parameters, go) => {
     _.trackEvent('model', algo);
     if (parameters.hyper_parameters) {
@@ -368,9 +368,9 @@ export function h2oProxy(_) {
       if (parameters.search_criteria) {
         parameters.search_criteria = flowPrelude.stringify(parameters.search_criteria);
       }
-      return doPost(getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
+      return doPost(_, getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
     }
-    return doPost(getModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
+    return doPost(_, getModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
   };
   const requestAutoModelBuild = (parameters, go) => doPostJSON('/3/AutoMLBuilder', parameters, go);
   const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
@@ -395,7 +395,7 @@ export function h2oProxy(_) {
     if (void 0 !== opt) {
       opts.exemplar_index = opt;
     }
-    return doPost(`/3/Predictions/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, opts, (error, result) => {
+    return doPost(_, `/3/Predictions/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, opts, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -476,7 +476,7 @@ export function h2oProxy(_) {
     if (name) {
       uri += `/${encodeURIComponent(name)}`;
     }
-    return doPost(uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
+    return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
   };
   const requestUploadObject = (type, name, formData, go) => {
     let uri;
@@ -492,11 +492,11 @@ export function h2oProxy(_) {
   const requestProfile = (depth, go) => doGet(_, `/3/Profiler?depth=${depth}`, go);
   const requestStackTrace = go => doGet(_, '/3/JStack', go);
   const requestRemoveAll = go => doDelete('/3/DKV', go);
-  const requestEcho = (message, go) => doPost('/3/LogAndEcho', { message }, go);
+  const requestEcho = (message, go) => doPost(_, '/3/LogAndEcho', { message }, go);
   const requestLogFile = (nodeIndex, fileType, go) => doGet(_, `/3/Logs/nodes/${nodeIndex}/files/${fileType}`, go);
   const requestNetworkTest = go => doGet(_, '/3/NetworkTest', go);
   const requestAbout = go => doGet(_, '/3/About', go);
-  const requestShutdown = go => doPost('/3/Shutdown', {}, go);
+  const requestShutdown = go => doPost(_, '/3/Shutdown', {}, go);
   const requestEndpoints = go => doGet(_, '/3/Metadata/endpoints', go);
   const requestEndpoint = (index, go) => doGet(_, `/3/Metadata/endpoints/${index}`, go);
   const requestSchemas = go => doGet(_, '/3/Metadata/schemas', go);
@@ -514,25 +514,25 @@ export function h2oProxy(_) {
   const requestHelpContent = (name, go) => download('text', `/flow/help/${name}.html`, go);
   const requestRDDs = go => doGet(_, '/3/RDDs', go);
   const requestDataFrames = go => doGet(_, '/3/dataframes', go);
-  const requestScalaIntp = go => doPost('/3/scalaint', {}, go);
-  const requestScalaCode = (sessionId, code, go) => doPost(`/3/scalaint/${sessionId}`, { code }, go);
+  const requestScalaIntp = go => doPost(_, '/3/scalaint', {}, go);
+  const requestScalaCode = (sessionId, code, go) => doPost(_, `/3/scalaint/${sessionId}`, { code }, go);
   const requestAsH2OFrameFromRDD = (rddId, name, go) => {
     if (name === void 0) {
-      return doPost(`/3/RDDs/${rddId}/h2oframe`, {}, go);
+      return doPost(_, `/3/RDDs/${rddId}/h2oframe`, {}, go);
     }
-    return doPost(`/3/RDDs/${rddId}/h2oframe`, { h2oframe_id: name }, go);
+    return doPost(_, `/3/RDDs/${rddId}/h2oframe`, { h2oframe_id: name }, go);
   };
   const requestAsH2OFrameFromDF = (dfId, name, go) => {
     if (name === void 0) {
-      return doPost(`/3/dataframes/${dfId}/h2oframe`, {}, go);
+      return doPost(_, `/3/dataframes/${dfId}/h2oframe`, {}, go);
     }
-    return doPost(`/3/dataframes/${dfId}/h2oframe`, { h2oframe_id: name }, go);
+    return doPost(_, `/3/dataframes/${dfId}/h2oframe`, { h2oframe_id: name }, go);
   };
   const requestAsDataFrame = (hfId, name, go) => {
     if (name === void 0) {
-      return doPost(`/3/h2oframes/${hfId}/dataframe`, {}, go);
+      return doPost(_, `/3/h2oframes/${hfId}/dataframe`, {}, go);
     }
-    return doPost(`/3/h2oframes/${hfId}/dataframe`, { dataframe_id: name }, go);
+    return doPost(_, `/3/h2oframes/${hfId}/dataframe`, { dataframe_id: name }, go);
   };
   Flow.Dataflow.link(_.requestInspect, requestInspect);
   Flow.Dataflow.link(_.requestCreateFrame, requestCreateFrame);
