@@ -3,6 +3,7 @@ import { http } from './http';
 import { doGet } from './doGet';
 import { doPost } from './doPost';
 import { doPostJSON } from './doPostJSON';
+import { doUpload } from './doUpload';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -15,7 +16,6 @@ export function h2oProxy(_) {
   let __modelBuilderEndpoints;
   let __modelBuilders;
   let _storageConfiguration;
-  const doUpload = (path, formData, go) => http(_, 'UPLOAD', path, formData, go);
   const doDelete = (path, go) => http(_, 'DELETE', path, null, go);
   const mapWithKey = (obj, f) => {
     let key;
@@ -483,9 +483,9 @@ export function h2oProxy(_) {
     if (name) {
       uri += `/${encodeURIComponent(name)}`;
     }
-    return doUpload(uri, formData, unwrap(go, result => result.name));
+    return doUpload(_, uri, formData, unwrap(go, result => result.name));
   };
-  const requestUploadFile = (key, formData, go) => doUpload(`/3/PostFile?destination_frame=${encodeURIComponent(key)}`, formData, go);
+  const requestUploadFile = (key, formData, go) => doUpload(_, `/3/PostFile?destination_frame=${encodeURIComponent(key)}`, formData, go);
   const requestCloud = go => doGet(_, '/3/Cloud', go);
   const requestTimeline = go => doGet(_, '/3/Timeline', go);
   const requestProfile = (depth, go) => doGet(_, `/3/Profiler?depth=${depth}`, go);
