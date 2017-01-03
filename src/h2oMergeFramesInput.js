@@ -44,7 +44,7 @@ export function h2oMergeFramesInput(_, _go) {
     const cs = `mergeFrames ${flowPrelude.stringify(_destinationKey())}, ${flowPrelude.stringify(_selectedLeftFrame())}, ${_selectedLeftColumn().index}, ${_includeAllLeftRows()}, ${flowPrelude.stringify(_selectedRightFrame())}, ${_selectedRightColumn().index}, ${_includeAllRightRows()}`;
     return _.insertAndExecuteCell('cs', cs);
   };
-  _.requestFrames((error, frames) => {
+  _.requestFrames(_, (error, frames) => {
     let frame;
     if (error) {
       return _exception(new Flow.Error('Error fetching frame list.', error));

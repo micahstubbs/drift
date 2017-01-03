@@ -924,7 +924,7 @@
         if (classificationParameter) {
           classificationParameter.actual_value = true;
         }
-        return _.requestFrames((error, frames) => {
+        return _.requestFrames(_, (error, frames) => {
           let frame;
           let frameKeys;
           let frameParameters;
@@ -1444,7 +1444,7 @@
         }
         return _.insertAndExecuteCell('cs', `imputeColumn ${ JSON.stringify(arg) }`);
       };
-      _.requestFrames((error, frames) => {
+      _.requestFrames(_, (error, frames) => {
         let frame;
         if (error) {
           // empty
@@ -4012,7 +4012,7 @@
   }
 
   function requestFrames(_, go) {
-    return _.requestFrames((error, frames) => {
+    return _.requestFrames(_, (error, frames) => {
       if (error) {
         return go(error);
       }
@@ -5347,7 +5347,7 @@
       };
       return _.insertAndExecuteCell('cs', `buildAutoModel ${ JSON.stringify(arg) }`);
     };
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         // empty
@@ -5483,7 +5483,7 @@
       return hasFrameAndModel && hasValidOptions;
     });
     if (!_hasFrames) {
-      _.requestFrames((error, frames) => {
+      _.requestFrames(_, (error, frames) => {
         let frame;
         if (error) {
           return _exception(new Flow.Error('Error fetching frame list.', error));
@@ -5801,7 +5801,7 @@
       return _.insertAndExecuteCell('cs', `splitFrame ${ flowPrelude$37.stringify(_frame()) }, ${ flowPrelude$37.stringify(splitRatios) }, ${ flowPrelude$37.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
     });
     const initialize = () => {
-      _.requestFrames((error, frames) => {
+      _.requestFrames(_, (error, frames) => {
         let frame;
         let frameKeys;
         if (!error) {
@@ -5886,7 +5886,7 @@
       const cs = `mergeFrames ${ flowPrelude$38.stringify(_destinationKey()) }, ${ flowPrelude$38.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ flowPrelude$38.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
       return _.insertAndExecuteCell('cs', cs);
     };
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));
@@ -5965,7 +5965,7 @@
       // and run the cell
       return _.insertAndExecuteCell('cs', cs);
     };
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));
@@ -6025,7 +6025,7 @@
     const _overwrite = Flow.Dataflow.signal(true);
     const _canExportFrame = Flow.Dataflow.lift(_selectedFrame, _path, (frame, path) => frame && path);
     const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$40.stringify(_selectedFrame()) }, ${ flowPrelude$40.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         // empty
@@ -11980,6 +11980,15 @@
     return doPost(_, '/3/SplitFrame', opts, go);
   }
 
+  function requestFrames$1(_, go) {
+    return doGet(_, '/3/Frames', (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, result.frames);
+    });
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -11991,12 +12000,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestFrames = go => doGet(_, '/3/Frames', (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, result.frames);
-    });
     const requestFrame = (key, go) => doGet(_, `/3/Frames/${ encodeURIComponent(key) }`, unwrap(go, result => lodash.head(result.frames)));
     const requestFrameSlice = (key, searchTerm, offset, count, go) => {
       // eslint-disable-line
@@ -12405,7 +12408,7 @@
       return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
     };
     Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame$1);
-    Flow.Dataflow.link(_.requestFrames, requestFrames);
+    Flow.Dataflow.link(_.requestFrames, requestFrames$1);
     Flow.Dataflow.link(_.requestFrame, requestFrame);
     Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
     Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary);

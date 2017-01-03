@@ -556,7 +556,6 @@ export function modelInput() {
             }
           } else {
             value = control.value();
-            console.log('control from modelInput', control);
             if (control.isVisible() && (includeUnchangedParameters || control.isRequired || control.defaultValue !== value)) {
               switch (control.kind) {
                 case 'dropdown':
@@ -783,7 +782,7 @@ export function modelInput() {
       if (classificationParameter) {
         classificationParameter.actual_value = true;
       }
-      return _.requestFrames((error, frames) => {
+      return _.requestFrames(_, (error, frames) => {
         let frame;
         let frameKeys;
         let frameParameters;

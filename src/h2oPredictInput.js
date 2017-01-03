@@ -79,7 +79,7 @@ export function h2oPredictInput(_, _go, opt) {
     return hasFrameAndModel && hasValidOptions;
   });
   if (!_hasFrames) {
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));

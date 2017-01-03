@@ -30,7 +30,7 @@ export function h2oAutoModelInput(_, _go, opts) {
     };
     return _.insertAndExecuteCell('cs', `buildAutoModel ${JSON.stringify(arg)}`);
   };
-  _.requestFrames((error, frames) => {
+  _.requestFrames(_, (error, frames) => {
     let frame;
     if (error) {
       // empty

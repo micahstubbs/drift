@@ -70,7 +70,7 @@ export function imputeInput() {
       }
       return _.insertAndExecuteCell('cs', `imputeColumn ${JSON.stringify(arg)}`);
     };
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         // empty

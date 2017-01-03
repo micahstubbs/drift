@@ -11,6 +11,7 @@ import { encodeArrayForPost } from './encodeArrayForPost';
 import { encodeObjectForPost } from './encodeObjectForPost';
 import { unwrap } from './unwrap';
 import { requestSplitFrame } from './requestSplitFrame';
+import { requestFrames } from './requestFrames';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -24,12 +25,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestFrames = go => doGet(_, '/3/Frames', (error, result) => {
-    if (error) {
-      return go(error);
-    }
-    return go(null, result.frames);
-  });
   const requestFrame = (key, go) => doGet(_, `/3/Frames/${encodeURIComponent(key)}`, unwrap(go, result => lodash.head(result.frames)));
   const requestFrameSlice = (key, searchTerm, offset, count, go) => { // eslint-disable-line
     // TODO send search term

@@ -42,7 +42,7 @@ export function h2oPartialDependenceInput(_, _go) {
     // and run the cell
     return _.insertAndExecuteCell('cs', cs);
   };
-  _.requestFrames((error, frames) => {
+  _.requestFrames(_, (error, frames) => {
     let frame;
     if (error) {
       return _exception(new Flow.Error('Error fetching frame list.', error));
