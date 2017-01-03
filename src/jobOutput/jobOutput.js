@@ -1,4 +1,5 @@
 import { getJobRequest } from '../h2oProxy/getJobRequest';
+import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -165,7 +166,7 @@ export function jobOutput() {
           // do nothing
       }
     };
-    const cancel = () => _.requestCancelJob(_key, (error, result) => {
+    const cancel = () => postCancelJobRequest(_, _key, (error, result) => {
       if (error) {
         return console.debug(error);
       }

@@ -1,8 +1,9 @@
 
 import { extendCancelJob } from './extendCancelJob';
+import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
 
 export function requestCancelJob(_, key, go) {
-  return _.requestCancelJob(key, error => {
+  return postCancelJobRequest(_, key, error => {
     if (error) {
       return go(error);
     }

@@ -1298,6 +1298,20 @@
     });
   }
 
+  function doPost(_, path, opts, go) {
+    return http(_, 'POST', path, opts, go);
+  }
+
+  function postCancelJobRequest(_, key, go) {
+    const Flow = window.Flow;
+    return doPost(_, `/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
+      if (error) {
+        return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
+      }
+      return go(null);
+    });
+  }
+
   const flowPrelude$4 = flowPreludeFunction();
 
   function jobOutput() {
@@ -1462,7 +1476,7 @@
           // do nothing
         }
       };
-      const cancel = () => _.requestCancelJob(_key, (error, result) => {
+      const cancel = () => postCancelJobRequest(_, _key, (error, result) => {
         if (error) {
           return console.debug(error);
         }
@@ -3731,10 +3745,6 @@
     });
   }
 
-  function doPost(_, path, opts, go) {
-    return http(_, 'POST', path, opts, go);
-  }
-
   function postCreateFrameRequest(_, opts, go) {
     return doPost(_, '/3/CreateFrame', opts, go);
   }
@@ -4726,6 +4736,25 @@
         return go(error);
       }
       return go(null, extendParseSetupResults(_, { source_frames: sourceKeys }, parseSetupResults));
+    });
+  }
+
+  function h2oCancelJobOutput(_, _go, _cancellation) {
+    const lodash = window._;
+    lodash.defer(_go);
+    return { template: 'flow-cancel-job-output' };
+  }
+
+  function extendCancelJob(_, cancellation) {
+    return render_(_, cancellation, h2oCancelJobOutput, cancellation);
+  }
+
+  function requestCancelJob(_, key, go) {
+    return postCancelJobRequest(_, key, error => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendCancelJob(_, {}));
     });
   }
 
@@ -11913,7 +11942,6 @@
     _.requestDeleteModel = Flow.Dataflow.slot();
     _.requestImportModel = Flow.Dataflow.slot();
     _.requestExportModel = Flow.Dataflow.slot();
-    _.requestCancelJob = Flow.Dataflow.slot();
     _.requestObjects = Flow.Dataflow.slot();
     _.requestObject = Flow.Dataflow.slot();
     _.requestObjectExists = Flow.Dataflow.slot();
@@ -12083,12 +12111,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestCancelJob = (key, go) => doPost(_, `/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
-      if (error) {
-        return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
-      }
-      return go(null);
-    });
     const requestFileGlob = (path, limit, go) => {
       const opts = {
         src: encodeURIComponent(path),
@@ -12458,7 +12480,6 @@
     Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
     Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
     Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame$1);
-    Flow.Dataflow.link(_.requestCancelJob, requestCancelJob);
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
