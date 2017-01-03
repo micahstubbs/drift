@@ -31,7 +31,7 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  
+
   // abstracting out these two functions
   // produces an error
   // defer for now
@@ -42,27 +42,7 @@ export function h2oProxy(_) {
   const requestImportFile = (path, go) => {
     const opts = { path: encodeURIComponent(path) };
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
-  };
-  const requestParseSetupPreview = (
-    sourceKeys,
-    parseType,
-    separator,
-    useSingleQuotes,
-    checkHeader,
-    columnTypes,
-    go
-  ) => {
-    const opts = {
-      source_frames: encodeArrayForPost(sourceKeys),
-      parse_type: parseType,
-      separator,
-      single_quotes: useSingleQuotes,
-      check_header: checkHeader,
-      column_types: encodeArrayForPost(columnTypes),
-    };
-    return doPost(_, '/3/ParseSetup', opts, go);
-  };
-  const requestParseFiles = (
+  }; const requestParseFiles = (
     sourceKeys,
     destinationKey,
     parseType,
@@ -421,7 +401,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestParseSetupPreview, requestParseSetupPreview);
   Flow.Dataflow.link(_.requestParseFiles, requestParseFiles);
   Flow.Dataflow.link(_.requestPartialDependence, requestPartialDependence);
   Flow.Dataflow.link(_.requestPartialDependenceData, requestPartialDependenceData);
