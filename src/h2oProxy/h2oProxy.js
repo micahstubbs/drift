@@ -63,10 +63,6 @@ export function h2oProxy(_) {
     const opts = { path: encodeURIComponent(path) };
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
   };
-  const requestParseSetup = (sourceKeys, go) => {
-    const opts = { source_frames: encodeArrayForPost(sourceKeys) };
-    return doPost(_, '/3/ParseSetup', opts, go);
-  };
   const requestParseSetupPreview = (
     sourceKeys,
     parseType,
@@ -448,7 +444,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestParseSetup, requestParseSetup);
   Flow.Dataflow.link(_.requestParseSetupPreview, requestParseSetupPreview);
   Flow.Dataflow.link(_.requestParseFiles, requestParseFiles);
   Flow.Dataflow.link(_.requestPartialDependence, requestPartialDependence);

@@ -60,6 +60,7 @@ import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
 import { unwrapPrediction } from './unwrapPrediction';
 import { inspectModelParameters } from './inspectModelParameters';
+import { requestParseSetup } from './requestParseSetup';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';

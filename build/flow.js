@@ -4541,6 +4541,26 @@
     return render_(_, parseSetupResults, H2O.SetupParseOutput, args, parseSetupResults);
   }
 
+  function encodeArrayForPost(array) {
+    const lodash = window._;
+    if (array) {
+      if (array.length === 0) {
+        return null;
+      }
+      return `[${ lodash.map(array, element => {
+        if (lodash.isNumber(element)) {
+          return element;
+        }return `"${ element }"`;
+      }).join(',') } ]`;
+    }
+    return null;
+  }
+
+  function postParseSetupRequest(_, sourceKeys, go) {
+    const opts = { source_frames: encodeArrayForPost(sourceKeys) };
+    return doPost(_, '/3/ParseSetup', opts, go);
+  }
+
   function requestImportAndParseSetup(_, paths, go) {
     const lodash = window._;
     return _.requestImportFiles(paths, (error, importResults) => {
@@ -4548,7 +4568,7 @@
         return go(error);
       }
       const sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-      return _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
+      return postParseSetupRequest(_, sourceKeys, (error, parseSetupResults) => {
         if (error) {
           return go(error);
         }
@@ -4668,6 +4688,15 @@
         origin: `getModel ${ flowPrelude$27.stringify(model.model_id.name) }`
       });
     };
+  }
+
+  function requestParseSetup(_, sourceKeys, go) {
+    return postParseSetupRequest(_, sourceKeys, (error, parseSetupResults) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendParseSetupResults(_, { source_frames: sourceKeys }, parseSetupResults));
+    });
   }
 
   const flowPrelude$28 = flowPreludeFunction();
@@ -11827,7 +11856,6 @@
     _.requestImportFile = Flow.Dataflow.slot();
     _.requestImportFiles = Flow.Dataflow.slot();
     _.requestParseFiles = Flow.Dataflow.slot();
-    _.requestParseSetup = Flow.Dataflow.slot();
     _.requestParseSetupPreview = Flow.Dataflow.slot();
     _.requestFrames = Flow.Dataflow.slot();
     _.requestFrameSlice = Flow.Dataflow.slot();
@@ -11959,21 +11987,6 @@
     return doGet(_, composePath(path, opts), go);
   }
 
-  function encodeArrayForPost(array) {
-    const lodash = window._;
-    if (array) {
-      if (array.length === 0) {
-        return null;
-      }
-      return `[${ lodash.map(array, element => {
-        if (lodash.isNumber(element)) {
-          return element;
-        }return `"${ element }"`;
-      }).join(',') } ]`;
-    }
-    return null;
-  }
-
   function encodeObjectForPost(source) {
     const lodash = window._;
     let k;
@@ -12074,10 +12087,6 @@
     const requestImportFile = (path, go) => {
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
-    };
-    const requestParseSetup = (sourceKeys, go) => {
-      const opts = { source_frames: encodeArrayForPost(sourceKeys) };
-      return doPost(_, '/3/ParseSetup', opts, go);
     };
     const requestParseSetupPreview = (sourceKeys, parseType, separator, useSingleQuotes, checkHeader, columnTypes, go) => {
       const opts = {
@@ -12439,7 +12448,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestParseSetup, requestParseSetup);
     Flow.Dataflow.link(_.requestParseSetupPreview, requestParseSetupPreview);
     Flow.Dataflow.link(_.requestParseFiles, requestParseFiles);
     Flow.Dataflow.link(_.requestPartialDependence, requestPartialDependence);
