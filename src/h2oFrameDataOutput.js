@@ -9,6 +9,7 @@ export function h2oFrameDataOutput(_, _go, _frame) {
   const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
   const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
   const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
+  console.log('_ from h2oFrameDataOutput', _);
   const renderPlot = (container, render) => render((error, vis) => {
     if (error) {
       return console.debug(error);
@@ -24,7 +25,7 @@ export function h2oFrameDataOutput(_, _go, _frame) {
     }
     const startIndex = pageIndex * MaxItemsPerPage;
     const itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-    return _.requestFrameDataE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
+    return _.requestFrameDataE(_, _frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
       if (error) {
         // empty
       } else {

@@ -7,6 +7,7 @@ export function http(_, method, path, opts, go) {
   if (path.substring(0, 1) === '/') {
     path = window.Flow.ContextPath + path.substring(1);
   }
+  console.log('_ from http', _);
   _.status('server', 'request', path);
   trackPath(_, path);
   const req = (() => {
