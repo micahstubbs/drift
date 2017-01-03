@@ -7141,6 +7141,21 @@
     };
   }
 
+  function getGridRequest(_, key, opts, go) {
+    let params;
+    params = void 0;
+    if (opts) {
+      params = {};
+      if (opts.sort_by) {
+        params.sort_by = encodeURIComponent(opts.sort_by);
+      }
+      if (opts.decreasing === true || opts.decreasing === false) {
+        params.decreasing = opts.decreasing;
+      }
+    }
+    return doGet(_, composePath(`/99/Grids/${ encodeURIComponent(key) }`, params), go);
+  }
+
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -7574,7 +7589,7 @@
         }
       };
       // depends on `extendGrid`
-      requestGrid = (gridKey, opts, go) => _.requestGrid(gridKey, opts, (error, grid) => {
+      requestGrid = (gridKey, opts, go) => getGridRequest(_, gridKey, opts, (error, grid) => {
         if (error) {
           return go(error);
         }
@@ -12125,7 +12140,6 @@
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
-    _.requestGrid = Flow.Dataflow.slot();
     _.requestModel = Flow.Dataflow.slot();
     _.requestPojoPreview = Flow.Dataflow.slot();
     _.requestDeleteModel = Flow.Dataflow.slot();
@@ -12293,20 +12307,6 @@
     const requestImportFile = (path, go) => {
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
-    };
-    const requestGrid = (key, opts, go) => {
-      let params;
-      params = void 0;
-      if (opts) {
-        params = {};
-        if (opts.sort_by) {
-          params.sort_by = encodeURIComponent(opts.sort_by);
-        }
-        if (opts.decreasing === true || opts.decreasing === false) {
-          params.decreasing = opts.decreasing;
-        }
-      }
-      return doGet(_, composePath(`/99/Grids/${ encodeURIComponent(key) }`, params), go);
     };
     const requestModel = (key, go) => doGet(_, `/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
       if (error) {
@@ -12590,7 +12590,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestGrid, requestGrid);
     Flow.Dataflow.link(_.requestModel, requestModel);
     Flow.Dataflow.link(_.requestPojoPreview, requestPojoPreview);
     Flow.Dataflow.link(_.requestDeleteModel, requestDeleteModel);

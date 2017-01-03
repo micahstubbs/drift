@@ -94,6 +94,8 @@ import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
 import { h2oModelOutput } from '../h2oModelOutput';
 
+import { getGridRequest } from '../h2oProxy/getGridRequest';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -539,7 +541,7 @@ export function routines() {
       }
     };
     // depends on `extendGrid`
-    requestGrid = (gridKey, opts, go) => _.requestGrid(gridKey, opts, (error, grid) => {
+    requestGrid = (gridKey, opts, go) => getGridRequest(_, gridKey, opts, (error, grid) => {
       if (error) {
         return go(error);
       }

@@ -43,20 +43,6 @@ export function h2oProxy(_) {
     const opts = { path: encodeURIComponent(path) };
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
   };
-  const requestGrid = (key, opts, go) => {
-    let params;
-    params = void 0;
-    if (opts) {
-      params = {};
-      if (opts.sort_by) {
-        params.sort_by = encodeURIComponent(opts.sort_by);
-      }
-      if (opts.decreasing === true || opts.decreasing === false) {
-        params.decreasing = opts.decreasing;
-      }
-    }
-    return doGet(_, composePath(`/99/Grids/${encodeURIComponent(key)}`, params), go);
-  };
   const requestModel = (key, go) => doGet(_, `/3/Models/${encodeURIComponent(key)}`, (error, result) => {
     if (error) {
       return go(error, result);
@@ -339,7 +325,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestGrid, requestGrid);
   Flow.Dataflow.link(_.requestModel, requestModel);
   Flow.Dataflow.link(_.requestPojoPreview, requestPojoPreview);
   Flow.Dataflow.link(_.requestDeleteModel, requestDeleteModel);
