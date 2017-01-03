@@ -11,7 +11,7 @@ export function requestImputeColumn(_, opts, go) {
   combineMethod = opts.combineMethod;
   const groupByColumns = opts.groupByColumns;
   combineMethod = combineMethod != null ? combineMethod : 'interpolate';
-  return _.requestFrameSummaryWithoutData(frame, (error, result) => {
+  return _.requestFrameSummaryWithoutData(_, frame, (error, result) => {
     let columnIndex;
     let columnIndicesError;
     let columnKeyError;

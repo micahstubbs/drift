@@ -459,7 +459,7 @@ export function modelInput() {
         if (responseColumnParameter || ignoredColumnsParameter) {
           return Flow.Dataflow.act(trainingFrameParameter.value, frameKey => {
             if (frameKey) {
-              _.requestFrameSummaryWithoutData(frameKey, (error, frame) => {
+              _.requestFrameSummaryWithoutData(_, frameKey, (error, frame) => {
                 let columnLabels;
                 let columnValues;
                 if (!error) {

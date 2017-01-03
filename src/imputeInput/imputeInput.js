@@ -95,7 +95,7 @@ export function imputeInput() {
     });
     Flow.Dataflow.react(_frame, frame => {
       if (frame) {
-        return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
+        return _.requestFrameSummaryWithoutData(_, frame, (error, frame) => {
           let column;
           if (error) {
             // empty

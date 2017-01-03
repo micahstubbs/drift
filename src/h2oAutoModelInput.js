@@ -55,7 +55,7 @@ export function h2oAutoModelInput(_, _go, opts) {
   });
   Flow.Dataflow.react(_frame, frame => {
     if (frame) {
-      return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
+      return _.requestFrameSummaryWithoutData(_, frame, (error, frame) => {
         let column;
         if (error) {
           // empty

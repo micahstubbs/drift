@@ -15,6 +15,7 @@ import { requestFrames } from './requestFrames';
 import { requestFrameSlice } from './requestFrameSlice';
 import { requestFrameSummary } from './requestFrameSummary';
 import { requestFrameSummarySlice } from './requestFrameSummarySlice';
+import { requestFrameSummaryWithoutData } from './requestFrameSummaryWithoutData';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -28,12 +29,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestFrameSummaryWithoutData = (key, go) => doGet(_, `/3/Frames/${encodeURIComponent(key)}/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
-    if (error) {
-      return go(error);
-    }
-    return go(null, lodash.head(result.frames));
-  });
   const requestDeleteFrame = (key, go) => doDelete(_, `/3/Frames/${encodeURIComponent(key)}`, go);
   const requestExportFrame = (key, path, overwrite, go) => {
     const params = {

@@ -605,7 +605,7 @@
           if (responseColumnParameter || ignoredColumnsParameter) {
             return Flow.Dataflow.act(trainingFrameParameter.value, frameKey => {
               if (frameKey) {
-                _.requestFrameSummaryWithoutData(frameKey, (error, frame) => {
+                _.requestFrameSummaryWithoutData(_, frameKey, (error, frame) => {
                   let columnLabels;
                   let columnValues;
                   if (!error) {
@@ -1469,7 +1469,7 @@
       });
       Flow.Dataflow.react(_frame, frame => {
         if (frame) {
-          return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
+          return _.requestFrameSummaryWithoutData(_, frame, (error, frame) => {
             let column;
             if (error) {
               // empty
@@ -4397,7 +4397,7 @@
     combineMethod = opts.combineMethod;
     const groupByColumns = opts.groupByColumns;
     combineMethod = combineMethod != null ? combineMethod : 'interpolate';
-    return _.requestFrameSummaryWithoutData(frame, (error, result) => {
+    return _.requestFrameSummaryWithoutData(_, frame, (error, result) => {
       let columnIndex;
       let columnIndicesError;
       let columnKeyError;
@@ -4436,7 +4436,7 @@
     const column = opts.column;
     const type = opts.type;
     const method = type === 'enum' ? 'as.factor' : 'as.numeric';
-    return _.requestFrameSummaryWithoutData(frame, (error, result) => {
+    return _.requestFrameSummaryWithoutData(_, frame, (error, result) => {
       let columnIndex;
       let columnKeyError;
       try {
@@ -5391,7 +5391,7 @@
     });
     Flow.Dataflow.react(_frame, frame => {
       if (frame) {
-        return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
+        return _.requestFrameSummaryWithoutData(_, frame, (error, frame) => {
           let column;
           if (error) {
             // empty
@@ -5880,7 +5880,7 @@
     const _canMerge = Flow.Dataflow.lift(_selectedLeftFrame, _selectedLeftColumn, _selectedRightFrame, _selectedRightColumn, (lf, lc, rf, rc) => lf && lc && rf && rc);
     Flow.Dataflow.react(_selectedLeftFrame, frameKey => {
       if (frameKey) {
-        return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _leftColumns(lodash.map(frame.columns, (column, i) => ({
+        return _.requestFrameSummaryWithoutData(_, frameKey, (error, frame) => _leftColumns(lodash.map(frame.columns, (column, i) => ({
           label: column.label,
           index: i
         }))));
@@ -5890,7 +5890,7 @@
     });
     Flow.Dataflow.react(_selectedRightFrame, frameKey => {
       if (frameKey) {
-        return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _rightColumns(lodash.map(frame.columns, (column, i) => ({
+        return _.requestFrameSummaryWithoutData(_, frameKey, (error, frame) => _rightColumns(lodash.map(frame.columns, (column, i) => ({
           label: column.label,
           index: i
         }))));
@@ -12005,6 +12005,16 @@
     return doGet(_, urlString, unwrap(go, result => lodash.head(result.frames)));
   }
 
+  function requestFrameSummaryWithoutData(_, key, go) {
+    return doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
+      const lodash = window._;
+      if (error) {
+        return go(error);
+      }
+      return go(null, lodash.head(result.frames));
+    });
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -12016,12 +12026,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestFrameSummaryWithoutData = (key, go) => doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, lodash.head(result.frames));
-    });
     const requestDeleteFrame = (key, go) => doDelete(_, `/3/Frames/${ encodeURIComponent(key) }`, go);
     const requestExportFrame = (key, path, overwrite, go) => {
       const params = {

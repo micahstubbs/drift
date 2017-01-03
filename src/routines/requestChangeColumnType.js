@@ -7,7 +7,7 @@ export function requestChangeColumnType(_, opts, go) {
   const column = opts.column;
   const type = opts.type;
   const method = type === 'enum' ? 'as.factor' : 'as.numeric';
-  return _.requestFrameSummaryWithoutData(frame, (error, result) => {
+  return _.requestFrameSummaryWithoutData(_, frame, (error, result) => {
     let columnIndex;
     let columnKeyError;
     try {
