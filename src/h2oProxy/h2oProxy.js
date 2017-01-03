@@ -42,34 +42,6 @@ export function h2oProxy(_) {
   const requestImportFile = (path, go) => {
     const opts = { path: encodeURIComponent(path) };
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
-  }; const requestParseFiles = (
-    sourceKeys,
-    destinationKey,
-    parseType,
-    separator,
-    columnCount,
-    useSingleQuotes,
-    columnNames,
-    columnTypes,
-    deleteOnDone,
-    checkHeader,
-    chunkSize,
-    go
-  ) => {
-    const opts = {
-      destination_frame: destinationKey,
-      source_frames: encodeArrayForPost(sourceKeys),
-      parse_type: parseType,
-      separator,
-      number_columns: columnCount,
-      single_quotes: useSingleQuotes,
-      column_names: encodeArrayForPost(columnNames),
-      column_types: encodeArrayForPost(columnTypes),
-      check_header: checkHeader,
-      delete_on_done: deleteOnDone,
-      chunk_size: chunkSize,
-    };
-    return doPost(_, '/3/Parse', opts, go);
   };
 
   // Create data for partial dependence plot(s)
@@ -401,7 +373,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestParseFiles, requestParseFiles);
   Flow.Dataflow.link(_.requestPartialDependence, requestPartialDependence);
   Flow.Dataflow.link(_.requestPartialDependenceData, requestPartialDependenceData);
   Flow.Dataflow.link(_.requestGrids, requestGrids);

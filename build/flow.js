@@ -4634,6 +4634,23 @@
     return render_(_, parseResult, H2O.JobOutput, parseResult.job);
   }
 
+  function postParseFilesRequest(_, sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
+    const opts = {
+      destination_frame: destinationKey,
+      source_frames: encodeArrayForPost(sourceKeys),
+      parse_type: parseType,
+      separator,
+      number_columns: columnCount,
+      single_quotes: useSingleQuotes,
+      column_names: encodeArrayForPost(columnNames),
+      column_types: encodeArrayForPost(columnTypes),
+      check_header: checkHeader,
+      delete_on_done: deleteOnDone,
+      chunk_size: chunkSize
+    };
+    return doPost(_, '/3/Parse', opts, go);
+  }
+
   function requestImportAndParseFiles(_, paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
     return _.requestImportFiles(paths, (error, importResults) => {
       const lodash = window._;
@@ -4641,7 +4658,7 @@
         return go(error);
       }
       const sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-      return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
+      return postParseFilesRequest(_, sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
         if (error) {
           return go(error);
         }
@@ -4651,7 +4668,7 @@
   }
 
   function requestParseFiles(_, sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
-    return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
+    return postParseFilesRequest(_, sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
       if (error) {
         return go(error);
       }
@@ -11926,7 +11943,6 @@
     _.requestSplitFrame = Flow.Dataflow.slot();
     _.requestImportFile = Flow.Dataflow.slot();
     _.requestImportFiles = Flow.Dataflow.slot();
-    _.requestParseFiles = Flow.Dataflow.slot();
     _.requestFrames = Flow.Dataflow.slot();
     _.requestFrameSlice = Flow.Dataflow.slot();
     _.requestFrameSummary = Flow.Dataflow.slot();
@@ -12141,21 +12157,6 @@
     const requestImportFile = (path, go) => {
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
-    };const requestParseFiles = (sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) => {
-      const opts = {
-        destination_frame: destinationKey,
-        source_frames: encodeArrayForPost(sourceKeys),
-        parse_type: parseType,
-        separator,
-        number_columns: columnCount,
-        single_quotes: useSingleQuotes,
-        column_names: encodeArrayForPost(columnNames),
-        column_types: encodeArrayForPost(columnTypes),
-        check_header: checkHeader,
-        delete_on_done: deleteOnDone,
-        chunk_size: chunkSize
-      };
-      return doPost(_, '/3/Parse', opts, go);
     };
 
     // Create data for partial dependence plot(s)
@@ -12487,7 +12488,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestParseFiles, requestParseFiles);
     Flow.Dataflow.link(_.requestPartialDependence, requestPartialDependence);
     Flow.Dataflow.link(_.requestPartialDependenceData, requestPartialDependenceData);
     Flow.Dataflow.link(_.requestGrids, requestGrids);
