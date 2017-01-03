@@ -32,7 +32,6 @@ export function h2oApplicationContext(_) {
   _.requestDeleteModel = Flow.Dataflow.slot();
   _.requestImportModel = Flow.Dataflow.slot();
   _.requestExportModel = Flow.Dataflow.slot();
-  _.requestJobs = Flow.Dataflow.slot();
   _.requestJob = Flow.Dataflow.slot();
   _.requestCancelJob = Flow.Dataflow.slot();
   _.requestObjects = Flow.Dataflow.slot();
