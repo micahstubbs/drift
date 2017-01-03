@@ -4184,6 +4184,41 @@
     });
   }
 
+  function mapWithKey(obj, f) {
+    let key;
+    let value;
+    const result = [];
+    for (key in obj) {
+      if ({}.hasOwnProperty.call(obj, key)) {
+        value = obj[key];
+        result.push(f(value, key));
+      }
+    }
+    return result;
+  }
+
+  function composePath(path, opts) {
+    let params;
+    if (opts) {
+      params = mapWithKey(opts, (v, k) => `${ k }=${ v }`);
+      return `${ path }?${ params.join('&') }`;
+    }
+    return path;
+  }
+
+  function requestWithOpts(_, path, opts, go) {
+    return doGet(_, composePath(path, opts), go);
+  }
+
+  function getModelsRequest(_, go, opts) {
+    return requestWithOpts(_, '/3/Models', opts, (error, result) => {
+      if (error) {
+        return go(error, result);
+      }
+      return go(error, result.models);
+    });
+  }
+
   const flowPrelude$24 = flowPreludeFunction();
 
   function inspectParametersAcrossModels(models) {
@@ -4434,7 +4469,7 @@
   }
 
   function requestModels(_, go) {
-    return _.requestModels((error, models) => {
+    return getModelsRequest(_, (error, models) => {
       if (error) {
         return go(error);
       }
@@ -5784,7 +5819,7 @@
       });
     }
     if (!_hasModels) {
-      _.requestModels((error, models) => {
+      getModelsRequest(_, (error, models) => {
         let model;
         if (error) {
           return _exception(new Flow.Error('Error fetching model list.', error));
@@ -6264,7 +6299,7 @@
         return _results;
       })());
     });
-    _.requestModels((error, models) => {
+    getModelsRequest(_, (error, models) => {
       let model;
       if (error) {
         return _exception(new Flow.Error('Error fetching model list.', error));
@@ -6372,7 +6407,7 @@
     const _overwrite = Flow.Dataflow.signal(opt.overwrite);
     const _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, (modelKey, path) => modelKey && path);
     const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$43.stringify(_selectedModelKey()) }, ${ flowPrelude$43.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
-    _.requestModels((error, models) => {
+    getModelsRequest(_, (error, models) => {
       let model;
       if (error) {
         // empty
@@ -12090,7 +12125,6 @@
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
-    _.requestModels = Flow.Dataflow.slot();
     _.requestGrid = Flow.Dataflow.slot();
     _.requestModel = Flow.Dataflow.slot();
     _.requestPojoPreview = Flow.Dataflow.slot();
@@ -12170,32 +12204,6 @@
 
   function doDelete(_, path, go) {
     return http(_, 'DELETE', path, null, go);
-  }
-
-  function mapWithKey(obj, f) {
-    let key;
-    let value;
-    const result = [];
-    for (key in obj) {
-      if ({}.hasOwnProperty.call(obj, key)) {
-        value = obj[key];
-        result.push(f(value, key));
-      }
-    }
-    return result;
-  }
-
-  function composePath(path, opts) {
-    let params;
-    if (opts) {
-      params = mapWithKey(opts, (v, k) => `${ k }=${ v }`);
-      return `${ path }?${ params.join('&') }`;
-    }
-    return path;
-  }
-
-  function requestWithOpts(_, path, opts, go) {
-    return doGet(_, composePath(path, opts), go);
   }
 
   function encodeObjectForPost(source) {
@@ -12286,12 +12294,6 @@
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
     };
-    const requestModels = (go, opts) => requestWithOpts(_, '/3/Models', opts, (error, result) => {
-      if (error) {
-        return go(error, result);
-      }
-      return go(error, result.models);
-    });
     const requestGrid = (key, opts, go) => {
       let params;
       params = void 0;
@@ -12588,7 +12590,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestModels, requestModels);
     Flow.Dataflow.link(_.requestGrid, requestGrid);
     Flow.Dataflow.link(_.requestModel, requestModel);
     Flow.Dataflow.link(_.requestPojoPreview, requestPojoPreview);

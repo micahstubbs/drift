@@ -1,7 +1,8 @@
+import { getModelsRequest } from '../h2oProxy/getModelsRequest';
 import { extendModels } from './extendModels';
 
 export function requestModels(_, go) {
-  return _.requestModels((error, models) => {
+  return getModelsRequest(_, (error, models) => {
     if (error) {
       return go(error);
     }

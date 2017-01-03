@@ -1,3 +1,5 @@
+import { getModelsRequest } from './h2oProxy/getModelsRequest';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -13,7 +15,7 @@ export function h2oExportModelInput(_, _go, modelKey, path, opt) {
   const _overwrite = Flow.Dataflow.signal(opt.overwrite);
   const _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, (modelKey, path) => modelKey && path);
   const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_selectedModelKey())}, ${flowPrelude.stringify(_path())}, overwrite: ${(_overwrite() ? 'true' : 'false')}`);
-  _.requestModels((error, models) => {
+  getModelsRequest(_, (error, models) => {
     let model;
     if (error) {
       // empty

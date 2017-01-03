@@ -1,3 +1,5 @@
+import { getModelsRequest } from './h2oProxy/getModelsRequest';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -99,7 +101,7 @@ export function h2oPredictInput(_, _go, opt) {
     });
   }
   if (!_hasModels) {
-    _.requestModels((error, models) => {
+    getModelsRequest(_, (error, models) => {
       let model;
       if (error) {
         return _exception(new Flow.Error('Error fetching model list.', error));
