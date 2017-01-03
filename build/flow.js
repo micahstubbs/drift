@@ -3348,7 +3348,6 @@
     if (path.substring(0, 1) === '/') {
       path = window.Flow.ContextPath + path.substring(1);
     }
-    console.log('_ from http', _);
     _.status('server', 'request', path);
     trackPath(_, path);
     const req = (() => {
@@ -3426,7 +3425,6 @@
 
   function requestFrameSlice(_, key, searchTerm, offset, count, go) {
     const lodash = window._;
-    console.log('_ from requestFrameSlice', _);
     // TODO send search term
     return doGet(_, `/3/Frames/${ encodeURIComponent(key) }?column_offset=${ offset }&column_count=${ count }`, unwrap(go, result => lodash.head(result.frames)));
   }
@@ -3450,7 +3448,6 @@
   }
 
   function requestFrameData(_, frameKey, searchTerm, offset, count, go) {
-    console.log('_ from requestFrameData', _);
     return requestFrameSlice(_, frameKey, searchTerm, offset, count, (error, frame) => {
       if (error) {
         return go(error);
