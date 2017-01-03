@@ -63,6 +63,8 @@ import { unwrapPrediction } from './unwrapPrediction';
 import { inspectModelParameters } from './inspectModelParameters';
 import { requestParseSetup } from './requestParseSetup';
 import { requestCancelJob } from './requestCancelJob';
+import { requestPartialDependence } from './requestPartialDependence';
+import { requestPartialDependenceData } from './requestPartialDependenceData';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';

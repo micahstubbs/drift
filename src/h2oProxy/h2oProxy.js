@@ -44,16 +44,6 @@ export function h2oProxy(_) {
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
   };
 
-  // Create data for partial dependence plot(s)
-  // for the specified model and frame.
-  //
-  // make a post request to h2o-3 to request
-  // the data about the specified model and frame
-  // subject to the other options `opts`
-  //
-  // returns a job
-  const requestPartialDependence = (opts, go) => doPost(_, '/3/PartialDependence/', opts, go);
-
   // make a post request to h2o-3 to do request
   // the data about the specified model and frame
   // subject to the other options `opts`
@@ -373,7 +363,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestPartialDependence, requestPartialDependence);
   Flow.Dataflow.link(_.requestPartialDependenceData, requestPartialDependenceData);
   Flow.Dataflow.link(_.requestGrids, requestGrids);
   Flow.Dataflow.link(_.requestModels, requestModels);
