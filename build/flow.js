@@ -2982,7 +2982,7 @@
       }
       const startIndex = pageIndex * MaxItemsPerPage;
       const itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-      return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
+      return _.requestFrameSummarySliceE(_, _frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
         if (error) {
           // empty
           // TODO
@@ -7133,13 +7133,13 @@
         return predictions;
       };
 
-      requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
+      requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, (error, frame) => {
         if (error) {
           return go(error);
         }
         return go(null, extendFrameSummary(_, frameKey, frame));
       });
-      requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(frameKey, void 0, 0, 20, (error, frame) => {
+      requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
         if (error) {
           return go(error);
         }
@@ -11999,6 +11999,12 @@
     doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, result => lodash.head(result.frames)));
   }
 
+  function requestFrameSummarySlice(_, key, searchTerm, offset, count, go) {
+    const lodash = window._;
+    const urlString = `/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`;
+    return doGet(_, urlString, unwrap(go, result => lodash.head(result.frames)));
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -12010,7 +12016,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestFrameSummarySlice = (key, searchTerm, offset, count, go) => doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, unwrap(go, result => lodash.head(result.frames)));
     const requestFrameSummaryWithoutData = (key, go) => doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
       if (error) {
         return go(error);

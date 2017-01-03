@@ -68,7 +68,7 @@ export function h2oFrameOutput(_, _go, _frame) {
     }
     const startIndex = pageIndex * MaxItemsPerPage;
     const itemCount = startIndex + MaxItemsPerPage < _frame.total_column_count ? MaxItemsPerPage : _frame.total_column_count - startIndex;
-    return _.requestFrameSummarySliceE(_frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
+    return _.requestFrameSummarySliceE(_, _frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
       if (error) {
         // empty
         // TODO
