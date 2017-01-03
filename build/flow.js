@@ -4040,7 +4040,7 @@
   }
 
   function requestDeleteFrame(_, frameKey, go) {
-    return _.requestDeleteFrame(frameKey, (error, result) => {
+    return _.requestDeleteFrame(_, frameKey, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -12015,6 +12015,10 @@
     });
   }
 
+  function requestDeleteFrame$1(_, key, go) {
+    doDelete(_, `/3/Frames/${ encodeURIComponent(key) }`, go);
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -12026,7 +12030,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestDeleteFrame = (key, go) => doDelete(_, `/3/Frames/${ encodeURIComponent(key) }`, go);
     const requestExportFrame = (key, path, overwrite, go) => {
       const params = {
         path,
@@ -12425,7 +12428,7 @@
     Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary);
     Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
     Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
-    Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame);
+    Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame$1);
     Flow.Dataflow.link(_.requestExportFrame, requestExportFrame);
     Flow.Dataflow.link(_.requestColumnSummary, requestColumnSummary);
     Flow.Dataflow.link(_.requestJobs, requestJobs);
