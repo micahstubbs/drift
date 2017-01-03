@@ -43,12 +43,6 @@ export function h2oProxy(_) {
     const opts = { path: encodeURIComponent(path) };
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
   };
-
-  // make a post request to h2o-3 to do request
-  // the data about the specified model and frame
-  // subject to the other options `opts`
-  //
-  // returns a json response that contains the data
   const requestGrids = (go, opts) => doGet(_, '/99/Grids', (error, result) => {
     if (error) {
       return go(error, result);
