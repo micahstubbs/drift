@@ -43,12 +43,6 @@ export function h2oProxy(_) {
     const opts = { path: encodeURIComponent(path) };
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
   };
-  const requestGrids = (go, opts) => doGet(_, '/99/Grids', (error, result) => {
-    if (error) {
-      return go(error, result);
-    }
-    return go(error, result.grids);
-  });
   const requestModels = (go, opts) => requestWithOpts(_, '/3/Models', opts, (error, result) => {
     if (error) {
       return go(error, result);
@@ -351,7 +345,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestGrids, requestGrids);
   Flow.Dataflow.link(_.requestModels, requestModels);
   Flow.Dataflow.link(_.requestGrid, requestGrid);
   Flow.Dataflow.link(_.requestModel, requestModel);

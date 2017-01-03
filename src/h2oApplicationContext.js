@@ -20,7 +20,6 @@ export function h2oApplicationContext(_) {
   _.requestPredict = Flow.Dataflow.slot();
   _.requestPrediction = Flow.Dataflow.slot();
   _.requestPredictions = Flow.Dataflow.slot();
-  _.requestGrids = Flow.Dataflow.slot();
   _.requestModels = Flow.Dataflow.slot();
   _.requestGrid = Flow.Dataflow.slot();
   _.requestModel = Flow.Dataflow.slot();

@@ -4166,8 +4166,17 @@
     return render_(_, grids, h2oGridsOutput, grids);
   }
 
+  function getGridsRequest(_, go, opts) {
+    return doGet(_, '/99/Grids', (error, result) => {
+      if (error) {
+        return go(error, result);
+      }
+      return go(error, result.grids);
+    });
+  }
+
   function requestGrids(_, go) {
-    return _.requestGrids((error, grids) => {
+    return getGridsRequest(_, (error, grids) => {
       if (error) {
         return go(error);
       }
@@ -4888,6 +4897,11 @@
     return result;
   }
 
+  // make a post request to h2o-3 to do request
+  // the data about the specified model and frame
+  // subject to the other options `opts`
+  //
+  // returns a json response that contains the data
   function postPartialDependenceDataRequest(_, key, go) {
     return doGet(_, `/3/PartialDependence/${ encodeURIComponent(key) }`, (error, result) => {
       if (error) {
@@ -12076,7 +12090,6 @@
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
-    _.requestGrids = Flow.Dataflow.slot();
     _.requestModels = Flow.Dataflow.slot();
     _.requestGrid = Flow.Dataflow.slot();
     _.requestModel = Flow.Dataflow.slot();
@@ -12273,18 +12286,6 @@
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
     };
-
-    // make a post request to h2o-3 to do request
-    // the data about the specified model and frame
-    // subject to the other options `opts`
-    //
-    // returns a json response that contains the data
-    const requestGrids = (go, opts) => doGet(_, '/99/Grids', (error, result) => {
-      if (error) {
-        return go(error, result);
-      }
-      return go(error, result.grids);
-    });
     const requestModels = (go, opts) => requestWithOpts(_, '/3/Models', opts, (error, result) => {
       if (error) {
         return go(error, result);
@@ -12587,7 +12588,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestGrids, requestGrids);
     Flow.Dataflow.link(_.requestModels, requestModels);
     Flow.Dataflow.link(_.requestGrid, requestGrid);
     Flow.Dataflow.link(_.requestModel, requestModel);
