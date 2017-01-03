@@ -11971,6 +11971,15 @@
     };
   }
 
+  function requestSplitFrame$1(_, frameKey, splitRatios, splitKeys, go) {
+    const opts = {
+      dataset: frameKey,
+      ratios: encodeArrayForPost(splitRatios),
+      dest_keys: encodeArrayForPost(splitKeys)
+    };
+    return doPost(_, '/3/SplitFrame', opts, go);
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -11982,14 +11991,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
-      const opts = {
-        dataset: frameKey,
-        ratios: encodeArrayForPost(splitRatios),
-        dest_keys: encodeArrayForPost(splitKeys)
-      };
-      return doPost(_, '/3/SplitFrame', opts, go);
-    };
     const requestFrames = go => doGet(_, '/3/Frames', (error, result) => {
       if (error) {
         return go(error);
@@ -12403,7 +12404,7 @@
       }
       return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
     };
-    Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame);
+    Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame$1);
     Flow.Dataflow.link(_.requestFrames, requestFrames);
     Flow.Dataflow.link(_.requestFrame, requestFrame);
     Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);

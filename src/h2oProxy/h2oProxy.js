@@ -10,6 +10,7 @@ import { requestWithOpts } from './requestWithOpts';
 import { encodeArrayForPost } from './encodeArrayForPost';
 import { encodeObjectForPost } from './encodeObjectForPost';
 import { unwrap } from './unwrap';
+import { requestSplitFrame } from './requestSplitFrame';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -23,14 +24,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestSplitFrame = (frameKey, splitRatios, splitKeys, go) => {
-    const opts = {
-      dataset: frameKey,
-      ratios: encodeArrayForPost(splitRatios),
-      dest_keys: encodeArrayForPost(splitKeys),
-    };
-    return doPost(_, '/3/SplitFrame', opts, go);
-  };
   const requestFrames = go => doGet(_, '/3/Frames', (error, result) => {
     if (error) {
       return go(error);
