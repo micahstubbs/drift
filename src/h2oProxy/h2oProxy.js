@@ -49,12 +49,6 @@ export function h2oProxy(_) {
   // subject to the other options `opts`
   //
   // returns a json response that contains the data
-  const requestPartialDependenceData = (key, go) => doGet(_, `/3/PartialDependence/${encodeURIComponent(key)}`, (error, result) => {
-    if (error) {
-      return go(error, result);
-    }
-    return go(error, result);
-  });
   const requestGrids = (go, opts) => doGet(_, '/99/Grids', (error, result) => {
     if (error) {
       return go(error, result);
@@ -363,7 +357,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestPartialDependenceData, requestPartialDependenceData);
   Flow.Dataflow.link(_.requestGrids, requestGrids);
   Flow.Dataflow.link(_.requestModels, requestModels);
   Flow.Dataflow.link(_.requestGrid, requestGrid);

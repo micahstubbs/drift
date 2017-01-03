@@ -4888,8 +4888,17 @@
     return result;
   }
 
+  function postPartialDependenceDataRequest(_, key, go) {
+    return doGet(_, `/3/PartialDependence/${ encodeURIComponent(key) }`, (error, result) => {
+      if (error) {
+        return go(error, result);
+      }
+      return go(error, result);
+    });
+  }
+
   function requestPartialDependenceData(_, key, go) {
-    return _.requestPartialDependenceData(key, (error, result) => {
+    return postPartialDependenceDataRequest(_, key, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -12067,7 +12076,6 @@
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
-    _.requestPartialDependenceData = Flow.Dataflow.slot();
     _.requestGrids = Flow.Dataflow.slot();
     _.requestModels = Flow.Dataflow.slot();
     _.requestGrid = Flow.Dataflow.slot();
@@ -12271,12 +12279,6 @@
     // subject to the other options `opts`
     //
     // returns a json response that contains the data
-    const requestPartialDependenceData = (key, go) => doGet(_, `/3/PartialDependence/${ encodeURIComponent(key) }`, (error, result) => {
-      if (error) {
-        return go(error, result);
-      }
-      return go(error, result);
-    });
     const requestGrids = (go, opts) => doGet(_, '/99/Grids', (error, result) => {
       if (error) {
         return go(error, result);
@@ -12585,7 +12587,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestPartialDependenceData, requestPartialDependenceData);
     Flow.Dataflow.link(_.requestGrids, requestGrids);
     Flow.Dataflow.link(_.requestModels, requestModels);
     Flow.Dataflow.link(_.requestGrid, requestGrid);
