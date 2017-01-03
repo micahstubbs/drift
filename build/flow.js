@@ -5295,7 +5295,7 @@
     });
     const tryImportFiles = () => {
       const specifiedPath = _specifiedPath();
-      return _.requestFileGlob(specifiedPath, -1, (error, result) => {
+      return _.requestFileGlob(_, specifiedPath, -1, (error, result) => {
         if (error) {
           return _exception(error.stack);
         }
@@ -5373,7 +5373,7 @@
       return self;
     };
     const createFileItems = result => lodash.map(result.matches, path => createFileItem(path, _selectedFilesDictionary()[path]));
-    const listPathHints = (query, process) => _.requestFileGlob(query, 10, (error, result) => {
+    const listPathHints = (query, process) => _.requestFileGlob(_, query, 10, (error, result) => {
       if (!error) {
         return process(lodash.map(result.matches, value => ({
           value
@@ -12100,6 +12100,14 @@
     doDelete(_, `/3/Frames/${ encodeURIComponent(key) }`, go);
   }
 
+  function requestFileGlob(_, path, limit, go) {
+    const opts = {
+      src: encodeURIComponent(path),
+      limit
+    };
+    return requestWithOpts(_, '/3/Typeahead/files', opts, go);
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -12111,13 +12119,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestFileGlob = (path, limit, go) => {
-      const opts = {
-        src: encodeURIComponent(path),
-        limit
-      };
-      return requestWithOpts(_, '/3/Typeahead/files', opts, go);
-    };
     const requestImportFiles = (paths, go) => {
       const tasks = lodash.map(paths, path => go => requestImportFile(path, go));
       return Flow.Async.iterate(tasks)(go);

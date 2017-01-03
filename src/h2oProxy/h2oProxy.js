@@ -17,6 +17,7 @@ import { requestFrameSummary } from './requestFrameSummary';
 import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummaryWithoutData } from './requestFrameSummaryWithoutData';
 import { requestDeleteFrame } from './requestDeleteFrame';
+import { requestFileGlob } from './requestFileGlob';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -30,13 +31,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestFileGlob = (path, limit, go) => {
-    const opts = {
-      src: encodeURIComponent(path),
-      limit,
-    };
-    return requestWithOpts(_, '/3/Typeahead/files', opts, go);
-  };
   const requestImportFiles = (paths, go) => {
     const tasks = lodash.map(paths, path => go => requestImportFile(path, go));
     return Flow.Async.iterate(tasks)(go);
