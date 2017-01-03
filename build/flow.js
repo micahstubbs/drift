@@ -1178,6 +1178,126 @@
     };
   }
 
+  function optsToString(opts) {
+    let str;
+    if (opts != null) {
+      str = ` with opts ${ JSON.stringify(opts) }`;
+      if (str.length > 50) {
+        return `${ str.substr(0, 50) }...`;
+      }
+      return str;
+    }
+    return '';
+  }
+
+  function trackPath(_, path) {
+    let base;
+    let e;
+    let name;
+    let other;
+    let root;
+    let version;
+    let _ref;
+    let _ref1;
+    try {
+      _ref = path.split('/');
+      root = _ref[0];
+      version = _ref[1];
+      name = _ref[2];
+      _ref1 = name.split('?');
+      base = _ref1[0];
+      other = _ref1[1];
+      if (base !== 'Typeahead' && base !== 'Jobs') {
+        _.trackEvent('api', base, version);
+      }
+    } catch (_error) {
+      e = _error;
+    }
+  }
+
+  function http(_, method, path, opts, go) {
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    if (path.substring(0, 1) === '/') {
+      path = window.Flow.ContextPath + path.substring(1);
+    }
+    _.status('server', 'request', path);
+    trackPath(_, path);
+    const req = (() => {
+      switch (method) {
+        case 'GET':
+          return $.getJSON(path);
+        case 'POST':
+          return $.post(path, opts);
+        case 'POSTJSON':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify(opts)
+          });
+        case 'PUT':
+          return $.ajax({
+            url: path,
+            type: method,
+            data: opts
+          });
+        case 'DELETE':
+          return $.ajax({
+            url: path,
+            type: method
+          });
+        case 'UPLOAD':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            data: opts,
+            cache: false,
+            contentType: false,
+            processData: false
+          });
+        default:
+        // do nothing
+      }
+    })();
+    req.done((data, status, xhr) => {
+      let error;
+      _.status('server', 'response', path);
+      try {
+        return go(null, data);
+      } catch (_error) {
+        error = _error;
+        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
+      }
+    });
+    return req.fail((xhr, status, error) => {
+      let serverError;
+      _.status('server', 'error', path);
+      const response = xhr.responseJSON;
+      const meta = response;
+      // special-case net::ERR_CONNECTION_REFUSED
+      // if status is 'error' and xhr.status is 0
+      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
+    });
+  }
+
+  function doGet(_, path, go) {
+    return http(_, 'GET', path, null, go);
+  }
+
+  function getJobRequest(_, key, go) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    return doGet(_, `/3/Jobs/${ encodeURIComponent(key) }`, (error, result) => {
+      if (error) {
+        return go(new Flow.Error(`Error fetching job \'${ key }\'`, error));
+      }
+      return go(null, lodash.head(result.jobs));
+    });
+  }
+
   const flowPrelude$4 = flowPreludeFunction();
 
   function jobOutput() {
@@ -1296,7 +1416,7 @@
       };
       const refresh = () => {
         _isBusy(true);
-        return _.requestJob(_key, (error, job) => {
+        return getJobRequest(_, _key, (error, job) => {
           _isBusy(false);
           if (error) {
             _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
@@ -2659,115 +2779,6 @@
     return render_(_, job, H2O.JobOutput, job);
   }
 
-  function optsToString(opts) {
-    let str;
-    if (opts != null) {
-      str = ` with opts ${ JSON.stringify(opts) }`;
-      if (str.length > 50) {
-        return `${ str.substr(0, 50) }...`;
-      }
-      return str;
-    }
-    return '';
-  }
-
-  function trackPath(_, path) {
-    let base;
-    let e;
-    let name;
-    let other;
-    let root;
-    let version;
-    let _ref;
-    let _ref1;
-    try {
-      _ref = path.split('/');
-      root = _ref[0];
-      version = _ref[1];
-      name = _ref[2];
-      _ref1 = name.split('?');
-      base = _ref1[0];
-      other = _ref1[1];
-      if (base !== 'Typeahead' && base !== 'Jobs') {
-        _.trackEvent('api', base, version);
-      }
-    } catch (_error) {
-      e = _error;
-    }
-  }
-
-  function http(_, method, path, opts, go) {
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    if (path.substring(0, 1) === '/') {
-      path = window.Flow.ContextPath + path.substring(1);
-    }
-    _.status('server', 'request', path);
-    trackPath(_, path);
-    const req = (() => {
-      switch (method) {
-        case 'GET':
-          return $.getJSON(path);
-        case 'POST':
-          return $.post(path, opts);
-        case 'POSTJSON':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            contentType: 'application/json',
-            cache: false,
-            data: JSON.stringify(opts)
-          });
-        case 'PUT':
-          return $.ajax({
-            url: path,
-            type: method,
-            data: opts
-          });
-        case 'DELETE':
-          return $.ajax({
-            url: path,
-            type: method
-          });
-        case 'UPLOAD':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            data: opts,
-            cache: false,
-            contentType: false,
-            processData: false
-          });
-        default:
-        // do nothing
-      }
-    })();
-    req.done((data, status, xhr) => {
-      let error;
-      _.status('server', 'response', path);
-      try {
-        return go(null, data);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
-      }
-    });
-    return req.fail((xhr, status, error) => {
-      let serverError;
-      _.status('server', 'error', path);
-      const response = xhr.responseJSON;
-      const meta = response;
-      // special-case net::ERR_CONNECTION_REFUSED
-      // if status is 'error' and xhr.status is 0
-      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
-      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
-    });
-  }
-
-  function doGet(_, path, go) {
-    return http(_, 'GET', path, null, go);
-  }
-
   function getJobsRequest(_, go) {
     const Flow = window.Flow;
     return doGet(_, '/3/Jobs', (error, result) => {
@@ -3733,7 +3744,7 @@
       if (error) {
         return go(error);
       }
-      return _.requestJob(result.key.name, (error, job) => {
+      return getJobRequest(_, result.key.name, (error, job) => {
         if (error) {
           return go(error);
         }
@@ -4077,7 +4088,7 @@
       if (error) {
         return go(error);
       }
-      return _.requestJob(result.job.key.name, (error, job) => {
+      return getJobRequest(result.job.key.name, (error, job) => {
         if (error) {
           return go(error);
         }
@@ -4498,6 +4509,15 @@
         return go(error);
       }
       return go(null, extendImportModel(_, result));
+    });
+  }
+
+  function requestJob(_, key, go) {
+    return getJobRequest(_, key, (error, job) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendJob(_, job));
     });
   }
 
@@ -11893,7 +11913,6 @@
     _.requestDeleteModel = Flow.Dataflow.slot();
     _.requestImportModel = Flow.Dataflow.slot();
     _.requestExportModel = Flow.Dataflow.slot();
-    _.requestJob = Flow.Dataflow.slot();
     _.requestCancelJob = Flow.Dataflow.slot();
     _.requestObjects = Flow.Dataflow.slot();
     _.requestObject = Flow.Dataflow.slot();
@@ -12064,12 +12083,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestJob = (key, go) => doGet(_, `/3/Jobs/${ encodeURIComponent(key) }`, (error, result) => {
-      if (error) {
-        return go(new Flow.Error(`Error fetching job \'${ key }\'`, error));
-      }
-      return go(null, lodash.head(result.jobs));
-    });
     const requestCancelJob = (key, go) => doPost(_, `/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
       if (error) {
         return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
@@ -12445,7 +12458,6 @@
     Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
     Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
     Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame$1);
-    Flow.Dataflow.link(_.requestJob, requestJob);
     Flow.Dataflow.link(_.requestCancelJob, requestCancelJob);
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);

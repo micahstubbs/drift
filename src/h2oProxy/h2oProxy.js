@@ -30,12 +30,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestJob = (key, go) => doGet(_, `/3/Jobs/${encodeURIComponent(key)}`, (error, result) => {
-    if (error) {
-      return go(new Flow.Error(`Error fetching job \'${key}\'`, error));
-    }
-    return go(null, lodash.head(result.jobs));
-  });
   const requestCancelJob = (key, go) => doPost(_, `/3/Jobs/${encodeURIComponent(key)}/cancel`, {}, (error, result) => {
     if (error) {
       return go(new Flow.Error(`Error canceling job \'${key}\'`, error));
@@ -432,7 +426,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
   Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
   Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame);
-  Flow.Dataflow.link(_.requestJob, requestJob);
   Flow.Dataflow.link(_.requestCancelJob, requestCancelJob);
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);

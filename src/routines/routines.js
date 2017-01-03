@@ -51,6 +51,7 @@ import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
 import { requestDeleteModel } from './requestDeleteModel';
 import { requestImportModel } from './requestImportModel';
+import { requestJob } from './requestJob';
 import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
