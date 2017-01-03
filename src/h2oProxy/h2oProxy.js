@@ -30,7 +30,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestColumnSummary = (frameKey, column, go) => doGet(_, `/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`, unwrap(go, result => lodash.head(result.frames)));
   const requestJobs = go => doGet(_, '/3/Jobs', (error, result) => {
     if (error) {
       return go(new Flow.Error('Error fetching jobs', error));
@@ -443,7 +442,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
   Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
   Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame);
-  Flow.Dataflow.link(_.requestColumnSummary, requestColumnSummary);
   Flow.Dataflow.link(_.requestJobs, requestJobs);
   Flow.Dataflow.link(_.requestJob, requestJob);
   Flow.Dataflow.link(_.requestCancelJob, requestCancelJob);

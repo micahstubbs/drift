@@ -3695,8 +3695,14 @@
     return render_(_, frame, h2oColumnSummaryOutput, frameKey, frame, columnName);
   }
 
+  function getColumnSummaryRequest(_, frameKey, column, go) {
+    const lodash = window._;
+    const urlString = `/3/Frames/${ encodeURIComponent(frameKey) }/columns/${ encodeURIComponent(column) }/summary`;
+    return doGet(_, urlString, unwrap(go, result => lodash.head(result.frames)));
+  }
+
   function requestColumnSummary(_, frameKey, columnName, go) {
-    return _.requestColumnSummary(frameKey, columnName, (error, frame) => {
+    return getColumnSummaryRequest(_, frameKey, columnName, (error, frame) => {
       if (error) {
         return go(error);
       }
@@ -11831,7 +11837,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestColumnSummary = Flow.Dataflow.slot();
     _.requestModelBuilder = Flow.Dataflow.slot();
     _.requestModelBuilders = Flow.Dataflow.slot();
     _.requestModelBuild = Flow.Dataflow.slot();
@@ -12037,7 +12042,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestColumnSummary = (frameKey, column, go) => doGet(_, `/3/Frames/${ encodeURIComponent(frameKey) }/columns/${ encodeURIComponent(column) }/summary`, unwrap(go, result => lodash.head(result.frames)));
     const requestJobs = go => doGet(_, '/3/Jobs', (error, result) => {
       if (error) {
         return go(new Flow.Error('Error fetching jobs', error));
@@ -12429,7 +12433,6 @@
     Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
     Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
     Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame$1);
-    Flow.Dataflow.link(_.requestColumnSummary, requestColumnSummary);
     Flow.Dataflow.link(_.requestJobs, requestJobs);
     Flow.Dataflow.link(_.requestJob, requestJob);
     Flow.Dataflow.link(_.requestCancelJob, requestCancelJob);
