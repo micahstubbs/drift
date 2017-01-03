@@ -30,13 +30,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestExportFrame = (key, path, overwrite, go) => {
-    const params = {
-      path,
-      force: overwrite ? 'true' : 'false',
-    };
-    return doPost(_, `/3/Frames/${encodeURIComponent(key)}/export`, params, go);
-  };
   const requestColumnSummary = (frameKey, column, go) => doGet(_, `/3/Frames/${encodeURIComponent(frameKey)}/columns/${encodeURIComponent(column)}/summary`, unwrap(go, result => lodash.head(result.frames)));
   const requestJobs = go => doGet(_, '/3/Jobs', (error, result) => {
     if (error) {
@@ -450,7 +443,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
   Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
   Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame);
-  Flow.Dataflow.link(_.requestExportFrame, requestExportFrame);
   Flow.Dataflow.link(_.requestColumnSummary, requestColumnSummary);
   Flow.Dataflow.link(_.requestJobs, requestJobs);
   Flow.Dataflow.link(_.requestJob, requestJob);

@@ -4048,8 +4048,16 @@
     });
   }
 
+  function postExportFrameRequest(_, key, path, overwrite, go) {
+    const params = {
+      path,
+      force: overwrite ? 'true' : 'false'
+    };
+    return doPost(_, `/3/Frames/${ encodeURIComponent(key) }/export`, params, go);
+  }
+
   function requestExportFrame(_, frameKey, path, opts, go) {
-    return _.requestExportFrame(frameKey, path, opts.overwrite, (error, result) => {
+    return postExportFrameRequest(_, frameKey, path, opts.overwrite, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -11823,7 +11831,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestExportFrame = Flow.Dataflow.slot();
     _.requestColumnSummary = Flow.Dataflow.slot();
     _.requestModelBuilder = Flow.Dataflow.slot();
     _.requestModelBuilders = Flow.Dataflow.slot();
@@ -12030,13 +12037,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestExportFrame = (key, path, overwrite, go) => {
-      const params = {
-        path,
-        force: overwrite ? 'true' : 'false'
-      };
-      return doPost(_, `/3/Frames/${ encodeURIComponent(key) }/export`, params, go);
-    };
     const requestColumnSummary = (frameKey, column, go) => doGet(_, `/3/Frames/${ encodeURIComponent(frameKey) }/columns/${ encodeURIComponent(column) }/summary`, unwrap(go, result => lodash.head(result.frames)));
     const requestJobs = go => doGet(_, '/3/Jobs', (error, result) => {
       if (error) {
@@ -12429,7 +12429,6 @@
     Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
     Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
     Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame$1);
-    Flow.Dataflow.link(_.requestExportFrame, requestExportFrame);
     Flow.Dataflow.link(_.requestColumnSummary, requestColumnSummary);
     Flow.Dataflow.link(_.requestJobs, requestJobs);
     Flow.Dataflow.link(_.requestJob, requestJob);
