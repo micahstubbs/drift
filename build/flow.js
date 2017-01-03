@@ -698,7 +698,6 @@
               }
             } else {
               value = control.value();
-              console.log('control from modelInput', control);
               if (control.isVisible() && (includeUnchangedParameters || control.isRequired || control.defaultValue !== value)) {
                 switch (control.kind) {
                   case 'dropdown':
@@ -11797,7 +11796,6 @@
     _.requestParseSetup = Flow.Dataflow.slot();
     _.requestParseSetupPreview = Flow.Dataflow.slot();
     _.requestFrames = Flow.Dataflow.slot();
-    _.requestFrame = Flow.Dataflow.slot();
     _.requestFrameSlice = Flow.Dataflow.slot();
     _.requestFrameSummary = Flow.Dataflow.slot();
     _.requestFrameDataE = Flow.Dataflow.slot();
@@ -12000,7 +11998,6 @@
     let __modelBuilders;
     let _storageConfiguration;
     let _storageConfigurations;
-    const requestFrame = (key, go) => doGet(_, `/3/Frames/${ encodeURIComponent(key) }`, unwrap(go, result => lodash.head(result.frames)));
     const requestFrameSlice = (key, searchTerm, offset, count, go) => {
       // eslint-disable-line
       // TODO send search term
@@ -12409,7 +12406,6 @@
     };
     Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame$1);
     Flow.Dataflow.link(_.requestFrames, requestFrames$1);
-    Flow.Dataflow.link(_.requestFrame, requestFrame);
     Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
     Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary);
     Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);

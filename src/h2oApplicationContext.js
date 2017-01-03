@@ -8,7 +8,6 @@ export function h2oApplicationContext(_) {
   _.requestParseSetup = Flow.Dataflow.slot();
   _.requestParseSetupPreview = Flow.Dataflow.slot();
   _.requestFrames = Flow.Dataflow.slot();
-  _.requestFrame = Flow.Dataflow.slot();
   _.requestFrameSlice = Flow.Dataflow.slot();
   _.requestFrameSummary = Flow.Dataflow.slot();
   _.requestFrameDataE = Flow.Dataflow.slot();

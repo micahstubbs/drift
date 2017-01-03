@@ -25,7 +25,6 @@ export function h2oProxy(_) {
   let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
-  const requestFrame = (key, go) => doGet(_, `/3/Frames/${encodeURIComponent(key)}`, unwrap(go, result => lodash.head(result.frames)));
   const requestFrameSlice = (key, searchTerm, offset, count, go) => { // eslint-disable-line
     // TODO send search term
     return doGet(_, `/3/Frames/${encodeURIComponent(key)}?column_offset=${offset}&column_count=${count}`, unwrap(go, result => lodash.head(result.frames)));
@@ -454,7 +453,6 @@ export function h2oProxy(_) {
   };
   Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame);
   Flow.Dataflow.link(_.requestFrames, requestFrames);
-  Flow.Dataflow.link(_.requestFrame, requestFrame);
   Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
   Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary);
   Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
