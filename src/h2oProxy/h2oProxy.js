@@ -50,7 +50,6 @@ export function h2oProxy(_) {
     };
     return doPost(_, '/99/Models.bin/not_in_use', opts, go);
   };
-  const requestExportModel = (key, path, overwrite, go) => doGet(_, `/99/Models.bin/${encodeURIComponent(key)}?dir=${encodeURIComponent(path)}&force=${overwrite}`, go);
 
   // TODO Obsolete
   const requestModelBuildersVisibility = go => doGet(_, '/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
@@ -318,7 +317,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
   Flow.Dataflow.link(_.requestImportModel, requestImportModel);
-  Flow.Dataflow.link(_.requestExportModel, requestExportModel);
   Flow.Dataflow.link(_.requestModelBuilder, requestModelBuilder);
   Flow.Dataflow.link(_.requestModelBuilders, requestModelBuilders);
   Flow.Dataflow.link(_.requestModelBuild, requestModelBuild);

@@ -65,6 +65,7 @@ import { requestParseSetup } from './requestParseSetup';
 import { requestCancelJob } from './requestCancelJob';
 import { requestPartialDependence } from './requestPartialDependence';
 import { requestPartialDependenceData } from './requestPartialDependenceData';
+import { requestExportModel } from './requestExportModel';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';

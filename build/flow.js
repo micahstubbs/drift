@@ -4963,6 +4963,29 @@
     });
   }
 
+  function h2oExportModelOutput(_, _go, result) {
+    const lodash = window._;
+    lodash.defer(_go);
+    return { template: 'flow-export-model-output' };
+  }
+
+  function extendExportModel(_, result) {
+    return render_(_, result, h2oExportModelOutput, result);
+  }
+
+  function getExportModelRequest(_, key, path, overwrite, go) {
+    return doGet(_, `/99/Models.bin/${ encodeURIComponent(key) }?dir=${ encodeURIComponent(path) }&force=${ overwrite }`, go);
+  }
+
+  function requestExportModel(_, modelKey, path, opts, go) {
+    return getExportModelRequest(_, modelKey, path, opts.overwrite, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendExportModel(_, result));
+    });
+  }
+
   const flowPrelude$30 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -12181,7 +12204,6 @@
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
     _.requestImportModel = Flow.Dataflow.slot();
-    _.requestExportModel = Flow.Dataflow.slot();
     _.requestObjects = Flow.Dataflow.slot();
     _.requestObject = Flow.Dataflow.slot();
     _.requestObjectExists = Flow.Dataflow.slot();
@@ -12330,7 +12352,6 @@
       };
       return doPost(_, '/99/Models.bin/not_in_use', opts, go);
     };
-    const requestExportModel = (key, path, overwrite, go) => doGet(_, `/99/Models.bin/${ encodeURIComponent(key) }?dir=${ encodeURIComponent(path) }&force=${ overwrite }`, go);
 
     // TODO Obsolete
     const requestModelBuildersVisibility = go => doGet(_, '/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
@@ -12598,7 +12619,6 @@
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
     Flow.Dataflow.link(_.requestImportModel, requestImportModel);
-    Flow.Dataflow.link(_.requestExportModel, requestExportModel);
     Flow.Dataflow.link(_.requestModelBuilder, requestModelBuilder);
     Flow.Dataflow.link(_.requestModelBuilders, requestModelBuilders);
     Flow.Dataflow.link(_.requestModelBuild, requestModelBuild);
