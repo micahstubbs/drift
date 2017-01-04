@@ -46,35 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
-    let opt;
-    const opts = {};
-    if (destinationKey) {
-      opts.predictions_frame = destinationKey;
-    }
-    opt = options.reconstruction_error;
-    if (void 0 !== opt) {
-      opts.reconstruction_error = opt;
-    }
-    opt = options.deep_features_hidden_layer;
-    if (void 0 !== opt) {
-      opts.deep_features_hidden_layer = opt;
-    }
-    opt = options.leaf_node_assignment;
-    if (void 0 !== opt) {
-      opts.leaf_node_assignment = opt;
-    }
-    opt = options.exemplar_index;
-    if (void 0 !== opt) {
-      opts.exemplar_index = opt;
-    }
-    return doPost(_, `/3/Predictions/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, opts, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, result);
-    });
-  };
   const requestPrediction = (modelKey, frameKey, go) => doGet(_, `/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, (error, result) => {
     if (error) {
       return go(error);
@@ -217,7 +188,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestPredict, requestPredict);
   Flow.Dataflow.link(_.requestPrediction, requestPrediction);
   Flow.Dataflow.link(_.requestPredictions, requestPredictions);
   Flow.Dataflow.link(_.requestObjects, requestObjects);
