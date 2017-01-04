@@ -102,6 +102,7 @@ import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
 import { getCloudRequest } from '../h2oProxy/getCloudRequest';
 import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 import { getProfileRequest } from '../h2oProxy/getProfileRequest';
+import { getStackTraceRequest } from '../h2oProxy/getStackTraceRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -863,7 +864,7 @@ export function routines() {
     });
     // blocked by CoffeeScript codecell `_` issue
     getTimeline = () => _fork(requestTimeline);
-    requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
+    requestStackTrace = go => getStackTraceRequest(_, (error, stackTrace) => {
       if (error) {
         return go(error);
       }

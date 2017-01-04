@@ -7435,6 +7435,10 @@
     return doGet(_, `/3/Profiler?depth=${ depth }`, go);
   }
 
+  function getStackTraceRequest(_, go) {
+    return doGet(_, '/3/JStack', go);
+  }
+
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8183,7 +8187,7 @@
       });
       // blocked by CoffeeScript codecell `_` issue
       getTimeline = () => _fork(requestTimeline);
-      requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
+      requestStackTrace = go => getStackTraceRequest(_, (error, stackTrace) => {
         if (error) {
           return go(error);
         }
@@ -12455,7 +12459,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestStackTrace = Flow.Dataflow.slot();
     _.requestRemoveAll = Flow.Dataflow.slot();
     _.requestEcho = Flow.Dataflow.slot();
     _.requestLogFile = Flow.Dataflow.slot();
@@ -12566,7 +12569,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestStackTrace = go => doGet(_, '/3/JStack', go);
     const requestRemoveAll = go => doDelete(_, '/3/DKV', go);
     const requestEcho = (message, go) => doPost(_, '/3/LogAndEcho', { message }, go);
     const requestLogFile = (nodeIndex, fileType, go) => doGet(_, `/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
@@ -12620,7 +12622,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestStackTrace, requestStackTrace);
     Flow.Dataflow.link(_.requestRemoveAll, requestRemoveAll);
     Flow.Dataflow.link(_.requestEcho, requestEcho);
     Flow.Dataflow.link(_.requestLogFile, requestLogFile);
