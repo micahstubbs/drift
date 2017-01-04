@@ -1,4 +1,5 @@
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
+import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
@@ -364,7 +365,7 @@ export function notebook() {
       _selectedCell.execute(() => selectNextCell());
       return false;
     };
-    const checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
+    const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
     const storeNotebook = (localName, remoteName) => _.requestPutObject('notebook', localName, serialize(), error => {
       if (error) {
         return _.alert(`Error saving notebook: ${error.message}`);

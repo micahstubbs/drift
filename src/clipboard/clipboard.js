@@ -1,3 +1,5 @@
+import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -60,7 +62,7 @@ export function clipboard() {
       return _trashClips.remove(clip);
     }
     const emptyTrash = () => _trashClips.removeAll();
-    const loadUserClips = () => _.requestObjectExists('environment', 'clips', (error, exists) => {
+    const loadUserClips = () => getObjectExistsRequest(_, 'environment', 'clips', (error, exists) => {
       if (exists) {
         return _.requestObject('environment', 'clips', (error, doc) => {
           if (!error) {

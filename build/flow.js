@@ -10403,6 +10403,11 @@
     };
   }
 
+  function getObjectExistsRequest(_, type, name, go) {
+    const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
+    return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
+  }
+
   function flowHeading(_, level) {
     const render = (input, output) => {
       output.data({
@@ -11201,7 +11206,7 @@
       }
       return false;
     });
-    const checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
+    const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
     const uploadFile = basename => _.requestUploadObject('notebook', basename, new FormData(_form()), (error, filename) => _go({
       error,
       filename
@@ -11629,7 +11634,7 @@
         _selectedCell.execute(() => selectNextCell());
         return false;
       };
-      const checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
+      const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
       const storeNotebook = (localName, remoteName) => _.requestPutObject('notebook', localName, serialize(), error => {
         if (error) {
           return _.alert(`Error saving notebook: ${ error.message }`);
@@ -12190,7 +12195,7 @@
         return _trashClips.remove(clip);
       }
       const emptyTrash = () => _trashClips.removeAll();
-      const loadUserClips = () => _.requestObjectExists('environment', 'clips', (error, exists) => {
+      const loadUserClips = () => getObjectExistsRequest(_, 'environment', 'clips', (error, exists) => {
         if (exists) {
           return _.requestObject('environment', 'clips', (error, doc) => {
             if (!error) {
@@ -12404,7 +12409,6 @@
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
     _.requestObject = Flow.Dataflow.slot();
-    _.requestObjectExists = Flow.Dataflow.slot();
     _.requestDeleteObject = Flow.Dataflow.slot();
     _.requestPutObject = Flow.Dataflow.slot();
     _.requestUploadObject = Flow.Dataflow.slot();
@@ -12527,7 +12531,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestObjectExists = (type, name, go) => doGet(_, `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`, (error, result) => go(null, error ? false : result.exists));
     const requestObject = (type, name, go) => doGet(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, unwrap(go, result => JSON.parse(result.value)));
     const requestDeleteObject = (type, name, go) => doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
     const requestPutObject = (type, name, value, go) => {
@@ -12605,7 +12608,6 @@
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
     Flow.Dataflow.link(_.requestObject, requestObject);
-    Flow.Dataflow.link(_.requestObjectExists, requestObjectExists);
     Flow.Dataflow.link(_.requestDeleteObject, requestDeleteObject);
     Flow.Dataflow.link(_.requestPutObject, requestPutObject);
     Flow.Dataflow.link(_.requestUploadObject, requestUploadObject);

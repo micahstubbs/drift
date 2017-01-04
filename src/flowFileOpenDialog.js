@@ -1,3 +1,5 @@
+import { getObjectExistsRequest } from './h2oProxy/getObjectExistsRequest';
+
 export function flowFileOpenDialog(_, _go) {
   const Flow = window.Flow;
   const H2O = window.H2O;
@@ -10,7 +12,7 @@ export function flowFileOpenDialog(_, _go) {
     }
     return false;
   });
-  const checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
+  const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
   const uploadFile = basename => _.requestUploadObject('notebook', basename, new FormData(_form()), (error, filename) => _go({
     error,
     filename,
