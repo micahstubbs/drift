@@ -12364,8 +12364,6 @@
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
     };
 
-    // TODO Obsolete
-    const requestModelBuildersVisibility = go => doGet(_, '/3/Configuration/ModelBuilders/visibility', unwrap(go, result => result.value));
     __modelBuilders = null;
     __modelBuilderEndpoints = null;
     __gridModelBuilderEndpoints = null;
