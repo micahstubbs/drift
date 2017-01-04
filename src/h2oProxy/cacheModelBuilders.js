@@ -1,4 +1,4 @@
-export function cacheModelBuilders(modelBuilders) {
+export function cacheModelBuilders(_, modelBuilders) {
   let modelBuilder;
   let _i;
   let _len;
@@ -9,9 +9,8 @@ export function cacheModelBuilders(modelBuilders) {
     modelBuilderEndpoints[modelBuilder.algo] = `/${modelBuilder.__meta.schema_version}/ModelBuilders/${modelBuilder.algo}`;
     gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${modelBuilder.algo}`;
   }
-  const __modelBuilderEndpoints = modelBuilderEndpoints;
-  const __gridModelBuilderEndpoints = gridModelBuilderEndpoints;
-  const __modelBuilders = modelBuilders;
-  console.log('__modelBuilders from cacheModelBuilders', __modelBuilders);
-  return __modelBuilders;
+  _.__.modelBuilderEndpoints = modelBuilderEndpoints;
+  _.__.gridModelBuilderEndpoints = gridModelBuilderEndpoints;
+  _.__.modelBuilders = modelBuilders;
+  return _.__.modelBuilders;
 }

@@ -18,6 +18,7 @@ import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummaryWithoutData } from './requestFrameSummaryWithoutData';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestFileGlob } from './requestFileGlob';
+import { cacheModelBuilders } from './cacheModelBuilders';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -46,22 +47,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const cacheModelBuilders = modelBuilders => {
-    let modelBuilder;
-    let _i;
-    let _len;
-    const modelBuilderEndpoints = {};
-    const gridModelBuilderEndpoints = {};
-    for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
-      modelBuilder = modelBuilders[_i];
-      modelBuilderEndpoints[modelBuilder.algo] = `/${modelBuilder.__meta.schema_version}/ModelBuilders/${modelBuilder.algo}`;
-      gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${modelBuilder.algo}`;
-    }
-    _.__.modelBuilderEndpoints = modelBuilderEndpoints;
-    _.__.gridModelBuilderEndpoints = gridModelBuilderEndpoints;
-    _.__.modelBuilders = modelBuilders;
-    return _.__.modelBuilders;
-  };
   const requestModelBuilders = go => {
     const modelBuilders = _.__.modelBuilders;
     if (modelBuilders) {
@@ -114,7 +99,7 @@ export function h2oProxy(_) {
             return builders;
         }
       })();
-      return cacheModelBuilders(availableBuilders);
+      return cacheModelBuilders(_, availableBuilders);
     }));
   };
   const requestModelBuilder = (algo, go) => doGet(_, _.__.modelBuilderEndpoints[algo], go);
