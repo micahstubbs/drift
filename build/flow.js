@@ -12382,7 +12382,6 @@
       _.__.modelBuilders = modelBuilders;
       return _.__.modelBuilders;
     };
-    const getGridModelBuilderEndpoint = algo => _.__.gridModelBuilderEndpoints[algo];
     const requestModelBuilders = go => {
       const modelBuilders = _.__.modelBuilders;
       if (modelBuilders) {
@@ -12448,7 +12447,7 @@
         if (parameters.search_criteria) {
           parameters.search_criteria = flowPrelude$50.stringify(parameters.search_criteria);
         }
-        return doPost(_, getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
+        return doPost(_, _.__.gridModelBuilderEndpoints[algo], encodeObjectForPost(parameters), go);
       }
       return doPost(_, _.__.modelBuilderEndpoints[algo], encodeObjectForPost(parameters), go);
     };

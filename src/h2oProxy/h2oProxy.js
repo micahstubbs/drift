@@ -62,7 +62,6 @@ export function h2oProxy(_) {
     _.__.modelBuilders = modelBuilders;
     return _.__.modelBuilders;
   };
-  const getGridModelBuilderEndpoint = algo => _.__.gridModelBuilderEndpoints[algo];
   const requestModelBuilders = go => {
     const modelBuilders = _.__.modelBuilders;
     if (modelBuilders) {
@@ -128,7 +127,7 @@ export function h2oProxy(_) {
       if (parameters.search_criteria) {
         parameters.search_criteria = flowPrelude.stringify(parameters.search_criteria);
       }
-      return doPost(_, getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
+      return doPost(_, _.__.gridModelBuilderEndpoints[algo], encodeObjectForPost(parameters), go);
     }
     return doPost(_, _.__.modelBuilderEndpoints[algo], encodeObjectForPost(parameters), go);
   };
