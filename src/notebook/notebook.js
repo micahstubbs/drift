@@ -3,6 +3,7 @@ import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 import { getObjectRequest } from '../h2oProxy/getObjectRequest';
 import { deleteObjectRequest } from '../h2oProxy/deleteObjectRequest';
 import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
+import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
 
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
@@ -539,7 +540,7 @@ export function notebook() {
     };
     const executeCommand = command => () => _.insertAndExecuteCell('cs', command);
     const displayAbout = () => $('#aboutDialog').modal();
-    const shutdown = () => _.requestShutdown((error, result) => {
+    const shutdown = () => postShutdownRequest(_, (error, result) => {
       if (error) {
         return _.growl(`Shutdown failed: ${error.message}`, 'danger');
       }

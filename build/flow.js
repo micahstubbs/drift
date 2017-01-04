@@ -10454,6 +10454,10 @@
     return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
   }
 
+  function postShutdownRequest(_, go) {
+    return doPost(_, '/3/Shutdown', {}, go);
+  }
+
   function flowHeading(_, level) {
     const render = (input, output) => {
       output.data({
@@ -11863,7 +11867,7 @@
       };
       const executeCommand = command => () => _.insertAndExecuteCell('cs', command);
       const displayAbout = () => $('#aboutDialog').modal();
-      const shutdown = () => _.requestShutdown((error, result) => {
+      const shutdown = () => postShutdownRequest(_, (error, result) => {
         if (error) {
           return _.growl(`Shutdown failed: ${ error.message }`, 'danger');
         }
@@ -12475,7 +12479,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestShutdown = Flow.Dataflow.slot();
     _.requestEndpoints = Flow.Dataflow.slot();
     _.requestEndpoint = Flow.Dataflow.slot();
     _.requestSchemas = Flow.Dataflow.slot();
@@ -12580,7 +12583,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestShutdown = go => doPost(_, '/3/Shutdown', {}, go);
     const requestEndpoints = go => doGet(_, '/3/Metadata/endpoints', go);
     const requestEndpoint = (index, go) => doGet(_, `/3/Metadata/endpoints/${ index }`, go);
     const requestSchemas = go => doGet(_, '/3/Metadata/schemas', go);
@@ -12628,7 +12630,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestShutdown, requestShutdown);
     Flow.Dataflow.link(_.requestEndpoints, requestEndpoints);
     Flow.Dataflow.link(_.requestEndpoint, requestEndpoint);
     Flow.Dataflow.link(_.requestSchemas, requestSchemas);
