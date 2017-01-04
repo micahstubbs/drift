@@ -93,6 +93,17 @@
 
   const flowPrelude$1 = flowPreludeFunction();
 
+  function h2oImportModelOutput(_, _go, result) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const viewModel = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$1.stringify(result.models[0].model_id.name) }`);
+    lodash.defer(_go);
+    return {
+      viewModel,
+      template: 'flow-import-model-output'
+    };
+  }
+
   function h2oFrameDataOutput(_, _go, _frame) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -4589,11 +4600,19 @@
 
   function extendImportModel(_, result) {
     const H2O = window.H2O;
-    return render_(_, result, H2O.ImportModelOutput, result);
+    return render_(_, result, h2oImportModelOutput, result);
+  }
+
+  function postImportModelRequest(_, path, overwrite, go) {
+    const opts = {
+      dir: path,
+      force: overwrite
+    };
+    return doPost(_, '/99/Models.bin/not_in_use', opts, go);
   }
 
   function requestImportModel(_, path, opts, go) {
-    return _.requestImportModel(path, opts.overwrite, (error, result) => {
+    return postImportModelRequest(_, path, opts.overwrite, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -12203,7 +12222,6 @@
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
-    _.requestImportModel = Flow.Dataflow.slot();
     _.requestObjects = Flow.Dataflow.slot();
     _.requestObject = Flow.Dataflow.slot();
     _.requestObjectExists = Flow.Dataflow.slot();
@@ -12344,13 +12362,6 @@
     const requestImportFile = (path, go) => {
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
-    };
-    const requestImportModel = (path, overwrite, go) => {
-      const opts = {
-        dir: path,
-        force: overwrite
-      };
-      return doPost(_, '/99/Models.bin/not_in_use', opts, go);
     };
 
     // TODO Obsolete
@@ -12618,7 +12629,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestImportModel, requestImportModel);
     Flow.Dataflow.link(_.requestModelBuilder, requestModelBuilder);
     Flow.Dataflow.link(_.requestModelBuilders, requestModelBuilders);
     Flow.Dataflow.link(_.requestModelBuild, requestModelBuild);

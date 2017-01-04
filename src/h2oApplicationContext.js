@@ -20,7 +20,6 @@ export function h2oApplicationContext(_) {
   _.requestPredict = Flow.Dataflow.slot();
   _.requestPrediction = Flow.Dataflow.slot();
   _.requestPredictions = Flow.Dataflow.slot();
-  _.requestImportModel = Flow.Dataflow.slot();
   _.requestObjects = Flow.Dataflow.slot();
   _.requestObject = Flow.Dataflow.slot();
   _.requestObjectExists = Flow.Dataflow.slot();
