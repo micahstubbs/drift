@@ -10417,6 +10417,15 @@
     return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
   }
 
+  function postPutObjectRequest(_, type, name, value, go) {
+    let uri;
+    uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
+    if (name) {
+      uri += `/${ encodeURIComponent(name) }`;
+    }
+    return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
+  }
+
   function flowHeading(_, level) {
     const render = (input, output) => {
       output.data({
@@ -11644,7 +11653,7 @@
         return false;
       };
       const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-      const storeNotebook = (localName, remoteName) => _.requestPutObject('notebook', localName, serialize(), error => {
+      const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(), error => {
         if (error) {
           return _.alert(`Error saving notebook: ${ error.message }`);
         }
@@ -12222,7 +12231,7 @@
         }))
       });
       function saveUserClips() {
-        return _.requestPutObject('environment', 'clips', serializeUserClips(), error => {
+        return postPutObjectRequest(_, 'environment', 'clips', serializeUserClips(), error => {
           if (error) {
             _.alert(`Error saving clips: ${ error.message }`);
           }
@@ -12417,7 +12426,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestPutObject = Flow.Dataflow.slot();
     _.requestUploadObject = Flow.Dataflow.slot();
     _.requestUploadFile = Flow.Dataflow.slot();
     _.requestCloud = Flow.Dataflow.slot();
@@ -12538,14 +12546,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestPutObject = (type, name, value, go) => {
-      let uri;
-      uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
-      if (name) {
-        uri += `/${ encodeURIComponent(name) }`;
-      }
-      return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
-    };
     const requestUploadObject = (type, name, formData, go) => {
       let uri;
       uri = `/3/NodePersistentStorage.bin/${ encodeURIComponent(type) }`;
@@ -12612,7 +12612,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestPutObject, requestPutObject);
     Flow.Dataflow.link(_.requestUploadObject, requestUploadObject);
     Flow.Dataflow.link(_.requestUploadFile, requestUploadFile);
     Flow.Dataflow.link(_.requestCloud, requestCloud);

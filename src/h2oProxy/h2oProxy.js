@@ -45,14 +45,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestPutObject = (type, name, value, go) => {
-    let uri;
-    uri = `/3/NodePersistentStorage/${encodeURIComponent(type)}`;
-    if (name) {
-      uri += `/${encodeURIComponent(name)}`;
-    }
-    return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
-  };
   const requestUploadObject = (type, name, formData, go) => {
     let uri;
     uri = `/3/NodePersistentStorage.bin/${encodeURIComponent(type)}`;
@@ -119,7 +111,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestPutObject, requestPutObject);
   Flow.Dataflow.link(_.requestUploadObject, requestUploadObject);
   Flow.Dataflow.link(_.requestUploadFile, requestUploadFile);
   Flow.Dataflow.link(_.requestCloud, requestCloud);

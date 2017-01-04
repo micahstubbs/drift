@@ -2,6 +2,7 @@ import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 import { getObjectRequest } from '../h2oProxy/getObjectRequest';
 import { deleteObjectRequest } from '../h2oProxy/deleteObjectRequest';
+import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
 
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
@@ -368,7 +369,7 @@ export function notebook() {
       return false;
     };
     const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-    const storeNotebook = (localName, remoteName) => _.requestPutObject('notebook', localName, serialize(), error => {
+    const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(), error => {
       if (error) {
         return _.alert(`Error saving notebook: ${error.message}`);
       }

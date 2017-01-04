@@ -1,5 +1,6 @@
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 import { getObjectRequest } from '../h2oProxy/getObjectRequest';
+import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -81,7 +82,7 @@ export function clipboard() {
       })),
     });
     function saveUserClips() {
-      return _.requestPutObject('environment', 'clips', serializeUserClips(), error => {
+      return postPutObjectRequest(_, 'environment', 'clips', serializeUserClips(), error => {
         if (error) {
           _.alert(`Error saving clips: ${error.message}`);
         }
