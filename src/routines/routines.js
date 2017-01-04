@@ -103,6 +103,7 @@ import { getCloudRequest } from '../h2oProxy/getCloudRequest';
 import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 import { getProfileRequest } from '../h2oProxy/getProfileRequest';
 import { getStackTraceRequest } from '../h2oProxy/getStackTraceRequest';
+import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -915,7 +916,7 @@ export function routines() {
     //
     testNetwork = () => _fork(requestNetworkTest);
     // calls _.self
-    requestRemoveAll = go => _.requestRemoveAll((error, result) => {
+    requestRemoveAll = go => deleteAllRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
