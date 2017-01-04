@@ -1,5 +1,6 @@
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
+import { getObjectRequest } from '../h2oProxy/getObjectRequest';
 
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
@@ -564,7 +565,7 @@ export function notebook() {
     const duplicateNotebook = () => deserialize(`Copy of ${_localName()}`, null, serialize());
     const openNotebook = (name, doc) => deserialize(name, null, doc);
     function loadNotebook(name) {
-      return _.requestObject('notebook', name, (error, doc) => {
+      return getObjectRequest(_, 'notebook', name, (error, doc) => {
         let _ref;
         if (error) {
           _ref = error.message;

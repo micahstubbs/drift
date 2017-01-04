@@ -10408,6 +10408,11 @@
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
   }
 
+  function getObjectRequest(_, type, name, go) {
+    const urlString = `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`;
+    return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
+  }
+
   function flowHeading(_, level) {
     const render = (input, output) => {
       output.data({
@@ -11828,7 +11833,7 @@
       const duplicateNotebook = () => deserialize(`Copy of ${ _localName() }`, null, serialize());
       const openNotebook = (name, doc) => deserialize(name, null, doc);
       function loadNotebook(name) {
-        return _.requestObject('notebook', name, (error, doc) => {
+        return getObjectRequest(_, 'notebook', name, (error, doc) => {
           let _ref;
           if (error) {
             _ref = error.message;
@@ -12197,7 +12202,7 @@
       const emptyTrash = () => _trashClips.removeAll();
       const loadUserClips = () => getObjectExistsRequest(_, 'environment', 'clips', (error, exists) => {
         if (exists) {
-          return _.requestObject('environment', 'clips', (error, doc) => {
+          return getObjectRequest(_, 'environment', 'clips', (error, doc) => {
             if (!error) {
               return _userClips(lodash.map(doc.clips, clip => createClip(_userClips, clip.type, clip.input)));
             }
@@ -12408,7 +12413,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestObject = Flow.Dataflow.slot();
     _.requestDeleteObject = Flow.Dataflow.slot();
     _.requestPutObject = Flow.Dataflow.slot();
     _.requestUploadObject = Flow.Dataflow.slot();
@@ -12531,7 +12535,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestObject = (type, name, go) => doGet(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, unwrap(go, result => JSON.parse(result.value)));
     const requestDeleteObject = (type, name, go) => doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
     const requestPutObject = (type, name, value, go) => {
       let uri;
@@ -12607,7 +12610,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestObject, requestObject);
     Flow.Dataflow.link(_.requestDeleteObject, requestDeleteObject);
     Flow.Dataflow.link(_.requestPutObject, requestPutObject);
     Flow.Dataflow.link(_.requestUploadObject, requestUploadObject);
