@@ -45,7 +45,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestUploadFile = (key, formData, go) => doUpload(_, `/3/PostFile?destination_frame=${encodeURIComponent(key)}`, formData, go);
   const requestCloud = go => doGet(_, '/3/Cloud', go);
   const requestTimeline = go => doGet(_, '/3/Timeline', go);
   const requestProfile = (depth, go) => doGet(_, `/3/Profiler?depth=${depth}`, go);
@@ -103,7 +102,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestUploadFile, requestUploadFile);
   Flow.Dataflow.link(_.requestCloud, requestCloud);
   Flow.Dataflow.link(_.requestTimeline, requestTimeline);
   Flow.Dataflow.link(_.requestProfile, requestProfile);

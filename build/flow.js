@@ -11270,11 +11270,15 @@
     };
   }
 
+  function postUploadFileRequest(_, key, formData, go) {
+    return doUpload(_, `/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
+  }
+
   function flowFileUploadDialog(_, _go) {
     const Flow = window.Flow;
     const _form = Flow.Dataflow.signal(null);
     const _file = Flow.Dataflow.signal(null);
-    const uploadFile = key => _.requestUploadFile(key, new FormData(_form()), (error, result) => _go({
+    const uploadFile = key => postUploadFileRequest(_, key, new FormData(_form()), (error, result) => _go({
       error,
       result
     }));
@@ -12439,7 +12443,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestUploadFile = Flow.Dataflow.slot();
     _.requestCloud = Flow.Dataflow.slot();
     _.requestTimeline = Flow.Dataflow.slot();
     _.requestProfile = Flow.Dataflow.slot();
@@ -12554,7 +12557,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestUploadFile = (key, formData, go) => doUpload(_, `/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
     const requestCloud = go => doGet(_, '/3/Cloud', go);
     const requestTimeline = go => doGet(_, '/3/Timeline', go);
     const requestProfile = (depth, go) => doGet(_, `/3/Profiler?depth=${ depth }`, go);
@@ -12612,7 +12614,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestUploadFile, requestUploadFile);
     Flow.Dataflow.link(_.requestCloud, requestCloud);
     Flow.Dataflow.link(_.requestTimeline, requestTimeline);
     Flow.Dataflow.link(_.requestProfile, requestProfile);
