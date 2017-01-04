@@ -5728,6 +5728,16 @@
     };
   }
 
+  function getModelRequest(_, key, go) {
+    const lodash = window._;
+    return doGet(_, `/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
+      if (error) {
+        return go(error, result);
+      }
+      return go(error, lodash.head(result.models));
+    });
+  }
+
   const flowPrelude$36 = flowPreludeFunction();
 
   function h2oPredictInput(_, _go, opt) {
@@ -5839,7 +5849,7 @@
     }
     if (!_selectedModel()) {
       if (opt.model && lodash.isString(opt.model)) {
-        _.requestModel(opt.model, (error, model) => _selectedModel(model));
+        getModelRequest(_, opt.model, (error, model) => _selectedModel(model));
       }
     }
     const predict = () => {
@@ -7322,7 +7332,7 @@
           inspect_(model, inspections);
           return model;
         };
-        const refresh = go => _.requestModel(model.model_id.name, (error, model) => {
+        const refresh = go => getModelRequest(_, model.model_id.name, (error, model) => {
           if (error) {
             return go(error);
           }
@@ -7332,7 +7342,7 @@
         return render_(model, h2oModelOutput, model, refresh);
       };
       requestModel = (modelKey, go) => {
-        return _.requestModel(modelKey, (error, model) => {
+        return getModelRequest(_, modelKey, (error, model) => {
           if (error) {
             return go(error);
           }
@@ -12140,7 +12150,6 @@
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
-    _.requestModel = Flow.Dataflow.slot();
     _.requestPojoPreview = Flow.Dataflow.slot();
     _.requestDeleteModel = Flow.Dataflow.slot();
     _.requestImportModel = Flow.Dataflow.slot();
@@ -12308,12 +12317,6 @@
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
     };
-    const requestModel = (key, go) => doGet(_, `/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
-      if (error) {
-        return go(error, result);
-      }
-      return go(error, lodash.head(result.models));
-    });
     const requestPojoPreview = (key, go) => download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
     const requestDeleteModel = (key, go) => doDelete(_, `/3/Models/${ encodeURIComponent(key) }`, go);
     const requestImportModel = (path, overwrite, go) => {
@@ -12590,7 +12593,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestModel, requestModel);
     Flow.Dataflow.link(_.requestPojoPreview, requestPojoPreview);
     Flow.Dataflow.link(_.requestDeleteModel, requestDeleteModel);
     Flow.Dataflow.link(_.requestImportModel, requestImportModel);

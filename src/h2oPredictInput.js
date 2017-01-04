@@ -1,3 +1,4 @@
+import { getModelRequest } from './h2oProxy/getModelRequest';
 import { getModelsRequest } from './h2oProxy/getModelsRequest';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
@@ -121,7 +122,7 @@ export function h2oPredictInput(_, _go, opt) {
   }
   if (!_selectedModel()) {
     if (opt.model && lodash.isString(opt.model)) {
-      _.requestModel(opt.model, (error, model) => _selectedModel(model));
+      getModelRequest(_, opt.model, (error, model) => _selectedModel(model));
     }
   }
   const predict = () => {

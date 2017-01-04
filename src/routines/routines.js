@@ -95,6 +95,7 @@ import { h2oNoAssist } from '../h2oNoAssist';
 import { h2oModelOutput } from '../h2oModelOutput';
 
 import { getGridRequest } from '../h2oProxy/getGridRequest';
+import { getModelRequest } from '../h2oProxy/getModelRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -266,7 +267,7 @@ export function routines() {
         inspect_(model, inspections);
         return model;
       };
-      const refresh = go => _.requestModel(model.model_id.name, (error, model) => {
+      const refresh = go => getModelRequest(_, model.model_id.name, (error, model) => {
         if (error) {
           return go(error);
         }
@@ -276,7 +277,7 @@ export function routines() {
       return render_(model, h2oModelOutput, model, refresh);
     }
     requestModel = (modelKey, go) => {
-      return _.requestModel(modelKey, (error, model) => {
+      return getModelRequest(_, modelKey, (error, model) => {
         if (error) {
           return go(error);
         }
