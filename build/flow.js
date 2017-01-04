@@ -12463,7 +12463,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestEcho = Flow.Dataflow.slot();
     _.requestLogFile = Flow.Dataflow.slot();
     _.requestNetworkTest = Flow.Dataflow.slot();
     _.requestAbout = Flow.Dataflow.slot();
@@ -12572,7 +12571,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestEcho = (message, go) => doPost(_, '/3/LogAndEcho', { message }, go);
     const requestLogFile = (nodeIndex, fileType, go) => doGet(_, `/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
     const requestNetworkTest = go => doGet(_, '/3/NetworkTest', go);
     const requestAbout = go => doGet(_, '/3/About', go);
@@ -12624,7 +12622,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestEcho, requestEcho);
     Flow.Dataflow.link(_.requestLogFile, requestLogFile);
     Flow.Dataflow.link(_.requestNetworkTest, requestNetworkTest);
     Flow.Dataflow.link(_.requestAbout, requestAbout);
@@ -12692,12 +12689,16 @@
     };
   }
 
+  function postEchoRequest(_, message, go) {
+    return doPost(_, '/3/LogAndEcho', { message }, go);
+  }
+
   function flowAnalytics(_) {
     const lodash = window._;
     const Flow = window.Flow;
     Flow.Dataflow.link(_.trackEvent, (category, action, label, value) => lodash.defer(() => window.ga('send', 'event', category, action, label, value)));
     return Flow.Dataflow.link(_.trackException, description => lodash.defer(() => {
-      _.requestEcho(`FLOW: ${ description }`, () => {});
+      postEchoRequest(_, `FLOW: ${ description }`, () => {});
       return window.ga('send', 'exception', {
         exDescription: description,
         exFatal: false,
