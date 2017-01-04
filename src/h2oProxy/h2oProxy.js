@@ -46,18 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestModelBuild = (algo, parameters, go) => {
-    _.trackEvent('model', algo);
-    if (parameters.hyper_parameters) {
-      // super-hack: nest this object as stringified json
-      parameters.hyper_parameters = flowPrelude.stringify(parameters.hyper_parameters);
-      if (parameters.search_criteria) {
-        parameters.search_criteria = flowPrelude.stringify(parameters.search_criteria);
-      }
-      return doPost(_, _.__.gridModelBuilderEndpoints[algo], encodeObjectForPost(parameters), go);
-    }
-    return doPost(_, _.__.modelBuilderEndpoints[algo], encodeObjectForPost(parameters), go);
-  };
   const requestAutoModelBuild = (parameters, go) => doPostJSON(_, '/3/AutoMLBuilder', parameters, go);
   const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
     let opt;
@@ -230,7 +218,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestModelBuild, requestModelBuild);
   Flow.Dataflow.link(_.requestAutoModelBuild, requestAutoModelBuild);
   Flow.Dataflow.link(_.requestPredict, requestPredict);
   Flow.Dataflow.link(_.requestPrediction, requestPrediction);

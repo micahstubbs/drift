@@ -12,7 +12,6 @@ export function h2oApplicationContext(_) {
   _.requestFrameSummarySliceE = Flow.Dataflow.slot();
   _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
   _.requestDeleteFrame = Flow.Dataflow.slot();
-  _.requestModelBuild = Flow.Dataflow.slot();
   _.requestAutoModelBuild = Flow.Dataflow.slot();
   _.requestPredict = Flow.Dataflow.slot();
   _.requestPrediction = Flow.Dataflow.slot();
