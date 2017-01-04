@@ -4570,8 +4570,16 @@
     });
   }
 
+  function doDelete(_, path, go) {
+    return http(_, 'DELETE', path, null, go);
+  }
+
+  function deleteModelRequest(_, key, go) {
+    return doDelete(_, `/3/Models/${ encodeURIComponent(key) }`, go);
+  }
+
   function requestDeleteModel(_, modelKey, go) {
-    return _.requestDeleteModel(modelKey, (error, result) => {
+    return deleteModelRequest(_, modelKey, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -12172,7 +12180,6 @@
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
-    _.requestDeleteModel = Flow.Dataflow.slot();
     _.requestImportModel = Flow.Dataflow.slot();
     _.requestExportModel = Flow.Dataflow.slot();
     _.requestObjects = Flow.Dataflow.slot();
@@ -12226,10 +12233,6 @@
 
   function doUpload(_, path, formData, go) {
     return http(_, 'UPLOAD', path, formData, go);
-  }
-
-  function doDelete(_, path, go) {
-    return http(_, 'DELETE', path, null, go);
   }
 
   function encodeObjectForPost(source) {
@@ -12320,7 +12323,6 @@
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
     };
-    const requestDeleteModel = (key, go) => doDelete(_, `/3/Models/${ encodeURIComponent(key) }`, go);
     const requestImportModel = (path, overwrite, go) => {
       const opts = {
         dir: path,
@@ -12595,7 +12597,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestDeleteModel, requestDeleteModel);
     Flow.Dataflow.link(_.requestImportModel, requestImportModel);
     Flow.Dataflow.link(_.requestExportModel, requestExportModel);
     Flow.Dataflow.link(_.requestModelBuilder, requestModelBuilder);
