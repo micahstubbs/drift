@@ -1,4 +1,5 @@
 import { extendJob } from './extendJob';
+import { postAutoModelBuildRequest } from '../h2oProxy/postAutoModelBuildRequest';
 
 export function requestAutoModelBuild(_, opts, go) {
   const params = {
@@ -8,7 +9,7 @@ export function requestAutoModelBuild(_, opts, go) {
     },
     build_control: { stopping_criteria: { max_runtime_secs: opts.maxRunTime } },
   };
-  return _.requestAutoModelBuild(params, (error, result) => {
+  return postAutoModelBuildRequest(_, params, (error, result) => {
     if (error) {
       return go(error);
     }

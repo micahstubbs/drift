@@ -12320,7 +12320,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestAutoModelBuild = Flow.Dataflow.slot();
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
@@ -12367,10 +12366,6 @@
     _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
     _.requestAsDataFrame = Flow.Dataflow.slot();
     return _.requestAsDataFrame;
-  }
-
-  function doPostJSON(_, path, opts, go) {
-    return http(_, 'POSTJSON', path, opts, go);
   }
 
   function doUpload(_, path, formData, go) {
@@ -12454,7 +12449,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestAutoModelBuild = (parameters, go) => doPostJSON(_, '/3/AutoMLBuilder', parameters, go);
     const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
       let opt;
       const opts = {};
@@ -12626,7 +12620,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestAutoModelBuild, requestAutoModelBuild);
     Flow.Dataflow.link(_.requestPredict, requestPredict);
     Flow.Dataflow.link(_.requestPrediction, requestPrediction);
     Flow.Dataflow.link(_.requestPredictions, requestPredictions);

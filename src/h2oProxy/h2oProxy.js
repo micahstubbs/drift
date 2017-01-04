@@ -46,7 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestAutoModelBuild = (parameters, go) => doPostJSON(_, '/3/AutoMLBuilder', parameters, go);
   const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
     let opt;
     const opts = {};
@@ -218,7 +217,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestAutoModelBuild, requestAutoModelBuild);
   Flow.Dataflow.link(_.requestPredict, requestPredict);
   Flow.Dataflow.link(_.requestPrediction, requestPrediction);
   Flow.Dataflow.link(_.requestPredictions, requestPredictions);
