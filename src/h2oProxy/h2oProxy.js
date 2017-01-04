@@ -26,9 +26,6 @@ export function h2oProxy(_) {
   const lodash = window._;
   const Flow = window.Flow;
   const $ = window.jQuery;
-  let __gridModelBuilderEndpoints;
-  let __modelBuilderEndpoints;
-  let __modelBuilders;
   let _storageConfiguration;
   let _storageConfigurations;
 
@@ -44,9 +41,11 @@ export function h2oProxy(_) {
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
   };
 
-  __modelBuilders = null;
-  __modelBuilderEndpoints = null;
-  __gridModelBuilderEndpoints = null;
+  // setup a __ namespace for our modelBuilders cache
+  _.__ = {};
+  _.__.modelBuilders = null;
+  _.__.modelBuilderEndpoints = null;
+  _.__.gridModelBuilderEndpoints = null;
   const cacheModelBuilders = modelBuilders => {
     let modelBuilder;
     let _i;
@@ -58,14 +57,14 @@ export function h2oProxy(_) {
       modelBuilderEndpoints[modelBuilder.algo] = `/${modelBuilder.__meta.schema_version}/ModelBuilders/${modelBuilder.algo}`;
       gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${modelBuilder.algo}`;
     }
-    __modelBuilderEndpoints = modelBuilderEndpoints;
-    __gridModelBuilderEndpoints = gridModelBuilderEndpoints;
-    __modelBuilders = modelBuilders;
-    return __modelBuilders;
+    _.__.modelBuilderEndpoints = modelBuilderEndpoints;
+    _.__.gridModelBuilderEndpoints = gridModelBuilderEndpoints;
+    _.__.modelBuilders = modelBuilders;
+    return _.__.modelBuilders;
   };
-  const getModelBuilders = () => __modelBuilders;
-  const getModelBuilderEndpoint = algo => __modelBuilderEndpoints[algo];
-  const getGridModelBuilderEndpoint = algo => __gridModelBuilderEndpoints[algo];
+  const getModelBuilders = () => _.__.modelBuilders;
+  const getModelBuilderEndpoint = algo => _.__.modelBuilderEndpoints[algo];
+  const getGridModelBuilderEndpoint = algo => _.__.gridModelBuilderEndpoints[algo];
   const requestModelBuilders = go => {
     const modelBuilders = getModelBuilders();
     if (modelBuilders) {
