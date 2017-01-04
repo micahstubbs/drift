@@ -2413,6 +2413,10 @@
     }
   };
 
+  function getCloudRequest(_, go) {
+    return doGet(_, '/3/Cloud', go);
+  }
+
   function h2oCloudOutput(_, _go, _cloud) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -2567,7 +2571,7 @@
     const toggleRefresh = () => _isLive(!_isLive());
     const refresh = () => {
       _isBusy(true);
-      return _.requestCloud((error, cloud) => {
+      return getCloudRequest(_, (error, cloud) => {
         _isBusy(false);
         if (error) {
           _exception(Flow.failure(_, new Flow.Error('Error fetching cloud status', error)));
@@ -2610,6 +2614,10 @@
 
   function extendCloud(_, cloud) {
     return render_(_, cloud, h2oCloudOutput, cloud);
+  }
+
+  function getTimelineRequest(_, go) {
+    return doGet(_, '/3/Timeline', go);
   }
 
   function h2oTimelineOutput(_, _go, _timeline) {
@@ -2680,7 +2688,7 @@
     const toggleRefresh = () => _isLive(!_isLive());
     const refresh = () => {
       _isBusy(true);
-      return _.requestTimeline((error, timeline) => {
+      return getTimelineRequest(_, (error, timeline) => {
         _isBusy(false);
         if (error) {
           _exception(Flow.failure(_, new Flow.Error('Error fetching timeline', error)));
@@ -8154,7 +8162,7 @@
         return _fork(requestPredictions, opts);
       };
       // calls _.self
-      requestCloud = go => _.requestCloud((error, cloud) => {
+      requestCloud = go => getCloudRequest(_, (error, cloud) => {
         if (error) {
           return go(error);
         }
@@ -8163,7 +8171,7 @@
       // blocked by CoffeeScript codecell `_` issue
       getCloud = () => _fork(requestCloud);
       // calls _.self
-      requestTimeline = go => _.requestTimeline((error, timeline) => {
+      requestTimeline = go => getTimelineRequest(_, (error, timeline) => {
         if (error) {
           return go(error);
         }
@@ -12443,8 +12451,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestCloud = Flow.Dataflow.slot();
-    _.requestTimeline = Flow.Dataflow.slot();
     _.requestProfile = Flow.Dataflow.slot();
     _.requestStackTrace = Flow.Dataflow.slot();
     _.requestRemoveAll = Flow.Dataflow.slot();
@@ -12557,8 +12563,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestCloud = go => doGet(_, '/3/Cloud', go);
-    const requestTimeline = go => doGet(_, '/3/Timeline', go);
     const requestProfile = (depth, go) => doGet(_, `/3/Profiler?depth=${ depth }`, go);
     const requestStackTrace = go => doGet(_, '/3/JStack', go);
     const requestRemoveAll = go => doDelete(_, '/3/DKV', go);
@@ -12614,8 +12618,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestCloud, requestCloud);
-    Flow.Dataflow.link(_.requestTimeline, requestTimeline);
     Flow.Dataflow.link(_.requestProfile, requestProfile);
     Flow.Dataflow.link(_.requestStackTrace, requestStackTrace);
     Flow.Dataflow.link(_.requestRemoveAll, requestRemoveAll);
