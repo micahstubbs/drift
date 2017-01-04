@@ -7447,6 +7447,10 @@
     return doDelete(_, '/3/DKV', go);
   }
 
+  function getNetworkTestRequest(_, go) {
+    return doGet(_, '/3/NetworkTest', go);
+  }
+
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8231,7 +8235,7 @@
         return _fork(requestLogFile, nodeIndex, fileType);
       };
       // calls _.self
-      requestNetworkTest = go => _.requestNetworkTest((error, result) => {
+      requestNetworkTest = go => getNetworkTestRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -12467,7 +12471,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestNetworkTest = Flow.Dataflow.slot();
     _.requestAbout = Flow.Dataflow.slot();
     _.requestShutdown = Flow.Dataflow.slot();
     _.requestEndpoints = Flow.Dataflow.slot();
@@ -12574,7 +12577,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestNetworkTest = go => doGet(_, '/3/NetworkTest', go);
     const requestAbout = go => doGet(_, '/3/About', go);
     const requestShutdown = go => doPost(_, '/3/Shutdown', {}, go);
     const requestEndpoints = go => doGet(_, '/3/Metadata/endpoints', go);
@@ -12624,7 +12626,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestNetworkTest, requestNetworkTest);
     Flow.Dataflow.link(_.requestAbout, requestAbout);
     Flow.Dataflow.link(_.requestShutdown, requestShutdown);
     Flow.Dataflow.link(_.requestEndpoints, requestEndpoints);

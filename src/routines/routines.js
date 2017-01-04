@@ -105,6 +105,7 @@ import { getProfileRequest } from '../h2oProxy/getProfileRequest';
 import { getStackTraceRequest } from '../h2oProxy/getStackTraceRequest';
 import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
 import { getLogFileRequest } from '../h2oProxy/getLogFileRequest';
+import { getNetworkTestRequest } from '../h2oProxy/getNetworkTestRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -902,7 +903,7 @@ export function routines() {
       return _fork(requestLogFile, nodeIndex, fileType);
     };
     // calls _.self
-    requestNetworkTest = go => _.requestNetworkTest((error, result) => {
+    requestNetworkTest = go => getNetworkTestRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }

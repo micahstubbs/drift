@@ -45,7 +45,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestNetworkTest = go => doGet(_, '/3/NetworkTest', go);
   const requestAbout = go => doGet(_, '/3/About', go);
   const requestShutdown = go => doPost(_, '/3/Shutdown', {}, go);
   const requestEndpoints = go => doGet(_, '/3/Metadata/endpoints', go);
@@ -95,7 +94,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestNetworkTest, requestNetworkTest);
   Flow.Dataflow.link(_.requestAbout, requestAbout);
   Flow.Dataflow.link(_.requestShutdown, requestShutdown);
   Flow.Dataflow.link(_.requestEndpoints, requestEndpoints);
