@@ -62,11 +62,10 @@ export function h2oProxy(_) {
     _.__.modelBuilders = modelBuilders;
     return _.__.modelBuilders;
   };
-  const getModelBuilders = () => _.__.modelBuilders;
   const getModelBuilderEndpoint = algo => _.__.modelBuilderEndpoints[algo];
   const getGridModelBuilderEndpoint = algo => _.__.gridModelBuilderEndpoints[algo];
   const requestModelBuilders = go => {
-    const modelBuilders = getModelBuilders();
+    const modelBuilders = _.__.modelBuilders;
     if (modelBuilders) {
       return go(null, modelBuilders);
     }
