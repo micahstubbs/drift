@@ -62,7 +62,6 @@ export function h2oProxy(_) {
     _.__.modelBuilders = modelBuilders;
     return _.__.modelBuilders;
   };
-  const getModelBuilderEndpoint = algo => _.__.modelBuilderEndpoints[algo];
   const getGridModelBuilderEndpoint = algo => _.__.gridModelBuilderEndpoints[algo];
   const requestModelBuilders = go => {
     const modelBuilders = _.__.modelBuilders;
@@ -119,8 +118,8 @@ export function h2oProxy(_) {
       return cacheModelBuilders(availableBuilders);
     }));
   };
-  const requestModelBuilder = (algo, go) => doGet(_, getModelBuilderEndpoint(algo), go);
-  const requestModelInputValidation = (algo, parameters, go) => doPost(_, `${getModelBuilderEndpoint(algo)}/parameters`, encodeObjectForPost(parameters), go);
+  const requestModelBuilder = (algo, go) => doGet(_, _.__.modelBuilderEndpoints[algo], go);
+  const requestModelInputValidation = (algo, parameters, go) => doPost(_, `${_.__.modelBuilderEndpoints[algo]}/parameters`, encodeObjectForPost(parameters), go);
   const requestModelBuild = (algo, parameters, go) => {
     _.trackEvent('model', algo);
     if (parameters.hyper_parameters) {
@@ -131,7 +130,7 @@ export function h2oProxy(_) {
       }
       return doPost(_, getGridModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
     }
-    return doPost(_, getModelBuilderEndpoint(algo), encodeObjectForPost(parameters), go);
+    return doPost(_, _.__.modelBuilderEndpoints[algo], encodeObjectForPost(parameters), go);
   };
   const requestAutoModelBuild = (parameters, go) => doPostJSON(_, '/3/AutoMLBuilder', parameters, go);
   const requestPredict = (destinationKey, modelKey, frameKey, options, go) => {
