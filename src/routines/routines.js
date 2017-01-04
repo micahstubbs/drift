@@ -104,6 +104,7 @@ import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 import { getProfileRequest } from '../h2oProxy/getProfileRequest';
 import { getStackTraceRequest } from '../h2oProxy/getStackTraceRequest';
 import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
+import { getLogFileRequest } from '../h2oProxy/getLogFileRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -874,7 +875,7 @@ export function routines() {
     // depends on requestStackTrace
     getStackTrace = () => _fork(requestStackTrace);
     // calls _.self
-    requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
+    requestLogFile = (nodeIndex, fileType, go) => getCloudRequest(_, (error, cloud) => {
       let NODE_INDEX_SELF;
       if (error) {
         return go(error);
@@ -883,7 +884,7 @@ export function routines() {
         NODE_INDEX_SELF = -1;
         nodeIndex = NODE_INDEX_SELF;
       }
-      return _.requestLogFile(nodeIndex, fileType, (error, logFile) => {
+      return getLogFileRequest(_, nodeIndex, fileType, (error, logFile) => {
         if (error) {
           return go(error);
         }

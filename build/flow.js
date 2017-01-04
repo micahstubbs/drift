@@ -2778,6 +2778,10 @@
     return render_(_, stackTrace, h2oStackTraceOutput, stackTrace);
   }
 
+  function getLogFileRequest(_, nodeIndex, fileType, go) {
+    return doGet(_, `/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
+  }
+
   function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -2794,7 +2798,7 @@
     });
     const refreshActiveView = (node, fileType) => {
       if (node) {
-        return _.requestLogFile(node.index, fileType, (error, logFile) => {
+        return getLogFileRequest(_, node.index, fileType, (error, logFile) => {
           if (error) {
             return _contents(`Error fetching log file: ${ error.message }`);
           }
@@ -8200,7 +8204,7 @@
       // depends on requestStackTrace
       getStackTrace = () => _fork(requestStackTrace);
       // calls _.self
-      requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
+      requestLogFile = (nodeIndex, fileType, go) => getCloudRequest(_, (error, cloud) => {
         let NODE_INDEX_SELF;
         if (error) {
           return go(error);
@@ -8209,7 +8213,7 @@
           NODE_INDEX_SELF = -1;
           nodeIndex = NODE_INDEX_SELF;
         }
-        return _.requestLogFile(nodeIndex, fileType, (error, logFile) => {
+        return getLogFileRequest(_, nodeIndex, fileType, (error, logFile) => {
           if (error) {
             return go(error);
           }
@@ -12463,7 +12467,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestLogFile = Flow.Dataflow.slot();
     _.requestNetworkTest = Flow.Dataflow.slot();
     _.requestAbout = Flow.Dataflow.slot();
     _.requestShutdown = Flow.Dataflow.slot();
@@ -12571,7 +12574,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestLogFile = (nodeIndex, fileType, go) => doGet(_, `/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
     const requestNetworkTest = go => doGet(_, '/3/NetworkTest', go);
     const requestAbout = go => doGet(_, '/3/About', go);
     const requestShutdown = go => doPost(_, '/3/Shutdown', {}, go);
@@ -12622,7 +12624,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestLogFile, requestLogFile);
     Flow.Dataflow.link(_.requestNetworkTest, requestNetworkTest);
     Flow.Dataflow.link(_.requestAbout, requestAbout);
     Flow.Dataflow.link(_.requestShutdown, requestShutdown);
