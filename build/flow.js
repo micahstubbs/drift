@@ -7653,7 +7653,7 @@
       };
 
       requestPrediction = (modelKey, frameKey, go) => {
-        return _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
+        return postPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
       };
       // abstracting this out produces an error
       // defer for now
@@ -12350,7 +12350,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
     _.requestObjects = Flow.Dataflow.slot();
     _.requestObject = Flow.Dataflow.slot();
@@ -12478,12 +12477,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestPrediction = (modelKey, frameKey, go) => doGet(_, `/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, result);
-    });
     const requestPredictions = (modelKey, frameKey, _go) => {
       const go = (error, result) => {
         let prediction;
@@ -12620,7 +12613,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestPrediction, requestPrediction);
     Flow.Dataflow.link(_.requestPredictions, requestPredictions);
     Flow.Dataflow.link(_.requestObjects, requestObjects);
     Flow.Dataflow.link(_.requestObject, requestObject);

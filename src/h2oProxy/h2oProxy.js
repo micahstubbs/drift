@@ -46,12 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestPrediction = (modelKey, frameKey, go) => doGet(_, `/3/ModelMetrics/models/${encodeURIComponent(modelKey)}/frames/${encodeURIComponent(frameKey)}`, (error, result) => {
-    if (error) {
-      return go(error);
-    }
-    return go(null, result);
-  });
   const requestPredictions = (modelKey, frameKey, _go) => {
     const go = (error, result) => {
       let prediction;
@@ -188,7 +182,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestPrediction, requestPrediction);
   Flow.Dataflow.link(_.requestPredictions, requestPredictions);
   Flow.Dataflow.link(_.requestObjects, requestObjects);
   Flow.Dataflow.link(_.requestObject, requestObject);

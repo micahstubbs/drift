@@ -97,6 +97,7 @@ import { h2oModelOutput } from '../h2oModelOutput';
 
 import { getGridRequest } from '../h2oProxy/getGridRequest';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
+import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -381,7 +382,7 @@ export function routines() {
     };
 
     requestPrediction = (modelKey, frameKey, go) => {
-      return _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
+      return postPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
     }
     // abstracting this out produces an error
     // defer for now
