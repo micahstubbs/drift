@@ -1,3 +1,5 @@
+import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
+
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
 import { flowRaw } from '../flowRaw';
@@ -817,7 +819,7 @@ export function notebook() {
         ]),
       ];
     };
-    const setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
+    const setupMenus = () => requestModelBuilders(_, (error, builders) => _menus(initializeMenus(error ? [] : builders)));
     const createTool = (icon, label, action, isDisabled) => {
       if (isDisabled == null) {
         isDisabled = false;

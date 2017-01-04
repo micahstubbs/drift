@@ -180,6 +180,197 @@
     };
   }
 
+  function optsToString(opts) {
+    let str;
+    if (opts != null) {
+      str = ` with opts ${ JSON.stringify(opts) }`;
+      if (str.length > 50) {
+        return `${ str.substr(0, 50) }...`;
+      }
+      return str;
+    }
+    return '';
+  }
+
+  function trackPath(_, path) {
+    let base;
+    let e;
+    let name;
+    let other;
+    let root;
+    let version;
+    let _ref;
+    let _ref1;
+    try {
+      _ref = path.split('/');
+      root = _ref[0];
+      version = _ref[1];
+      name = _ref[2];
+      _ref1 = name.split('?');
+      base = _ref1[0];
+      other = _ref1[1];
+      if (base !== 'Typeahead' && base !== 'Jobs') {
+        _.trackEvent('api', base, version);
+      }
+    } catch (_error) {
+      e = _error;
+    }
+  }
+
+  function http(_, method, path, opts, go) {
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    if (path.substring(0, 1) === '/') {
+      path = window.Flow.ContextPath + path.substring(1);
+    }
+    _.status('server', 'request', path);
+    trackPath(_, path);
+    const req = (() => {
+      switch (method) {
+        case 'GET':
+          return $.getJSON(path);
+        case 'POST':
+          return $.post(path, opts);
+        case 'POSTJSON':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify(opts)
+          });
+        case 'PUT':
+          return $.ajax({
+            url: path,
+            type: method,
+            data: opts
+          });
+        case 'DELETE':
+          return $.ajax({
+            url: path,
+            type: method
+          });
+        case 'UPLOAD':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            data: opts,
+            cache: false,
+            contentType: false,
+            processData: false
+          });
+        default:
+        // do nothing
+      }
+    })();
+    req.done((data, status, xhr) => {
+      let error;
+      _.status('server', 'response', path);
+      try {
+        return go(null, data);
+      } catch (_error) {
+        error = _error;
+        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
+      }
+    });
+    return req.fail((xhr, status, error) => {
+      let serverError;
+      _.status('server', 'error', path);
+      const response = xhr.responseJSON;
+      const meta = response;
+      // special-case net::ERR_CONNECTION_REFUSED
+      // if status is 'error' and xhr.status is 0
+      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
+    });
+  }
+
+  function doGet(_, path, go) {
+    return http(_, 'GET', path, null, go);
+  }
+
+  function unwrap(go, transform) {
+    return (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, transform(result));
+    };
+  }
+
+  function cacheModelBuilders(_, modelBuilders) {
+    let modelBuilder;
+    let _i;
+    let _len;
+    const modelBuilderEndpoints = {};
+    const gridModelBuilderEndpoints = {};
+    for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
+      modelBuilder = modelBuilders[_i];
+      modelBuilderEndpoints[modelBuilder.algo] = `/${ modelBuilder.__meta.schema_version }/ModelBuilders/${ modelBuilder.algo }`;
+      gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${ modelBuilder.algo }`;
+    }
+    _.__.modelBuilderEndpoints = modelBuilderEndpoints;
+    _.__.gridModelBuilderEndpoints = gridModelBuilderEndpoints;
+    _.__.modelBuilders = modelBuilders;
+    return _.__.modelBuilders;
+  }
+
+  function requestModelBuilders(_, go) {
+    const modelBuilders = _.__.modelBuilders;
+    if (modelBuilders) {
+      return go(null, modelBuilders);
+    }
+    const visibility = 'Stable';
+    return doGet(_, '/3/ModelBuilders', unwrap(go, result => {
+      let algo;
+      let builder;
+      const builders = (() => {
+        const _ref = result.model_builders;
+        const _results = [];
+        for (algo in _ref) {
+          if ({}.hasOwnProperty.call(_ref, algo)) {
+            builder = _ref[algo];
+            _results.push(builder);
+          }
+        }
+        return _results;
+      })();
+      const availableBuilders = (() => {
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
+        let _results;
+        let _results1;
+        switch (visibility) {
+          case 'Stable':
+            _results = [];
+            for (_i = 0, _len = builders.length; _i < _len; _i++) {
+              builder = builders[_i];
+              if (builder.visibility === visibility) {
+                _results.push(builder);
+              }
+            }
+            return _results;
+          // break; // no-unreachable
+          case 'Beta':
+            _results1 = [];
+            for (_j = 0, _len1 = builders.length; _j < _len1; _j++) {
+              builder = builders[_j];
+              if (builder.visibility === visibility || builder.visibility === 'Stable') {
+                _results1.push(builder);
+              }
+            }
+            return _results1;
+          // break; // no-unreachable
+          default:
+            return builders;
+        }
+      })();
+      return cacheModelBuilders(_, availableBuilders);
+    }));
+  }
+
   const flowPrelude$2 = flowPreludeFunction();
 
   function modelInput() {
@@ -974,7 +1165,7 @@
           }
         });
       };
-      (() => _.requestModelBuilders((error, modelBuilders) => {
+      (() => requestModelBuilders(_, (error, modelBuilders) => {
         _algorithms(modelBuilders);
         _algorithm(_algo ? lodash.find(modelBuilders, builder => builder.algo === _algo) : void 0);
         const frameKey = _opts != null ? _opts.training_frame : void 0;
@@ -1001,111 +1192,6 @@
         template: 'flow-model-input'
       };
     };
-  }
-
-  function optsToString(opts) {
-    let str;
-    if (opts != null) {
-      str = ` with opts ${ JSON.stringify(opts) }`;
-      if (str.length > 50) {
-        return `${ str.substr(0, 50) }...`;
-      }
-      return str;
-    }
-    return '';
-  }
-
-  function trackPath(_, path) {
-    let base;
-    let e;
-    let name;
-    let other;
-    let root;
-    let version;
-    let _ref;
-    let _ref1;
-    try {
-      _ref = path.split('/');
-      root = _ref[0];
-      version = _ref[1];
-      name = _ref[2];
-      _ref1 = name.split('?');
-      base = _ref1[0];
-      other = _ref1[1];
-      if (base !== 'Typeahead' && base !== 'Jobs') {
-        _.trackEvent('api', base, version);
-      }
-    } catch (_error) {
-      e = _error;
-    }
-  }
-
-  function http(_, method, path, opts, go) {
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    if (path.substring(0, 1) === '/') {
-      path = window.Flow.ContextPath + path.substring(1);
-    }
-    _.status('server', 'request', path);
-    trackPath(_, path);
-    const req = (() => {
-      switch (method) {
-        case 'GET':
-          return $.getJSON(path);
-        case 'POST':
-          return $.post(path, opts);
-        case 'POSTJSON':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            contentType: 'application/json',
-            cache: false,
-            data: JSON.stringify(opts)
-          });
-        case 'PUT':
-          return $.ajax({
-            url: path,
-            type: method,
-            data: opts
-          });
-        case 'DELETE':
-          return $.ajax({
-            url: path,
-            type: method
-          });
-        case 'UPLOAD':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            data: opts,
-            cache: false,
-            contentType: false,
-            processData: false
-          });
-        default:
-        // do nothing
-      }
-    })();
-    req.done((data, status, xhr) => {
-      let error;
-      _.status('server', 'response', path);
-      try {
-        return go(null, data);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
-      }
-    });
-    return req.fail((xhr, status, error) => {
-      let serverError;
-      _.status('server', 'error', path);
-      const response = xhr.responseJSON;
-      const meta = response;
-      // special-case net::ERR_CONNECTION_REFUSED
-      // if status is 'error' and xhr.status is 0
-      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
-      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
-    });
   }
 
   function doPost(_, path, opts, go) {
@@ -1323,10 +1409,6 @@
         template: 'flow-parse-raw-input'
       };
     };
-  }
-
-  function doGet(_, path, go) {
-    return http(_, 'GET', path, null, go);
   }
 
   function getJobRequest(_, key, go) {
@@ -3485,15 +3567,6 @@
     inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
     inspect_(frame, inspections);
     return render_(_, frame, h2oFrameOutput, frame);
-  }
-
-  function unwrap(go, transform) {
-    return (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, transform(result));
-    };
   }
 
   function requestFrameSlice(_, key, searchTerm, offset, count, go) {
@@ -11778,7 +11851,7 @@
         // TODO Tutorial Flows
         createMenuItem('About', displayAbout)])];
       };
-      const setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
+      const setupMenus = () => requestModelBuilders(_, (error, builders) => _menus(initializeMenus(error ? [] : builders)));
       const createTool = (icon, label, action, isDisabled) => {
         if (isDisabled == null) {
           isDisabled = false;
@@ -12215,7 +12288,6 @@
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
     _.requestModelBuilder = Flow.Dataflow.slot();
-    _.requestModelBuilders = Flow.Dataflow.slot();
     _.requestModelBuild = Flow.Dataflow.slot();
     _.requestModelInputValidation = Flow.Dataflow.slot();
     _.requestAutoModelBuild = Flow.Dataflow.slot();
@@ -12340,23 +12412,6 @@
     return requestWithOpts(_, '/3/Typeahead/files', opts, go);
   }
 
-  function cacheModelBuilders(_, modelBuilders) {
-    let modelBuilder;
-    let _i;
-    let _len;
-    const modelBuilderEndpoints = {};
-    const gridModelBuilderEndpoints = {};
-    for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
-      modelBuilder = modelBuilders[_i];
-      modelBuilderEndpoints[modelBuilder.algo] = `/${ modelBuilder.__meta.schema_version }/ModelBuilders/${ modelBuilder.algo }`;
-      gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${ modelBuilder.algo }`;
-    }
-    _.__.modelBuilderEndpoints = modelBuilderEndpoints;
-    _.__.gridModelBuilderEndpoints = gridModelBuilderEndpoints;
-    _.__.modelBuilders = modelBuilders;
-    return _.__.modelBuilders;
-  }
-
   const flowPrelude$50 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -12383,61 +12438,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestModelBuilders = go => {
-      const modelBuilders = _.__.modelBuilders;
-      if (modelBuilders) {
-        return go(null, modelBuilders);
-      }
-      const visibility = 'Stable';
-      return doGet(_, '/3/ModelBuilders', unwrap(go, result => {
-        let algo;
-        let builder;
-        const builders = (() => {
-          const _ref = result.model_builders;
-          const _results = [];
-          for (algo in _ref) {
-            if ({}.hasOwnProperty.call(_ref, algo)) {
-              builder = _ref[algo];
-              _results.push(builder);
-            }
-          }
-          return _results;
-        })();
-        const availableBuilders = (() => {
-          let _i;
-          let _j;
-          let _len;
-          let _len1;
-          let _results;
-          let _results1;
-          switch (visibility) {
-            case 'Stable':
-              _results = [];
-              for (_i = 0, _len = builders.length; _i < _len; _i++) {
-                builder = builders[_i];
-                if (builder.visibility === visibility) {
-                  _results.push(builder);
-                }
-              }
-              return _results;
-            // break; // no-unreachable
-            case 'Beta':
-              _results1 = [];
-              for (_j = 0, _len1 = builders.length; _j < _len1; _j++) {
-                builder = builders[_j];
-                if (builder.visibility === visibility || builder.visibility === 'Stable') {
-                  _results1.push(builder);
-                }
-              }
-              return _results1;
-            // break; // no-unreachable
-            default:
-              return builders;
-          }
-        })();
-        return cacheModelBuilders(_, availableBuilders);
-      }));
-    };
     const requestModelBuilder = (algo, go) => doGet(_, _.__.modelBuilderEndpoints[algo], go);
     const requestModelInputValidation = (algo, parameters, go) => doPost(_, `${ _.__.modelBuilderEndpoints[algo] }/parameters`, encodeObjectForPost(parameters), go);
     const requestModelBuild = (algo, parameters, go) => {
@@ -12625,7 +12625,6 @@
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
     Flow.Dataflow.link(_.requestModelBuilder, requestModelBuilder);
-    Flow.Dataflow.link(_.requestModelBuilders, requestModelBuilders);
     Flow.Dataflow.link(_.requestModelBuild, requestModelBuild);
     Flow.Dataflow.link(_.requestModelInputValidation, requestModelInputValidation);
     Flow.Dataflow.link(_.requestAutoModelBuild, requestAutoModelBuild);

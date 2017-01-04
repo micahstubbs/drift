@@ -18,7 +18,6 @@ import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummaryWithoutData } from './requestFrameSummaryWithoutData';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestFileGlob } from './requestFileGlob';
-import { cacheModelBuilders } from './cacheModelBuilders';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -47,61 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestModelBuilders = go => {
-    const modelBuilders = _.__.modelBuilders;
-    if (modelBuilders) {
-      return go(null, modelBuilders);
-    }
-    const visibility = 'Stable';
-    return doGet(_, '/3/ModelBuilders', unwrap(go, result => {
-      let algo;
-      let builder;
-      const builders = (() => {
-        const _ref = result.model_builders;
-        const _results = [];
-        for (algo in _ref) {
-          if ({}.hasOwnProperty.call(_ref, algo)) {
-            builder = _ref[algo];
-            _results.push(builder);
-          }
-        }
-        return _results;
-      })();
-      const availableBuilders = (() => {
-        let _i;
-        let _j;
-        let _len;
-        let _len1;
-        let _results;
-        let _results1;
-        switch (visibility) {
-          case 'Stable':
-            _results = [];
-            for (_i = 0, _len = builders.length; _i < _len; _i++) {
-              builder = builders[_i];
-              if (builder.visibility === visibility) {
-                _results.push(builder);
-              }
-            }
-            return _results;
-            // break; // no-unreachable
-          case 'Beta':
-            _results1 = [];
-            for (_j = 0, _len1 = builders.length; _j < _len1; _j++) {
-              builder = builders[_j];
-              if (builder.visibility === visibility || builder.visibility === 'Stable') {
-                _results1.push(builder);
-              }
-            }
-            return _results1;
-            // break; // no-unreachable
-          default:
-            return builders;
-        }
-      })();
-      return cacheModelBuilders(_, availableBuilders);
-    }));
-  };
   const requestModelBuilder = (algo, go) => doGet(_, _.__.modelBuilderEndpoints[algo], go);
   const requestModelInputValidation = (algo, parameters, go) => doPost(_, `${_.__.modelBuilderEndpoints[algo]}/parameters`, encodeObjectForPost(parameters), go);
   const requestModelBuild = (algo, parameters, go) => {
@@ -289,7 +233,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
   Flow.Dataflow.link(_.requestModelBuilder, requestModelBuilder);
-  Flow.Dataflow.link(_.requestModelBuilders, requestModelBuilders);
   Flow.Dataflow.link(_.requestModelBuild, requestModelBuild);
   Flow.Dataflow.link(_.requestModelInputValidation, requestModelInputValidation);
   Flow.Dataflow.link(_.requestAutoModelBuild, requestAutoModelBuild);

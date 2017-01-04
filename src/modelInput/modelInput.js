@@ -1,3 +1,5 @@
+import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -821,7 +823,7 @@ export function modelInput() {
         }
       });
     };
-    ((() => _.requestModelBuilders((error, modelBuilders) => {
+    ((() => requestModelBuilders(_, (error, modelBuilders) => {
       _algorithms(modelBuilders);
       _algorithm(_algo ? lodash.find(modelBuilders, builder => builder.algo === _algo) : void 0);
       const frameKey = _opts != null ? _opts.training_frame : void 0;
