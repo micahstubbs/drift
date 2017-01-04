@@ -101,6 +101,7 @@ import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
 import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
 import { getCloudRequest } from '../h2oProxy/getCloudRequest';
 import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
+import { getProfileRequest } from '../h2oProxy/getProfileRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -1015,7 +1016,7 @@ export function routines() {
       return result;
     };
     getScalaIntp = () => _fork(requestScalaIntp);
-    requestProfile = (depth, go) => _.requestProfile(depth, (error, profile) => {
+    requestProfile = (depth, go) => getProfileRequest(_, depth, (error, profile) => {
       if (error) {
         return go(error);
       }
