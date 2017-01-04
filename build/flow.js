@@ -371,6 +371,43 @@
     }));
   }
 
+  function doPost(_, path, opts, go) {
+    return http(_, 'POST', path, opts, go);
+  }
+
+  function encodeArrayForPost(array) {
+    const lodash = window._;
+    if (array) {
+      if (array.length === 0) {
+        return null;
+      }
+      return `[${ lodash.map(array, element => {
+        if (lodash.isNumber(element)) {
+          return element;
+        }return `"${ element }"`;
+      }).join(',') } ]`;
+    }
+    return null;
+  }
+
+  function encodeObjectForPost(source) {
+    const lodash = window._;
+    let k;
+    let v;
+    const target = {};
+    for (k in source) {
+      if ({}.hasOwnProperty.call(source, k)) {
+        v = source[k];
+        target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
+      }
+    }
+    return target;
+  }
+
+  function postModelInputValidationRequest(_, algo, parameters, go) {
+    return doPost(_, `${ _.__.modelBuilderEndpoints[algo] }/parameters`, encodeObjectForPost(parameters), go);
+  }
+
   const flowPrelude$2 = flowPreludeFunction();
 
   function modelInput() {
@@ -982,7 +1019,7 @@
           return go();
         }
         _validationFailureMessage('');
-        return _.requestModelInputValidation(_algorithm, parameters, (error, modelBuilder) => {
+        return postModelInputValidationRequest(_, _algorithm, parameters, (error, modelBuilder) => {
           let controls;
           let hasErrors;
           let validation;
@@ -1192,25 +1229,6 @@
         template: 'flow-model-input'
       };
     };
-  }
-
-  function doPost(_, path, opts, go) {
-    return http(_, 'POST', path, opts, go);
-  }
-
-  function encodeArrayForPost(array) {
-    const lodash = window._;
-    if (array) {
-      if (array.length === 0) {
-        return null;
-      }
-      return `[${ lodash.map(array, element => {
-        if (lodash.isNumber(element)) {
-          return element;
-        }return `"${ element }"`;
-      }).join(',') } ]`;
-    }
-    return null;
   }
 
   function postParseSetupPreviewRequest(_, sourceKeys, parseType, separator, useSingleQuotes, checkHeader, columnTypes, go) {
@@ -12287,9 +12305,7 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestModelBuilder = Flow.Dataflow.slot();
     _.requestModelBuild = Flow.Dataflow.slot();
-    _.requestModelInputValidation = Flow.Dataflow.slot();
     _.requestAutoModelBuild = Flow.Dataflow.slot();
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
@@ -12345,20 +12361,6 @@
 
   function doUpload(_, path, formData, go) {
     return http(_, 'UPLOAD', path, formData, go);
-  }
-
-  function encodeObjectForPost(source) {
-    const lodash = window._;
-    let k;
-    let v;
-    const target = {};
-    for (k in source) {
-      if ({}.hasOwnProperty.call(source, k)) {
-        v = source[k];
-        target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
-      }
-    }
-    return target;
   }
 
   function requestSplitFrame$1(_, frameKey, splitRatios, splitKeys, go) {
@@ -12438,8 +12440,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestModelBuilder = (algo, go) => doGet(_, _.__.modelBuilderEndpoints[algo], go);
-    const requestModelInputValidation = (algo, parameters, go) => doPost(_, `${ _.__.modelBuilderEndpoints[algo] }/parameters`, encodeObjectForPost(parameters), go);
     const requestModelBuild = (algo, parameters, go) => {
       _.trackEvent('model', algo);
       if (parameters.hyper_parameters) {
@@ -12624,9 +12624,7 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestModelBuilder, requestModelBuilder);
     Flow.Dataflow.link(_.requestModelBuild, requestModelBuild);
-    Flow.Dataflow.link(_.requestModelInputValidation, requestModelInputValidation);
     Flow.Dataflow.link(_.requestAutoModelBuild, requestAutoModelBuild);
     Flow.Dataflow.link(_.requestPredict, requestPredict);
     Flow.Dataflow.link(_.requestPrediction, requestPrediction);

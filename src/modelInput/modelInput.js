@@ -1,4 +1,5 @@
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
+import { postModelInputValidationRequest } from '../h2oProxy/postModelInputValidationRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -639,7 +640,7 @@ export function modelInput() {
         return go();
       }
       _validationFailureMessage('');
-      return _.requestModelInputValidation(_algorithm, parameters, (error, modelBuilder) => {
+      return postModelInputValidationRequest(_, _algorithm, parameters, (error, modelBuilder) => {
         let controls;
         let hasErrors;
         let validation;
