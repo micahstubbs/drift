@@ -1,7 +1,8 @@
+import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 import { extendTimeline } from './extendTimeline';
 
 export function requestTimeline(_, go) {
-  return _.requestTimeline((error, timeline) => {
+  return getTimelineRequest(_, (error, timeline) => {
     if (error) {
       return go(error);
     }

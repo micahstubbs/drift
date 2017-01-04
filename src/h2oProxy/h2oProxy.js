@@ -45,8 +45,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestCloud = go => doGet(_, '/3/Cloud', go);
-  const requestTimeline = go => doGet(_, '/3/Timeline', go);
   const requestProfile = (depth, go) => doGet(_, `/3/Profiler?depth=${depth}`, go);
   const requestStackTrace = go => doGet(_, '/3/JStack', go);
   const requestRemoveAll = go => doDelete(_, '/3/DKV', go);
@@ -102,8 +100,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestCloud, requestCloud);
-  Flow.Dataflow.link(_.requestTimeline, requestTimeline);
   Flow.Dataflow.link(_.requestProfile, requestProfile);
   Flow.Dataflow.link(_.requestStackTrace, requestStackTrace);
   Flow.Dataflow.link(_.requestRemoveAll, requestRemoveAll);

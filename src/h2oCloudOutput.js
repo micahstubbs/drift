@@ -1,3 +1,5 @@
+import { getCloudRequest } from './h2oProxy/getCloudRequest';
+
 export function h2oCloudOutput(_, _go, _cloud) {
   const lodash = window._;
   const Flow = window.Flow;
@@ -293,7 +295,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
   const toggleRefresh = () => _isLive(!_isLive());
   const refresh = () => {
     _isBusy(true);
-    return _.requestCloud((error, cloud) => {
+    return getCloudRequest(_, (error, cloud) => {
       _isBusy(false);
       if (error) {
         _exception(Flow.failure(_, new Flow.Error('Error fetching cloud status', error)));

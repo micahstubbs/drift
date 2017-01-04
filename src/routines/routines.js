@@ -99,6 +99,8 @@ import { getGridRequest } from '../h2oProxy/getGridRequest';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
 import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
 import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
+import { getCloudRequest } from '../h2oProxy/getCloudRequest';
+import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -843,7 +845,7 @@ export function routines() {
       return _fork(requestPredictions, opts);
     };
     // calls _.self
-    requestCloud = go => _.requestCloud((error, cloud) => {
+    requestCloud = go => getCloudRequest(_, (error, cloud) => {
       if (error) {
         return go(error);
       }
@@ -852,7 +854,7 @@ export function routines() {
     // blocked by CoffeeScript codecell `_` issue
     getCloud = () => _fork(requestCloud);
     // calls _.self
-    requestTimeline = go => _.requestTimeline((error, timeline) => {
+    requestTimeline = go => getTimelineRequest(_, (error, timeline) => {
       if (error) {
         return go(error);
       }

@@ -1,3 +1,5 @@
+import { getTimelineRequest } from './h2oProxy/getTimelineRequest';
+
 export function h2oTimelineOutput(_, _go, _timeline) {
   const lodash = window._;
   const Flow = window.Flow;
@@ -101,7 +103,7 @@ export function h2oTimelineOutput(_, _go, _timeline) {
   const toggleRefresh = () => _isLive(!_isLive());
   const refresh = () => {
     _isBusy(true);
-    return _.requestTimeline((error, timeline) => {
+    return getTimelineRequest(_, (error, timeline) => {
       _isBusy(false);
       if (error) {
         _exception(Flow.failure(_, new Flow.Error('Error fetching timeline', error)));
