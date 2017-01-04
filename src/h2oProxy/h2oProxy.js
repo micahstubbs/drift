@@ -45,7 +45,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestDeleteObject = (type, name, go) => doDelete(_, `/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, go);
   const requestPutObject = (type, name, value, go) => {
     let uri;
     uri = `/3/NodePersistentStorage/${encodeURIComponent(type)}`;
@@ -120,7 +119,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestDeleteObject, requestDeleteObject);
   Flow.Dataflow.link(_.requestPutObject, requestPutObject);
   Flow.Dataflow.link(_.requestUploadObject, requestUploadObject);
   Flow.Dataflow.link(_.requestUploadFile, requestUploadFile);

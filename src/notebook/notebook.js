@@ -1,6 +1,7 @@
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 import { getObjectRequest } from '../h2oProxy/getObjectRequest';
+import { deleteObjectRequest } from '../h2oProxy/deleteObjectRequest';
 
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
@@ -376,7 +377,7 @@ export function notebook() {
 
       // renamed document
       if (remoteName !== localName) {
-        return _.requestDeleteObject('notebook', remoteName, error => {
+        return deleteObjectRequest(_, 'notebook', remoteName, error => {
           if (error) {
             _.alert(`Error deleting remote notebook [${remoteName}]: ${error.message}`);
           }

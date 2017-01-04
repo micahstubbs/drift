@@ -1,4 +1,5 @@
 import { getObjectsRequest } from './h2oProxy/getObjectsRequest';
+import { deleteObjectRequest } from './h2oProxy/deleteObjectRequest';
 
 export function flowBrowser(_) {
   const lodash = window._;
@@ -23,7 +24,7 @@ export function flowBrowser(_) {
       declineCaption: 'Keep',
     }, accept => {
       if (accept) {
-        return _.requestDeleteObject('notebook', _name, error => {
+        return deleteObjectRequest(_, 'notebook', _name, error => {
           let _ref;
           if (error) {
             _ref = error.message;

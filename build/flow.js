@@ -10413,6 +10413,10 @@
     return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
   }
 
+  function deleteObjectRequest(_, type, name, go) {
+    return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
+  }
+
   function flowHeading(_, level) {
     const render = (input, output) => {
       output.data({
@@ -10940,7 +10944,7 @@
         declineCaption: 'Keep'
       }, accept => {
         if (accept) {
-          return _.requestDeleteObject('notebook', _name, error => {
+          return deleteObjectRequest(_, 'notebook', _name, error => {
             let _ref;
             if (error) {
               _ref = error.message;
@@ -11649,7 +11653,7 @@
 
         // renamed document
         if (remoteName !== localName) {
-          return _.requestDeleteObject('notebook', remoteName, error => {
+          return deleteObjectRequest(_, 'notebook', remoteName, error => {
             if (error) {
               _.alert(`Error deleting remote notebook [${ remoteName }]: ${ error.message }`);
             }
@@ -12413,7 +12417,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestDeleteObject = Flow.Dataflow.slot();
     _.requestPutObject = Flow.Dataflow.slot();
     _.requestUploadObject = Flow.Dataflow.slot();
     _.requestUploadFile = Flow.Dataflow.slot();
@@ -12535,7 +12538,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestDeleteObject = (type, name, go) => doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
     const requestPutObject = (type, name, value, go) => {
       let uri;
       uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
@@ -12610,7 +12612,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestDeleteObject, requestDeleteObject);
     Flow.Dataflow.link(_.requestPutObject, requestPutObject);
     Flow.Dataflow.link(_.requestUploadObject, requestUploadObject);
     Flow.Dataflow.link(_.requestUploadFile, requestUploadFile);
