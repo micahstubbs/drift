@@ -1,3 +1,5 @@
+import { getObjectsRequest } from './h2oProxy/getObjectsRequest';
+
 export function flowBrowser(_) {
   const lodash = window._;
   const Flow = window.Flow;
@@ -41,7 +43,7 @@ export function flowBrowser(_) {
     };
     return self;
   };
-  const loadNotebooks = () => _.requestObjects('notebook', (error, notebooks) => {
+  const loadNotebooks = () => getObjectsRequest(_, 'notebook', (error, notebooks) => {
     if (error) {
       return console.debug(error);
     }
