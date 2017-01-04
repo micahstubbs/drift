@@ -7374,6 +7374,55 @@
     return doGet(_, composePath(`/99/Grids/${ encodeURIComponent(key) }`, params), go);
   }
 
+  function getPredictionsRequest(_, modelKey, frameKey, _go) {
+    const go = (error, result) => {
+      let prediction;
+      if (error) {
+        return _go(error);
+      }
+      //
+      // TODO workaround for a filtering bug in the API
+      //
+      const predictions = (() => {
+        let _i;
+        let _len;
+        const _ref = result.model_metrics;
+        const _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          prediction = _ref[_i];
+          if (modelKey && prediction.model.name !== modelKey) {
+            _results.push(null);
+          } else if (frameKey && prediction.frame.name !== frameKey) {
+            _results.push(null);
+          } else {
+            _results.push(prediction);
+          }
+        }
+        return _results;
+      })();
+      return _go(null, (() => {
+        let _i;
+        let _len;
+        const _results = [];
+        for (_i = 0, _len = predictions.length; _i < _len; _i++) {
+          prediction = predictions[_i];
+          if (prediction) {
+            _results.push(prediction);
+          }
+        }
+        return _results;
+      })());
+    };
+    if (modelKey && frameKey) {
+      return doGet(_, `/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/'${ encodeURIComponent(frameKey) }`, go);
+    } else if (modelKey) {
+      return doGet(_, `/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }`, go);
+    } else if (frameKey) {
+      return doGet(_, `/3/ModelMetrics/frames/${ encodeURIComponent(frameKey) }`, go);
+    }
+    return doGet(_, '/3/ModelMetrics', go);
+  }
+
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8060,7 +8109,7 @@
             let frameKey;
             let modelKey;
             modelKey = opt.model, frameKey = opt.frame;
-            return _fork(_.requestPredictions, modelKey, frameKey);
+            return _fork(getPredictionsRequest, _, modelKey, frameKey);
           });
           return Flow.Async.join(futures, (error, predictions) => {
             let uniquePredictions;
@@ -8072,7 +8121,7 @@
           });
         }
         modelKey = opts.model, frameKey = opts.frame;
-        return _.requestPredictions(modelKey, frameKey, (error, predictions) => {
+        return getPredictionsRequest(_, modelKey, frameKey, (error, predictions) => {
           if (error) {
             return go(error);
           }
@@ -12350,7 +12399,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestPredictions = Flow.Dataflow.slot();
     _.requestObjects = Flow.Dataflow.slot();
     _.requestObject = Flow.Dataflow.slot();
     _.requestObjectExists = Flow.Dataflow.slot();
@@ -12477,54 +12525,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestPredictions = (modelKey, frameKey, _go) => {
-      const go = (error, result) => {
-        let prediction;
-        if (error) {
-          return _go(error);
-        }
-        //
-        // TODO workaround for a filtering bug in the API
-        //
-        const predictions = (() => {
-          let _i;
-          let _len;
-          const _ref = result.model_metrics;
-          const _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            prediction = _ref[_i];
-            if (modelKey && prediction.model.name !== modelKey) {
-              _results.push(null);
-            } else if (frameKey && prediction.frame.name !== frameKey) {
-              _results.push(null);
-            } else {
-              _results.push(prediction);
-            }
-          }
-          return _results;
-        })();
-        return _go(null, (() => {
-          let _i;
-          let _len;
-          const _results = [];
-          for (_i = 0, _len = predictions.length; _i < _len; _i++) {
-            prediction = predictions[_i];
-            if (prediction) {
-              _results.push(prediction);
-            }
-          }
-          return _results;
-        })());
-      };
-      if (modelKey && frameKey) {
-        return doGet(_, `/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/'${ encodeURIComponent(frameKey) }`, go);
-      } else if (modelKey) {
-        return doGet(_, `/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }`, go);
-      } else if (frameKey) {
-        return doGet(_, `/3/ModelMetrics/frames/${ encodeURIComponent(frameKey) }`, go);
-      }
-      return doGet(_, '/3/ModelMetrics', go);
-    };
     _storageConfiguration = null;
     const requestIsStorageConfigured = go => {
       if (_storageConfiguration) {
@@ -12613,7 +12613,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestPredictions, requestPredictions);
     Flow.Dataflow.link(_.requestObjects, requestObjects);
     Flow.Dataflow.link(_.requestObject, requestObject);
     Flow.Dataflow.link(_.requestObjectExists, requestObjectExists);

@@ -98,6 +98,7 @@ import { h2oModelOutput } from '../h2oModelOutput';
 import { getGridRequest } from '../h2oProxy/getGridRequest';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
 import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
+import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -797,7 +798,7 @@ export function routines() {
           let frameKey;
           let modelKey;
           modelKey = opt.model, frameKey = opt.frame;
-          return _fork(_.requestPredictions, modelKey, frameKey);
+          return _fork(getPredictionsRequest, _, modelKey, frameKey);
         });
         return Flow.Async.join(futures, (error, predictions) => {
           let uniquePredictions;
@@ -809,7 +810,7 @@ export function routines() {
         });
       }
       modelKey = opts.model, frameKey = opts.frame;
-      return _.requestPredictions(modelKey, frameKey, (error, predictions) => {
+      return getPredictionsRequest(_, modelKey, frameKey, (error, predictions) => {
         if (error) {
           return go(error);
         }
