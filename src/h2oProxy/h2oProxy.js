@@ -26,7 +26,6 @@ export function h2oProxy(_) {
   const lodash = window._;
   const Flow = window.Flow;
   const $ = window.jQuery;
-  let _storageConfiguration;
   let _storageConfigurations;
 
   // abstracting out these two functions
@@ -46,16 +45,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  _storageConfiguration = null;
-  const requestIsStorageConfigured = go => {
-    if (_storageConfiguration) {
-      return go(null, _storageConfiguration.isConfigured);
-    }
-    return doGet(_, '/3/NodePersistentStorage/configured', (error, result) => {
-      _storageConfiguration = { isConfigured: error ? false : result.configured };
-      return go(null, _storageConfiguration.isConfigured);
-    });
-  };
   const requestObjects = (type, go) => doGet(_, `/3/NodePersistentStorage/${encodeURIComponent(type)}`, unwrap(go, result => result.entries));
   const requestObjectExists = (type, name, go) => doGet(_, `/3/NodePersistentStorage/categories/${encodeURIComponent(type)}/names/${encodeURIComponent(name)}/exists`, (error, result) => go(null, error ? false : result.exists));
   const requestObject = (type, name, go) => doGet(_, `/3/NodePersistentStorage/${encodeURIComponent(type)}/${encodeURIComponent(name)}`, unwrap(go, result => JSON.parse(result.value)));
