@@ -11212,6 +11212,19 @@
     return self;
   }
 
+  function doUpload(_, path, formData, go) {
+    return http(_, 'UPLOAD', path, formData, go);
+  }
+
+  function postUploadObjectRequest(_, type, name, formData, go) {
+    let uri;
+    uri = `/3/NodePersistentStorage.bin/${ encodeURIComponent(type) }`;
+    if (name) {
+      uri += `/${ encodeURIComponent(name) }`;
+    }
+    return doUpload(_, uri, formData, unwrap(go, result => result.name));
+  }
+
   function flowFileOpenDialog(_, _go) {
     const Flow = window.Flow;
     const H2O = window.H2O;
@@ -11225,7 +11238,7 @@
       return false;
     });
     const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-    const uploadFile = basename => _.requestUploadObject('notebook', basename, new FormData(_form()), (error, filename) => _go({
+    const uploadFile = basename => postUploadObjectRequest(_, 'notebook', basename, new FormData(_form()), (error, filename) => _go({
       error,
       filename
     }));
@@ -12426,7 +12439,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestUploadObject = Flow.Dataflow.slot();
     _.requestUploadFile = Flow.Dataflow.slot();
     _.requestCloud = Flow.Dataflow.slot();
     _.requestTimeline = Flow.Dataflow.slot();
@@ -12464,10 +12476,6 @@
     _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
     _.requestAsDataFrame = Flow.Dataflow.slot();
     return _.requestAsDataFrame;
-  }
-
-  function doUpload(_, path, formData, go) {
-    return http(_, 'UPLOAD', path, formData, go);
   }
 
   function requestSplitFrame$1(_, frameKey, splitRatios, splitKeys, go) {
@@ -12546,14 +12554,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestUploadObject = (type, name, formData, go) => {
-      let uri;
-      uri = `/3/NodePersistentStorage.bin/${ encodeURIComponent(type) }`;
-      if (name) {
-        uri += `/${ encodeURIComponent(name) }`;
-      }
-      return doUpload(_, uri, formData, unwrap(go, result => result.name));
-    };
     const requestUploadFile = (key, formData, go) => doUpload(_, `/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
     const requestCloud = go => doGet(_, '/3/Cloud', go);
     const requestTimeline = go => doGet(_, '/3/Timeline', go);
@@ -12612,7 +12612,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestUploadObject, requestUploadObject);
     Flow.Dataflow.link(_.requestUploadFile, requestUploadFile);
     Flow.Dataflow.link(_.requestCloud, requestCloud);
     Flow.Dataflow.link(_.requestTimeline, requestTimeline);

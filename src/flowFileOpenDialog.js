@@ -1,4 +1,5 @@
 import { getObjectExistsRequest } from './h2oProxy/getObjectExistsRequest';
+import { postUploadObjectRequest } from './h2oProxy/postUploadObjectRequest';
 
 export function flowFileOpenDialog(_, _go) {
   const Flow = window.Flow;
@@ -13,7 +14,7 @@ export function flowFileOpenDialog(_, _go) {
     return false;
   });
   const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-  const uploadFile = basename => _.requestUploadObject('notebook', basename, new FormData(_form()), (error, filename) => _go({
+  const uploadFile = basename => postUploadObjectRequest(_, 'notebook', basename, new FormData(_form()), (error, filename) => _go({
     error,
     filename,
   }));
