@@ -1,3 +1,5 @@
+import { getAboutRequest } from '../h2oProxy/getAboutRequest';
+
 export function about() {
   const Flow = window.Flow;
   Flow.Version = '0.4.54';
@@ -7,7 +9,7 @@ export function about() {
       if (Flow.BuildProperties) {
         return _properties(Flow.BuildProperties);
       }
-      return _.requestAbout((error, response) => {
+      return getAboutRequest(_, (error, response) => {
         let name;
         let value;
         let _i;

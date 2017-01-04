@@ -12313,6 +12313,10 @@
     };
   }
 
+  function getAboutRequest(_, go) {
+    return doGet(_, '/3/About', go);
+  }
+
   function about() {
     const Flow = window.Flow;
     Flow.Version = '0.4.54';
@@ -12322,7 +12326,7 @@
         if (Flow.BuildProperties) {
           return _properties(Flow.BuildProperties);
         }
-        return _.requestAbout((error, response) => {
+        return getAboutRequest(_, (error, response) => {
           let name;
           let value;
           let _i;
@@ -12471,7 +12475,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestAbout = Flow.Dataflow.slot();
     _.requestShutdown = Flow.Dataflow.slot();
     _.requestEndpoints = Flow.Dataflow.slot();
     _.requestEndpoint = Flow.Dataflow.slot();
@@ -12577,7 +12580,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestAbout = go => doGet(_, '/3/About', go);
     const requestShutdown = go => doPost(_, '/3/Shutdown', {}, go);
     const requestEndpoints = go => doGet(_, '/3/Metadata/endpoints', go);
     const requestEndpoint = (index, go) => doGet(_, `/3/Metadata/endpoints/${ index }`, go);
@@ -12626,7 +12628,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestAbout, requestAbout);
     Flow.Dataflow.link(_.requestShutdown, requestShutdown);
     Flow.Dataflow.link(_.requestEndpoints, requestEndpoints);
     Flow.Dataflow.link(_.requestEndpoint, requestEndpoint);
