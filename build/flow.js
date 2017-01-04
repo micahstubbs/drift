@@ -6459,6 +6459,28 @@
     };
   }
 
+  function download(type, url, go) {
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    if (url.substring(0, 1) === '/') {
+      url = window.Flow.ContextPath + url.substring(1);
+    }
+    return $.ajax({
+      dataType: type,
+      url,
+      success(data, status, xhr) {
+        return go(null, data);
+      },
+      error(xhr, status, error) {
+        return go(new Flow.Error(error));
+      }
+    });
+  }
+
+  function requestPojoPreview(key, go) {
+    return download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
+  }
+
   const flowPrelude$44 = flowPreludeFunction();
 
   function h2oModelOutput(_, _go, _model, refresh) {
@@ -7088,7 +7110,7 @@
       const cloneModel = () => alert('Not implemented');
       const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$44.stringify(_model.model_id.name) }`);
       const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$44.stringify(_model.model_id.name) }`);
-      const previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
+      const previewPojo = () => requestPojoPreview(_model.model_id.name, (error, result) => {
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
         }
@@ -12150,7 +12172,6 @@
     _.requestPredict = Flow.Dataflow.slot();
     _.requestPrediction = Flow.Dataflow.slot();
     _.requestPredictions = Flow.Dataflow.slot();
-    _.requestPojoPreview = Flow.Dataflow.slot();
     _.requestDeleteModel = Flow.Dataflow.slot();
     _.requestImportModel = Flow.Dataflow.slot();
     _.requestExportModel = Flow.Dataflow.slot();
@@ -12197,24 +12218,6 @@
     _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
     _.requestAsDataFrame = Flow.Dataflow.slot();
     return _.requestAsDataFrame;
-  }
-
-  function download(type, url, go) {
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    if (url.substring(0, 1) === '/') {
-      url = window.Flow.ContextPath + url.substring(1);
-    }
-    return $.ajax({
-      dataType: type,
-      url,
-      success(data, status, xhr) {
-        return go(null, data);
-      },
-      error(xhr, status, error) {
-        return go(new Flow.Error(error));
-      }
-    });
   }
 
   function doPostJSON(_, path, opts, go) {
@@ -12317,7 +12320,6 @@
       const opts = { path: encodeURIComponent(path) };
       return requestWithOpts(_, '/3/ImportFiles', opts, go);
     };
-    const requestPojoPreview = (key, go) => download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
     const requestDeleteModel = (key, go) => doDelete(_, `/3/Models/${ encodeURIComponent(key) }`, go);
     const requestImportModel = (path, overwrite, go) => {
       const opts = {
@@ -12593,7 +12595,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestPojoPreview, requestPojoPreview);
     Flow.Dataflow.link(_.requestDeleteModel, requestDeleteModel);
     Flow.Dataflow.link(_.requestImportModel, requestImportModel);
     Flow.Dataflow.link(_.requestExportModel, requestExportModel);

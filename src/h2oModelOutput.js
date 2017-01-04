@@ -1,3 +1,5 @@
+import { requestPojoPreview } from './h2oProxy/requestPojoPreview';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -628,7 +630,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
     const cloneModel = () => alert('Not implemented');
     const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(_model.model_id.name)}`);
     const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_model.model_id.name)}`);
-    const previewPojo = () => _.requestPojoPreview(_model.model_id.name, (error, result) => {
+    const previewPojo = () => requestPojoPreview(_model.model_id.name, (error, result) => {
       if (error) {
         return _pojoPreview(`<pre>${lodash.escape(error)}</pre>`);
       }

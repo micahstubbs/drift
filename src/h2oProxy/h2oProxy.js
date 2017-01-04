@@ -43,7 +43,6 @@ export function h2oProxy(_) {
     const opts = { path: encodeURIComponent(path) };
     return requestWithOpts(_, '/3/ImportFiles', opts, go);
   };
-  const requestPojoPreview = (key, go) => download('text', `/3/Models.java/${encodeURIComponent(key)}/preview`, go);
   const requestDeleteModel = (key, go) => doDelete(_, `/3/Models/${encodeURIComponent(key)}`, go);
   const requestImportModel = (path, overwrite, go) => {
     const opts = {
@@ -319,7 +318,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestPojoPreview, requestPojoPreview);
   Flow.Dataflow.link(_.requestDeleteModel, requestDeleteModel);
   Flow.Dataflow.link(_.requestImportModel, requestImportModel);
   Flow.Dataflow.link(_.requestExportModel, requestExportModel);
