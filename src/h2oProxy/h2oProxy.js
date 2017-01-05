@@ -46,7 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestRDDs = go => doGet(_, '/3/RDDs', go);
   const requestDataFrames = go => doGet(_, '/3/dataframes', go);
   const requestScalaIntp = go => doPost(_, '/3/scalaint', {}, go);
   const requestScalaCode = (sessionId, code, go) => doPost(_, `/3/scalaint/${sessionId}`, { code }, go);
@@ -81,7 +80,6 @@ export function h2oProxy(_) {
   //
   // Sparkling-Water
   //
-  Flow.Dataflow.link(_.requestRDDs, requestRDDs);
   Flow.Dataflow.link(_.requestDataFrames, requestDataFrames);
   Flow.Dataflow.link(_.requestScalaIntp, requestScalaIntp);
   Flow.Dataflow.link(_.requestScalaCode, requestScalaCode);

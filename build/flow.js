@@ -7451,6 +7451,10 @@
     return doGet(_, '/3/NetworkTest', go);
   }
 
+  function getRDDsRequest(_, go) {
+    return doGet(_, '/3/RDDs', go);
+  }
+
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8262,13 +8266,13 @@
         return rdds;
       };
       // calls _.self
-      requestRDDs = go => _.requestRDDs((error, result) => {
+      requestRDDs = go => getRDDsRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendRDDs(result.rdds));
       });
-      getRDDs = () => _fork(requestRDDs);
+      // getRDDs = () => _fork(requestRDDs);
       extendDataFrames = dataframes => {
         render_(dataframes, h2oDataFramesOutput, dataframes);
         return dataframes;
@@ -12534,7 +12538,6 @@
     // Sparkling-Water
     //
     _.scalaIntpId = Flow.Dataflow.signal(-1);
-    _.requestRDDs = Flow.Dataflow.slot();
     _.requestDataFrames = Flow.Dataflow.slot();
     _.requestScalaIntp = Flow.Dataflow.slot();
     _.requestScalaCode = Flow.Dataflow.slot();
@@ -12620,7 +12623,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestRDDs = go => doGet(_, '/3/RDDs', go);
     const requestDataFrames = go => doGet(_, '/3/dataframes', go);
     const requestScalaIntp = go => doPost(_, '/3/scalaint', {}, go);
     const requestScalaCode = (sessionId, code, go) => doPost(_, `/3/scalaint/${ sessionId }`, { code }, go);
@@ -12655,7 +12657,6 @@
     //
     // Sparkling-Water
     //
-    Flow.Dataflow.link(_.requestRDDs, requestRDDs);
     Flow.Dataflow.link(_.requestDataFrames, requestDataFrames);
     Flow.Dataflow.link(_.requestScalaIntp, requestScalaIntp);
     Flow.Dataflow.link(_.requestScalaCode, requestScalaCode);
