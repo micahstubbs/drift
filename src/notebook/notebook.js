@@ -4,7 +4,6 @@ import { getObjectRequest } from '../h2oProxy/getObjectRequest';
 import { deleteObjectRequest } from '../h2oProxy/deleteObjectRequest';
 import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
 import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
-import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
 
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
@@ -99,7 +98,7 @@ export function notebook() {
 
     // initialize the interpreter when the notebook is created
     // one interpreter is shared by all scala cells
-    const _initializeInterpreter = () => postScalaIntpRequest(_, (error, response) => {
+    const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
       if (error) {
         // Handle the error
         return _.scalaIntpId(-1);
