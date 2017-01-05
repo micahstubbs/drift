@@ -3,6 +3,7 @@ import { getEndpointRequest } from '../h2oProxy/getEndpointRequest';
 import { getSchemasRequest } from '../h2oProxy/getSchemasRequest';
 import { getSchemaRequest } from '../h2oProxy/getSchemaRequest';
 import { requestPacks } from '../h2oProxy/requestPacks';
+import { requestPack } from '../h2oProxy/requestPack';
 
 export function help() {
   const lodash = window._;
@@ -93,7 +94,7 @@ export function help() {
           break;
         case 'get-pack':
           packName = $el.attr('data-pack-name');
-          _.requestPack(packName, (error, flowNames) => {
+          requestPack(packName, (error, flowNames) => {
             if (!error) {
               return displayFlows(packName, flowNames);
             }
