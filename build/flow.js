@@ -7453,6 +7453,36 @@
     return doGet(_, '/3/NetworkTest', go);
   }
 
+  function getRDDsRequest(_, go) {
+    return doGet(_, '/3/RDDs', go);
+  }
+
+  function getDataFramesRequest(_, go) {
+    return doGet(_, '/3/dataframes', go);
+  }
+
+  function postScalaIntpRequest(_, go) {
+    return doPost(_, '/3/scalaint', {}, go);
+  }
+
+  function postScalaCodeRequest(_, sessionId, code, go) {
+    return doPost(_, `/3/scalaint/${ sessionId }`, { code }, go);
+  }
+
+  function postAsH2OFrameFromRDDRequest(_, rddId, name, go) {
+    if (name === void 0) {
+      return doPost(_, `/3/RDDs/${ rddId }/h2oframe`, {}, go);
+    }
+    return doPost(_, `/3/RDDs/${ rddId }/h2oframe`, { h2oframe_id: name }, go);
+  }
+
+  function postAsH2OFrameFromDFRequest(_, dfId, name, go) {
+    if (name === void 0) {
+      return doPost(_, `/3/dataframes/${ dfId }/h2oframe`, {}, go);
+    }
+    return doPost(_, `/3/dataframes/${ dfId }/h2oframe`, { h2oframe_id: name }, go);
+  }
+
   function postAsDataFrameRequest(_, hfId, name, go) {
     if (name === void 0) {
       return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, {}, go);
@@ -8271,7 +8301,7 @@
         return rdds;
       };
       // calls _.self
-      requestRDDs = go => _.requestRDDs((error, result) => {
+      requestRDDs = go => getRDDsRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -8283,7 +8313,7 @@
         return dataframes;
       };
       // calls _.self
-      requestDataFrames = go => _.requestDataFrames((error, result) => {
+      requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -8295,7 +8325,7 @@
         return result;
       };
       // calls _.self
-      requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
+      requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
         if (error) {
           return go(error);
         }
@@ -8308,7 +8338,7 @@
         return _fork(requestAsH2OFrameFromRDD, rddId, name);
       };
       // calls _.self
-      requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
+      requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -8340,7 +8370,7 @@
       // calls _.self
       requestScalaCode = (session_id, code, go) => {
         console.log('session_id from routines requestScalaCode', session_id);
-        return _.requestScalaCode(session_id, code, (error, result) => {
+        return postScalaCodeRequest(_, session_id, code, (error, result) => {
           if (error) {
             return go(error);
           }
@@ -8356,7 +8386,7 @@
         return _fork(requestScalaCode, session_id, code);
       };
       // calls _.self
-      requestScalaIntp = go => _.requestScalaIntp((error, result) => {
+      requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -11494,7 +11524,7 @@
 
       // initialize the interpreter when the notebook is created
       // one interpreter is shared by all scala cells
-      const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
+      const _initializeInterpreter = () => postScalaIntpRequest(_, (error, response) => {
         if (error) {
           // Handle the error
           return _.scalaIntpId(-1);

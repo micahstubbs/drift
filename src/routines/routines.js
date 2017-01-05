@@ -937,7 +937,7 @@ export function routines() {
       return rdds;
     };
     // calls _.self
-    requestRDDs = go => _.requestRDDs((error, result) => {
+    requestRDDs = go => getRDDsRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -949,7 +949,7 @@ export function routines() {
       return dataframes;
     };
     // calls _.self
-    requestDataFrames = go => _.requestDataFrames((error, result) => {
+    requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -961,7 +961,7 @@ export function routines() {
       return result;
     };
     // calls _.self
-    requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
+    requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
       if (error) {
         return go(error);
       }
@@ -974,7 +974,7 @@ export function routines() {
       return _fork(requestAsH2OFrameFromRDD, rddId, name);
     };
     // calls _.self
-    requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
+    requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -1006,7 +1006,7 @@ export function routines() {
     // calls _.self
     requestScalaCode = (session_id, code, go) => {
       console.log('session_id from routines requestScalaCode', session_id);
-      return _.requestScalaCode(session_id, code, (error, result) => {
+      return postScalaCodeRequest(_, session_id, code, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -1022,7 +1022,7 @@ export function routines() {
       return _fork(requestScalaCode, session_id, code);
     }
     // calls _.self
-    requestScalaIntp = go => _.requestScalaIntp((error, result) => {
+    requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
