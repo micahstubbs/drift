@@ -10190,6 +10190,10 @@
     return download('json', '/flow/help/catalog.json', go);
   }
 
+  function requestHelpContent(name, go) {
+    return download('text', `/flow/help/${ name }.html`, go);
+  }
+
   function help() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -10249,7 +10253,7 @@
         switch (action) {
           case 'help':
             topic = _index[$el.attr('data-topic')];
-            _.requestHelpContent(topic.name, (error, html) => {
+            requestHelpContent(topic.name, (error, html) => {
               const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6');
               const div = _ref[0];
               const mark = _ref[1];
@@ -12521,7 +12525,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestHelpContent = Flow.Dataflow.slot();
     _.ls = Flow.Dataflow.slot();
     _.inspect = Flow.Dataflow.slot();
     _.plot = Flow.Dataflow.slot();
@@ -12617,7 +12620,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestHelpContent = (name, go) => download('text', `/flow/help/${ name }.html`, go);
     const requestRDDs = go => doGet(_, '/3/RDDs', go);
     const requestDataFrames = go => doGet(_, '/3/dataframes', go);
     const requestScalaIntp = go => doPost(_, '/3/scalaint', {}, go);
@@ -12650,7 +12652,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestHelpContent, requestHelpContent);
     //
     // Sparkling-Water
     //

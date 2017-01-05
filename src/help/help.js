@@ -6,6 +6,7 @@ import { requestPacks } from '../h2oProxy/requestPacks';
 import { requestPack } from '../h2oProxy/requestPack';
 import { requestFlow } from '../h2oProxy/requestFlow';
 import { requestHelpIndex } from '../h2oProxy/requestHelpIndex';
+import { requestHelpContent } from '../h2oProxy/requestHelpContent';
 
 export function help() {
   const lodash = window._;
@@ -66,7 +67,7 @@ export function help() {
       switch (action) {
         case 'help':
           topic = _index[$el.attr('data-topic')];
-          _.requestHelpContent(topic.name, (error, html) => {
+          requestHelpContent(topic.name, (error, html) => {
             const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6');
             const div = _ref[0];
             const mark = _ref[1];
