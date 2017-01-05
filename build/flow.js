@@ -10186,6 +10186,10 @@
     return download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
   }
 
+  function requestHelpIndex(go) {
+    return download('json', '/flow/help/catalog.json', go);
+  }
+
   function help() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -10453,7 +10457,7 @@
         _homeContent = marked(_homeMarkdown).replace('%HELP_TOPICS%', buildToc(_catalog));
         return goHome();
       };
-      Flow.Dataflow.link(_.ready, () => _.requestHelpIndex((error, catalog) => {
+      Flow.Dataflow.link(_.ready, () => requestHelpIndex((error, catalog) => {
         if (!error) {
           return initialize(catalog);
         }
@@ -12517,7 +12521,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestHelpIndex = Flow.Dataflow.slot();
     _.requestHelpContent = Flow.Dataflow.slot();
     _.ls = Flow.Dataflow.slot();
     _.inspect = Flow.Dataflow.slot();
@@ -12614,7 +12617,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestHelpIndex = go => download('json', '/flow/help/catalog.json', go);
     const requestHelpContent = (name, go) => download('text', `/flow/help/${ name }.html`, go);
     const requestRDDs = go => doGet(_, '/3/RDDs', go);
     const requestDataFrames = go => doGet(_, '/3/dataframes', go);
@@ -12648,7 +12650,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestHelpIndex, requestHelpIndex);
     Flow.Dataflow.link(_.requestHelpContent, requestHelpContent);
     //
     // Sparkling-Water

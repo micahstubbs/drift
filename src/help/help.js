@@ -5,6 +5,7 @@ import { getSchemaRequest } from '../h2oProxy/getSchemaRequest';
 import { requestPacks } from '../h2oProxy/requestPacks';
 import { requestPack } from '../h2oProxy/requestPack';
 import { requestFlow } from '../h2oProxy/requestFlow';
+import { requestHelpIndex } from '../h2oProxy/requestHelpIndex';
 
 export function help() {
   const lodash = window._;
@@ -315,7 +316,7 @@ export function help() {
       _homeContent = marked(_homeMarkdown).replace('%HELP_TOPICS%', buildToc(_catalog));
       return goHome();
     };
-    Flow.Dataflow.link(_.ready, () => _.requestHelpIndex((error, catalog) => {
+    Flow.Dataflow.link(_.ready, () => requestHelpIndex((error, catalog) => {
       if (!error) {
         return initialize(catalog);
       }
