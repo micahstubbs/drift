@@ -1,3 +1,5 @@
+import { getEndpointsRequest } from '../h2oProxy/getEndpointsRequest';
+
 export function help() {
   const lodash = window._;
   const Flow = window.Flow;
@@ -113,7 +115,7 @@ export function help() {
           });
           break;
         case 'endpoints':
-          _.requestEndpoints((error, response) => {
+          getEndpointsRequest(_, (error, response) => {
             if (!error) {
               return displayEndpoints(response.routes);
             }

@@ -10148,6 +10148,10 @@
     };
   }
 
+  function getEndpointsRequest(_, go) {
+    return doGet(_, '/3/Metadata/endpoints', go);
+  }
+
   function help() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -10259,7 +10263,7 @@
             });
             break;
           case 'endpoints':
-            _.requestEndpoints((error, response) => {
+            getEndpointsRequest(_, (error, response) => {
               if (!error) {
                 return displayEndpoints(response.routes);
               }
@@ -12479,7 +12483,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestEndpoints = Flow.Dataflow.slot();
     _.requestEndpoint = Flow.Dataflow.slot();
     _.requestSchemas = Flow.Dataflow.slot();
     _.requestSchema = Flow.Dataflow.slot();
@@ -12583,7 +12586,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestEndpoints = go => doGet(_, '/3/Metadata/endpoints', go);
     const requestEndpoint = (index, go) => doGet(_, `/3/Metadata/endpoints/${ index }`, go);
     const requestSchemas = go => doGet(_, '/3/Metadata/schemas', go);
     const requestSchema = (name, go) => doGet(_, `/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
@@ -12630,7 +12632,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestEndpoints, requestEndpoints);
     Flow.Dataflow.link(_.requestEndpoint, requestEndpoint);
     Flow.Dataflow.link(_.requestSchemas, requestSchemas);
     Flow.Dataflow.link(_.requestSchema, requestSchema);
