@@ -8302,7 +8302,7 @@
         return result;
       };
       // calls _.self
-      requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
+      requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
         if (error) {
           return go(error);
         }
@@ -12550,6 +12550,7 @@
     // Sparkling-Water
     //
     _.scalaIntpId = Flow.Dataflow.signal(-1);
+    _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
     _.requestAsDataFrame = Flow.Dataflow.slot();
     return _.requestAsDataFrame;
@@ -12631,6 +12632,12 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
+    const requestAsH2OFrameFromRDD = (rddId, name, go) => {
+      if (name === void 0) {
+        return doPost(_, `/3/RDDs/${ rddId }/h2oframe`, {}, go);
+      }
+      return doPost(_, `/3/RDDs/${ rddId }/h2oframe`, { h2oframe_id: name }, go);
+    };
     const requestAsH2OFrameFromDF = (dfId, name, go) => {
       if (name === void 0) {
         return doPost(_, `/3/dataframes/${ dfId }/h2oframe`, {}, go);
@@ -12657,6 +12664,7 @@
     // Sparkling-Water
     //
     Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);
+    Flow.Dataflow.link(_.requestAsH2OFrameFromRDD, requestAsH2OFrameFromRDD);
     return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
   }
 
