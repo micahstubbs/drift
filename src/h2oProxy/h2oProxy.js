@@ -46,7 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestPacks = go => download('text', '/flow/packs/index.list', unwrap(go, getLines));
   const requestPack = (packName, go) => download('text', `/flow/packs/${encodeURIComponent(packName)}/index.list`, unwrap(go, getLines));
   const requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${encodeURIComponent(packName)}/${encodeURIComponent(flowName)}`, go);
   const requestHelpIndex = go => download('json', '/flow/help/catalog.json', go);
@@ -83,7 +82,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestPacks, requestPacks);
   Flow.Dataflow.link(_.requestPack, requestPack);
   Flow.Dataflow.link(_.requestFlow, requestFlow);
   Flow.Dataflow.link(_.requestHelpIndex, requestHelpIndex);

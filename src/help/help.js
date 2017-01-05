@@ -2,6 +2,7 @@ import { getEndpointsRequest } from '../h2oProxy/getEndpointsRequest';
 import { getEndpointRequest } from '../h2oProxy/getEndpointRequest';
 import { getSchemasRequest } from '../h2oProxy/getSchemasRequest';
 import { getSchemaRequest } from '../h2oProxy/getSchemaRequest';
+import { requestPacks } from '../h2oProxy/requestPacks';
 
 export function help() {
   const lodash = window._;
@@ -84,7 +85,7 @@ export function help() {
           _.insertAndExecuteCell('cs', 'assist');
           break;
         case 'get-packs':
-          _.requestPacks((error, packNames) => {
+          requestPacks((error, packNames) => {
             if (!error) {
               return displayPacks(lodash.filter(packNames, packName => packName !== 'test'));
             }

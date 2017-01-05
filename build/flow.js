@@ -10164,6 +10164,20 @@
     return doGet(_, `/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
   }
 
+  function getLines(data) {
+    const lodash = window._;
+    return lodash.filter(data.split('\n'), line => {
+      if (line.trim()) {
+        return true;
+      }
+      return false;
+    });
+  }
+
+  function requestPacks(go) {
+    return download('text', '/flow/packs/index.list', unwrap(go, getLines));
+  }
+
   function help() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -10241,7 +10255,7 @@
             _.insertAndExecuteCell('cs', 'assist');
             break;
           case 'get-packs':
-            _.requestPacks((error, packNames) => {
+            requestPacks((error, packNames) => {
               if (!error) {
                 return displayPacks(lodash.filter(packNames, packName => packName !== 'test'));
               }
@@ -12495,7 +12509,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestPacks = Flow.Dataflow.slot();
     _.requestPack = Flow.Dataflow.slot();
     _.requestFlow = Flow.Dataflow.slot();
     _.requestHelpIndex = Flow.Dataflow.slot();
@@ -12570,16 +12583,6 @@
     return requestWithOpts(_, '/3/Typeahead/files', opts, go);
   }
 
-  function getLines(data) {
-    const lodash = window._;
-    return lodash.filter(data.split('\n'), line => {
-      if (line.trim()) {
-        return true;
-      }
-      return false;
-    });
-  }
-
   const flowPrelude$51 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -12605,7 +12608,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestPacks = go => download('text', '/flow/packs/index.list', unwrap(go, getLines));
     const requestPack = (packName, go) => download('text', `/flow/packs/${ encodeURIComponent(packName) }/index.list`, unwrap(go, getLines));
     const requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
     const requestHelpIndex = go => download('json', '/flow/help/catalog.json', go);
@@ -12642,7 +12644,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestPacks, requestPacks);
     Flow.Dataflow.link(_.requestPack, requestPack);
     Flow.Dataflow.link(_.requestFlow, requestFlow);
     Flow.Dataflow.link(_.requestHelpIndex, requestHelpIndex);
