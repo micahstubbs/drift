@@ -10148,16 +10148,20 @@
     };
   }
 
-  function getEndpointRequest(_, index, go) {
-    return doGet(_, `/3/Metadata/endpoints/${ index }`, go);
-  }
-
   function getEndpointsRequest(_, go) {
     return doGet(_, '/3/Metadata/endpoints', go);
   }
 
+  function getEndpointRequest(_, index, go) {
+    return doGet(_, `/3/Metadata/endpoints/${ index }`, go);
+  }
+
   function getSchemasRequest(_, go) {
     return doGet(_, '/3/Metadata/schemas', go);
+  }
+
+  function getSchemaRequest(_, name, go) {
+    return doGet(_, `/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
   }
 
   function help() {
@@ -10294,7 +10298,7 @@
             break;
           case 'schema':
             schemaName = $el.attr('data-schema');
-            _.requestSchema(schemaName, (error, response) => {
+            getSchemaRequest(_, schemaName, (error, response) => {
               if (!error) {
                 return displaySchema(lodash.head(response.schemas));
               }
@@ -12491,7 +12495,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestSchema = Flow.Dataflow.slot();
     _.requestPacks = Flow.Dataflow.slot();
     _.requestPack = Flow.Dataflow.slot();
     _.requestFlow = Flow.Dataflow.slot();
@@ -12592,7 +12595,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestSchema = (name, go) => doGet(_, `/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
     const getLines = data => lodash.filter(data.split('\n'), line => {
       if (line.trim()) {
         return true;
@@ -12636,7 +12638,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestSchema, requestSchema);
     Flow.Dataflow.link(_.requestPacks, requestPacks);
     Flow.Dataflow.link(_.requestPack, requestPack);
     Flow.Dataflow.link(_.requestFlow, requestFlow);

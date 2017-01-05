@@ -1,6 +1,7 @@
-import { getEndpointRequest } from '../h2oProxy/getEndpointRequest';
 import { getEndpointsRequest } from '../h2oProxy/getEndpointsRequest';
+import { getEndpointRequest } from '../h2oProxy/getEndpointRequest';
 import { getSchemasRequest } from '../h2oProxy/getSchemasRequest';
+import { getSchemaRequest } from '../h2oProxy/getSchemaRequest';
 
 export function help() {
   const lodash = window._;
@@ -140,7 +141,7 @@ export function help() {
           break;
         case 'schema':
           schemaName = $el.attr('data-schema');
-          _.requestSchema(schemaName, (error, response) => {
+          getSchemaRequest(_, schemaName, (error, response) => {
             if (!error) {
               return displaySchema(lodash.head(response.schemas));
             }
