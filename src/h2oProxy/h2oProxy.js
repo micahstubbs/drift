@@ -18,6 +18,7 @@ import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummaryWithoutData } from './requestFrameSummaryWithoutData';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestFileGlob } from './requestFileGlob';
+import { getLines } from './getLines';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -45,12 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const getLines = data => lodash.filter(data.split('\n'), line => {
-    if (line.trim()) {
-      return true;
-    }
-    return false;
-  });
   const requestPacks = go => download('text', '/flow/packs/index.list', unwrap(go, getLines));
   const requestPack = (packName, go) => download('text', `/flow/packs/${encodeURIComponent(packName)}/index.list`, unwrap(go, getLines));
   const requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${encodeURIComponent(packName)}/${encodeURIComponent(flowName)}`, go);

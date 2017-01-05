@@ -12570,6 +12570,16 @@
     return requestWithOpts(_, '/3/Typeahead/files', opts, go);
   }
 
+  function getLines(data) {
+    const lodash = window._;
+    return lodash.filter(data.split('\n'), line => {
+      if (line.trim()) {
+        return true;
+      }
+      return false;
+    });
+  }
+
   const flowPrelude$51 = flowPreludeFunction();
 
   function h2oProxy(_) {
@@ -12595,12 +12605,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const getLines = data => lodash.filter(data.split('\n'), line => {
-      if (line.trim()) {
-        return true;
-      }
-      return false;
-    });
     const requestPacks = go => download('text', '/flow/packs/index.list', unwrap(go, getLines));
     const requestPack = (packName, go) => download('text', `/flow/packs/${ encodeURIComponent(packName) }/index.list`, unwrap(go, getLines));
     const requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
