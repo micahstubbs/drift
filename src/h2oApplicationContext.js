@@ -21,5 +21,7 @@ export function h2oApplicationContext(_) {
   // Sparkling-Water
   //
   _.scalaIntpId = Flow.Dataflow.signal(-1);
+  _.requestAsDataFrame = Flow.Dataflow.slot();
+  return _.requestAsDataFrame;
 }
 

@@ -7481,13 +7481,6 @@
     return doPost(_, `/3/dataframes/${ dfId }/h2oframe`, { h2oframe_id: name }, go);
   }
 
-  function postAsDataFrameRequest(_, hfId, name, go) {
-    if (name === void 0) {
-      return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, {}, go);
-    }
-    return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
-  }
-
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8353,7 +8346,7 @@
         return result;
       };
       // calls _.self
-      requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
+      requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -12571,6 +12564,8 @@
     // Sparkling-Water
     //
     _.scalaIntpId = Flow.Dataflow.signal(-1);
+    _.requestAsDataFrame = Flow.Dataflow.slot();
+    return _.requestAsDataFrame;
   }
 
   function requestSplitFrame$1(_, frameKey, splitRatios, splitKeys, go) {
@@ -12649,6 +12644,12 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
+    const requestAsDataFrame = (hfId, name, go) => {
+      if (name === void 0) {
+        return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, {}, go);
+      }
+      return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
+    };
     Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame$1);
     Flow.Dataflow.link(_.requestFrames, requestFrames$1);
     Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
@@ -12659,6 +12660,10 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
+    //
+    // Sparkling-Water
+    //
+    return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
   }
 
   function h2oApplication(_) {
