@@ -7467,20 +7467,6 @@
     return doPost(_, `/3/scalaint/${ sessionId }`, { code }, go);
   }
 
-  function postAsH2OFrameFromRDDRequest(_, rddId, name, go) {
-    if (name === void 0) {
-      return doPost(_, `/3/RDDs/${ rddId }/h2oframe`, {}, go);
-    }
-    return doPost(_, `/3/RDDs/${ rddId }/h2oframe`, { h2oframe_id: name }, go);
-  }
-
-  function postAsH2OFrameFromDFRequest(_, dfId, name, go) {
-    if (name === void 0) {
-      return doPost(_, `/3/dataframes/${ dfId }/h2oframe`, {}, go);
-    }
-    return doPost(_, `/3/dataframes/${ dfId }/h2oframe`, { h2oframe_id: name }, go);
-  }
-
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8329,7 +8315,7 @@
         return _fork(requestAsH2OFrameFromRDD, rddId, name);
       };
       // calls _.self
-      requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
+      requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -12564,6 +12550,7 @@
     // Sparkling-Water
     //
     _.scalaIntpId = Flow.Dataflow.signal(-1);
+    _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
     _.requestAsDataFrame = Flow.Dataflow.slot();
     return _.requestAsDataFrame;
   }
@@ -12644,6 +12631,12 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
+    const requestAsH2OFrameFromDF = (dfId, name, go) => {
+      if (name === void 0) {
+        return doPost(_, `/3/dataframes/${ dfId }/h2oframe`, {}, go);
+      }
+      return doPost(_, `/3/dataframes/${ dfId }/h2oframe`, { h2oframe_id: name }, go);
+    };
     const requestAsDataFrame = (hfId, name, go) => {
       if (name === void 0) {
         return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, {}, go);
@@ -12663,6 +12656,7 @@
     //
     // Sparkling-Water
     //
+    Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);
     return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
   }
 
