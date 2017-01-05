@@ -46,12 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestAsDataFrame = (hfId, name, go) => {
-    if (name === void 0) {
-      return doPost(_, `/3/h2oframes/${hfId}/dataframe`, {}, go);
-    }
-    return doPost(_, `/3/h2oframes/${hfId}/dataframe`, { dataframe_id: name }, go);
-  };
   Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame);
   Flow.Dataflow.link(_.requestFrames, requestFrames);
   Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
@@ -62,8 +56,4 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  //
-  // Sparkling-Water
-  //
-  return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
 }

@@ -112,6 +112,7 @@ import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
 import { postScalaCodeRequest } from '../h2oProxy/postScalaCodeRequest';
 import { postAsH2OFrameFromRDDRequest } from '../h2oProxy/postAsH2OFrameFromRDDRequest';
 import { postAsH2OFrameFromDFRequest } from '../h2oProxy/postAsH2OFrameFromDFRequest';
+import { postAsDataFrameRequest } from '../h2oProxy/postAsDataFrameRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -990,7 +991,7 @@ export function routines() {
       return result;
     };
     // calls _.self
-    requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
+    requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
       if (error) {
         return go(error);
       }
