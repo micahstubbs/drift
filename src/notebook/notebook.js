@@ -103,7 +103,8 @@ export function notebook() {
         // Handle the error
         return _.scalaIntpId(-1);
       }
-      return _.scalaIntpId(response.sessionId);
+      console.log('response from notebook _initializeInterpreter', response);
+      return _.scalaIntpId(response.session_id);
     });
     const serialize = () => {
       let cell;

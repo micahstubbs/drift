@@ -997,17 +997,23 @@ export function routines() {
       return _fork(requestAsDataFrame, hfId, name);
     };
     // calls _.self
-    requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendScalaCode(result));
-    });
+    requestScalaCode = (session_id, code, go) => {
+      console.log('session_id from routines requestScalaCode', session_id);
+      return _.requestScalaCode(session_id, code, (error, result) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendScalaCode(result));
+      });
+    }
     extendScalaCode = result => {
       render_(result, h2oScalaCodeOutput, result);
       return result;
     };
-    runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
+    runScalaCode = (session_id, code) => {
+      console.log('session_id from routines runScalaCode', session_id);
+      return _fork(requestScalaCode, session_id, code);
+    }
     // calls _.self
     requestScalaIntp = go => _.requestScalaIntp((error, result) => {
       if (error) {

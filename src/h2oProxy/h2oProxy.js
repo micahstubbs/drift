@@ -49,7 +49,10 @@ export function h2oProxy(_) {
   const requestRDDs = go => doGet(_, '/3/RDDs', go);
   const requestDataFrames = go => doGet(_, '/3/dataframes', go);
   const requestScalaIntp = go => doPost(_, '/3/scalaint', {}, go);
-  const requestScalaCode = (sessionId, code, go) => doPost(_, `/3/scalaint/${sessionId}`, { code }, go);
+  const requestScalaCode = (sessionId, code, go) => {
+    console.log('sessionId from requestScalaCode', sessionId);
+    return doPost(_, `/3/scalaint/${sessionId}`, { code }, go);
+  };
   const requestAsH2OFrameFromRDD = (rddId, name, go) => {
     if (name === void 0) {
       return doPost(_, `/3/RDDs/${rddId}/h2oframe`, {}, go);
