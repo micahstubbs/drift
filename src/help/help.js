@@ -1,5 +1,6 @@
 import { getEndpointRequest } from '../h2oProxy/getEndpointRequest';
 import { getEndpointsRequest } from '../h2oProxy/getEndpointsRequest';
+import { getSchemasRequest } from '../h2oProxy/getSchemasRequest';
 
 export function help() {
   const lodash = window._;
@@ -131,7 +132,7 @@ export function help() {
           });
           break;
         case 'schemas':
-          _.requestSchemas((error, response) => {
+          getSchemasRequest(_, (error, response) => {
             if (!error) {
               return displaySchemas(lodash.sortBy(response.schemas, schema => schema.name));
             }
