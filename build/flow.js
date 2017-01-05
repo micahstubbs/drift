@@ -7463,10 +7463,6 @@
     return doPost(_, '/3/scalaint', {}, go);
   }
 
-  function postScalaCodeRequest(_, sessionId, code, go) {
-    return doPost(_, `/3/scalaint/${ sessionId }`, { code }, go);
-  }
-
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8345,7 +8341,7 @@
         return _fork(requestAsDataFrame, hfId, name);
       };
       // calls _.self
-      requestScalaCode = (sessionId, code, go) => postScalaCodeRequest(_, sessionId, code, (error, result) => {
+      requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -12550,6 +12546,7 @@
     // Sparkling-Water
     //
     _.scalaIntpId = Flow.Dataflow.signal(-1);
+    _.requestScalaCode = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
     _.requestAsDataFrame = Flow.Dataflow.slot();
@@ -12632,6 +12629,7 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
+    const requestScalaCode = (sessionId, code, go) => doPost(_, `/3/scalaint/${ sessionId }`, { code }, go);
     const requestAsH2OFrameFromRDD = (rddId, name, go) => {
       if (name === void 0) {
         return doPost(_, `/3/RDDs/${ rddId }/h2oframe`, {}, go);
@@ -12663,6 +12661,7 @@
     //
     // Sparkling-Water
     //
+    Flow.Dataflow.link(_.requestScalaCode, requestScalaCode);
     Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);
     Flow.Dataflow.link(_.requestAsH2OFrameFromRDD, requestAsH2OFrameFromRDD);
     return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
