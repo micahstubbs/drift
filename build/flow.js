@@ -7459,6 +7459,10 @@
     return doGet(_, '/3/dataframes', go);
   }
 
+  function postScalaIntpRequest(_, go) {
+    return doPost(_, '/3/scalaint', {}, go);
+  }
+
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8349,7 +8353,7 @@
       };
       runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
       // calls _.self
-      requestScalaIntp = go => _.requestScalaIntp((error, result) => {
+      requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -11487,7 +11491,7 @@
 
       // initialize the interpreter when the notebook is created
       // one interpreter is shared by all scala cells
-      const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
+      const _initializeInterpreter = () => postScalaIntpRequest(_, (error, response) => {
         if (error) {
           // Handle the error
           return _.scalaIntpId(-1);
@@ -12542,7 +12546,6 @@
     // Sparkling-Water
     //
     _.scalaIntpId = Flow.Dataflow.signal(-1);
-    _.requestScalaIntp = Flow.Dataflow.slot();
     _.requestScalaCode = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromDF = Flow.Dataflow.slot();
@@ -12626,7 +12629,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestScalaIntp = go => doPost(_, '/3/scalaint', {}, go);
     const requestScalaCode = (sessionId, code, go) => doPost(_, `/3/scalaint/${ sessionId }`, { code }, go);
     const requestAsH2OFrameFromRDD = (rddId, name, go) => {
       if (name === void 0) {
@@ -12659,7 +12661,6 @@
     //
     // Sparkling-Water
     //
-    Flow.Dataflow.link(_.requestScalaIntp, requestScalaIntp);
     Flow.Dataflow.link(_.requestScalaCode, requestScalaCode);
     Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);
     Flow.Dataflow.link(_.requestAsH2OFrameFromRDD, requestAsH2OFrameFromRDD);
