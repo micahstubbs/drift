@@ -46,31 +46,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestRDDs = go => doGet(_, '/3/RDDs', go);
-  const requestDataFrames = go => doGet(_, '/3/dataframes', go);
-  const requestScalaIntp = go => doPost(_, '/3/scalaint', {}, go);
-  const requestScalaCode = (sessionId, code, go) => {
-    console.log('sessionId from requestScalaCode', sessionId);
-    return doPost(_, `/3/scalaint/${sessionId}`, { code }, go);
-  };
-  const requestAsH2OFrameFromRDD = (rddId, name, go) => {
-    if (name === void 0) {
-      return doPost(_, `/3/RDDs/${rddId}/h2oframe`, {}, go);
-    }
-    return doPost(_, `/3/RDDs/${rddId}/h2oframe`, { h2oframe_id: name }, go);
-  };
-  const requestAsH2OFrameFromDF = (dfId, name, go) => {
-    if (name === void 0) {
-      return doPost(_, `/3/dataframes/${dfId}/h2oframe`, {}, go);
-    }
-    return doPost(_, `/3/dataframes/${dfId}/h2oframe`, { h2oframe_id: name }, go);
-  };
-  const requestAsDataFrame = (hfId, name, go) => {
-    if (name === void 0) {
-      return doPost(_, `/3/h2oframes/${hfId}/dataframe`, {}, go);
-    }
-    return doPost(_, `/3/h2oframes/${hfId}/dataframe`, { dataframe_id: name }, go);
-  };
   Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame);
   Flow.Dataflow.link(_.requestFrames, requestFrames);
   Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
@@ -81,14 +56,4 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  //
-  // Sparkling-Water
-  //
-  Flow.Dataflow.link(_.requestRDDs, requestRDDs);
-  Flow.Dataflow.link(_.requestDataFrames, requestDataFrames);
-  Flow.Dataflow.link(_.requestScalaIntp, requestScalaIntp);
-  Flow.Dataflow.link(_.requestScalaCode, requestScalaCode);
-  Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);
-  Flow.Dataflow.link(_.requestAsH2OFrameFromRDD, requestAsH2OFrameFromRDD);
-  return Flow.Dataflow.link(_.requestAsDataFrame, requestAsDataFrame);
 }
