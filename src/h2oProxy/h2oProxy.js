@@ -45,7 +45,6 @@ export function h2oProxy(_) {
   _.__.modelBuilders = null;
   _.__.modelBuilderEndpoints = null;
   _.__.gridModelBuilderEndpoints = null;
-  const requestEndpoint = (index, go) => doGet(_, `/3/Metadata/endpoints/${index}`, go);
   const requestSchemas = go => doGet(_, '/3/Metadata/schemas', go);
   const requestSchema = (name, go) => doGet(_, `/3/Metadata/schemas/${encodeURIComponent(name)}`, go);
   const getLines = data => lodash.filter(data.split('\n'), line => {
@@ -91,7 +90,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
   Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-  Flow.Dataflow.link(_.requestEndpoint, requestEndpoint);
   Flow.Dataflow.link(_.requestSchemas, requestSchemas);
   Flow.Dataflow.link(_.requestSchema, requestSchema);
   Flow.Dataflow.link(_.requestPacks, requestPacks);

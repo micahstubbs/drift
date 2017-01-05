@@ -1,3 +1,4 @@
+import { getEndpointRequest } from '../h2oProxy/getEndpointRequest';
 import { getEndpointsRequest } from '../h2oProxy/getEndpointsRequest';
 
 export function help() {
@@ -123,7 +124,7 @@ export function help() {
           break;
         case 'endpoint':
           routeIndex = $el.attr('data-index');
-          _.requestEndpoint(routeIndex, (error, response) => {
+          getEndpointRequest(_, routeIndex, (error, response) => {
             if (!error) {
               return displayEndpoint(lodash.head(response.routes));
             }
