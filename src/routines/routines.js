@@ -937,7 +937,7 @@ export function routines() {
       }
       return go(null, extendRDDs(result.rdds));
     });
-    // getRDDs = () => _fork(requestRDDs);
+    getRDDs = () => _fork(requestRDDs);
     extendDataFrames = dataframes => {
       render_(dataframes, h2oDataFramesOutput, dataframes);
       return dataframes;
