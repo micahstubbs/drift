@@ -106,7 +106,6 @@ import { getStackTraceRequest } from '../h2oProxy/getStackTraceRequest';
 import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
 import { getLogFileRequest } from '../h2oProxy/getLogFileRequest';
 import { getNetworkTestRequest } from '../h2oProxy/getNetworkTestRequest';
-import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -931,13 +930,13 @@ export function routines() {
       return rdds;
     };
     // calls _.self
-    requestRDDs = go => getRDDsRequest(_, (error, result) => {
+    requestRDDs = go => _.requestRDDs((error, result) => {
       if (error) {
         return go(error);
       }
       return go(null, extendRDDs(result.rdds));
     });
-    // getRDDs = () => _fork(requestRDDs);
+    getRDDs = () => _fork(requestRDDs);
     extendDataFrames = dataframes => {
       render_(dataframes, h2oDataFramesOutput, dataframes);
       return dataframes;
