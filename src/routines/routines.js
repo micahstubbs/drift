@@ -109,6 +109,7 @@ import { getNetworkTestRequest } from '../h2oProxy/getNetworkTestRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
 import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
 import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
+import { postScalaCodeRequest } from '../h2oProxy/postScalaCodeRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -1000,7 +1001,7 @@ export function routines() {
       return _fork(requestAsDataFrame, hfId, name);
     };
     // calls _.self
-    requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
+    requestScalaCode = (sessionId, code, go) => postScalaCodeRequest(_, sessionId, code, (error, result) => {
       if (error) {
         return go(error);
       }
