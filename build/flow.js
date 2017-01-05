@@ -7455,6 +7455,10 @@
     return doGet(_, '/3/RDDs', go);
   }
 
+  function getDataFramesRequest(_, go) {
+    return doGet(_, '/3/dataframes', go);
+  }
+
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -8278,7 +8282,7 @@
         return dataframes;
       };
       // calls _.self
-      requestDataFrames = go => _.requestDataFrames((error, result) => {
+      requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
@@ -12538,7 +12542,6 @@
     // Sparkling-Water
     //
     _.scalaIntpId = Flow.Dataflow.signal(-1);
-    _.requestDataFrames = Flow.Dataflow.slot();
     _.requestScalaIntp = Flow.Dataflow.slot();
     _.requestScalaCode = Flow.Dataflow.slot();
     _.requestAsH2OFrameFromRDD = Flow.Dataflow.slot();
@@ -12623,7 +12626,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestDataFrames = go => doGet(_, '/3/dataframes', go);
     const requestScalaIntp = go => doPost(_, '/3/scalaint', {}, go);
     const requestScalaCode = (sessionId, code, go) => doPost(_, `/3/scalaint/${ sessionId }`, { code }, go);
     const requestAsH2OFrameFromRDD = (rddId, name, go) => {
@@ -12657,7 +12659,6 @@
     //
     // Sparkling-Water
     //
-    Flow.Dataflow.link(_.requestDataFrames, requestDataFrames);
     Flow.Dataflow.link(_.requestScalaIntp, requestScalaIntp);
     Flow.Dataflow.link(_.requestScalaCode, requestScalaCode);
     Flow.Dataflow.link(_.requestAsH2OFrameFromDF, requestAsH2OFrameFromDF);

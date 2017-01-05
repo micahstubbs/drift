@@ -107,6 +107,7 @@ import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
 import { getLogFileRequest } from '../h2oProxy/getLogFileRequest';
 import { getNetworkTestRequest } from '../h2oProxy/getNetworkTestRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
+import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -943,7 +944,7 @@ export function routines() {
       return dataframes;
     };
     // calls _.self
-    requestDataFrames = go => _.requestDataFrames((error, result) => {
+    requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
