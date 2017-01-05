@@ -4,6 +4,7 @@ import { getSchemasRequest } from '../h2oProxy/getSchemasRequest';
 import { getSchemaRequest } from '../h2oProxy/getSchemaRequest';
 import { requestPacks } from '../h2oProxy/requestPacks';
 import { requestPack } from '../h2oProxy/requestPack';
+import { requestFlow } from '../h2oProxy/requestFlow';
 
 export function help() {
   const lodash = window._;
@@ -110,7 +111,7 @@ export function help() {
               packName = $el.attr('data-pack-name');
               flowName = $el.attr('data-flow-name');
               if (H2O.Util.validateFileExtension(flowName, '.flow')) {
-                return _.requestFlow(packName, flowName, (error, flow) => {
+                return requestFlow(packName, flowName, (error, flow) => {
                   if (!error) {
                     return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
                   }

@@ -10182,6 +10182,10 @@
     return download('text', `/flow/packs/${ encodeURIComponent(packName) }/index.list`, unwrap(go, getLines));
   }
 
+  function requestFlow(packName, flowName, go) {
+    return download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
+  }
+
   function help() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -10283,7 +10287,7 @@
                 packName = $el.attr('data-pack-name');
                 flowName = $el.attr('data-flow-name');
                 if (H2O.Util.validateFileExtension(flowName, '.flow')) {
-                  return _.requestFlow(packName, flowName, (error, flow) => {
+                  return requestFlow(packName, flowName, (error, flow) => {
                     if (!error) {
                       return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
                     }
@@ -12513,7 +12517,6 @@
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
-    _.requestFlow = Flow.Dataflow.slot();
     _.requestHelpIndex = Flow.Dataflow.slot();
     _.requestHelpContent = Flow.Dataflow.slot();
     _.ls = Flow.Dataflow.slot();
@@ -12611,7 +12614,6 @@
     _.__.modelBuilders = null;
     _.__.modelBuilderEndpoints = null;
     _.__.gridModelBuilderEndpoints = null;
-    const requestFlow = (packName, flowName, go) => download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
     const requestHelpIndex = go => download('json', '/flow/help/catalog.json', go);
     const requestHelpContent = (name, go) => download('text', `/flow/help/${ name }.html`, go);
     const requestRDDs = go => doGet(_, '/3/RDDs', go);
@@ -12646,7 +12648,6 @@
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);
     Flow.Dataflow.link(_.requestImportFile, requestImportFile);
-    Flow.Dataflow.link(_.requestFlow, requestFlow);
     Flow.Dataflow.link(_.requestHelpIndex, requestHelpIndex);
     Flow.Dataflow.link(_.requestHelpContent, requestHelpContent);
     //
