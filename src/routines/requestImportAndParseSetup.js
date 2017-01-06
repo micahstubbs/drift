@@ -1,4 +1,5 @@
 import { extendParseSetupResults } from './extendParseSetupResults';
+import { postParseSetupRequest } from '../h2oProxy/postParseSetupRequest';
 
 export function requestImportAndParseSetup(_, paths, go) {
   const lodash = window._;
@@ -7,7 +8,7 @@ export function requestImportAndParseSetup(_, paths, go) {
       return go(error);
     }
     const sourceKeys = lodash.flatten(lodash.compact(lodash.map(importResults, result => result.destination_frames)));
-    return _.requestParseSetup(sourceKeys, (error, parseSetupResults) => {
+    return postParseSetupRequest(_, sourceKeys, (error, parseSetupResults) => {
       if (error) {
         return go(error);
       }

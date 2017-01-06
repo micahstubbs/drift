@@ -70,7 +70,7 @@ export function imputeInput() {
       }
       return _.insertAndExecuteCell('cs', `imputeColumn ${JSON.stringify(arg)}`);
     };
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         // empty
@@ -95,7 +95,7 @@ export function imputeInput() {
     });
     Flow.Dataflow.react(_frame, frame => {
       if (frame) {
-        return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
+        return _.requestFrameSummaryWithoutData(_, frame, (error, frame) => {
           let column;
           if (error) {
             // empty

@@ -140,7 +140,7 @@ export function h2oSplitFrameInput(_, _go, _frameKey) {
       `splitFrame ${flowPrelude.stringify(_frame())}, ${flowPrelude.stringify(splitRatios)}, ${flowPrelude.stringify(splitKeys)}, ${_seed()}`); // eslint-disable-line
   });
   const initialize = () => {
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       let frameKeys;
       if (!error) {

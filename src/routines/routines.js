@@ -51,6 +51,7 @@ import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
 import { requestDeleteModel } from './requestDeleteModel';
 import { requestImportModel } from './requestImportModel';
+import { requestJob } from './requestJob';
 import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
@@ -60,6 +61,11 @@ import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
 import { unwrapPrediction } from './unwrapPrediction';
 import { inspectModelParameters } from './inspectModelParameters';
+import { requestParseSetup } from './requestParseSetup';
+import { requestCancelJob } from './requestCancelJob';
+import { requestPartialDependence } from './requestPartialDependence';
+import { requestPartialDependenceData } from './requestPartialDependenceData';
+import { requestExportModel } from './requestExportModel';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -88,6 +94,25 @@ import { h2oImportModelInput } from '../h2oImportModelInput';
 import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
 import { h2oModelOutput } from '../h2oModelOutput';
+
+import { getGridRequest } from '../h2oProxy/getGridRequest';
+import { getModelRequest } from '../h2oProxy/getModelRequest';
+import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
+import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
+import { getCloudRequest } from '../h2oProxy/getCloudRequest';
+import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
+import { getProfileRequest } from '../h2oProxy/getProfileRequest';
+import { getStackTraceRequest } from '../h2oProxy/getStackTraceRequest';
+import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
+import { getLogFileRequest } from '../h2oProxy/getLogFileRequest';
+import { getNetworkTestRequest } from '../h2oProxy/getNetworkTestRequest';
+import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
+import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
+import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
+import { postScalaCodeRequest } from '../h2oProxy/postScalaCodeRequest';
+import { postAsH2OFrameFromRDDRequest } from '../h2oProxy/postAsH2OFrameFromRDDRequest';
+import { postAsH2OFrameFromDFRequest } from '../h2oProxy/postAsH2OFrameFromDFRequest';
+import { postAsDataFrameRequest } from '../h2oProxy/postAsDataFrameRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -259,7 +284,7 @@ export function routines() {
         inspect_(model, inspections);
         return model;
       };
-      const refresh = go => _.requestModel(model.model_id.name, (error, model) => {
+      const refresh = go => getModelRequest(_, model.model_id.name, (error, model) => {
         if (error) {
           return go(error);
         }
@@ -269,7 +294,7 @@ export function routines() {
       return render_(model, h2oModelOutput, model, refresh);
     }
     requestModel = (modelKey, go) => {
-      return _.requestModel(modelKey, (error, model) => {
+      return getModelRequest(_, modelKey, (error, model) => {
         if (error) {
           return go(error);
         }
@@ -372,7 +397,7 @@ export function routines() {
     };
 
     requestPrediction = (modelKey, frameKey, go) => {
-      return _.requestPrediction(modelKey, frameKey, unwrapPrediction(_, go));
+      return postPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
     }
     // abstracting this out produces an error
     // defer for now
@@ -382,13 +407,13 @@ export function routines() {
       return predictions;
     };
 
-    requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(frameKey, searchTerm, offset, length, (error, frame) => {
+    requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, (error, frame) => {
       if (error) {
         return go(error);
       }
       return go(null, extendFrameSummary(_, frameKey, frame));
     });
-    requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(frameKey, void 0, 0, 20, (error, frame) => {
+    requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
       if (error) {
         return go(error);
       }
@@ -534,7 +559,7 @@ export function routines() {
       }
     };
     // depends on `extendGrid`
-    requestGrid = (gridKey, opts, go) => _.requestGrid(gridKey, opts, (error, grid) => {
+    requestGrid = (gridKey, opts, go) => getGridRequest(_, gridKey, opts, (error, grid) => {
       if (error) {
         return go(error);
       }
@@ -787,7 +812,7 @@ export function routines() {
           let frameKey;
           let modelKey;
           modelKey = opt.model, frameKey = opt.frame;
-          return _fork(_.requestPredictions, modelKey, frameKey);
+          return _fork(getPredictionsRequest, _, modelKey, frameKey);
         });
         return Flow.Async.join(futures, (error, predictions) => {
           let uniquePredictions;
@@ -799,7 +824,7 @@ export function routines() {
         });
       }
       modelKey = opts.model, frameKey = opts.frame;
-      return _.requestPredictions(modelKey, frameKey, (error, predictions) => {
+      return getPredictionsRequest(_, modelKey, frameKey, (error, predictions) => {
         if (error) {
           return go(error);
         }
@@ -832,7 +857,7 @@ export function routines() {
       return _fork(requestPredictions, opts);
     };
     // calls _.self
-    requestCloud = go => _.requestCloud((error, cloud) => {
+    requestCloud = go => getCloudRequest(_, (error, cloud) => {
       if (error) {
         return go(error);
       }
@@ -841,7 +866,7 @@ export function routines() {
     // blocked by CoffeeScript codecell `_` issue
     getCloud = () => _fork(requestCloud);
     // calls _.self
-    requestTimeline = go => _.requestTimeline((error, timeline) => {
+    requestTimeline = go => getTimelineRequest(_, (error, timeline) => {
       if (error) {
         return go(error);
       }
@@ -849,7 +874,7 @@ export function routines() {
     });
     // blocked by CoffeeScript codecell `_` issue
     getTimeline = () => _fork(requestTimeline);
-    requestStackTrace = go => _.requestStackTrace((error, stackTrace) => {
+    requestStackTrace = go => getStackTraceRequest(_, (error, stackTrace) => {
       if (error) {
         return go(error);
       }
@@ -858,7 +883,7 @@ export function routines() {
     // depends on requestStackTrace
     getStackTrace = () => _fork(requestStackTrace);
     // calls _.self
-    requestLogFile = (nodeIndex, fileType, go) => _.requestCloud((error, cloud) => {
+    requestLogFile = (nodeIndex, fileType, go) => getCloudRequest(_, (error, cloud) => {
       let NODE_INDEX_SELF;
       if (error) {
         return go(error);
@@ -867,7 +892,7 @@ export function routines() {
         NODE_INDEX_SELF = -1;
         nodeIndex = NODE_INDEX_SELF;
       }
-      return _.requestLogFile(nodeIndex, fileType, (error, logFile) => {
+      return getLogFileRequest(_, nodeIndex, fileType, (error, logFile) => {
         if (error) {
           return go(error);
         }
@@ -885,7 +910,7 @@ export function routines() {
       return _fork(requestLogFile, nodeIndex, fileType);
     };
     // calls _.self
-    requestNetworkTest = go => _.requestNetworkTest((error, result) => {
+    requestNetworkTest = go => getNetworkTestRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -900,7 +925,7 @@ export function routines() {
     //
     testNetwork = () => _fork(requestNetworkTest);
     // calls _.self
-    requestRemoveAll = go => _.requestRemoveAll((error, result) => {
+    requestRemoveAll = go => deleteAllRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -912,7 +937,7 @@ export function routines() {
       return rdds;
     };
     // calls _.self
-    requestRDDs = go => _.requestRDDs((error, result) => {
+    requestRDDs = go => getRDDsRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -924,7 +949,7 @@ export function routines() {
       return dataframes;
     };
     // calls _.self
-    requestDataFrames = go => _.requestDataFrames((error, result) => {
+    requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -936,7 +961,7 @@ export function routines() {
       return result;
     };
     // calls _.self
-    requestAsH2OFrameFromRDD = (rddId, name, go) => _.requestAsH2OFrameFromRDD(rddId, name, (error, h2oframe_id) => {
+    requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
       if (error) {
         return go(error);
       }
@@ -949,7 +974,7 @@ export function routines() {
       return _fork(requestAsH2OFrameFromRDD, rddId, name);
     };
     // calls _.self
-    requestAsH2OFrameFromDF = (dfId, name, go) => _.requestAsH2OFrameFromDF(dfId, name, (error, result) => {
+    requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -966,7 +991,7 @@ export function routines() {
       return result;
     };
     // calls _.self
-    requestAsDataFrame = (hfId, name, go) => _.requestAsDataFrame(hfId, name, (error, result) => {
+    requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -979,19 +1004,25 @@ export function routines() {
       return _fork(requestAsDataFrame, hfId, name);
     };
     // calls _.self
-    requestScalaCode = (sessionId, code, go) => _.requestScalaCode(sessionId, code, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendScalaCode(result));
-    });
+    requestScalaCode = (session_id, code, go) => {
+      console.log('session_id from routines requestScalaCode', session_id);
+      return postScalaCodeRequest(_, session_id, code, (error, result) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendScalaCode(result));
+      });
+    }
     extendScalaCode = result => {
       render_(result, h2oScalaCodeOutput, result);
       return result;
     };
-    runScalaCode = (sessionId, code) => _fork(requestScalaCode, sessionId, code);
+    runScalaCode = (session_id, code) => {
+      console.log('session_id from routines runScalaCode', session_id);
+      return _fork(requestScalaCode, session_id, code);
+    }
     // calls _.self
-    requestScalaIntp = go => _.requestScalaIntp((error, result) => {
+    requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
       if (error) {
         return go(error);
       }
@@ -1002,7 +1033,7 @@ export function routines() {
       return result;
     };
     getScalaIntp = () => _fork(requestScalaIntp);
-    requestProfile = (depth, go) => _.requestProfile(depth, (error, profile) => {
+    requestProfile = (depth, go) => getProfileRequest(_, depth, (error, profile) => {
       if (error) {
         return go(error);
       }

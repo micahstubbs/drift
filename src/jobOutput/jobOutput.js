@@ -1,3 +1,6 @@
+import { getJobRequest } from '../h2oProxy/getJobRequest';
+import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -117,7 +120,7 @@ export function jobOutput() {
     };
     const refresh = () => {
       _isBusy(true);
-      return _.requestJob(_key, (error, job) => {
+      return getJobRequest(_, _key, (error, job) => {
         _isBusy(false);
         if (error) {
           _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
@@ -163,7 +166,7 @@ export function jobOutput() {
           // do nothing
       }
     };
-    const cancel = () => _.requestCancelJob(_key, (error, result) => {
+    const cancel = () => postCancelJobRequest(_, _key, (error, result) => {
       if (error) {
         return console.debug(error);
       }

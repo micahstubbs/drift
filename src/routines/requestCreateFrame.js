@@ -1,11 +1,13 @@
 import { extendJob } from './extendJob';
+import { postCreateFrameRequest } from '../h2oProxy/postCreateFrameRequest';
+import { getJobRequest } from '../h2oProxy/getJobRequest';
 
 export function requestCreateFrame(_, opts, go) {
-  return _.requestCreateFrame(opts, (error, result) => {
+  return postCreateFrameRequest(_, opts, (error, result) => {
     if (error) {
       return go(error);
     }
-    return _.requestJob(result.key.name, (error, job) => {
+    return getJobRequest(_, result.key.name, (error, job) => {
       if (error) {
         return go(error);
       }

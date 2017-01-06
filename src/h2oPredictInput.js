@@ -1,3 +1,6 @@
+import { getModelRequest } from './h2oProxy/getModelRequest';
+import { getModelsRequest } from './h2oProxy/getModelsRequest';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -79,7 +82,7 @@ export function h2oPredictInput(_, _go, opt) {
     return hasFrameAndModel && hasValidOptions;
   });
   if (!_hasFrames) {
-    _.requestFrames((error, frames) => {
+    _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));
@@ -99,7 +102,7 @@ export function h2oPredictInput(_, _go, opt) {
     });
   }
   if (!_hasModels) {
-    _.requestModels((error, models) => {
+    getModelsRequest(_, (error, models) => {
       let model;
       if (error) {
         return _exception(new Flow.Error('Error fetching model list.', error));
@@ -119,7 +122,7 @@ export function h2oPredictInput(_, _go, opt) {
   }
   if (!_selectedModel()) {
     if (opt.model && lodash.isString(opt.model)) {
-      _.requestModel(opt.model, (error, model) => _selectedModel(model));
+      getModelRequest(_, opt.model, (error, model) => _selectedModel(model));
     }
   }
   const predict = () => {

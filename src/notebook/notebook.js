@@ -1,3 +1,11 @@
+import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
+import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
+import { getObjectRequest } from '../h2oProxy/getObjectRequest';
+import { deleteObjectRequest } from '../h2oProxy/deleteObjectRequest';
+import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
+import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
+import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
+
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
 import { flowRaw } from '../flowRaw';
@@ -91,12 +99,13 @@ export function notebook() {
 
     // initialize the interpreter when the notebook is created
     // one interpreter is shared by all scala cells
-    const _initializeInterpreter = () => _.requestScalaIntp((error, response) => {
+    const _initializeInterpreter = () => postScalaIntpRequest(_, (error, response) => {
       if (error) {
         // Handle the error
         return _.scalaIntpId(-1);
       }
-      return _.scalaIntpId(response.sessionId);
+      console.log('response from notebook _initializeInterpreter', response);
+      return _.scalaIntpId(response.session_id);
     });
     const serialize = () => {
       let cell;
@@ -362,8 +371,8 @@ export function notebook() {
       _selectedCell.execute(() => selectNextCell());
       return false;
     };
-    const checkIfNameIsInUse = (name, go) => _.requestObjectExists('notebook', name, (error, exists) => go(exists));
-    const storeNotebook = (localName, remoteName) => _.requestPutObject('notebook', localName, serialize(), error => {
+    const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
+    const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(), error => {
       if (error) {
         return _.alert(`Error saving notebook: ${error.message}`);
       }
@@ -372,7 +381,7 @@ export function notebook() {
 
       // renamed document
       if (remoteName !== localName) {
-        return _.requestDeleteObject('notebook', remoteName, error => {
+        return deleteObjectRequest(_, 'notebook', remoteName, error => {
           if (error) {
             _.alert(`Error deleting remote notebook [${remoteName}]: ${error.message}`);
           }
@@ -533,7 +542,7 @@ export function notebook() {
     };
     const executeCommand = command => () => _.insertAndExecuteCell('cs', command);
     const displayAbout = () => $('#aboutDialog').modal();
-    const shutdown = () => _.requestShutdown((error, result) => {
+    const shutdown = () => postShutdownRequest(_, (error, result) => {
       if (error) {
         return _.growl(`Shutdown failed: ${error.message}`, 'danger');
       }
@@ -561,7 +570,7 @@ export function notebook() {
     const duplicateNotebook = () => deserialize(`Copy of ${_localName()}`, null, serialize());
     const openNotebook = (name, doc) => deserialize(name, null, doc);
     function loadNotebook(name) {
-      return _.requestObject('notebook', name, (error, doc) => {
+      return getObjectRequest(_, 'notebook', name, (error, doc) => {
         let _ref;
         if (error) {
           _ref = error.message;
@@ -817,7 +826,7 @@ export function notebook() {
         ]),
       ];
     };
-    const setupMenus = () => _.requestModelBuilders((error, builders) => _menus(initializeMenus(error ? [] : builders)));
+    const setupMenus = () => requestModelBuilders(_, (error, builders) => _menus(initializeMenus(error ? [] : builders)));
     const createTool = (icon, label, action, isDisabled) => {
       if (isDisabled == null) {
         isDisabled = false;

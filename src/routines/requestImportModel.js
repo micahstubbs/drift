@@ -1,7 +1,8 @@
 import { extendImportModel } from './extendImportModel';
+import { postImportModelRequest } from '../h2oProxy/postImportModelRequest';
 
 export function requestImportModel(_, path, opts, go) {
-  return _.requestImportModel(path, opts.overwrite, (error, result) => {
+  return postImportModelRequest(_, path, opts.overwrite, (error, result) => {
     if (error) {
       return go(error);
     }

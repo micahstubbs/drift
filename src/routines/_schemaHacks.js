@@ -9,6 +9,7 @@ export const _schemaHacks = {
   NaiveBayesOutput: { fields: 'names domains help pcond' },
   PCAOutput: { fields: 'names domains help' },
   GLRMOutput: { fields: 'names domains help' },
+  SVMOutput: { fields: 'names domains help' },
   ModelMetricsBinomialGLM: {
     fields: null,
     transform: transformBinomialMetrics,
@@ -25,5 +26,5 @@ export const _schemaHacks = {
   ModelMetricsAutoEncoder: { fields: null },
   ModelMetricsPCA: { fields: null },
   ModelMetricsGLRM: { fields: null },
-  ConfusionMatrix: { fields: null }
+  ConfusionMatrix: { fields: null },
 };

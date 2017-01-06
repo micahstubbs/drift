@@ -1,3 +1,13 @@
+import { getEndpointsRequest } from '../h2oProxy/getEndpointsRequest';
+import { getEndpointRequest } from '../h2oProxy/getEndpointRequest';
+import { getSchemasRequest } from '../h2oProxy/getSchemasRequest';
+import { getSchemaRequest } from '../h2oProxy/getSchemaRequest';
+import { requestPacks } from '../h2oProxy/requestPacks';
+import { requestPack } from '../h2oProxy/requestPack';
+import { requestFlow } from '../h2oProxy/requestFlow';
+import { requestHelpIndex } from '../h2oProxy/requestHelpIndex';
+import { requestHelpContent } from '../h2oProxy/requestHelpContent';
+
 export function help() {
   const lodash = window._;
   const Flow = window.Flow;
@@ -57,7 +67,7 @@ export function help() {
       switch (action) {
         case 'help':
           topic = _index[$el.attr('data-topic')];
-          _.requestHelpContent(topic.name, (error, html) => {
+          requestHelpContent(topic.name, (error, html) => {
             const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6');
             const div = _ref[0];
             const mark = _ref[1];
@@ -79,7 +89,7 @@ export function help() {
           _.insertAndExecuteCell('cs', 'assist');
           break;
         case 'get-packs':
-          _.requestPacks((error, packNames) => {
+          requestPacks((error, packNames) => {
             if (!error) {
               return displayPacks(lodash.filter(packNames, packName => packName !== 'test'));
             }
@@ -87,7 +97,7 @@ export function help() {
           break;
         case 'get-pack':
           packName = $el.attr('data-pack-name');
-          _.requestPack(packName, (error, flowNames) => {
+          requestPack(packName, (error, flowNames) => {
             if (!error) {
               return displayFlows(packName, flowNames);
             }
@@ -103,7 +113,7 @@ export function help() {
               packName = $el.attr('data-pack-name');
               flowName = $el.attr('data-flow-name');
               if (H2O.Util.validateFileExtension(flowName, '.flow')) {
-                return _.requestFlow(packName, flowName, (error, flow) => {
+                return requestFlow(packName, flowName, (error, flow) => {
                   if (!error) {
                     return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
                   }
@@ -113,7 +123,7 @@ export function help() {
           });
           break;
         case 'endpoints':
-          _.requestEndpoints((error, response) => {
+          getEndpointsRequest(_, (error, response) => {
             if (!error) {
               return displayEndpoints(response.routes);
             }
@@ -121,14 +131,14 @@ export function help() {
           break;
         case 'endpoint':
           routeIndex = $el.attr('data-index');
-          _.requestEndpoint(routeIndex, (error, response) => {
+          getEndpointRequest(_, routeIndex, (error, response) => {
             if (!error) {
               return displayEndpoint(lodash.head(response.routes));
             }
           });
           break;
         case 'schemas':
-          _.requestSchemas((error, response) => {
+          getSchemasRequest(_, (error, response) => {
             if (!error) {
               return displaySchemas(lodash.sortBy(response.schemas, schema => schema.name));
             }
@@ -136,7 +146,7 @@ export function help() {
           break;
         case 'schema':
           schemaName = $el.attr('data-schema');
-          _.requestSchema(schemaName, (error, response) => {
+          getSchemaRequest(_, schemaName, (error, response) => {
             if (!error) {
               return displaySchema(lodash.head(response.schemas));
             }
@@ -307,7 +317,7 @@ export function help() {
       _homeContent = marked(_homeMarkdown).replace('%HELP_TOPICS%', buildToc(_catalog));
       return goHome();
     };
-    Flow.Dataflow.link(_.ready, () => _.requestHelpIndex((error, catalog) => {
+    Flow.Dataflow.link(_.ready, () => requestHelpIndex((error, catalog) => {
       if (!error) {
         return initialize(catalog);
       }

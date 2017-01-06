@@ -1,3 +1,5 @@
+import { postParseSetupPreviewRequest } from '../h2oProxy/postParseSetupPreviewRequest';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -112,7 +114,7 @@ export function parseInput() {
         }
         return _results;
       })();
-      return _.requestParseSetupPreview(_sourceKeys, _parseType().type, _delimiter().charCode, _useSingleQuotes(), _headerOptions[_headerOption()], columnTypes, (error, result) => {
+      return postParseSetupPreviewRequest(_, _sourceKeys, _parseType().type, _delimiter().charCode, _useSingleQuotes(), _headerOptions[_headerOption()], columnTypes, (error, result) => {
         if (!error) {
           return _preview(result);
         }

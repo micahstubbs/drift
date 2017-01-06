@@ -1,6 +1,7 @@
 import { requestColumnSummary } from './requestColumnSummary';
 import { findColumnIndicesByColumnLabels } from './findColumnIndicesByColumnLabels';
 import { findColumnIndexByColumnLabel } from './findColumnIndexByColumnLabel';
+import { requestExec } from '../h2oProxy/requestExec';
 
 export function requestImputeColumn(_, opts, go) {
   let combineMethod;
@@ -10,7 +11,7 @@ export function requestImputeColumn(_, opts, go) {
   combineMethod = opts.combineMethod;
   const groupByColumns = opts.groupByColumns;
   combineMethod = combineMethod != null ? combineMethod : 'interpolate';
-  return _.requestFrameSummaryWithoutData(frame, (error, result) => {
+  return _.requestFrameSummaryWithoutData(_, frame, (error, result) => {
     let columnIndex;
     let columnIndicesError;
     let columnKeyError;
@@ -35,7 +36,7 @@ export function requestImputeColumn(_, opts, go) {
       groupByColumnIndices = null;
     }
     const groupByArg = groupByColumnIndices ? `[${groupByColumnIndices.join(' ')}]` : '[]';
-    return _.requestExec(`(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`, (error, result) => {
+    return requestExec(_, `(h2o.impute ${frame} ${columnIndex} ${JSON.stringify(method)} ${JSON.stringify(combineMethod)} ${groupByArg} _ _)`, (error, result) => {
       if (error) {
         return go(error);
       }

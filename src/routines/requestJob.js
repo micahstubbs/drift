@@ -1,7 +1,8 @@
 import { extendJob } from './extendJob';
+import { getJobRequest } from '../h2oProxy/getJobRequest';
 
 export function requestJob(_, key, go) {
-  return _.requestJob(key, (error, job) => {
+  return getJobRequest(_, key, (error, job) => {
     if (error) {
       return go(error);
     }

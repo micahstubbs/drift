@@ -5,6 +5,7 @@ import { inspect_ } from './inspect_';
 import { render_ } from './render_';
 
 import { h2oModelOutput } from '../h2oModelOutput';
+import { getModelRequest } from '../h2oProxy/getModelRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -36,7 +37,7 @@ export function extendModel(_, model) {
     inspect_(model, inspections);
     return model;
   };
-  const refresh = go => _.requestModel(model.model_id.name, (error, model) => {
+  const refresh = go => getModelRequest(_, model.model_id.name, (error, model) => {
     if (error) {
       return go(error);
     }

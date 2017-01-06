@@ -1,3 +1,5 @@
+import { getLogFileRequest } from './h2oProxy/getLogFileRequest';
+
 export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
   const lodash = window._;
   const Flow = window.Flow;
@@ -24,7 +26,7 @@ export function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile
   });
   const refreshActiveView = (node, fileType) => {
     if (node) {
-      return _.requestLogFile(node.index, fileType, (error, logFile) => {
+      return getLogFileRequest(_, node.index, fileType, (error, logFile) => {
         if (error) {
           return _contents(`Error fetching log file: ${error.message}`);
         }

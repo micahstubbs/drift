@@ -17,7 +17,7 @@ export function h2oImportFilesInput(_, _go) {
   });
   const tryImportFiles = () => {
     const specifiedPath = _specifiedPath();
-    return _.requestFileGlob(specifiedPath, -1, (error, result) => {
+    return _.requestFileGlob(_, specifiedPath, -1, (error, result) => {
       if (error) {
         return _exception(error.stack);
       }
@@ -95,7 +95,7 @@ export function h2oImportFilesInput(_, _go) {
     return self;
   };
   const createFileItems = result => lodash.map(result.matches, path => createFileItem(path, _selectedFilesDictionary()[path]));
-  const listPathHints = (query, process) => _.requestFileGlob(query, 10, (error, result) => {
+  const listPathHints = (query, process) => _.requestFileGlob(_, query, 10, (error, result) => {
     if (!error) {
       return process(lodash.map(result.matches, value => ({
         value,

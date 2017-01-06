@@ -1,7 +1,8 @@
 import { extendBindFrames } from './extendBindFrames';
+import { requestExec } from '../h2oProxy/requestExec';
 
 export function requestBindFrames(_, key, sourceKeys, go) {
-  return _.requestExec(`(assign ${key} (cbind ${sourceKeys.join(' ')}))`, (error, result) => {
+  return requestExec(_, `(assign ${key} (cbind ${sourceKeys.join(' ')}))`, (error, result) => {
     if (error) {
       return go(error);
     }

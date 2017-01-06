@@ -19,7 +19,7 @@ export function h2oMergeFramesInput(_, _go) {
   const _canMerge = Flow.Dataflow.lift(_selectedLeftFrame, _selectedLeftColumn, _selectedRightFrame, _selectedRightColumn, (lf, lc, rf, rc) => lf && lc && rf && rc);
   Flow.Dataflow.react(_selectedLeftFrame, frameKey => {
     if (frameKey) {
-      return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _leftColumns(lodash.map(frame.columns, (column, i) => ({
+      return _.requestFrameSummaryWithoutData(_, frameKey, (error, frame) => _leftColumns(lodash.map(frame.columns, (column, i) => ({
         label: column.label,
         index: i,
       }))));
@@ -29,7 +29,7 @@ export function h2oMergeFramesInput(_, _go) {
   });
   Flow.Dataflow.react(_selectedRightFrame, frameKey => {
     if (frameKey) {
-      return _.requestFrameSummaryWithoutData(frameKey, (error, frame) => _rightColumns(lodash.map(frame.columns, (column, i) => ({
+      return _.requestFrameSummaryWithoutData(_, frameKey, (error, frame) => _rightColumns(lodash.map(frame.columns, (column, i) => ({
         label: column.label,
         index: i,
       }))));
@@ -44,7 +44,7 @@ export function h2oMergeFramesInput(_, _go) {
     const cs = `mergeFrames ${flowPrelude.stringify(_destinationKey())}, ${flowPrelude.stringify(_selectedLeftFrame())}, ${_selectedLeftColumn().index}, ${_includeAllLeftRows()}, ${flowPrelude.stringify(_selectedRightFrame())}, ${_selectedRightColumn().index}, ${_includeAllRightRows()}`;
     return _.insertAndExecuteCell('cs', cs);
   };
-  _.requestFrames((error, frames) => {
+  _.requestFrames(_, (error, frames) => {
     let frame;
     if (error) {
       return _exception(new Flow.Error('Error fetching frame list.', error));

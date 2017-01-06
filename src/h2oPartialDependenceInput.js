@@ -1,3 +1,5 @@
+import { getModelsRequest } from './h2oProxy/getModelsRequest';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -42,7 +44,7 @@ export function h2oPartialDependenceInput(_, _go) {
     // and run the cell
     return _.insertAndExecuteCell('cs', cs);
   };
-  _.requestFrames((error, frames) => {
+  _.requestFrames(_, (error, frames) => {
     let frame;
     if (error) {
       return _exception(new Flow.Error('Error fetching frame list.', error));
@@ -60,7 +62,7 @@ export function h2oPartialDependenceInput(_, _go) {
       return _results;
     })());
   });
-  _.requestModels((error, models) => {
+  getModelsRequest(_, (error, models) => {
     let model;
     if (error) {
       return _exception(new Flow.Error('Error fetching model list.', error));

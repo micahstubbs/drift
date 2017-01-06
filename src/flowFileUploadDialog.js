@@ -1,8 +1,10 @@
+import { postUploadFileRequest } from './h2oProxy/postUploadFileRequest';
+
 export function flowFileUploadDialog(_, _go) {
   const Flow = window.Flow;
   const _form = Flow.Dataflow.signal(null);
   const _file = Flow.Dataflow.signal(null);
-  const uploadFile = key => _.requestUploadFile(key, new FormData(_form()), (error, result) => _go({
+  const uploadFile = key => postUploadFileRequest(_, key, new FormData(_form()), (error, result) => _go({
     error,
     result,
   }));

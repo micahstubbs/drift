@@ -1,3 +1,6 @@
+import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
+import { postModelInputValidationRequest } from '../h2oProxy/postModelInputValidationRequest';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -459,7 +462,7 @@ export function modelInput() {
         if (responseColumnParameter || ignoredColumnsParameter) {
           return Flow.Dataflow.act(trainingFrameParameter.value, frameKey => {
             if (frameKey) {
-              _.requestFrameSummaryWithoutData(frameKey, (error, frame) => {
+              _.requestFrameSummaryWithoutData(_, frameKey, (error, frame) => {
                 let columnLabels;
                 let columnValues;
                 if (!error) {
@@ -556,7 +559,6 @@ export function modelInput() {
             }
           } else {
             value = control.value();
-            console.log('control from modelInput', control);
             if (control.isVisible() && (includeUnchangedParameters || control.isRequired || control.defaultValue !== value)) {
               switch (control.kind) {
                 case 'dropdown':
@@ -638,7 +640,7 @@ export function modelInput() {
         return go();
       }
       _validationFailureMessage('');
-      return _.requestModelInputValidation(_algorithm, parameters, (error, modelBuilder) => {
+      return postModelInputValidationRequest(_, _algorithm, parameters, (error, modelBuilder) => {
         let controls;
         let hasErrors;
         let validation;
@@ -783,7 +785,7 @@ export function modelInput() {
       if (classificationParameter) {
         classificationParameter.actual_value = true;
       }
-      return _.requestFrames((error, frames) => {
+      return _.requestFrames(_, (error, frames) => {
         let frame;
         let frameKeys;
         let frameParameters;
@@ -822,7 +824,7 @@ export function modelInput() {
         }
       });
     };
-    ((() => _.requestModelBuilders((error, modelBuilders) => {
+    ((() => requestModelBuilders(_, (error, modelBuilders) => {
       _algorithms(modelBuilders);
       _algorithm(_algo ? lodash.find(modelBuilders, builder => builder.algo === _algo) : void 0);
       const frameKey = _opts != null ? _opts.training_frame : void 0;

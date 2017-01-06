@@ -1,4 +1,5 @@
 import { extendParseResult } from './extendParseResult';
+import { postParseFilesRequest } from '../h2oProxy/postParseFilesRequest';
 
 export function requestParseFiles(
   _,
@@ -15,7 +16,7 @@ export function requestParseFiles(
   chunkSize,
   go
 ) {
-  return _.requestParseFiles(sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
+  return postParseFilesRequest(_, sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, (error, parseResult) => {
     if (error) {
       return go(error);
     }

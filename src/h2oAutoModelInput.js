@@ -30,7 +30,7 @@ export function h2oAutoModelInput(_, _go, opts) {
     };
     return _.insertAndExecuteCell('cs', `buildAutoModel ${JSON.stringify(arg)}`);
   };
-  _.requestFrames((error, frames) => {
+  _.requestFrames(_, (error, frames) => {
     let frame;
     if (error) {
       // empty
@@ -55,7 +55,7 @@ export function h2oAutoModelInput(_, _go, opts) {
   });
   Flow.Dataflow.react(_frame, frame => {
     if (frame) {
-      return _.requestFrameSummaryWithoutData(frame, (error, frame) => {
+      return _.requestFrameSummaryWithoutData(_, frame, (error, frame) => {
         let column;
         if (error) {
           // empty

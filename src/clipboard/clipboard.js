@@ -1,3 +1,7 @@
+import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
+import { getObjectRequest } from '../h2oProxy/getObjectRequest';
+import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -60,9 +64,9 @@ export function clipboard() {
       return _trashClips.remove(clip);
     }
     const emptyTrash = () => _trashClips.removeAll();
-    const loadUserClips = () => _.requestObjectExists('environment', 'clips', (error, exists) => {
+    const loadUserClips = () => getObjectExistsRequest(_, 'environment', 'clips', (error, exists) => {
       if (exists) {
-        return _.requestObject('environment', 'clips', (error, doc) => {
+        return getObjectRequest(_, 'environment', 'clips', (error, doc) => {
           if (!error) {
             return _userClips(lodash.map(doc.clips, clip => createClip(_userClips, clip.type, clip.input)));
           }
@@ -78,7 +82,7 @@ export function clipboard() {
       })),
     });
     function saveUserClips() {
-      return _.requestPutObject('environment', 'clips', serializeUserClips(), error => {
+      return postPutObjectRequest(_, 'environment', 'clips', serializeUserClips(), error => {
         if (error) {
           _.alert(`Error saving clips: ${error.message}`);
         }

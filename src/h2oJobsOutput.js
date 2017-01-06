@@ -1,3 +1,5 @@
+import { getJobsRequest } from './h2oProxy/getJobsRequest';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -39,7 +41,7 @@ export function h2oJobsOutput(_, _go, jobs) {
   const toggleRefresh = () => _isLive(!_isLive());
   const refresh = () => {
     _isBusy(true);
-    return _.requestJobs((error, jobs) => {
+    return getJobsRequest(_, (error, jobs) => {
       _isBusy(false);
       if (error) {
         _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));

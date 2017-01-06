@@ -1,7 +1,8 @@
 import { extendJob } from './extendJob';
+import { postModelBuildRequest } from '../h2oProxy/postModelBuildRequest';
 
 export function requestModelBuild(_, algo, opts, go) {
-  return _.requestModelBuild(algo, opts, (error, result) => {
+  return postModelBuildRequest(_, algo, opts, (error, result) => {
     const Flow = window.Flow;
     let messages;
     let validation;
