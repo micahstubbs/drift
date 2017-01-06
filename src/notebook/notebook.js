@@ -778,8 +778,9 @@ export function notebook() {
         createMenu('Score', [
           createMenuItem('Predict...', executeCommand('predict')),
           createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')),
-          createMenuItem('Model Deviances Visualization', goToH2OUrl('image.html')),
-          createMenuItem('Local Model Deviances Vis', goToUrl('http://localhost:8989')),
+          createMenuItem('Model Deviances Vis - Static', goToH2OUrl('vis.html')),
+          createMenuItem('Model Deviances Vis - Image', goToH2OUrl('image.html')),
+          createMenuItem('Model Deviances Vis - Local', goToUrl('http://localhost:8989')),
           menuDivider,
           createMenuItem('List All Predictions', executeCommand('getPredictions')),
           // TODO Confusion Matrix
