@@ -41,7 +41,6 @@ import { requestColumnSummary } from './requestColumnSummary';
 import { requestCreateFrame } from './requestCreateFrame';
 import { requestSplitFrame } from './requestSplitFrame';
 import { requestMergeFrames } from './requestMergeFrames';
-import { requestFrames } from './requestFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestExportFrame } from './requestExportFrame';
 import { requestGrids } from './requestGrids';
@@ -66,6 +65,7 @@ import { requestPartialDependence } from './requestPartialDependence';
 import { requestPartialDependenceData } from './requestPartialDependenceData';
 import { requestExportModel } from './requestExportModel';
 import { testNetwork } from './testNetwork';
+import { getFrames } from './getFrames';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -175,7 +175,6 @@ export function routines() {
     let getFrame;
     let getFrameData;
     let getFrameSummary;
-    let getFrames;
     let getGrid;
     let getGrids;
     let getJob;
@@ -466,12 +465,6 @@ export function routines() {
       }
       return assist(getPartialDependence);
     };
-    // abstracting this out causes a bug
-    // need to figure out how to insert a `_` variable
-    // into coffeescript that is then executed
-    // so that `_`'s meaning is preserved
-    // rather that being stringified into [object Object]
-    getFrames = () => _fork(requestFrames, _);
     // depends on `assist`
     getFrame = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
