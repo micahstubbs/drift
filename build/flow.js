@@ -10926,6 +10926,8 @@
     };
   }
 
+  const routinesThatAcceptUnderbarParameter = ['testNetwork'];
+
   function flowCoffeescript(_, guid, sandbox) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -10992,7 +10994,6 @@
           if (isRoutine(result)) {
             // a hack to gradually migrate routines to accept _ as a parameter
             // rather than expect _ to be a global variable
-            const routinesThatAcceptUnderbarParameter = ['testNetwork'];
             if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {
               return print(result(_));
             }

@@ -1,4 +1,5 @@
 import { flowCoffeescriptKernel } from './flowCoffeescriptKernel';
+import { routinesThatAcceptUnderbarParameter } from './routinesThatAcceptUnderbarParameter';
 
 export function flowCoffeescript(_, guid, sandbox) {
   const lodash = window._;
@@ -76,9 +77,6 @@ export function flowCoffeescript(_, guid, sandbox) {
         if (isRoutine(result)) {
           // a hack to gradually migrate routines to accept _ as a parameter
           // rather than expect _ to be a global variable
-          const routinesThatAcceptUnderbarParameter = [
-            'testNetwork'
-          ];
           if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {
             return print(result(_));
           }
