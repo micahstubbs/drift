@@ -233,6 +233,7 @@ export function routines() {
     let routinesOnSw;
     let runScalaCode;
     let setupParse;
+    let showFrameID;
     let splitFrame;
     let testNetwork;
 
@@ -802,6 +803,71 @@ export function routines() {
         frame
       });
     };
+    showFrameID = opts => {
+      let combos;
+      let deep_features_hidden_layer;
+      let exemplar_index;
+      let frame;
+      let frames;
+      let leaf_node_assignment;
+      let model;
+      let models;
+      let predictions_frame;
+      let reconstruction_error;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      if (opts == null) {
+        opts = {};
+      }
+      predictions_frame = opts.predictions_frame, model = opts.model, models = opts.models, frame = opts.frame, frames = opts.frames, reconstruction_error = opts.reconstruction_error, deep_features_hidden_layer = opts.deep_features_hidden_layer, leaf_node_assignment = opts.leaf_node_assignment, exemplar_index = opts.exemplar_index;
+      if (models || frames) {
+        if (!models) {
+          if (model) {
+            models = [model];
+          }
+        }
+        if (!frames) {
+          if (frame) {
+            frames = [frame];
+          }
+        }
+        if (frames && models) {
+          combos = [];
+          for (_i = 0, _len = models.length; _i < _len; _i++) {
+            model = models[_i];
+            for (_j = 0, _len1 = frames.length; _j < _len1; _j++) {
+              frame = frames[_j];
+              combos.push({
+                model,
+                frame
+              });
+            }
+          }
+          return _fork(requestPredicts, combos);
+        }
+        return assist(predict, {
+          predictions_frame,
+          models,
+          frames
+        });
+      }
+      if (model && frame) {
+        return _fork(requestPredict, _, predictions_frame, model, frame, {
+          reconstruction_error,
+          deep_features_hidden_layer,
+          leaf_node_assignment
+        });
+      } else if (model && exemplar_index !== void 0) {
+        return _fork(requestPredict, _, predictions_frame, model, null, { exemplar_index });
+      }
+      return assist(predict, {
+        predictions_frame,
+        model,
+        frame
+      });
+    };
     // depends on `extendPredictions`
     requestPredictions = (opts, go) => {
       let frameKey;
@@ -1214,7 +1280,8 @@ export function routines() {
       getStackTrace,
       getLogFile,
       testNetwork,
-      deleteAll
+      deleteAll,
+      showFrameID
     };
     if (_.onSparklingWater) {
       routinesOnSw = {

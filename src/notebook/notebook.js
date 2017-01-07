@@ -768,6 +768,9 @@ export function notebook() {
           createMenuItem('Split Frame...', executeCommand('splitFrame')),
           createMenuItem('Merge Frames...', executeCommand('mergeFrames')),
           menuDivider,
+          createMenuItem('Show Frame ID in a new window', executeCommand('showFrameID')),
+          // createMenuItem('Show Frame ID in a new window', goToH2OUrl(`frame.html?${_.currentFrameID}`))
+          menuDivider,
           createMenuItem('List All Frames', executeCommand('getFrames')),
           menuDivider,
           createMenuItem('Impute...', executeCommand('imputeColumn')),

@@ -7608,6 +7608,7 @@
       let routinesOnSw;
       let runScalaCode;
       let setupParse;
+      let showFrameID;
       let splitFrame;
       let testNetwork;
 
@@ -8166,6 +8167,71 @@
           frame
         });
       };
+      showFrameID = opts => {
+        let combos;
+        let deep_features_hidden_layer;
+        let exemplar_index;
+        let frame;
+        let frames;
+        let leaf_node_assignment;
+        let model;
+        let models;
+        let predictions_frame;
+        let reconstruction_error;
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
+        if (opts == null) {
+          opts = {};
+        }
+        predictions_frame = opts.predictions_frame, model = opts.model, models = opts.models, frame = opts.frame, frames = opts.frames, reconstruction_error = opts.reconstruction_error, deep_features_hidden_layer = opts.deep_features_hidden_layer, leaf_node_assignment = opts.leaf_node_assignment, exemplar_index = opts.exemplar_index;
+        if (models || frames) {
+          if (!models) {
+            if (model) {
+              models = [model];
+            }
+          }
+          if (!frames) {
+            if (frame) {
+              frames = [frame];
+            }
+          }
+          if (frames && models) {
+            combos = [];
+            for (_i = 0, _len = models.length; _i < _len; _i++) {
+              model = models[_i];
+              for (_j = 0, _len1 = frames.length; _j < _len1; _j++) {
+                frame = frames[_j];
+                combos.push({
+                  model,
+                  frame
+                });
+              }
+            }
+            return _fork(requestPredicts, combos);
+          }
+          return assist(predict, {
+            predictions_frame,
+            models,
+            frames
+          });
+        }
+        if (model && frame) {
+          return _fork(requestPredict, _, predictions_frame, model, frame, {
+            reconstruction_error,
+            deep_features_hidden_layer,
+            leaf_node_assignment
+          });
+        } else if (model && exemplar_index !== void 0) {
+          return _fork(requestPredict, _, predictions_frame, model, null, { exemplar_index });
+        }
+        return assist(predict, {
+          predictions_frame,
+          model,
+          frame
+        });
+      };
       // depends on `extendPredictions`
       requestPredictions = (opts, go) => {
         let frameKey;
@@ -8578,7 +8644,8 @@
         getStackTrace,
         getLogFile,
         testNetwork,
-        deleteAll
+        deleteAll,
+        showFrameID
       };
       if (_.onSparklingWater) {
         routinesOnSw = {
@@ -12120,7 +12187,9 @@
       }
       const initializeMenus = builder => {
         const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$49.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
-        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), createMenuItem('Model Deviances Vis - Static', goToH2OUrl('vis.html')), createMenuItem('Model Deviances Vis - Image', goToH2OUrl('image.html')), createMenuItem('Model Deviances Vis - Local', goToUrl('http://localhost:8989')), createMenuItem('Say Hello', goToH2OUrl('hello.html?user=Tom')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
+        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('Show Frame ID in a new window', executeCommand('showFrameID')),
+        // createMenuItem('Show Frame ID in a new window', goToH2OUrl(`frame.html?${_.currentFrameID}`))
+        menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), createMenuItem('Model Deviances Vis - Static', goToH2OUrl('vis.html')), createMenuItem('Model Deviances Vis - Image', goToH2OUrl('image.html')), createMenuItem('Model Deviances Vis - Local', goToUrl('http://localhost:8989')), createMenuItem('Say Hello', goToH2OUrl('hello.html?user=Tom')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
         // TODO Cluster I/O
         createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')),
         // TODO UDP Drop Test
