@@ -66,6 +66,7 @@ import { requestPartialDependenceData } from './requestPartialDependenceData';
 import { requestExportModel } from './requestExportModel';
 import { testNetwork } from './testNetwork';
 import { getFrames } from './getFrames';
+import { requestBindFrames } from './requestBindFrames';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
