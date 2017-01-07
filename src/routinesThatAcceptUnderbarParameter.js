@@ -1,4 +1,5 @@
 export const routinesThatAcceptUnderbarParameter = [
   'testNetwork',
-  'getFrames'
+  'getFrames',
+  'getGrids'
 ];

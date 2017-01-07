@@ -43,7 +43,6 @@ import { requestSplitFrame } from './requestSplitFrame';
 import { requestMergeFrames } from './requestMergeFrames';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestExportFrame } from './requestExportFrame';
-import { requestGrids } from './requestGrids';
 import { requestModels } from './requestModels';
 import { requestImputeColumn } from './requestImputeColumn';
 import { requestChangeColumnType } from './requestChangeColumnType';
@@ -67,6 +66,7 @@ import { requestExportModel } from './requestExportModel';
 import { testNetwork } from './testNetwork';
 import { getFrames } from './getFrames';
 import { requestBindFrames } from './requestBindFrames';
+import { getGrids } from './getGrids'; 
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -177,7 +177,6 @@ export function routines() {
     let getFrameData;
     let getFrameSummary;
     let getGrid;
-    let getGrids;
     let getJob;
     let getJobs;
     let getLogFile;
@@ -476,6 +475,7 @@ export function routines() {
       }
     };
     // blocked by CoffeeScript codecell `_` issue
+    // has multiple parameters
     bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
     // depends on `assist`
     getFrameSummary = frameKey => {
@@ -535,9 +535,7 @@ export function routines() {
         return _fork(requestModels, _);
       }
       return _fork(requestModels, _);
-    };
-    // blocked by CoffeeScript codecell `_` issue
-    getGrids = () => _fork(requestGrids, _);
+    };  
     // depends on `assist`
     getModel = modelKey => {
       switch (flowPrelude.typeOf(modelKey)) {
