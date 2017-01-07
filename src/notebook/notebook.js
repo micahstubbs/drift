@@ -287,6 +287,7 @@ export function notebook() {
     };
     const appendCellAndRun = (type, input) => {
       const cell = appendCell(createCell(type, input));
+      console.log('cell from appendCellAndRun', cell);
       cell.execute();
       return cell;
     };

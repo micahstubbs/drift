@@ -340,6 +340,7 @@ export function flowCoffeescriptKernel() {
     }
   };
   const executeJavascript = (sandbox, print) => (closure, go) => {
+    console.log('sandbox from flowCoffeescriptKernel executeJavascript', sandbox);
     let error;
     try {
       return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));

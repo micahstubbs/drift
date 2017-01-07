@@ -5167,6 +5167,11 @@
     });
   }
 
+  function testNetwork(_) {
+    console.log('arguments from testNetwork', arguments);
+    return _fork(requestNetworkTest, _);
+  }
+
   const flowPrelude$31 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7617,7 +7622,6 @@
       let runScalaCode;
       let setupParse;
       let splitFrame;
-      let testNetwork;
 
       // TODO move these into Flow.Async
       let _async;
@@ -8286,7 +8290,6 @@
       //
       //
       //
-      testNetwork = () => _fork(requestNetworkTest, _);
       // calls _.self
       requestRemoveAll = go => deleteAllRequest(_, (error, result) => {
         if (error) {
@@ -10901,6 +10904,7 @@
       }
     };
     const executeJavascript = (sandbox, print) => (closure, go) => {
+      console.log('sandbox from flowCoffeescriptKernel executeJavascript', sandbox);
       let error;
       try {
         return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
@@ -10949,6 +10953,8 @@
 
     // XXX special-case functions so that bodies are not printed with the raw renderer.
     const render = (input, output) => {
+      console.log('input from flowCoffeescript render', input);
+      console.log('output from flowCoffeescript render', output);
       let cellResult;
       let outputBuffer;
       sandbox.results[guid] = cellResult = {
@@ -10980,8 +10986,16 @@
           output.error(error);
         }
         const result = cellResult.result();
+        // console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
+        // console.log('result from tasks pipe in flowCoffeescriptKernel', result);
         if (lodash.isFunction(result)) {
           if (isRoutine(result)) {
+            // a hack to gradually migrate routines to accept _ as a parameter
+            // rather than expect _ to be a global variable
+            const routinesThatAcceptUnderbarParameter = ['testNetwork'];
+            if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {
+              return print(result(_));
+            }
             return print(result());
           }
           return evaluate(result);
@@ -11711,6 +11725,7 @@
       };
       const appendCellAndRun = (type, input) => {
         const cell = appendCell(createCell(type, input));
+        console.log('cell from appendCellAndRun', cell);
         cell.execute();
         return cell;
       };
@@ -12779,6 +12794,7 @@
     const _sandbox = flowSandbox(_, routines(_));
     // TODO support external renderers
     const _renderers = Flow.renderers(_, _sandbox);
+    console.log('_renderers from flowApplication', _renderers);
     flowAnalytics(_);
     flowGrowl(_);
     flowAutosave(_);

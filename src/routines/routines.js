@@ -65,7 +65,7 @@ import { requestCancelJob } from './requestCancelJob';
 import { requestPartialDependence } from './requestPartialDependence';
 import { requestPartialDependenceData } from './requestPartialDependenceData';
 import { requestExportModel } from './requestExportModel';
-import { requestNetworkTest } from './requestNetworkTest'; 
+import { testNetwork } from './testNetwork';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -232,7 +232,6 @@ export function routines() {
     let runScalaCode;
     let setupParse;
     let splitFrame;
-    let testNetwork;
 
     // TODO move these into Flow.Async
     let _async;
@@ -912,7 +911,6 @@ export function routines() {
     //
     //
     //
-    testNetwork = () => _fork(requestNetworkTest, _);
     // calls _.self
     requestRemoveAll = go => deleteAllRequest(_, (error, result) => {
       if (error) {

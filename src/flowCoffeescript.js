@@ -27,6 +27,8 @@ export function flowCoffeescript(_, guid, sandbox) {
 
   // XXX special-case functions so that bodies are not printed with the raw renderer.
   const render = (input, output) => {
+    console.log('input from flowCoffeescript render', input);
+    console.log('output from flowCoffeescript render', output);
     let cellResult;
     let outputBuffer;
     sandbox.results[guid] = cellResult = {
@@ -68,8 +70,18 @@ export function flowCoffeescript(_, guid, sandbox) {
         output.error(error);
       }
       const result = cellResult.result();
+      // console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
+      // console.log('result from tasks pipe in flowCoffeescriptKernel', result);
       if (lodash.isFunction(result)) {
         if (isRoutine(result)) {
+          // a hack to gradually migrate routines to accept _ as a parameter
+          // rather than expect _ to be a global variable
+          const routinesThatAcceptUnderbarParameter = [
+            'testNetwork'
+          ];
+          if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {
+            return print(result(_));
+          }
           return print(result());
         }
         return evaluate(result);
