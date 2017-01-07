@@ -781,6 +781,7 @@ export function notebook() {
           createMenuItem('Model Deviances Vis - Static', goToH2OUrl('vis.html')),
           createMenuItem('Model Deviances Vis - Image', goToH2OUrl('image.html')),
           createMenuItem('Model Deviances Vis - Local', goToUrl('http://localhost:8989')),
+          createMenuItem('Say Hello', goToH2OUrl('hello.html?user=Tom')),
           menuDivider,
           createMenuItem('List All Predictions', executeCommand('getPredictions')),
           // TODO Confusion Matrix
