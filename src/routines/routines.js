@@ -27,7 +27,6 @@ import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
-import { extendNetworkTest } from './extendNetworkTest';
 import { extendProfile } from './extendProfile';
 import { extendJobs } from './extendJobs';
 import { extendDeletedKeys } from './extendDeletedKeys';
@@ -66,6 +65,7 @@ import { requestCancelJob } from './requestCancelJob';
 import { requestPartialDependence } from './requestPartialDependence';
 import { requestPartialDependenceData } from './requestPartialDependenceData';
 import { requestExportModel } from './requestExportModel';
+import { requestNetworkTest } from './requestNetworkTest'; 
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -105,7 +105,6 @@ import { getProfileRequest } from '../h2oProxy/getProfileRequest';
 import { getStackTraceRequest } from '../h2oProxy/getStackTraceRequest';
 import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
 import { getLogFileRequest } from '../h2oProxy/getLogFileRequest';
-import { getNetworkTestRequest } from '../h2oProxy/getNetworkTestRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
 import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
 import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
@@ -218,7 +217,6 @@ export function routines() {
     let requestImportFiles;
     let requestLogFile;
     let requestModel;
-    let requestNetworkTest;
     let requestPrediction;
     let requestPredictions;
     let requestPredicts;
@@ -401,12 +399,10 @@ export function routines() {
     }
     // abstracting this out produces an error
     // defer for now
-
     extendPredictions = (opts, predictions) => {
       render_(predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
-
     requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, (error, frame) => {
       if (error) {
         return go(error);
@@ -909,13 +905,6 @@ export function routines() {
       }
       return _fork(requestLogFile, nodeIndex, fileType);
     };
-    // calls _.self
-    requestNetworkTest = go => getNetworkTestRequest(_, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendNetworkTest(_, result));
-    });
     //
     //
     //
@@ -923,7 +912,7 @@ export function routines() {
     //
     //
     //
-    testNetwork = () => _fork(requestNetworkTest);
+    testNetwork = () => _fork(requestNetworkTest, _);
     // calls _.self
     requestRemoveAll = go => deleteAllRequest(_, (error, result) => {
       if (error) {

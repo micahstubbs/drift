@@ -2852,38 +2852,6 @@
     return render_(_, logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
   }
 
-  function inspectNetworkTestResult(testResult) {
-    return function () {
-      return convertTableToFrame(testResult.table, testResult.table.name, {
-        description: testResult.table.name,
-        origin: 'testNetwork'
-      });
-    };
-  }
-
-  function h2oNetworkTestOutput(_, _go, _testResult) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const _result = Flow.Dataflow.signal(null);
-    const render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
-    render((error, vis) => {
-      if (error) {
-        return console.debug(error);
-      }
-      return _result(vis.element);
-    });
-    lodash.defer(_go);
-    return {
-      result: _result,
-      template: 'flow-network-test-output'
-    };
-  }
-
-  function extendNetworkTest(_, testResult) {
-    inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
-    return render_(_, testResult, h2oNetworkTestOutput, testResult);
-  }
-
   function h2oProfileOutput(_, _go, _profile) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -5151,6 +5119,51 @@
         return go(error);
       }
       return go(null, extendExportModel(_, result));
+    });
+  }
+
+  function getNetworkTestRequest(_, go) {
+    return doGet(_, '/3/NetworkTest', go);
+  }
+
+  function inspectNetworkTestResult(testResult) {
+    return function () {
+      return convertTableToFrame(testResult.table, testResult.table.name, {
+        description: testResult.table.name,
+        origin: 'testNetwork'
+      });
+    };
+  }
+
+  function h2oNetworkTestOutput(_, _go, _testResult) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _result = Flow.Dataflow.signal(null);
+    const render = _.plot(g => g(g.select(), g.from(_.inspect('result', _testResult))));
+    render((error, vis) => {
+      if (error) {
+        return console.debug(error);
+      }
+      return _result(vis.element);
+    });
+    lodash.defer(_go);
+    return {
+      result: _result,
+      template: 'flow-network-test-output'
+    };
+  }
+
+  function extendNetworkTest(_, testResult) {
+    inspect_(testResult, { result: inspectNetworkTestResult(testResult) });
+    return render_(_, testResult, h2oNetworkTestOutput, testResult);
+  }
+
+  function requestNetworkTest(_, go) {
+    return getNetworkTestRequest(_, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendNetworkTest(_, result));
     });
   }
 
@@ -7449,10 +7462,6 @@
     return doDelete(_, '/3/DKV', go);
   }
 
-  function getNetworkTestRequest(_, go) {
-    return doGet(_, '/3/NetworkTest', go);
-  }
-
   function getRDDsRequest(_, go) {
     return doGet(_, '/3/RDDs', go);
   }
@@ -7593,7 +7602,6 @@
       let requestImportFiles;
       let requestLogFile;
       let requestModel;
-      let requestNetworkTest;
       let requestPrediction;
       let requestPredictions;
       let requestPredicts;
@@ -7773,12 +7781,10 @@
       };
       // abstracting this out produces an error
       // defer for now
-
       extendPredictions = (opts, predictions) => {
         render_(predictions, h2oPredictsOutput, opts, predictions);
         return predictions;
       };
-
       requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, (error, frame) => {
         if (error) {
           return go(error);
@@ -8273,13 +8279,6 @@
         }
         return _fork(requestLogFile, nodeIndex, fileType);
       };
-      // calls _.self
-      requestNetworkTest = go => getNetworkTestRequest(_, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendNetworkTest(_, result));
-      });
       //
       //
       //
@@ -8287,7 +8286,7 @@
       //
       //
       //
-      testNetwork = () => _fork(requestNetworkTest);
+      testNetwork = () => _fork(requestNetworkTest, _);
       // calls _.self
       requestRemoveAll = go => deleteAllRequest(_, (error, result) => {
         if (error) {
