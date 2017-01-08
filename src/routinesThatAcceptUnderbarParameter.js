@@ -3,4 +3,5 @@ export const routinesThatAcceptUnderbarParameter = [
   'getFrames',
   'getGrids',
   'getCloud',
+  'getTimeline',
 ];

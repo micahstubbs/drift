@@ -67,7 +67,7 @@ import { getFrames } from './getFrames';
 import { requestBindFrames } from './requestBindFrames';
 import { getGrids } from './getGrids';
 import { getCloud } from './getCloud';
-import { requestTimeline } from './requestTimeline';
+import { getTimeline } from './getTimeline';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -189,7 +189,6 @@ export function routines() {
     let getRDDs;
     let getScalaIntp;
     let getStackTrace;
-    let getTimeline;
     let grid;
     let importFiles;
     let importModel;
@@ -841,8 +840,6 @@ export function routines() {
       }
       return _fork(requestPredictions, opts);
     };
-    // blocked by CoffeeScript codecell `_` issue
-    getTimeline = () => _fork(requestTimeline, _);
     requestStackTrace = go => getStackTraceRequest(_, (error, stackTrace) => {
       if (error) {
         return go(error);
