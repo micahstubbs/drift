@@ -5,4 +5,5 @@ export const routinesThatAcceptUnderbarParameter = [
   'getCloud',
   'getTimeline',
   'getStackTrace',
+  'deleteAll',
 ];

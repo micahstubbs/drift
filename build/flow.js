@@ -5281,6 +5281,10 @@
     });
   }
 
+  function deleteAll(_) {
+    return _fork(requestRemoveAll, _);
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7640,7 +7644,6 @@
       let changeColumnType;
       let createFrame;
       let createPlot;
-      let deleteAll;
       let deleteFrame;
       let deleteFrames;
       let deleteModel;
@@ -8332,7 +8335,6 @@
       //
       //
       //
-      deleteAll = () => _fork(requestRemoveAll, _);
       extendRDDs = rdds => {
         render_(rdds, h2oRDDsOutput, rdds);
         return rdds;
@@ -10961,7 +10963,7 @@
     };
   }
 
-  const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace'];
+  const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll'];
 
   function flowCoffeescript(_, guid, sandbox) {
     const lodash = window._;

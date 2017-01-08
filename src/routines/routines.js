@@ -66,7 +66,7 @@ import { getCloud } from './getCloud';
 import { getTimeline } from './getTimeline';
 import { getStackTrace } from './getStackTrace';
 import { requestLogFile } from './requestLogFile';
-import { requestRemoveAll } from './requestRemoveAll';
+import { deleteAll } from './deleteAll';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -146,7 +146,6 @@ export function routines() {
     let changeColumnType;
     let createFrame;
     let createPlot;
-    let deleteAll;
     let deleteFrame;
     let deleteFrames;
     let deleteModel;
@@ -849,7 +848,6 @@ export function routines() {
     //
     //
     //
-    deleteAll = () => _fork(requestRemoveAll, _);
     extendRDDs = rdds => {
       render_(rdds, h2oRDDsOutput, rdds);
       return rdds;
