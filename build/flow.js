@@ -5215,6 +5215,10 @@
     });
   }
 
+  function getCloud(_) {
+    return _fork(requestCloud, _);
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7602,7 +7606,6 @@
       let extendScalaCode;
       let extendScalaIntp;
       let f;
-      let getCloud;
       let getColumnSummary;
       let getDataFrames;
       let getFrame;
@@ -8263,8 +8266,6 @@
         }
         return _fork(requestPredictions, opts);
       };
-      // blocked by CoffeeScript codecell `_` issue
-      getCloud = () => _fork(requestCloud, _);
       // calls _.self
       requestTimeline = go => getTimelineRequest(_, (error, timeline) => {
         if (error) {
@@ -10952,7 +10953,7 @@
     };
   }
 
-  const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids'];
+  const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud'];
 
   function flowCoffeescript(_, guid, sandbox) {
     const lodash = window._;
