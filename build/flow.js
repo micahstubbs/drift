@@ -2414,61 +2414,6 @@
     }
   };
 
-  function h2oProfileOutput(_, _go, _profile) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    let i;
-    let node;
-    const _activeNode = Flow.Dataflow.signal(null);
-    const createNode = node => {
-      let entry;
-      const display = () => _activeNode(self);
-      const entries = (() => {
-        let _i;
-        let _len;
-        const _ref = node.entries;
-        const _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          entry = _ref[_i];
-          _results.push({
-            stacktrace: entry.stacktrace,
-            caption: `Count: ${ entry.count }`
-          });
-        }
-        return _results;
-      })();
-      const self = {
-        name: node.node_name,
-        caption: `${ node.node_name } at ${ new Date(node.timestamp) }`,
-        entries,
-        display
-      };
-      return self;
-    };
-    const _nodes = (() => {
-      let _i;
-      let _len;
-      const _ref = _profile.nodes;
-      const _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        node = _ref[i];
-        _results.push(createNode(node));
-      }
-      return _results;
-    })();
-    _activeNode(lodash.head(_nodes));
-    lodash.defer(_go);
-    return {
-      nodes: _nodes,
-      activeNode: _activeNode,
-      template: 'flow-profile-output'
-    };
-  }
-
-  function extendProfile(_, profile) {
-    return render_(_, profile, h2oProfileOutput, profile);
-  }
-
   function extendJob(_, job) {
     const H2O = window.H2O;
     return render_(_, job, H2O.JobOutput, job);
@@ -5285,6 +5230,74 @@
     return _fork(requestRemoveAll, _);
   }
 
+  function getProfileRequest(_, depth, go) {
+    return doGet(_, `/3/Profiler?depth=${ depth }`, go);
+  }
+
+  function h2oProfileOutput(_, _go, _profile) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    let i;
+    let node;
+    const _activeNode = Flow.Dataflow.signal(null);
+    const createNode = node => {
+      let entry;
+      const display = () => _activeNode(self);
+      const entries = (() => {
+        let _i;
+        let _len;
+        const _ref = node.entries;
+        const _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          entry = _ref[_i];
+          _results.push({
+            stacktrace: entry.stacktrace,
+            caption: `Count: ${ entry.count }`
+          });
+        }
+        return _results;
+      })();
+      const self = {
+        name: node.node_name,
+        caption: `${ node.node_name } at ${ new Date(node.timestamp) }`,
+        entries,
+        display
+      };
+      return self;
+    };
+    const _nodes = (() => {
+      let _i;
+      let _len;
+      const _ref = _profile.nodes;
+      const _results = [];
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        node = _ref[i];
+        _results.push(createNode(node));
+      }
+      return _results;
+    })();
+    _activeNode(lodash.head(_nodes));
+    lodash.defer(_go);
+    return {
+      nodes: _nodes,
+      activeNode: _activeNode,
+      template: 'flow-profile-output'
+    };
+  }
+
+  function extendProfile(_, profile) {
+    return render_(_, profile, h2oProfileOutput, profile);
+  }
+
+  function requestProfile(_, depth, go) {
+    return getProfileRequest(_, depth, (error, profile) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendProfile(_, profile));
+    });
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7568,10 +7581,6 @@
     return doGet(_, '/3/ModelMetrics', go);
   }
 
-  function getProfileRequest(_, depth, go) {
-    return doGet(_, `/3/Profiler?depth=${ depth }`, go);
-  }
-
   function getRDDsRequest(_, go) {
     return doGet(_, '/3/RDDs', go);
   }
@@ -7707,7 +7716,6 @@
       let requestPrediction;
       let requestPredictions;
       let requestPredicts;
-      let requestProfile;
       let requestRDDs;
       let requestScalaCode;
       let requestScalaIntp;
@@ -8329,11 +8337,7 @@
         return _fork(requestLogFile, _, nodeIndex, fileType);
       };
       //
-      //
-      //
-      //  v  continue abstracting out here  v
-      //
-      //
+      // start Sparkling Water Routines
       //
       extendRDDs = rdds => {
         render_(rdds, h2oRDDsOutput, rdds);
@@ -8436,17 +8440,14 @@
         return result;
       };
       getScalaIntp = () => _fork(requestScalaIntp);
-      requestProfile = (depth, go) => getProfileRequest(_, depth, (error, profile) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendProfile(_, profile));
-      });
+      //
+      // end Sparkling Water Routines
+      //
       getProfile = opts => {
         if (!opts) {
           opts = { depth: 10 };
         }
-        return _fork(requestProfile, opts.depth);
+        return _fork(requestProfile, _, opts.depth);
       };
       loadScript = (path, go) => {
         let onDone;

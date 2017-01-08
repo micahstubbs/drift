@@ -23,7 +23,6 @@ import { inspectObject } from './inspectObject';
 import { proceed } from './proceed';
 import { gui } from './gui';
 import { _assistance } from './_assistance';
-import { extendProfile } from './extendProfile';
 import { extendJobs } from './extendJobs';
 import { extendFrameSummary } from './extendFrameSummary';
 import { read } from './read';
@@ -67,6 +66,7 @@ import { getTimeline } from './getTimeline';
 import { getStackTrace } from './getStackTrace';
 import { requestLogFile } from './requestLogFile';
 import { deleteAll } from './deleteAll';
+import { requestProfile } from './requestProfile'; 
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -101,7 +101,6 @@ import { getModelRequest } from '../h2oProxy/getModelRequest';
 import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
 import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
 import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
-import { getProfileRequest } from '../h2oProxy/getProfileRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
 import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
 import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
@@ -209,7 +208,6 @@ export function routines() {
     let requestPrediction;
     let requestPredictions;
     let requestPredicts;
-    let requestProfile;
     let requestRDDs;
     let requestScalaCode;
     let requestScalaIntp;
@@ -948,17 +946,11 @@ export function routines() {
     //
     // end Sparkling Water Routines
     //
-    requestProfile = (depth, go) => getProfileRequest(_, depth, (error, profile) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendProfile(_, profile));
-    });
     getProfile = opts => {
       if (!opts) {
         opts = { depth: 10 };
       }
-      return _fork(requestProfile, opts.depth);
+      return _fork(requestProfile, _, opts.depth);
     };
     loadScript = (path, go) => {
       let onDone;
