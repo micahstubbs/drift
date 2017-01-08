@@ -25,7 +25,6 @@ import { gui } from './gui';
 import { _assistance } from './_assistance';
 import { extendProfile } from './extendProfile';
 import { extendJobs } from './extendJobs';
-import { extendDeletedKeys } from './extendDeletedKeys';
 import { extendFrameSummary } from './extendFrameSummary';
 import { read } from './read';
 import { extendPrediction } from './extendPrediction';
@@ -67,6 +66,7 @@ import { getCloud } from './getCloud';
 import { getTimeline } from './getTimeline';
 import { getStackTrace } from './getStackTrace';
 import { requestLogFile } from './requestLogFile';
+import { requestRemoveAll } from './requestRemoveAll';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -102,7 +102,6 @@ import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
 import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
 import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 import { getProfileRequest } from '../h2oProxy/getProfileRequest';
-import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
 import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
 import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
@@ -213,7 +212,6 @@ export function routines() {
     let requestPredicts;
     let requestProfile;
     let requestRDDs;
-    let requestRemoveAll;
     let requestScalaCode;
     let requestScalaIntp;
 
@@ -851,14 +849,7 @@ export function routines() {
     //
     //
     //
-    // calls _.self
-    requestRemoveAll = go => deleteAllRequest(_, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendDeletedKeys(_, []));
-    });
-    deleteAll = () => _fork(requestRemoveAll);
+    deleteAll = () => _fork(requestRemoveAll, _);
     extendRDDs = rdds => {
       render_(rdds, h2oRDDsOutput, rdds);
       return rdds;

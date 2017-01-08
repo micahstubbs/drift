@@ -2569,20 +2569,6 @@
     return render_(_, jobs, h2oJobsOutput, jobs);
   }
 
-  function h2oDeleteObjectsOutput(_, _go, _keys) {
-    const lodash = window._;
-    lodash.defer(_go);
-    return {
-      hasKeys: _keys.length > 0,
-      keys: _keys,
-      template: 'flow-delete-objects-output'
-    };
-  }
-
-  function extendDeletedKeys(_, keys) {
-    return render_(_, keys, h2oDeleteObjectsOutput, keys);
-  }
-
   const flowPrelude$11 = flowPreludeFunction();
 
   function inspectFrameColumns(tableLabel, frameKey, frame, frameColumns) {
@@ -3626,6 +3612,20 @@
       }
       return go(null, extendMergeFramesResult(_, { key: destinationKey }));
     });
+  }
+
+  function h2oDeleteObjectsOutput(_, _go, _keys) {
+    const lodash = window._;
+    lodash.defer(_go);
+    return {
+      hasKeys: _keys.length > 0,
+      keys: _keys,
+      template: 'flow-delete-objects-output'
+    };
+  }
+
+  function extendDeletedKeys(_, keys) {
+    return render_(_, keys, h2oDeleteObjectsOutput, keys);
   }
 
   function requestDeleteFrame(_, frameKey, go) {
@@ -5265,6 +5265,19 @@
         }
         return go(null, extendLogFile(_, cloud, nodeIndex, fileType, logFile));
       });
+    });
+  }
+
+  function deleteAllRequest(_, go) {
+    return doDelete(_, '/3/DKV', go);
+  }
+
+  function requestRemoveAll(_, go) {
+    return deleteAllRequest(_, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDeletedKeys(_, []));
     });
   }
 
@@ -7555,10 +7568,6 @@
     return doGet(_, `/3/Profiler?depth=${ depth }`, go);
   }
 
-  function deleteAllRequest(_, go) {
-    return doDelete(_, '/3/DKV', go);
-  }
-
   function getRDDsRequest(_, go) {
     return doGet(_, '/3/RDDs', go);
   }
@@ -7697,7 +7706,6 @@
       let requestPredicts;
       let requestProfile;
       let requestRDDs;
-      let requestRemoveAll;
       let requestScalaCode;
       let requestScalaIntp;
 
@@ -8324,14 +8332,7 @@
       //
       //
       //
-      // calls _.self
-      requestRemoveAll = go => deleteAllRequest(_, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDeletedKeys(_, []));
-      });
-      deleteAll = () => _fork(requestRemoveAll);
+      deleteAll = () => _fork(requestRemoveAll, _);
       extendRDDs = rdds => {
         render_(rdds, h2oRDDsOutput, rdds);
         return rdds;
