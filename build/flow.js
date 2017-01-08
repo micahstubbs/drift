@@ -2519,63 +2519,6 @@
     return render_(_, timeline, h2oTimelineOutput, timeline);
   }
 
-  function h2oStackTraceOutput(_, _go, _stackTrace) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    let node;
-    const _activeNode = Flow.Dataflow.signal(null);
-    const createThread = thread => {
-      const lines = thread.split('\n');
-      return {
-        title: lodash.head(lines),
-        stackTrace: lodash.tail(lines).join('\n')
-      };
-    };
-    const createNode = node => {
-      let thread;
-      const display = () => _activeNode(self);
-      const self = {
-        name: node.node,
-        timestamp: new Date(node.time),
-        threads: (() => {
-          let _i;
-          let _len;
-          const _ref = node.thread_traces;
-          const _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            thread = _ref[_i];
-            _results.push(createThread(thread));
-          }
-          return _results;
-        })(),
-        display
-      };
-      return self;
-    };
-    const _nodes = (() => {
-      let _i;
-      let _len;
-      const _ref = _stackTrace.traces;
-      const _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
-        _results.push(createNode(node));
-      }
-      return _results;
-    })();
-    _activeNode(lodash.head(_nodes));
-    lodash.defer(_go);
-    return {
-      nodes: _nodes,
-      activeNode: _activeNode,
-      template: 'flow-stacktrace-output'
-    };
-  }
-
-  function extendStackTrace(_, stackTrace) {
-    return render_(_, stackTrace, h2oStackTraceOutput, stackTrace);
-  }
-
   function getLogFileRequest(_, nodeIndex, fileType, go) {
     return doGet(_, `/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
   }
@@ -5232,6 +5175,76 @@
     return _fork(requestTimeline, _);
   }
 
+  function h2oStackTraceOutput(_, _go, _stackTrace) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    let node;
+    const _activeNode = Flow.Dataflow.signal(null);
+    const createThread = thread => {
+      const lines = thread.split('\n');
+      return {
+        title: lodash.head(lines),
+        stackTrace: lodash.tail(lines).join('\n')
+      };
+    };
+    const createNode = node => {
+      let thread;
+      const display = () => _activeNode(self);
+      const self = {
+        name: node.node,
+        timestamp: new Date(node.time),
+        threads: (() => {
+          let _i;
+          let _len;
+          const _ref = node.thread_traces;
+          const _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            thread = _ref[_i];
+            _results.push(createThread(thread));
+          }
+          return _results;
+        })(),
+        display
+      };
+      return self;
+    };
+    const _nodes = (() => {
+      let _i;
+      let _len;
+      const _ref = _stackTrace.traces;
+      const _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        _results.push(createNode(node));
+      }
+      return _results;
+    })();
+    _activeNode(lodash.head(_nodes));
+    lodash.defer(_go);
+    return {
+      nodes: _nodes,
+      activeNode: _activeNode,
+      template: 'flow-stacktrace-output'
+    };
+  }
+
+  function extendStackTrace(_, stackTrace) {
+    return render_(_, stackTrace, h2oStackTraceOutput, stackTrace);
+  }
+
+  function getStackTraceRequest(_, go) {
+    return doGet(_, '/3/JStack', go);
+  }
+
+  function requestStackTrace(_, go) {
+    return getStackTraceRequest(_, (error, stackTrace) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendStackTrace(_, stackTrace));
+    });
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7519,10 +7532,6 @@
     return doGet(_, `/3/Profiler?depth=${ depth }`, go);
   }
 
-  function getStackTraceRequest(_, go) {
-    return doGet(_, '/3/JStack', go);
-  }
-
   function deleteAllRequest(_, go) {
     return doDelete(_, '/3/DKV', go);
   }
@@ -7670,7 +7679,7 @@
       let requestRemoveAll;
       let requestScalaCode;
       let requestScalaIntp;
-      let requestStackTrace;
+
       let routines;
       let routinesOnSw;
       let runScalaCode;
@@ -8277,14 +8286,7 @@
         }
         return _fork(requestPredictions, opts);
       };
-      requestStackTrace = go => getStackTraceRequest(_, (error, stackTrace) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendStackTrace(_, stackTrace));
-      });
-      // depends on requestStackTrace
-      getStackTrace = () => _fork(requestStackTrace);
+      getStackTrace = () => _fork(requestStackTrace, _);
       // calls _.self
       requestLogFile = (nodeIndex, fileType, go) => getCloudRequest(_, (error, cloud) => {
         let NODE_INDEX_SELF;

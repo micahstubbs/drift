@@ -24,7 +24,6 @@ import { proceed } from './proceed';
 import { gui } from './gui';
 import { _assistance } from './_assistance';
 import { extendTimeline } from './extendTimeline';
-import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
 import { extendProfile } from './extendProfile';
 import { extendJobs } from './extendJobs';
@@ -68,6 +67,7 @@ import { requestBindFrames } from './requestBindFrames';
 import { getGrids } from './getGrids';
 import { getCloud } from './getCloud';
 import { getTimeline } from './getTimeline';
+import { requestStackTrace } from './requestStackTrace';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -104,7 +104,6 @@ import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
 import { getCloudRequest } from '../h2oProxy/getCloudRequest';
 import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 import { getProfileRequest } from '../h2oProxy/getProfileRequest';
-import { getStackTraceRequest } from '../h2oProxy/getStackTraceRequest';
 import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
 import { getLogFileRequest } from '../h2oProxy/getLogFileRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
@@ -222,7 +221,7 @@ export function routines() {
     let requestRemoveAll;
     let requestScalaCode;
     let requestScalaIntp;
-    let requestStackTrace;
+
     let routines;
     let routinesOnSw;
     let runScalaCode;
@@ -840,14 +839,7 @@ export function routines() {
       }
       return _fork(requestPredictions, opts);
     };
-    requestStackTrace = go => getStackTraceRequest(_, (error, stackTrace) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendStackTrace(_, stackTrace));
-    });
-    // depends on requestStackTrace
-    getStackTrace = () => _fork(requestStackTrace);
+    getStackTrace = () => _fork(requestStackTrace, _);
     // calls _.self
     requestLogFile = (nodeIndex, fileType, go) => getCloudRequest(_, (error, cloud) => {
       let NODE_INDEX_SELF;
