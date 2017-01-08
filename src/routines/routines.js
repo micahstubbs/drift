@@ -23,7 +23,6 @@ import { inspectObject } from './inspectObject';
 import { proceed } from './proceed';
 import { gui } from './gui';
 import { _assistance } from './_assistance';
-import { extendLogFile } from './extendLogFile';
 import { extendProfile } from './extendProfile';
 import { extendJobs } from './extendJobs';
 import { extendDeletedKeys } from './extendDeletedKeys';
@@ -67,6 +66,7 @@ import { getGrids } from './getGrids';
 import { getCloud } from './getCloud';
 import { getTimeline } from './getTimeline';
 import { getStackTrace } from './getStackTrace';
+import { requestLogFile } from './requestLogFile';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -100,11 +100,9 @@ import { getGridRequest } from '../h2oProxy/getGridRequest';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
 import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
 import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
-import { getCloudRequest } from '../h2oProxy/getCloudRequest';
 import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 import { getProfileRequest } from '../h2oProxy/getProfileRequest';
 import { deleteAllRequest } from '../h2oProxy/deleteAllRequest';
-import { getLogFileRequest } from '../h2oProxy/getLogFileRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
 import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
 import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
@@ -209,7 +207,6 @@ export function routines() {
     let requestFrameSummarySlice;
     let requestGrid;
     let requestImportFiles;
-    let requestLogFile;
     let requestModel;
     let requestPrediction;
     let requestPredictions;
@@ -837,23 +834,6 @@ export function routines() {
       }
       return _fork(requestPredictions, opts);
     };
-    // calls _.self
-    requestLogFile = (nodeIndex, fileType, go) => getCloudRequest(_, (error, cloud) => {
-      let NODE_INDEX_SELF;
-      if (error) {
-        return go(error);
-      }
-      if (nodeIndex < 0 || nodeIndex >= cloud.nodes.length) {
-        NODE_INDEX_SELF = -1;
-        nodeIndex = NODE_INDEX_SELF;
-      }
-      return getLogFileRequest(_, nodeIndex, fileType, (error, logFile) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendLogFile(_, cloud, nodeIndex, fileType, logFile));
-      });
-    });
     // blocked by CoffeeScript codecell `_` issue
     getLogFile = (nodeIndex, fileType) => {
       if (nodeIndex == null) {
@@ -862,7 +842,7 @@ export function routines() {
       if (fileType == null) {
         fileType = 'info';
       }
-      return _fork(requestLogFile, nodeIndex, fileType);
+      return _fork(requestLogFile, _, nodeIndex, fileType);
     };
     //
     //

@@ -2414,79 +2414,6 @@
     }
   };
 
-  function getLogFileRequest(_, nodeIndex, fileType, go) {
-    return doGet(_, `/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
-  }
-
-  function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    // TODO Display in .jade
-    const _exception = Flow.Dataflow.signal(null);
-    const _contents = Flow.Dataflow.signal('');
-    const _nodes = Flow.Dataflow.signal([]);
-    const _activeNode = Flow.Dataflow.signal(null);
-    const _fileTypes = Flow.Dataflow.signal(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'httpd', 'stdout', 'stderr']);
-    const _activeFileType = Flow.Dataflow.signal(null);
-    const createNode = (node, index) => ({
-      name: node.ip_port,
-      index
-    });
-    const refreshActiveView = (node, fileType) => {
-      if (node) {
-        return getLogFileRequest(_, node.index, fileType, (error, logFile) => {
-          if (error) {
-            return _contents(`Error fetching log file: ${ error.message }`);
-          }
-          return _contents(logFile.log);
-        });
-      }
-      return _contents('');
-    };
-    const refresh = () => refreshActiveView(_activeNode(), _activeFileType());
-    const initialize = (cloud, nodeIndex, fileType, logFile) => {
-      let NODE_INDEX_SELF;
-      let clientNode;
-      let i;
-      let n;
-      let _i;
-      let _len;
-      _activeFileType(fileType);
-      _contents(logFile.log);
-      const nodes = [];
-      if (cloud.is_client) {
-        clientNode = { ip_port: 'driver' };
-        NODE_INDEX_SELF = -1;
-        nodes.push(createNode(clientNode, NODE_INDEX_SELF));
-      }
-      const _ref = cloud.nodes;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        n = _ref[i];
-        nodes.push(createNode(n, i));
-      }
-      _nodes(nodes);
-      if (nodeIndex < nodes.length) {
-        _activeNode(nodes[nodeIndex]);
-      }
-      Flow.Dataflow.react(_activeNode, _activeFileType, refreshActiveView);
-      return lodash.defer(_go);
-    };
-    initialize(_cloud, _nodeIndex, _fileType, _logFile);
-    return {
-      nodes: _nodes,
-      activeNode: _activeNode,
-      fileTypes: _fileTypes,
-      activeFileType: _activeFileType,
-      contents: _contents,
-      refresh,
-      template: 'flow-log-file-output'
-    };
-  }
-
-  function extendLogFile(_, cloud, nodeIndex, fileType, logFile) {
-    return render_(_, logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
-  }
-
   function h2oProfileOutput(_, _go, _profile) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -5249,6 +5176,98 @@
     return _fork(requestStackTrace, _);
   }
 
+  function getLogFileRequest(_, nodeIndex, fileType, go) {
+    return doGet(_, `/3/Logs/nodes/${ nodeIndex }/files/${ fileType }`, go);
+  }
+
+  function h2oLogFileOutput(_, _go, _cloud, _nodeIndex, _fileType, _logFile) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    // TODO Display in .jade
+    const _exception = Flow.Dataflow.signal(null);
+    const _contents = Flow.Dataflow.signal('');
+    const _nodes = Flow.Dataflow.signal([]);
+    const _activeNode = Flow.Dataflow.signal(null);
+    const _fileTypes = Flow.Dataflow.signal(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'httpd', 'stdout', 'stderr']);
+    const _activeFileType = Flow.Dataflow.signal(null);
+    const createNode = (node, index) => ({
+      name: node.ip_port,
+      index
+    });
+    const refreshActiveView = (node, fileType) => {
+      if (node) {
+        return getLogFileRequest(_, node.index, fileType, (error, logFile) => {
+          if (error) {
+            return _contents(`Error fetching log file: ${ error.message }`);
+          }
+          return _contents(logFile.log);
+        });
+      }
+      return _contents('');
+    };
+    const refresh = () => refreshActiveView(_activeNode(), _activeFileType());
+    const initialize = (cloud, nodeIndex, fileType, logFile) => {
+      let NODE_INDEX_SELF;
+      let clientNode;
+      let i;
+      let n;
+      let _i;
+      let _len;
+      _activeFileType(fileType);
+      _contents(logFile.log);
+      const nodes = [];
+      if (cloud.is_client) {
+        clientNode = { ip_port: 'driver' };
+        NODE_INDEX_SELF = -1;
+        nodes.push(createNode(clientNode, NODE_INDEX_SELF));
+      }
+      const _ref = cloud.nodes;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        n = _ref[i];
+        nodes.push(createNode(n, i));
+      }
+      _nodes(nodes);
+      if (nodeIndex < nodes.length) {
+        _activeNode(nodes[nodeIndex]);
+      }
+      Flow.Dataflow.react(_activeNode, _activeFileType, refreshActiveView);
+      return lodash.defer(_go);
+    };
+    initialize(_cloud, _nodeIndex, _fileType, _logFile);
+    return {
+      nodes: _nodes,
+      activeNode: _activeNode,
+      fileTypes: _fileTypes,
+      activeFileType: _activeFileType,
+      contents: _contents,
+      refresh,
+      template: 'flow-log-file-output'
+    };
+  }
+
+  function extendLogFile(_, cloud, nodeIndex, fileType, logFile) {
+    return render_(_, logFile, h2oLogFileOutput, cloud, nodeIndex, fileType, logFile);
+  }
+
+  function requestLogFile(_, nodeIndex, fileType, go) {
+    return getCloudRequest(_, (error, cloud) => {
+      let NODE_INDEX_SELF;
+      if (error) {
+        return go(error);
+      }
+      if (nodeIndex < 0 || nodeIndex >= cloud.nodes.length) {
+        NODE_INDEX_SELF = -1;
+        nodeIndex = NODE_INDEX_SELF;
+      }
+      return getLogFileRequest(_, nodeIndex, fileType, (error, logFile) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendLogFile(_, cloud, nodeIndex, fileType, logFile));
+      });
+    });
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7672,7 +7691,6 @@
       let requestFrameSummarySlice;
       let requestGrid;
       let requestImportFiles;
-      let requestLogFile;
       let requestModel;
       let requestPrediction;
       let requestPredictions;
@@ -8289,23 +8307,6 @@
         }
         return _fork(requestPredictions, opts);
       };
-      // calls _.self
-      requestLogFile = (nodeIndex, fileType, go) => getCloudRequest(_, (error, cloud) => {
-        let NODE_INDEX_SELF;
-        if (error) {
-          return go(error);
-        }
-        if (nodeIndex < 0 || nodeIndex >= cloud.nodes.length) {
-          NODE_INDEX_SELF = -1;
-          nodeIndex = NODE_INDEX_SELF;
-        }
-        return getLogFileRequest(_, nodeIndex, fileType, (error, logFile) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendLogFile(_, cloud, nodeIndex, fileType, logFile));
-        });
-      });
       // blocked by CoffeeScript codecell `_` issue
       getLogFile = (nodeIndex, fileType) => {
         if (nodeIndex == null) {
@@ -8314,7 +8315,7 @@
         if (fileType == null) {
           fileType = 'info';
         }
-        return _fork(requestLogFile, nodeIndex, fileType);
+        return _fork(requestLogFile, _, nodeIndex, fileType);
       };
       //
       //
