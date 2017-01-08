@@ -4,4 +4,5 @@ export const routinesThatAcceptUnderbarParameter = [
   'getGrids',
   'getCloud',
   'getTimeline',
+  'getStackTrace',
 ];

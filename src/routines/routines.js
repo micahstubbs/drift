@@ -66,7 +66,7 @@ import { requestBindFrames } from './requestBindFrames';
 import { getGrids } from './getGrids';
 import { getCloud } from './getCloud';
 import { getTimeline } from './getTimeline';
-import { requestStackTrace } from './requestStackTrace';
+import { getStackTrace } from './getStackTrace';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -186,7 +186,6 @@ export function routines() {
     let getProfile;
     let getRDDs;
     let getScalaIntp;
-    let getStackTrace;
     let grid;
     let importFiles;
     let importModel;
@@ -838,7 +837,6 @@ export function routines() {
       }
       return _fork(requestPredictions, opts);
     };
-    getStackTrace = () => _fork(requestStackTrace, _);
     // calls _.self
     requestLogFile = (nodeIndex, fileType, go) => getCloudRequest(_, (error, cloud) => {
       let NODE_INDEX_SELF;
