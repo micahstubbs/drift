@@ -952,6 +952,8 @@ export function routines() {
       }
       return _fork(requestProfile, _, opts.depth);
     };
+    // `loadScript` is not used anywhere else
+    // but could be called from a codecell in Flow
     loadScript = (path, go) => {
       let onDone;
       let onFail;
@@ -962,6 +964,8 @@ export function routines() {
       onFail = (jqxhr, settings, error) => go(error);
       return $.getScript(path).done(onDone).fail(onFail);
     };
+    // `dumpFuture` is not used anywhere else
+    // but could be called from a codecell in Flow
     dumpFuture = (result, go) => {
       if (result == null) {
         result = {};
@@ -969,6 +973,8 @@ export function routines() {
       console.debug(result);
       return go(null, render_(result, Flow.objectBrowser, 'dump', result));
     };
+    // `dump` is not used anywhere else
+    // but could be called from a codecell in Flow
     dump = f => {
       if (f != null ? f.isFuture : void 0) {
         return _fork(dumpFuture, f);
