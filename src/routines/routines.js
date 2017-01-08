@@ -23,7 +23,6 @@ import { inspectObject } from './inspectObject';
 import { proceed } from './proceed';
 import { gui } from './gui';
 import { _assistance } from './_assistance';
-import { extendCloud } from './extendCloud';
 import { extendTimeline } from './extendTimeline';
 import { extendStackTrace } from './extendStackTrace';
 import { extendLogFile } from './extendLogFile';
@@ -66,7 +65,8 @@ import { requestExportModel } from './requestExportModel';
 import { testNetwork } from './testNetwork';
 import { getFrames } from './getFrames';
 import { requestBindFrames } from './requestBindFrames';
-import { getGrids } from './getGrids'; 
+import { getGrids } from './getGrids';
+import { requestCloud } from './requestCloud';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -208,7 +208,6 @@ export function routines() {
     let requestAsDataFrame;
     let requestAsH2OFrameFromDF;
     let requestAsH2OFrameFromRDD;
-    let requestCloud;
     let requestDataFrames;
     let requestFrameSummary;
     let requestFrameSummarySlice;
@@ -843,15 +842,8 @@ export function routines() {
       }
       return _fork(requestPredictions, opts);
     };
-    // calls _.self
-    requestCloud = go => getCloudRequest(_, (error, cloud) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendCloud(_, cloud));
-    });
     // blocked by CoffeeScript codecell `_` issue
-    getCloud = () => _fork(requestCloud);
+    getCloud = () => _fork(requestCloud, _);
     // calls _.self
     requestTimeline = go => getTimelineRequest(_, (error, timeline) => {
       if (error) {
