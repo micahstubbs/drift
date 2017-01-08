@@ -5219,6 +5219,15 @@
     return _fork(requestCloud, _);
   }
 
+  function requestTimeline(_, go) {
+    return getTimelineRequest(_, (error, timeline) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendTimeline(_, timeline));
+    });
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7659,7 +7668,6 @@
       let requestScalaCode;
       let requestScalaIntp;
       let requestStackTrace;
-      let requestTimeline;
       let routines;
       let routinesOnSw;
       let runScalaCode;
@@ -8266,15 +8274,8 @@
         }
         return _fork(requestPredictions, opts);
       };
-      // calls _.self
-      requestTimeline = go => getTimelineRequest(_, (error, timeline) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendTimeline(_, timeline));
-      });
       // blocked by CoffeeScript codecell `_` issue
-      getTimeline = () => _fork(requestTimeline);
+      getTimeline = () => _fork(requestTimeline, _);
       requestStackTrace = go => getStackTraceRequest(_, (error, stackTrace) => {
         if (error) {
           return go(error);

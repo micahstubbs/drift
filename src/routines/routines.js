@@ -67,6 +67,7 @@ import { getFrames } from './getFrames';
 import { requestBindFrames } from './requestBindFrames';
 import { getGrids } from './getGrids';
 import { getCloud } from './getCloud';
+import { requestTimeline } from './requestTimeline';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -223,7 +224,6 @@ export function routines() {
     let requestScalaCode;
     let requestScalaIntp;
     let requestStackTrace;
-    let requestTimeline;
     let routines;
     let routinesOnSw;
     let runScalaCode;
@@ -841,15 +841,8 @@ export function routines() {
       }
       return _fork(requestPredictions, opts);
     };
-    // calls _.self
-    requestTimeline = go => getTimelineRequest(_, (error, timeline) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendTimeline(_, timeline));
-    });
     // blocked by CoffeeScript codecell `_` issue
-    getTimeline = () => _fork(requestTimeline);
+    getTimeline = () => _fork(requestTimeline, _);
     requestStackTrace = go => getStackTraceRequest(_, (error, stackTrace) => {
       if (error) {
         return go(error);
