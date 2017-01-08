@@ -23,7 +23,6 @@ import { inspectObject } from './inspectObject';
 import { proceed } from './proceed';
 import { gui } from './gui';
 import { _assistance } from './_assistance';
-import { extendTimeline } from './extendTimeline';
 import { extendLogFile } from './extendLogFile';
 import { extendProfile } from './extendProfile';
 import { extendJobs } from './extendJobs';
