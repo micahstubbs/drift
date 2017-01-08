@@ -842,11 +842,7 @@ export function routines() {
       return _fork(requestLogFile, _, nodeIndex, fileType);
     };
     //
-    //
-    //
-    //  v  continue abstracting out here  v
-    //
-    //
+    // start Sparkling Water Routines
     //
     extendRDDs = rdds => {
       render_(rdds, h2oRDDsOutput, rdds);
@@ -949,6 +945,9 @@ export function routines() {
       return result;
     };
     getScalaIntp = () => _fork(requestScalaIntp);
+    //
+    // end Sparkling Water Routines
+    //
     requestProfile = (depth, go) => getProfileRequest(_, depth, (error, profile) => {
       if (error) {
         return go(error);
