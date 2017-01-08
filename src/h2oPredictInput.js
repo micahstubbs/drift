@@ -1,10 +1,12 @@
 import { getModelRequest } from './h2oProxy/getModelRequest';
 import { getModelsRequest } from './h2oProxy/getModelsRequest';
+import { requestFrames } from './h2oProxy/requestFrames';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oPredictInput(_, _go, opt) {
+  console.log('arguments from h2oPredictInput', arguments);
   const lodash = window._;
   const Flow = window.Flow;
   const _ref = opt.predictions_frame;
@@ -82,7 +84,7 @@ export function h2oPredictInput(_, _go, opt) {
     return hasFrameAndModel && hasValidOptions;
   });
   if (!_hasFrames) {
-    _.requestFrames(_, (error, frames) => {
+    requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
         return _exception(new Flow.Error('Error fetching frame list.', error));

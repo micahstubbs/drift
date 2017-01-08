@@ -1,6 +1,7 @@
 import { flow_ } from './flow_';
 
 export function render_() {
+  console.log('arguments from render_', arguments);
   const Flow = window.Flow;
   const __slice = [].slice;
   const _ = arguments[0];

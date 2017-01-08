@@ -66,7 +66,8 @@ import { getTimeline } from './getTimeline';
 import { getStackTrace } from './getStackTrace';
 import { requestLogFile } from './requestLogFile';
 import { deleteAll } from './deleteAll';
-import { requestProfile } from './requestProfile'; 
+import { requestProfile } from './requestProfile';
+import { assist } from './assist'
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -82,18 +83,6 @@ import { h2oRDDsOutput } from '../h2oRDDsOutput';
 import { h2oDataFramesOutput } from '../h2oDataFramesOutput';
 import { h2oScalaCodeOutput } from '../h2oScalaCodeOutput';
 import { h2oScalaIntpOutput } from '../h2oScalaIntpOutput';
-import { h2oAssist } from '../h2oAssist';
-import { h2oImportFilesInput } from '../h2oImportFilesInput';
-import { h2oAutoModelInput } from '../h2oAutoModelInput';
-import { h2oPredictInput } from '../h2oPredictInput';
-import { h2oCreateFrameInput } from '../h2oCreateFrameInput';
-import { h2oSplitFrameInput } from '../h2oSplitFrameInput';
-import { h2oMergeFramesInput } from '../h2oMergeFramesInput';
-import { h2oPartialDependenceInput } from '../h2oPartialDependenceInput';
-import { h2oExportFrameInput } from '../h2oExportFrameInput';
-import { h2oImportModelInput } from '../h2oImportModelInput';
-import { h2oExportModelInput } from '../h2oExportModelInput';
-import { h2oNoAssist } from '../h2oNoAssist';
 import { h2oModelOutput } from '../h2oModelOutput';
 
 import { getGridRequest } from '../h2oProxy/getGridRequest';
@@ -135,7 +124,6 @@ export function routines() {
     let asDataFrame;
     let asH2OFrameFromDF;
     let asH2OFrameFromRDD;
-    let assist;
     let attrname;
     let bindFrames;
     let buildAutoModel;
@@ -754,11 +742,15 @@ export function routines() {
           }
           return _fork(requestPredicts, combos);
         }
-        return assist(predict, {
-          predictions_frame,
-          models,
-          frames
-        });
+        return assist(
+          predict, 
+          {
+            predictions_frame,
+            models,
+            frames
+          },
+          _
+        );
       }
       if (model && frame) {
         return _fork(requestPredict, _, predictions_frame, model, frame, {
@@ -769,11 +761,15 @@ export function routines() {
       } else if (model && exemplar_index !== void 0) {
         return _fork(requestPredict, _, predictions_frame, model, null, { exemplar_index });
       }
-      return assist(predict, {
-        predictions_frame,
-        model,
-        frame
-      });
+      return assist(
+        predict, 
+        {
+          predictions_frame,
+          model,
+          frame
+        },
+        _
+      );
     };
     // depends on `extendPredictions`
     requestPredictions = (opts, go) => {
@@ -980,45 +976,6 @@ export function routines() {
         return _fork(dumpFuture, f);
       }
       return Flow.Async.async(() => f);
-    };
-    // abstracting this out produces errors
-    // defer for now
-    assist = function () {
-      let args;
-      let func;
-      func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-      if (func === void 0) {
-        return _fork(proceed, _, h2oAssist, [_assistance]);
-      }
-      switch (func) {
-        case importFiles:
-          return _fork(proceed, _, h2oImportFilesInput, []);
-        case buildModel:
-          return _fork(proceed, _, H2O.ModelInput, args);
-        case buildAutoModel:
-          return _fork(proceed, _, h2oAutoModelInput, args);
-        case predict:
-        case getPrediction:
-          return _fork(proceed, _, h2oPredictInput, args);
-        case createFrame:
-          return _fork(proceed, _, h2oCreateFrameInput, args);
-        case splitFrame:
-          return _fork(proceed, _, h2oSplitFrameInput, args);
-        case mergeFrames:
-          return _fork(proceed, _, h2oMergeFramesInput, args);
-        case buildPartialDependence:
-          return _fork(proceed, _, h2oPartialDependenceInput, args);
-        case exportFrame:
-          return _fork(proceed, _, h2oExportFrameInput, args);
-        case imputeColumn:
-          return _fork(proceed, _, H2O.ImputeInput, args);
-        case importModel:
-          return _fork(proceed, _, h2oImportModelInput, args);
-        case exportModel:
-          return _fork(proceed, _, h2oExportModelInput, args);
-        default:
-          return _fork(proceed, _, h2oNoAssist, []);
-      }
     };
     Flow.Dataflow.link(_.ready, () => {
       Flow.Dataflow.link(_.ls, ls);

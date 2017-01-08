@@ -6,4 +6,6 @@ export const routinesThatAcceptUnderbarParameter = [
   'getTimeline',
   'getStackTrace',
   'deleteAll',
+  'assist',
+  'predict'
 ];
