@@ -1,5 +1,4 @@
 /* eslint arrow-body-style: 0 */
-/* eslint no-undef: 0 */
 /* eslint no-return-assign: 0 */
 /* eslint no-cond-assign: 0 */
 import { getTwoDimData } from './getTwoDimData';
@@ -70,6 +69,10 @@ import { getStackTrace } from './getStackTrace';
 import { requestLogFile } from './requestLogFile';
 import { deleteAll } from './deleteAll';
 import { requestProfile } from './requestProfile';
+import { requestAutoModelBuild } from './requestAutoModelBuild';
+import { requestDeleteModels } from './requestDeleteModels';
+import { requestModelsByKeys } from './requestModelsByKeys';
+import { requestDeleteFrames } from './requestDeleteFrames';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -98,6 +101,7 @@ import { h2oImportModelInput } from '../h2oImportModelInput';
 import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
 import { h2oModelOutput } from '../h2oModelOutput';
+import { h2oDataFrameOutput } from '../h2oDataFrameOutput';
 
 import { getGridRequest } from '../h2oProxy/getGridRequest';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
@@ -111,12 +115,14 @@ import { postScalaCodeRequest } from '../h2oProxy/postScalaCodeRequest';
 import { postAsH2OFrameFromRDDRequest } from '../h2oProxy/postAsH2OFrameFromRDDRequest';
 import { postAsH2OFrameFromDFRequest } from '../h2oProxy/postAsH2OFrameFromDFRequest';
 import { postAsDataFrameRequest } from '../h2oProxy/postAsDataFrameRequest';
+import { postPredictRequest } from '../h2oProxy/postPredictRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function routines() {
   const lodash = window._;
+  const $ = window.jQuery;
   const Flow = window.Flow;
   const H2O = window.H2O;
   const __slice = [].slice;
@@ -291,7 +297,7 @@ export function routines() {
     };
 
     const requestPrediction = (modelKey, frameKey, go) => {
-      return postPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
+      return postPredictRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
     };
     // abstracting this out produces an error
     // defer for now

@@ -168,6 +168,21 @@
     };
   }
 
+  function h2oDataFrameOutput(_, _go, _result) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _dataFrameView = Flow.Dataflow.signal(null);
+    const createDataFrameView = result => ({
+      dataframe_id: result.dataframe_id
+    });
+    _dataFrameView(createDataFrameView(_result));
+    lodash.defer(_go);
+    return {
+      dataFrameView: _dataFrameView,
+      template: 'flow-dataframe-output'
+    };
+  }
+
   function flowForm(_, _form, _go) {
     const lodash = window._;
     lodash.defer(_go);
@@ -5298,6 +5313,76 @@
     });
   }
 
+  function doPostJSON(_, path, opts, go) {
+    return http(_, 'POSTJSON', path, opts, go);
+  }
+
+  function postAutoModelBuildRequest(_, parameters, go) {
+    return doPostJSON(_, '/3/AutoMLBuilder', parameters, go);
+  }
+
+  function requestAutoModelBuild(_, opts, go) {
+    const params = {
+      input_spec: {
+        training_frame: opts.frame,
+        response_column: opts.column
+      },
+      build_control: { stopping_criteria: { max_runtime_secs: opts.maxRunTime } }
+    };
+    return postAutoModelBuildRequest(_, params, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendJob(_, result.job));
+    });
+  }
+
+  function requestDeleteModels(_, modelKeys, go) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const futures = lodash.map(modelKeys, modelKey => _fork(deleteModelRequest, _, modelKey));
+    return Flow.Async.join(futures, (error, results) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDeletedKeys(_, modelKeys));
+    });
+  }
+
+  function getModelRequest(_, key, go) {
+    const lodash = window._;
+    return doGet(_, `/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
+      if (error) {
+        return go(error, result);
+      }
+      return go(error, lodash.head(result.models));
+    });
+  }
+
+  function requestModelsByKeys(_, modelKeys, go) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const futures = lodash.map(modelKeys, key => _fork(getModelRequest, _, key));
+    return Flow.Async.join(futures, (error, models) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendModels(_, models));
+    });
+  }
+
+  function requestDeleteFrames(_, frameKeys, go) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const futures = lodash.map(frameKeys, frameKey => _fork(_.requestDeleteFrame, _, frameKey));
+    return Flow.Async.join(futures, (error, results) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDeletedKeys(_, frameKeys));
+    });
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -6070,16 +6155,6 @@
       buildModel,
       template: 'flow-automodel-input'
     };
-  }
-
-  function getModelRequest(_, key, go) {
-    const lodash = window._;
-    return doGet(_, `/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
-      if (error) {
-        return go(error, result);
-      }
-      return go(error, lodash.head(result.models));
-    });
   }
 
   const flowPrelude$38 = flowPreludeFunction();
@@ -7622,6 +7697,7 @@
 
   function routines() {
     const lodash = window._;
+    const $ = window.jQuery;
     const Flow = window.Flow;
     const H2O = window.H2O;
     const __slice = [].slice;
@@ -7793,7 +7869,7 @@
       };
 
       const requestPrediction = (modelKey, frameKey, go) => {
-        return postPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
+        return postPredictRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
       };
       // abstracting this out produces an error
       // defer for now
