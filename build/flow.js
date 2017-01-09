@@ -4222,6 +4222,7 @@
   }
 
   function postPredictRequest(_, destinationKey, modelKey, frameKey, options, go) {
+    console.log('arguments from postPredictRequest', arguments);
     let opt;
     const opts = {};
     if (destinationKey) {
@@ -7607,6 +7608,15 @@
     return doGet(_, composePath(`/99/Grids/${ encodeURIComponent(key) }`, params), go);
   }
 
+  function getPredictionRequest(_, modelKey, frameKey, go) {
+    return doGet(_, `/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, result);
+    });
+  }
+
   function getPredictionsRequest(_, modelKey, frameKey, _go) {
     const go = (error, result) => {
       let prediction;
@@ -7788,12 +7798,19 @@
       const inspect$1 = obj => {
         let attr;
         let inspections;
-        let inspectors;
         let _ref1;
         if (_isFuture(obj)) {
           return _async(inspect, obj);
         }
-        if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
+        let inspectors = void 0;
+        if (obj != null) {
+          _ref1 = obj._flow_;
+          if (_ref1 != null) {
+            inspectors = _ref1.inspect;
+          }
+        }
+        // const inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0;
+        if (inspectors) {
           inspections = [];
           for (attr in inspectors) {
             if ({}.hasOwnProperty.call(inspectors, attr)) {
@@ -7807,11 +7824,7 @@
         return {};
       };
       const inspect$2 = (attr, obj) => {
-        let cached;
         let inspection;
-        let inspectors;
-        let key;
-        let root;
         if (!attr) {
           return;
         }
@@ -7821,16 +7834,21 @@
         if (!obj) {
           return;
         }
-        if (!(root = obj._flow_)) {
+        const root = obj._flow_;
+        if (!root) {
           return;
         }
-        if (!(inspectors = root.inspect)) {
+        const inspectors = root.inspect;
+        if (!inspectors) {
           return;
         }
-        if (cached = root._cache_[key = `inspect_${ attr }`]) {
+        const key = `inspect_${ attr }`;
+        const cached = root._cache_[key];
+        if (cached) {
           return cached;
         }
-        if (!(f = inspectors[attr])) {
+        f = inspectors[attr];
+        if (!f) {
           return;
         }
         if (!lodash.isFunction(f)) {
@@ -7865,7 +7883,7 @@
         inspect_(grid, inspections);
         return render_(grid, h2oGridOutput, grid);
       };
-      const requestPrediction = (modelKey, frameKey, go) => postPredictRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
+      const requestPrediction = (modelKey, frameKey, go) => getPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
       // abstracting this out produces an error
       // defer for now
       const extendPredictions = (opts, predictions) => {

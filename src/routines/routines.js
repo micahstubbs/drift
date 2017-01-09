@@ -1,4 +1,3 @@
-/* eslint no-cond-assign: 0 */
 import { getTwoDimData } from './getTwoDimData';
 import { format6fi } from './format6fi';
 import { createArrays } from './createArrays';
@@ -214,12 +213,19 @@ export function routines() {
     const inspect$1 = obj => {
       let attr;
       let inspections;
-      let inspectors;
       let _ref1;
       if (_isFuture(obj)) {
         return _async(inspect, obj);
       }
-      if (inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0) {
+      let inspectors = void 0;
+      if (obj != null) {
+        _ref1 = obj._flow_;
+        if (_ref1 != null) {
+          inspectors = _ref1.inspect;
+        }
+      }
+      // const inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0;
+      if (inspectors) {
         inspections = [];
         for (attr in inspectors) {
           if ({}.hasOwnProperty.call(inspectors, attr)) {
@@ -233,11 +239,7 @@ export function routines() {
       return {};
     };
     const inspect$2 = (attr, obj) => {
-      let cached;
       let inspection;
-      let inspectors;
-      let key;
-      let root;
       if (!attr) {
         return;
       }
@@ -247,16 +249,21 @@ export function routines() {
       if (!obj) {
         return;
       }
-      if (!(root = obj._flow_)) {
+      const root = obj._flow_;
+      if (!root) {
         return;
       }
-      if (!(inspectors = root.inspect)) {
+      const inspectors = root.inspect;
+      if (!inspectors) {
         return;
       }
-      if (cached = root._cache_[key = `inspect_${attr}`]) {
+      const key = `inspect_${attr}`;
+      const cached = root._cache_[key];
+      if (cached) {
         return cached;
       }
-      if (!(f = inspectors[attr])) {
+      f = inspectors[attr];
+      if (!f) {
         return;
       }
       if (!lodash.isFunction(f)) {
@@ -291,7 +298,7 @@ export function routines() {
       inspect_(grid, inspections);
       return render_(grid, h2oGridOutput, grid);
     };
-    const requestPrediction = (modelKey, frameKey, go) => postPredictRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
+    const requestPrediction = (modelKey, frameKey, go) => getPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
     // abstracting this out produces an error
     // defer for now
     const extendPredictions = (opts, predictions) => {

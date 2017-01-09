@@ -1,6 +1,7 @@
 import { doPost } from './doPost';
 
 export function postPredictRequest(_, destinationKey, modelKey, frameKey, options, go) {
+  console.log('arguments from postPredictRequest', arguments);
   let opt;
   const opts = {};
   if (destinationKey) {
