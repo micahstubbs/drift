@@ -7766,14 +7766,12 @@
         lodash.extend(model);
         return render_(model, h2oModelOutput, model, refresh);
       };
-      const requestModel = (modelKey, go) => {
-        return getModelRequest(_, modelKey, (error, model) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendModel(model));
-        });
-      };
+      const requestModel = (modelKey, go) => getModelRequest(_, modelKey, (error, model) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendModel(model));
+      });
       const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
       const createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
         if (error) {
@@ -7867,10 +7865,7 @@
         inspect_(grid, inspections);
         return render_(grid, h2oGridOutput, grid);
       };
-
-      const requestPrediction = (modelKey, frameKey, go) => {
-        return postPredictRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
-      };
+      const requestPrediction = (modelKey, frameKey, go) => postPredictRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
       // abstracting this out produces an error
       // defer for now
       const extendPredictions = (opts, predictions) => {
