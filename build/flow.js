@@ -8504,7 +8504,7 @@
           description: 'Get a list of Spark\'s RDDs',
           icon: 'table'
         };
-        return _assistance.getDataFrames = {
+        _assistance.getDataFrames = {
           description: 'Get a list of Spark\'s data frames',
           icon: 'table'
         };

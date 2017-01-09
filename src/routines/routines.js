@@ -1,4 +1,3 @@
-/* eslint no-return-assign: 0 */
 /* eslint no-cond-assign: 0 */
 import { getTwoDimData } from './getTwoDimData';
 import { format6fi } from './format6fi';
@@ -936,7 +935,7 @@ export function routines() {
         description: 'Get a list of Spark\'s RDDs',
         icon: 'table',
       };
-      return _assistance.getDataFrames = {
+      _assistance.getDataFrames = {
         description: 'Get a list of Spark\'s data frames',
         icon: 'table',
       };
