@@ -195,6 +195,39 @@
     };
   }
 
+  function createControl(kind, parameter) {
+    const Flow = window.Flow;
+    const _hasError = Flow.Dataflow.signal(false);
+    const _hasWarning = Flow.Dataflow.signal(false);
+    const _hasInfo = Flow.Dataflow.signal(false);
+    const _message = Flow.Dataflow.signal('');
+    const _hasMessage = Flow.Dataflow.lift(_message, message => {
+      if (message) {
+        return true;
+      }
+      return false;
+    });
+    const _isVisible = Flow.Dataflow.signal(true);
+    const _isGrided = Flow.Dataflow.signal(false);
+    const _isNotGrided = Flow.Dataflow.lift(_isGrided, value => !value);
+    return {
+      kind,
+      name: parameter.name,
+      label: parameter.label,
+      description: parameter.help,
+      isRequired: parameter.required,
+      hasError: _hasError,
+      hasWarning: _hasWarning,
+      hasInfo: _hasInfo,
+      message: _message,
+      hasMessage: _hasMessage,
+      isVisible: _isVisible,
+      isGridable: parameter.gridable,
+      isGrided: _isGrided,
+      isNotGrided: _isNotGrided
+    };
+  }
+
   function optsToString(opts) {
     let str;
     if (opts != null) {
@@ -429,37 +462,6 @@
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const createControl = (kind, parameter) => {
-      const _hasError = Flow.Dataflow.signal(false);
-      const _hasWarning = Flow.Dataflow.signal(false);
-      const _hasInfo = Flow.Dataflow.signal(false);
-      const _message = Flow.Dataflow.signal('');
-      const _hasMessage = Flow.Dataflow.lift(_message, message => {
-        if (message) {
-          return true;
-        }
-        return false;
-      });
-      const _isVisible = Flow.Dataflow.signal(true);
-      const _isGrided = Flow.Dataflow.signal(false);
-      const _isNotGrided = Flow.Dataflow.lift(_isGrided, value => !value);
-      return {
-        kind,
-        name: parameter.name,
-        label: parameter.label,
-        description: parameter.help,
-        isRequired: parameter.required,
-        hasError: _hasError,
-        hasWarning: _hasWarning,
-        hasInfo: _hasInfo,
-        message: _message,
-        hasMessage: _hasMessage,
-        isVisible: _isVisible,
-        isGridable: parameter.gridable,
-        isGrided: _isGrided,
-        isNotGrided: _isNotGrided
-      };
-    };
     const createTextboxControl = (parameter, type) => {
       let isArrayValued;
       let isInt;
@@ -8175,8 +8177,6 @@
             return assist(cancelJob);
         }
       };
-
-      // some weird recursion and function scope things happening here
       // abstracting this out causes an error
       // defer for now
       const requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
@@ -8194,7 +8194,6 @@
             return assist(importFiles);
         }
       };
-
       // depends on `assist`
       const setupParse = args => {
         if (args.paths && lodash.isArray(args.paths)) {
@@ -8204,8 +8203,7 @@
         }
         return assist(setupParse);
       };
-
-      // blocked by CoffeeScript codecell `_` issue
+      // blocked by CoffeeScript codecell `_` issue - has arguments
       const parseFiles = opts => {
         const destinationKey = opts.destination_frame;
         const parseType = opts.parse_type;
@@ -8351,7 +8349,7 @@
           return go(null, extendPredictions(opts, predictions));
         });
       };
-      // blocked by CoffeeScript codecell `_` issue
+      // blocked by CoffeeScript codecell `_` issue - has arguments
       const getPrediction = opts => {
         if (opts == null) {
           opts = {};
@@ -8369,14 +8367,14 @@
           frame
         });
       };
-      // blocked by CoffeeScript codecell `_` issue
+      // blocked by CoffeeScript codecell `_` issue - has arguements
       const getPredictions = opts => {
         if (opts == null) {
           opts = {};
         }
         return _fork(requestPredictions, opts);
       };
-      // blocked by CoffeeScript codecell `_` issue
+      // blocked by CoffeeScript codecell `_` issue - has arguements
       const getLogFile = (nodeIndex, fileType) => {
         if (nodeIndex == null) {
           nodeIndex = -1;
@@ -8389,11 +8387,18 @@
       //
       // start Sparkling Water Routines
       //
+
+      // Sparkling Water Routines are hard to test
+      // since we have to build h2o-3
+      // then also build Sparkling Water
+      // everytime we want to make a change to here that interacts
+      // with Sparkling Water
+      // this takes about 4 minutes each time
+      // for that reason, defer abstracting these routines out
       const extendRDDs = rdds => {
         render_(rdds, h2oRDDsOutput, rdds);
         return rdds;
       };
-      // calls _.self
       const requestRDDs = go => getRDDsRequest(_, (error, result) => {
         if (error) {
           return go(error);
@@ -8405,7 +8410,6 @@
         render_(dataframes, h2oDataFramesOutput, dataframes);
         return dataframes;
       };
-      // calls _.self
       const requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
         if (error) {
           return go(error);
@@ -8417,7 +8421,6 @@
         render_(result, h2oH2OFrameOutput, result);
         return result;
       };
-      // calls _.self
       // eslint-disable-next-line camelcase
       const requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
         if (error) {
@@ -8431,7 +8434,6 @@
         }
         return _fork(requestAsH2OFrameFromRDD, rddId, name);
       };
-      // calls _.self
       const requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
         if (error) {
           return go(error);
@@ -8448,7 +8450,6 @@
         render_(result, h2oDataFrameOutput, result);
         return result;
       };
-      // calls _.self
       const requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
         if (error) {
           return go(error);
@@ -8461,7 +8462,6 @@
         }
         return _fork(requestAsDataFrame, hfId, name);
       };
-      // calls _.self
       const requestScalaCode = (session_id, code, go) => {
         // eslint-disable-line camelcase
         console.log('session_id from routines requestScalaCode', session_id);
@@ -8481,7 +8481,6 @@
         console.log('session_id from routines runScalaCode', session_id);
         return _fork(requestScalaCode, session_id, code);
       };
-      // calls _.self
       const requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
         if (error) {
           return go(error);
