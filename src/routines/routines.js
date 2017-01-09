@@ -522,8 +522,6 @@ export function routines() {
           return assist(cancelJob);
       }
     };
-
-    // some weird recursion and function scope things happening here
     // abstracting this out causes an error
     // defer for now
     const requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
@@ -541,7 +539,6 @@ export function routines() {
           return assist(importFiles);
       }
     };
-
     // depends on `assist`
     const setupParse = args => {
       if (args.paths && lodash.isArray(args.paths)) {
@@ -551,7 +548,6 @@ export function routines() {
       }
       return assist(setupParse);
     };
-
     // blocked by CoffeeScript codecell `_` issue
     const parseFiles = opts => {
       const destinationKey = opts.destination_frame;
