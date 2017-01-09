@@ -70,6 +70,7 @@ import { requestAutoModelBuild } from './requestAutoModelBuild';
 import { requestDeleteModels } from './requestDeleteModels';
 import { requestModelsByKeys } from './requestModelsByKeys';
 import { requestDeleteFrames } from './requestDeleteFrames';
+import { requestModel } from './requestModel';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -191,12 +192,6 @@ export function routines() {
       lodash.extend(model);
       return render_(model, h2oModelOutput, model, refresh);
     };
-    const requestModel = (modelKey, go) => getModelRequest(_, modelKey, (error, model) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendModel(model));
-    });
     const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
     const createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
       if (error) {
@@ -443,7 +438,7 @@ export function routines() {
     const getModel = modelKey => {
       switch (flowPrelude.typeOf(modelKey)) {
         case 'String':
-          return _fork(requestModel, modelKey);
+          return _fork(requestModel, _, modelKey);
         default:
           return assist(getModel);
       }
