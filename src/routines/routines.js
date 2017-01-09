@@ -224,7 +224,6 @@ export function routines() {
           inspectors = _ref1.inspect;
         }
       }
-      // const inspectors = obj != null ? (_ref1 = obj._flow_) != null ? _ref1.inspect : void 0 : void 0;
       if (inspectors) {
         inspections = [];
         for (attr in inspectors) {
