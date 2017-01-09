@@ -1,6 +1,7 @@
 import { createControl } from '../createControl';
 
 import { blockSelectionUpdates } from './blockSelectionUpdates';
+import { incrementSelectionCount } from './incrementSelectionCount';
 
 export function createListControl(parameter) {
   const lodash = window._;
@@ -13,15 +14,14 @@ export function createListControl(parameter) {
   const _values = Flow.Dataflow.signal([]);
   const _selectionCount = Flow.Dataflow.signal(0);
   const _isUpdatingSelectionCount = false;
-  const incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
   const createEntry = value => {
     const isSelected = Flow.Dataflow.signal(false);
     Flow.Dataflow.react(isSelected, isSelected => {
       if (!_isUpdatingSelectionCount) {
         if (isSelected) {
-          incrementSelectionCount(1);
+          incrementSelectionCount(1, _selectionCount);
         } else {
-          incrementSelectionCount(-1);
+          incrementSelectionCount(-1, _selectionCount);
         }
       }
     });
