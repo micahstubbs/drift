@@ -762,6 +762,7 @@ export function modelInput() {
     };
   };
   H2O.ModelInput = (_, _go, _algo, _opts) => {
+    console.log('arguments passed to H2O.ModelInput', arguments);
     const _exception = Flow.Dataflow.signal(null);
     const _algorithms = Flow.Dataflow.signal([]);
     const _algorithm = Flow.Dataflow.signal(null);
@@ -825,6 +826,7 @@ export function modelInput() {
       });
     };
     ((() => requestModelBuilders(_, (error, modelBuilders) => {
+      console.log('arguments passed to requestModelBuilders', arguments);
       _algorithms(modelBuilders);
       _algorithm(_algo ? lodash.find(modelBuilders, builder => builder.algo === _algo) : void 0);
       const frameKey = _opts != null ? _opts.training_frame : void 0;
@@ -838,7 +840,7 @@ export function modelInput() {
         }
         return _modelForm(null);
       });
-    }))());
+    }))(_));
     const createModel = () => _modelForm().createModel();
     lodash.defer(_go);
     return {

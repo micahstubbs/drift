@@ -3,7 +3,12 @@ import { unwrap } from './unwrap';
 import { cacheModelBuilders } from './cacheModelBuilders';
 
 export function requestModelBuilders(_, go) {
-  const modelBuilders = _.__.modelBuilders;
+  let modelBuilders;
+  if (typeof _ !== 'undefined') {
+    if (typeof _.__ !== 'undefined') {
+      modelBuilders = _.__.modelBuilders;
+    }
+  }
   if (modelBuilders) {
     return go(null, modelBuilders);
   }

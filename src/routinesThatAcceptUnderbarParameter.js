@@ -8,4 +8,5 @@ export const routinesThatAcceptUnderbarParameter = [
   'deleteAll',
   'assist',
   'predict',
+  'buildModel'
 ];

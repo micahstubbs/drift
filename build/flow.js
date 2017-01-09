@@ -316,7 +316,12 @@
   }
 
   function requestModelBuilders(_, go) {
-    const modelBuilders = _.__.modelBuilders;
+    let modelBuilders;
+    if (typeof _ !== 'undefined') {
+      if (typeof _.__ !== 'undefined') {
+        modelBuilders = _.__.modelBuilders;
+      }
+    }
     if (modelBuilders) {
       return go(null, modelBuilders);
     }
@@ -1140,6 +1145,7 @@
       };
     };
     H2O.ModelInput = (_, _go, _algo, _opts) => {
+      console.log('arguments passed to H2O.ModelInput', arguments);
       const _exception = Flow.Dataflow.signal(null);
       const _algorithms = Flow.Dataflow.signal([]);
       const _algorithm = Flow.Dataflow.signal(null);
@@ -1203,6 +1209,7 @@
         });
       };
       (() => requestModelBuilders(_, (error, modelBuilders) => {
+        console.log('arguments passed to requestModelBuilders', arguments);
         _algorithms(modelBuilders);
         _algorithm(_algo ? lodash.find(modelBuilders, builder => builder.algo === _algo) : void 0);
         const frameKey = _opts != null ? _opts.training_frame : void 0;
@@ -1216,7 +1223,7 @@
           }
           return _modelForm(null);
         });
-      }))();
+      }))(_);
       const createModel = () => _modelForm().createModel();
       lodash.defer(_go);
       return {
@@ -6327,6 +6334,7 @@
   }
 
   function assist() {
+    const H2O = window.H2O;
     let func;
     let args;
     let _;
@@ -6350,7 +6358,6 @@
         _ = arguments[arguments.length - 1];
         break;
     }
-    const H2O = window.H2O;
     console.log('func from assist', func);
     if (typeof func !== 'undefined') {
       console.log('func.name from assist', func.name);
@@ -8263,7 +8270,7 @@
         if (algo && opts && lodash.keys(opts).length > 1) {
           return _fork(requestModelBuild, _, algo, opts);
         }
-        return assist(buildModel, algo, opts);
+        return assist(buildModel, algo, opts, _);
       };
       // depends on `extendPredictions`
       requestPredicts = (opts, go) => {
@@ -11007,7 +11014,7 @@
     };
   }
 
-  const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll', 'assist', 'predict'];
+  const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll', 'assist', 'predict', 'buildModel'];
 
   function flowCoffeescript(_, guid, sandbox) {
     const lodash = window._;
@@ -11023,6 +11030,7 @@
       let name;
       let routine;
       const _ref = sandbox.routines;
+      console.log('sandbox.routines from flowCoffeescript isRoutine', sandbox.routines);
       for (name in _ref) {
         if ({}.hasOwnProperty.call(_ref, name)) {
           routine = _ref[name];
@@ -11072,7 +11080,7 @@
         // console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
         // console.log('result from tasks pipe in flowCoffeescriptKernel', result);
         if (lodash.isFunction(result)) {
-          if (isRoutine(result)) {
+          if (isRoutine(result) || result.name) {
             console.log('the result from flowCoffeescript is a routine');
             console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
             // a hack to gradually migrate routines to accept _ as a parameter

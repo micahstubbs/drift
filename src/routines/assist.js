@@ -16,6 +16,7 @@ import { h2oNoAssist } from '../h2oNoAssist';
 import { h2oAssist } from '../h2oAssist';
 
 export function assist() {
+  const H2O = window.H2O;
   let func;
   let args;
   let _;
@@ -39,7 +40,6 @@ export function assist() {
       _ = arguments[arguments.length - 1];
       break;
   }
-  const H2O = window.H2O;
   console.log('func from assist', func);
   if (typeof(func) !== 'undefined') {
     console.log('func.name from assist', func.name);

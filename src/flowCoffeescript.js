@@ -15,6 +15,7 @@ export function flowCoffeescript(_, guid, sandbox) {
     let name;
     let routine;
     const _ref = sandbox.routines;
+    console.log('sandbox.routines from flowCoffeescript isRoutine', sandbox.routines);
     for (name in _ref) {
       if ({}.hasOwnProperty.call(_ref, name)) {
         routine = _ref[name];
@@ -74,7 +75,7 @@ export function flowCoffeescript(_, guid, sandbox) {
       // console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
       // console.log('result from tasks pipe in flowCoffeescriptKernel', result);
       if (lodash.isFunction(result)) {
-        if (isRoutine(result)) {
+        if (isRoutine(result) || result.name) {
           console.log('the result from flowCoffeescript is a routine');
           console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
           // a hack to gradually migrate routines to accept _ as a parameter

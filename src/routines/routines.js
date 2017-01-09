@@ -678,7 +678,7 @@ export function routines() {
       if (algo && opts && lodash.keys(opts).length > 1) {
         return _fork(requestModelBuild, _, algo, opts);
       }
-      return assist(buildModel, algo, opts);
+      return assist(buildModel, algo, opts, _);
     };
     // depends on `extendPredictions`
     requestPredicts = (opts, go) => {
