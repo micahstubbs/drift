@@ -625,7 +625,7 @@ export function routines() {
         case 'Array':
           return _fork(requestImportFiles, paths);
         default:
-          return assist(importFiles);
+          return assist(importFiles, _);
       }
     };
 

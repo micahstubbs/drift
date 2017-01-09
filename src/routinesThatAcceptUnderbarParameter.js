@@ -7,5 +7,5 @@ export const routinesThatAcceptUnderbarParameter = [
   'getStackTrace',
   'deleteAll',
   'assist',
-  'predict'
+  'predict',
 ];

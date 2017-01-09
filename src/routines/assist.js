@@ -27,14 +27,14 @@ export function assist() {
       _ = arguments[0];
       break;
     // a function and the `_`
-    // case 2:
-    //   func = arguments[0];
-    //   args = [];
-    //   _ = arguments[1];
-    //   break;
+    case 2:
+      func = arguments[0];
+      args = [];
+      _ = arguments[1];
+      break;
     // a function, some other arguments, and the `_`
     default:
-      func = arguments[0]; 
+      func = arguments[0];
       args = Array.prototype.slice.call(arguments, 1, arguments.length - 1);
       _ = arguments[arguments.length - 1];
       break;

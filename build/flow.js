@@ -6338,11 +6338,11 @@
         _ = arguments[0];
         break;
       // a function and the `_`
-      // case 2:
-      //   func = arguments[0];
-      //   args = [];
-      //   _ = arguments[1];
-      //   break;
+      case 2:
+        func = arguments[0];
+        args = [];
+        _ = arguments[1];
+        break;
       // a function, some other arguments, and the `_`
       default:
         func = arguments[0];
@@ -8210,7 +8210,7 @@
           case 'Array':
             return _fork(requestImportFiles, paths);
           default:
-            return assist(importFiles);
+            return assist(importFiles, _);
         }
       };
 
