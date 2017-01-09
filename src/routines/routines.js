@@ -118,7 +118,6 @@ import { postAsH2OFrameFromDFRequest } from '../h2oProxy/postAsH2OFrameFromDFReq
 import { postAsDataFrameRequest } from '../h2oProxy/postAsDataFrameRequest';
 import { postPredictRequest } from '../h2oProxy/postPredictRequest';
 
-
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
