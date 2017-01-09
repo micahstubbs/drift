@@ -7624,128 +7624,38 @@
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    let createDataframe;
-    let createFactor;
-    let createList;
-    let createVector;
-    let lightning;
     const __slice = [].slice;
-    lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
+    const lightning = (typeof window !== 'undefined' && window !== null ? window.plot : void 0) != null ? window.plot : {};
     if (lightning.settings) {
       lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
       lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
     }
-    createVector = lightning.createVector;
-    createFactor = lightning.createFactor;
-    createList = lightning.createList;
-    createDataframe = lightning.createFrame;
+    const createVector = lightning.createVector;
+    const createFactor = lightning.createFactor;
+    const createList = lightning.createList;
+    const createDataframe = lightning.createFrame;
     H2O.Routines = _ => {
-      let asDataFrame;
-      let asH2OFrameFromDF;
-      let asH2OFrameFromRDD;
-      let assist;
       let attrname;
-      let bindFrames;
-      let buildAutoModel;
-      let buildModel;
-      let buildPartialDependence;
-      let cancelJob;
-      let changeColumnType;
-      let createFrame;
-      let createPlot;
-      let deleteFrame;
-      let deleteFrames;
-      let deleteModel;
-      let deleteModels;
-      let dump;
-      let dumpFuture;
-      let exportFrame;
-      let exportModel;
-      let extendAsDataFrame;
-      let extendAsH2OFrame;
-      let extendDataFrames;
-      let extendGrid;
-      let extendModel;
-      let extendPlot;
-      let extendPredictions;
-      let extendRDDs;
-      let extendScalaCode;
-      let extendScalaIntp;
       let f;
-      let getColumnSummary;
-      let getDataFrames;
-      let getFrame;
-      let getFrameData;
-      let getFrameSummary;
-      let getGrid;
-      let getJob;
-      let getJobs;
-      let getLogFile;
-      let getModel;
-      let getModels;
-      let getPartialDependence;
-      let getPrediction;
-      let getPredictions;
-      let getProfile;
-      let getRDDs;
-      let getScalaIntp;
-      let grid;
-      let importFiles;
-      let importModel;
-      let imputeColumn;
-      let initAssistanceSparklingWater;
-      let inspect;
-      let inspect$1;
-      let inspect$2;
-      let loadScript;
-      let mergeFrames;
       let name;
-      let parseFiles;
-      let plot;
-      let predict;
-      let render_;
-      let requestAsDataFrame;
-      let requestAsH2OFrameFromDF;
-      let requestAsH2OFrameFromRDD;
-      let requestDataFrames;
-      let requestFrameSummary;
-      let requestFrameSummarySlice;
-      let requestGrid;
-      let requestImportFiles;
-      let requestModel;
-      let requestPrediction;
-      let requestPredictions;
-      let requestPredicts;
-      let requestRDDs;
-      let requestScalaCode;
-      let requestScalaIntp;
-
-      let routines;
       let routinesOnSw;
-      let runScalaCode;
-      let setupParse;
-      let splitFrame;
 
       // TODO move these into Flow.Async
-      let _async;
-      let _get;
-      let _isFuture;
       let _ref;
       let _schemaHacks;
-      _isFuture = Flow.Async.isFuture;
-      _async = Flow.Async.async;
-      _get = Flow.Async.get;
+      const _isFuture = Flow.Async.isFuture;
+      const _async = Flow.Async.async;
+      const _get = Flow.Async.get;
 
-      render_ = function () {
-        let args;
-        let raw;
-        let render;
-        raw = arguments[0], render = arguments[1], args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
+      const render_ = function () {
+        const raw = arguments[0];
+        const render = arguments[1];
+        const args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
         // Prepend current context (_) and a continuation (go)
         flow_(raw).render = go => render(...[_, go].concat(args));
         return raw;
       };
-      extendModel = model => {
+      const extendModel = model => {
         lodash.extend = model => {
           let table;
           let tableName;
@@ -7780,7 +7690,7 @@
         lodash.extend(model);
         return render_(model, h2oModelOutput, model, refresh);
       };
-      requestModel = (modelKey, go) => {
+      const requestModel = (modelKey, go) => {
         return getModelRequest(_, modelKey, (error, model) => {
           if (error) {
             return go(error);
@@ -7788,20 +7698,20 @@
           return go(null, extendModel(model));
         });
       };
-      extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
-      createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
+      const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
+      const createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
         if (error) {
           return go(error);
         }
         return go(null, extendPlot(vis));
       });
-      inspect = function (a, b) {
+      const inspect = function (a, b) {
         if (arguments.length === 1) {
           return inspect$1(a);
         }
         return inspect$2(a, b);
       };
-      inspect$1 = obj => {
+      const inspect$1 = obj => {
         let attr;
         let inspections;
         let inspectors;
@@ -7822,7 +7732,7 @@
         }
         return {};
       };
-      inspect$2 = (attr, obj) => {
+      const inspect$2 = (attr, obj) => {
         let cached;
         let inspection;
         let inspectors;
@@ -7856,7 +7766,7 @@
         render_(inspection, h2oInspectOutput, inspection);
         return inspection;
       };
-      plot = f => {
+      const plot = f => {
         if (_isFuture(f)) {
           return _fork(proceed, h2oPlotInput, f);
         } else if (lodash.isFunction(f)) {
@@ -7865,17 +7775,16 @@
         return assist(plot);
       };
       // depends on `plot`
-      grid = f => plot(g => g(g.select(), g.from(f)));
+      const grid = f => plot(g => g(g.select(), g.from(f)));
 
       // depends on `grid`
-      extendGrid = (grid, opts) => {
-        let inspections;
+      const extendGrid = (grid, opts) => {
         let origin;
         origin = `getGrid ${ flowPrelude$5.stringify(grid.grid_id.name) }`;
         if (opts) {
           origin += `, ${ flowPrelude$5.stringify(opts) }`;
         }
-        inspections = {
+        const inspections = {
           summary: inspectTwoDimTable_(origin, 'summary', grid.summary_table),
           scoring_history: inspectTwoDimTable_(origin, 'scoring_history', grid.scoring_history)
         };
@@ -7883,36 +7792,36 @@
         return render_(grid, h2oGridOutput, grid);
       };
 
-      requestPrediction = (modelKey, frameKey, go) => {
+      const requestPrediction = (modelKey, frameKey, go) => {
         return postPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
       };
       // abstracting this out produces an error
       // defer for now
-      extendPredictions = (opts, predictions) => {
+      const extendPredictions = (opts, predictions) => {
         render_(predictions, h2oPredictsOutput, opts, predictions);
         return predictions;
       };
-      requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, (error, frame) => {
+      const requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, (error, frame) => {
         if (error) {
           return go(error);
         }
         return go(null, extendFrameSummary(_, frameKey, frame));
       });
-      requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
+      const requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
         if (error) {
           return go(error);
         }
         return go(null, extendFrameSummary(_, frameKey, frame));
       });
       // depends on `assist`
-      createFrame = opts => {
+      const createFrame = opts => {
         if (opts) {
           return _fork(requestCreateFrame, _, opts);
         }
         return assist(createFrame);
       };
       // depends on `assist`
-      splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
+      const splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
         if (seed == null) {
           seed = -1;
         }
@@ -7922,7 +7831,7 @@
         return assist(splitFrame);
       };
       // depends on `assist`
-      mergeFrames = (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows) => {
+      const mergeFrames = (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows) => {
         if (destinationKey && leftFrameKey && rightFrameKey) {
           return _fork(requestMergeFrames, _, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
         }
@@ -7930,10 +7839,10 @@
       };
 
       // depends on `assist`
-      // define the function that is called when 
+      // define the function that is called when
       // the Partial Dependence plot input form
       // is submitted
-      buildPartialDependence = opts => {
+      const buildPartialDependence = opts => {
         if (opts) {
           return _fork(requestPartialDependence, _, opts);
         }
@@ -7942,14 +7851,14 @@
         return assist(buildPartialDependence);
       };
       // depends on `assist`
-      getPartialDependence = destinationKey => {
+      const getPartialDependence = destinationKey => {
         if (destinationKey) {
           return _fork(requestPartialDependenceData, _, destinationKey);
         }
         return assist(getPartialDependence);
       };
       // depends on `assist`
-      getFrame = frameKey => {
+      const getFrame = frameKey => {
         switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrame, _, frameKey);
@@ -7959,9 +7868,9 @@
       };
       // blocked by CoffeeScript codecell `_` issue
       // has multiple parameters
-      bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
+      const bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
       // depends on `assist`
-      getFrameSummary = frameKey => {
+      const getFrameSummary = frameKey => {
         switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrameSummary, frameKey);
@@ -7970,7 +7879,7 @@
         }
       };
       // depends on `assist`
-      getFrameData = frameKey => {
+      const getFrameData = frameKey => {
         switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrameData, _, frameKey, void 0, 0, 20);
@@ -7979,7 +7888,7 @@
         }
       };
       // depends on `assist`
-      deleteFrame = frameKey => {
+      const deleteFrame = frameKey => {
         if (frameKey) {
           return _fork(requestDeleteFrame, _, frameKey);
         }
@@ -7987,7 +7896,7 @@
       };
 
       // depends on `assist`
-      exportFrame = (frameKey, path, opts) => {
+      const exportFrame = (frameKey, path, opts) => {
         if (opts == null) {
           opts = {};
         }
@@ -7997,7 +7906,7 @@
         return assist(exportFrame, frameKey, path, opts);
       };
       // depends on `assist`
-      deleteFrames = frameKeys => {
+      const deleteFrames = frameKeys => {
         switch (frameKeys.length) {
           case 0:
             return assist(deleteFrames);
@@ -8008,9 +7917,9 @@
         }
       };
       // blocked by CoffeeScript codecell `_` issue
-      getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
+      const getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
       // blocked by CoffeeScript codecell `_` issue
-      getModels = modelKeys => {
+      const getModels = modelKeys => {
         if (lodash.isArray(modelKeys)) {
           if (modelKeys.length) {
             return _fork(requestModelsByKeys, _, modelKeys);
@@ -8020,7 +7929,7 @@
         return _fork(requestModels, _);
       };
       // depends on `assist`
-      getModel = modelKey => {
+      const getModel = modelKey => {
         switch (flowPrelude$5.typeOf(modelKey)) {
           case 'String':
             return _fork(requestModel, modelKey);
@@ -8029,14 +7938,14 @@
         }
       };
       // depends on `extendGrid`
-      requestGrid = (gridKey, opts, go) => getGridRequest(_, gridKey, opts, (error, grid) => {
+      const requestGrid = (gridKey, opts, go) => getGridRequest(_, gridKey, opts, (error, grid) => {
         if (error) {
           return go(error);
         }
         return go(null, extendGrid(grid, opts));
       });
       // depends on `assist`
-      getGrid = (gridKey, opts) => {
+      const getGrid = (gridKey, opts) => {
         switch (flowPrelude$5.typeOf(gridKey)) {
           case 'String':
             return _fork(requestGrid, gridKey, opts);
@@ -8045,21 +7954,21 @@
         }
       };
       // depends on `assist`
-      imputeColumn = opts => {
+      const imputeColumn = opts => {
         if (opts && opts.frame && opts.column && opts.method) {
           return _fork(requestImputeColumn, _, opts);
         }
         return assist(imputeColumn, opts);
       };
       // depends on `assist`
-      changeColumnType = opts => {
+      const changeColumnType = opts => {
         if (opts && opts.frame && opts.column && opts.type) {
           return _fork(requestChangeColumnType, _, opts);
         }
         return assist(changeColumnType, opts);
       };
       // depends on `assist`
-      deleteModel = modelKey => {
+      const deleteModel = modelKey => {
         if (modelKey) {
           return _fork(requestDeleteModel, _, modelKey);
         }
@@ -8067,7 +7976,7 @@
       };
 
       // depends on `assist`
-      importModel = (path, opts) => {
+      const importModel = (path, opts) => {
         if (path && path.length) {
           return _fork(requestImportModel, _, path, opts);
         }
@@ -8075,14 +7984,14 @@
       };
 
       // depends on `assist`
-      exportModel = (modelKey, path, opts) => {
+      const exportModel = (modelKey, path, opts) => {
         if (modelKey && path) {
           return _fork(requestExportModel, _, modelKey, path, opts);
         }
         return assist(exportModel, modelKey, path, opts);
       };
       // depends on `assist`
-      deleteModels = modelKeys => {
+      const deleteModels = modelKeys => {
         switch (modelKeys.length) {
           case 0:
             return assist(deleteModels);
@@ -8093,9 +8002,9 @@
         }
       };
       // blocked by CoffeeScript codecell `_` issue
-      getJobs = () => _fork(requestJobs, _);
+      const getJobs = () => _fork(requestJobs, _);
       // depends on `assist`
-      getJob = arg => {
+      const getJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {
           case 'String':
             return _fork(requestJob, _, arg);
@@ -8110,7 +8019,7 @@
         }
       };
       // depends on `assist`
-      cancelJob = arg => {
+      const cancelJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {
           case 'String':
             return _fork(requestCancelJob, _, arg);
@@ -8122,14 +8031,14 @@
       // some weird recursion and function scope things happening here
       // abstracting this out causes an error
       // defer for now
-      requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
+      const requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
         if (error) {
           return go(error);
         }
         return go(null, extendImportResults(_, importResults));
       });
       // depends on `assist`
-      importFiles = paths => {
+      const importFiles = paths => {
         switch (flowPrelude$5.typeOf(paths)) {
           case 'Array':
             return _fork(requestImportFiles, paths);
@@ -8139,7 +8048,7 @@
       };
 
       // depends on `assist`
-      setupParse = args => {
+      const setupParse = args => {
         if (args.paths && lodash.isArray(args.paths)) {
           return _fork(requestImportAndParseSetup, _, args.paths);
         } else if (args.source_frames && lodash.isArray(args.source_frames)) {
@@ -8149,54 +8058,42 @@
       };
 
       // blocked by CoffeeScript codecell `_` issue
-      parseFiles = opts => {
-        let checkHeader;
-        let chunkSize;
-        let columnCount;
-        let columnNames;
-        let columnTypes;
-        let deleteOnDone;
-        let destinationKey;
-        let parseType;
-        let separator;
-        let useSingleQuotes;
-        destinationKey = opts.destination_frame;
-        parseType = opts.parse_type;
-        separator = opts.separator;
-        columnCount = opts.number_columns;
-        useSingleQuotes = opts.single_quotes;
-        columnNames = opts.column_names;
-        columnTypes = opts.column_types;
-        deleteOnDone = opts.delete_on_done;
-        checkHeader = opts.check_header;
-        chunkSize = opts.chunk_size;
+      const parseFiles = opts => {
+        const destinationKey = opts.destination_frame;
+        const parseType = opts.parse_type;
+        const separator = opts.separator;
+        const columnCount = opts.number_columns;
+        const useSingleQuotes = opts.single_quotes;
+        const columnNames = opts.column_names;
+        const columnTypes = opts.column_types;
+        const deleteOnDone = opts.delete_on_done;
+        const checkHeader = opts.check_header;
+        const chunkSize = opts.chunk_size;
         if (opts.paths) {
           return _fork(requestImportAndParseFiles, _, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
         }
         return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
       };
       // depends on `assist`
-      buildAutoModel = opts => {
+      const buildAutoModel = opts => {
         if (opts && lodash.keys(opts).length > 1) {
           return _fork(requestAutoModelBuild, _, opts);
         }
         return assist(buildAutoModel, opts);
       };
       // depends on `assist`
-      buildModel = (algo, opts) => {
+      const buildModel = (algo, opts) => {
         if (algo && opts && lodash.keys(opts).length > 1) {
           return _fork(requestModelBuild, _, algo, opts);
         }
         return assist(buildModel, algo, opts);
       };
       // depends on `extendPredictions`
-      requestPredicts = (opts, go) => {
-        let futures;
-        futures = lodash.map(opts, opt => {
-          let frameKey;
-          let modelKey;
-          let options;
-          modelKey = opt.model, frameKey = opt.frame, options = opt.options;
+      const requestPredicts = (opts, go) => {
+        const futures = lodash.map(opts, opt => {
+          const modelKey = opt.model;
+          const frameKey = opt.frame;
+          const options = opt.options;
           return _fork(_.requestPredict, _, null, modelKey, frameKey, options || {});
         });
         return Flow.Async.join(futures, (error, predictions) => {
@@ -8207,17 +8104,12 @@
         });
       };
       // depends on `assist`
-      predict = opts => {
+      const predict = opts => {
         let combos;
-        let deep_features_hidden_layer;
-        let exemplar_index;
         let frame;
         let frames;
-        let leaf_node_assignment;
         let model;
         let models;
-        let predictions_frame;
-        let reconstruction_error;
         let _i;
         let _j;
         let _len;
@@ -8225,7 +8117,15 @@
         if (opts == null) {
           opts = {};
         }
-        predictions_frame = opts.predictions_frame, model = opts.model, models = opts.models, frame = opts.frame, frames = opts.frames, reconstruction_error = opts.reconstruction_error, deep_features_hidden_layer = opts.deep_features_hidden_layer, leaf_node_assignment = opts.leaf_node_assignment, exemplar_index = opts.exemplar_index;
+        const predictions_frame = opts.predictions_frame;
+        model = opts.model;
+        models = opts.models;
+        frame = opts.frame;
+        frames = opts.frames;
+        const reconstruction_error = opts.reconstruction_error;
+        const deep_features_hidden_layer = opts.deep_features_hidden_layer;
+        const leaf_node_assignment = opts.leaf_node_assignment;
+        const exemplar_index = opts.exemplar_index;
         if (models || frames) {
           if (!models) {
             if (model) {
@@ -8273,27 +8173,23 @@
         });
       };
       // depends on `extendPredictions`
-      requestPredictions = (opts, go) => {
-        let frameKey;
-        let futures;
-        let modelKey;
+      const requestPredictions = (opts, go) => {
         if (lodash.isArray(opts)) {
-          futures = lodash.map(opts, opt => {
-            let frameKey;
-            let modelKey;
-            modelKey = opt.model, frameKey = opt.frame;
+          const futures = lodash.map(opts, opt => {
+            const modelKey = opt.model;
+            const frameKey = opt.frame;
             return _fork(getPredictionsRequest, _, modelKey, frameKey);
           });
           return Flow.Async.join(futures, (error, predictions) => {
-            let uniquePredictions;
             if (error) {
               return go(error);
             }
-            uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), prediction => prediction.model.name + prediction.frame.name));
+            const uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), prediction => prediction.model.name + prediction.frame.name));
             return go(null, extendPredictions(opts, uniquePredictions));
           });
         }
-        modelKey = opts.model, frameKey = opts.frame;
+        const modelKey = opts.model;
+        const frameKey = opts.frame;
         return getPredictionsRequest(_, modelKey, frameKey, (error, predictions) => {
           if (error) {
             return go(error);
@@ -8302,14 +8198,13 @@
         });
       };
       // blocked by CoffeeScript codecell `_` issue
-      getPrediction = opts => {
-        let frame;
-        let model;
-        let predictions_frame;
+      const getPrediction = opts => {
         if (opts == null) {
           opts = {};
         }
-        predictions_frame = opts.predictions_frame, model = opts.model, frame = opts.frame;
+        const predictions_frame = opts.predictions_frame;
+        const model = opts.model;
+        const frame = opts.frame;
         if (model && frame) {
           return _fork(requestPrediction, model, frame);
         }
@@ -8320,14 +8215,14 @@
         });
       };
       // blocked by CoffeeScript codecell `_` issue
-      getPredictions = opts => {
+      const getPredictions = opts => {
         if (opts == null) {
           opts = {};
         }
         return _fork(requestPredictions, opts);
       };
       // blocked by CoffeeScript codecell `_` issue
-      getLogFile = (nodeIndex, fileType) => {
+      const getLogFile = (nodeIndex, fileType) => {
         if (nodeIndex == null) {
           nodeIndex = -1;
         }
@@ -8339,79 +8234,79 @@
       //
       // start Sparkling Water Routines
       //
-      extendRDDs = rdds => {
+      const extendRDDs = rdds => {
         render_(rdds, h2oRDDsOutput, rdds);
         return rdds;
       };
       // calls _.self
-      requestRDDs = go => getRDDsRequest(_, (error, result) => {
+      const requestRDDs = go => getRDDsRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendRDDs(result.rdds));
       });
-      getRDDs = () => _fork(requestRDDs);
-      extendDataFrames = dataframes => {
+      const getRDDs = () => _fork(requestRDDs);
+      const extendDataFrames = dataframes => {
         render_(dataframes, h2oDataFramesOutput, dataframes);
         return dataframes;
       };
       // calls _.self
-      requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
+      const requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendDataFrames(result.dataframes));
       });
-      getDataFrames = () => _fork(requestDataFrames);
-      extendAsH2OFrame = result => {
+      const getDataFrames = () => _fork(requestDataFrames);
+      const extendAsH2OFrame = result => {
         render_(result, h2oH2OFrameOutput, result);
         return result;
       };
       // calls _.self
-      requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
+      const requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
         if (error) {
           return go(error);
         }
         return go(null, extendAsH2OFrame(h2oframe_id));
       });
-      asH2OFrameFromRDD = (rddId, name) => {
+      const asH2OFrameFromRDD = (rddId, name) => {
         if (name == null) {
           name = void 0;
         }
         return _fork(requestAsH2OFrameFromRDD, rddId, name);
       };
       // calls _.self
-      requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
+      const requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendAsH2OFrame(result));
       });
-      asH2OFrameFromDF = (dfId, name) => {
+      const asH2OFrameFromDF = (dfId, name) => {
         if (name == null) {
           name = void 0;
         }
         return _fork(requestAsH2OFrameFromDF, dfId, name);
       };
-      extendAsDataFrame = result => {
+      const extendAsDataFrame = result => {
         render_(result, h2oDataFrameOutput, result);
         return result;
       };
       // calls _.self
-      requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
+      const requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendAsDataFrame(result));
       });
-      asDataFrame = (hfId, name) => {
+      const asDataFrame = (hfId, name) => {
         if (name == null) {
           name = void 0;
         }
         return _fork(requestAsDataFrame, hfId, name);
       };
       // calls _.self
-      requestScalaCode = (session_id, code, go) => {
+      const requestScalaCode = (session_id, code, go) => {
         console.log('session_id from routines requestScalaCode', session_id);
         return postScalaCodeRequest(_, session_id, code, (error, result) => {
           if (error) {
@@ -8420,53 +8315,57 @@
           return go(null, extendScalaCode(result));
         });
       };
-      extendScalaCode = result => {
+      const extendScalaCode = result => {
         render_(result, h2oScalaCodeOutput, result);
         return result;
       };
-      runScalaCode = (session_id, code) => {
+      const runScalaCode = (session_id, code) => {
         console.log('session_id from routines runScalaCode', session_id);
         return _fork(requestScalaCode, session_id, code);
       };
       // calls _.self
-      requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
+      const requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
         if (error) {
           return go(error);
         }
         return go(null, extendScalaIntp(result));
       });
-      extendScalaIntp = result => {
+      const extendScalaIntp = result => {
         render_(result, h2oScalaIntpOutput, result);
         return result;
       };
-      getScalaIntp = () => _fork(requestScalaIntp);
+      const getScalaIntp = () => _fork(requestScalaIntp);
       //
       // end Sparkling Water Routines
       //
-      getProfile = opts => {
+      const getProfile = opts => {
         if (!opts) {
           opts = { depth: 10 };
         }
         return _fork(requestProfile, _, opts.depth);
       };
-      loadScript = (path, go) => {
-        let onDone;
-        let onFail;
-        onDone = (script, status) => go(null, {
+      // `loadScript` is not used anywhere else
+      // but could be called from a codecell in Flow
+      const loadScript = (path, go) => {
+        const onDone = (script, status) => go(null, {
           script,
           status
         });
-        onFail = (jqxhr, settings, error) => go(error);
+        const onFail = (jqxhr, settings, error) => go(error);
         return $.getScript(path).done(onDone).fail(onFail);
       };
-      dumpFuture = (result, go) => {
+      // `dumpFuture` is not used anywhere else
+      // but could be called from a codecell in Flow
+      const dumpFuture = (result, go) => {
         if (result == null) {
           result = {};
         }
         console.debug(result);
         return go(null, render_(result, Flow.objectBrowser, 'dump', result));
       };
-      dump = f => {
+      // `dump` is not used anywhere else
+      // but could be called from a codecell in Flow
+      const dump = f => {
         if (f != null ? f.isFuture : void 0) {
           return _fork(dumpFuture, f);
         }
@@ -8474,10 +8373,9 @@
       };
       // abstracting this out produces errors
       // defer for now
-      assist = function () {
-        let args;
-        let func;
-        func = arguments[0], args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
+      const assist = function () {
+        const func = arguments[0];
+        const args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
         if (func === void 0) {
           return _fork(proceed, _, h2oAssist, [_assistance]);
         }
@@ -8520,7 +8418,7 @@
         Flow.Dataflow.link(_.requestFrameDataE, requestFrameData);
         return Flow.Dataflow.link(_.requestFrameSummarySliceE, requestFrameSummarySlice);
       });
-      initAssistanceSparklingWater = () => {
+      const initAssistanceSparklingWater = () => {
         _assistance.getRDDs = {
           description: 'Get a list of Spark\'s RDDs',
           icon: 'table'
@@ -8535,7 +8433,7 @@
           return initAssistanceSparklingWater();
         }
       });
-      routines = {
+      const routines = {
         //
         // fork/join
         //
