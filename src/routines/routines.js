@@ -1,4 +1,3 @@
-/* eslint no-unused-expressions: 0 */
 /* eslint arrow-body-style: 0 */
 /* eslint no-undef: 0 */
 /* eslint no-return-assign: 0 */
