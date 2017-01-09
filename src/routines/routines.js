@@ -1,7 +1,6 @@
 /* eslint no-unused-expressions: 0 */
 /* eslint arrow-body-style: 0 */
 /* eslint no-undef: 0 */
-/* eslint camelcase: 0 */
 /* eslint no-return-assign: 0 */
 /* eslint no-cond-assign: 0 */
 import { getTwoDimData } from './getTwoDimData';
@@ -625,14 +624,19 @@ export function routines() {
       if (opts == null) {
         opts = {};
       }
+      // eslint-disable-next-line camelcase
       const predictions_frame = opts.predictions_frame;
       model = opts.model;
       models = opts.models;
       frame = opts.frame;
       frames = opts.frames;
+      // eslint-disable-next-line camelcase
       const reconstruction_error = opts.reconstruction_error;
+      // eslint-disable-next-line camelcase
       const deep_features_hidden_layer = opts.deep_features_hidden_layer;
+      // eslint-disable-next-line camelcase
       const leaf_node_assignment = opts.leaf_node_assignment;
+      // eslint-disable-next-line camelcase
       const exemplar_index = opts.exemplar_index;
       if (models || frames) {
         if (!models) {
@@ -671,7 +675,7 @@ export function routines() {
           deep_features_hidden_layer,
           leaf_node_assignment,
         });
-      } else if (model && exemplar_index !== void 0) {
+      } else if (model && exemplar_index !== void 0) { // eslint-disable-line camelcase
         return _fork(requestPredict, _, predictions_frame, model, null, { exemplar_index });
       }
       return assist(predict, {
@@ -710,6 +714,7 @@ export function routines() {
       if (opts == null) {
         opts = {};
       }
+      // eslint-disable-next-line camelcase
       const predictions_frame = opts.predictions_frame;
       const model = opts.model;
       const frame = opts.frame;
@@ -771,6 +776,7 @@ export function routines() {
       return result;
     };
     // calls _.self
+    // eslint-disable-next-line camelcase
     const requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
       if (error) {
         return go(error);
@@ -814,7 +820,7 @@ export function routines() {
       return _fork(requestAsDataFrame, hfId, name);
     };
     // calls _.self
-    const requestScalaCode = (session_id, code, go) => {
+    const requestScalaCode = (session_id, code, go) => { // eslint-disable-line camelcase
       console.log('session_id from routines requestScalaCode', session_id);
       return postScalaCodeRequest(_, session_id, code, (error, result) => {
         if (error) {
@@ -827,7 +833,7 @@ export function routines() {
       render_(result, h2oScalaCodeOutput, result);
       return result;
     };
-    const runScalaCode = (session_id, code) => {
+    const runScalaCode = (session_id, code) => { // eslint-disable-line camelcase
       console.log('session_id from routines runScalaCode', session_id);
       return _fork(requestScalaCode, session_id, code);
     };
