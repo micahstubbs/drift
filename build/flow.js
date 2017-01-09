@@ -4053,15 +4053,6 @@
     });
   }
 
-  function requestJobs(_, go) {
-    return getJobsRequest(_, (error, jobs) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendJobs(_, jobs));
-    });
-  }
-
   const flowPrelude$24 = flowPreludeFunction();
 
   function h2oImportFilesOutput(_, _go, _importResults) {
@@ -6183,6 +6174,19 @@
     });
   }
 
+  function requestJobs(_, go) {
+    return getJobsRequest(_, (error, jobs) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendJobs(_, jobs));
+    });
+  }
+
+  function getJobs(_) {
+    return _fork(requestJobs, _);
+  }
+
   const flowPrelude$34 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -8062,9 +8066,9 @@
             return _fork(requestDeleteFrames, _, frameKeys);
         }
       };
-      // blocked by CoffeeScript codecell `_` issue
+      // blocked by CoffeeScript codecell `_` issue - multiple parameters
       const getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
-      // blocked by CoffeeScript codecell `_` issue
+      // blocked by CoffeeScript codecell `_` issue - multiple parameters
       const getModels = modelKeys => {
         if (lodash.isArray(modelKeys)) {
           if (modelKeys.length) {
@@ -8147,8 +8151,6 @@
             return _fork(requestDeleteModels, _, modelKeys);
         }
       };
-      // blocked by CoffeeScript codecell `_` issue
-      const getJobs = () => _fork(requestJobs, _);
       // depends on `assist`
       const getJob = arg => {
         switch (flowPrelude$5.typeOf(arg)) {
@@ -11018,7 +11020,7 @@
     };
   }
 
-  const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll'];
+  const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll', 'getJobs'];
 
   function flowCoffeescript(_, guid, sandbox) {
     const lodash = window._;

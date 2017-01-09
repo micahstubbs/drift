@@ -42,7 +42,6 @@ import { requestChangeColumnType } from './requestChangeColumnType';
 import { requestDeleteModel } from './requestDeleteModel';
 import { requestImportModel } from './requestImportModel';
 import { requestJob } from './requestJob';
-import { requestJobs } from './requestJobs';
 import { extendImportResults } from './extendImportResults';
 import { requestImportAndParseSetup } from './requestImportAndParseSetup';
 import { requestImportAndParseFiles } from './requestImportAndParseFiles';
@@ -74,6 +73,7 @@ import { requestModel } from './requestModel';
 import { requestPrediction } from './requestPrediction';
 import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummary } from './requestFrameSummary';
+import { getJobs } from './getJobs';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -414,9 +414,9 @@ export function routines() {
           return _fork(requestDeleteFrames, _, frameKeys);
       }
     };
-    // blocked by CoffeeScript codecell `_` issue
+    // blocked by CoffeeScript codecell `_` issue - multiple parameters
     const getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
-    // blocked by CoffeeScript codecell `_` issue
+    // blocked by CoffeeScript codecell `_` issue - multiple parameters
     const getModels = modelKeys => {
       if (lodash.isArray(modelKeys)) {
         if (modelKeys.length) {
@@ -499,8 +499,6 @@ export function routines() {
           return _fork(requestDeleteModels, _, modelKeys);
       }
     };
-    // blocked by CoffeeScript codecell `_` issue
-    const getJobs = () => _fork(requestJobs, _);
     // depends on `assist`
     const getJob = arg => {
       switch (flowPrelude.typeOf(arg)) {
