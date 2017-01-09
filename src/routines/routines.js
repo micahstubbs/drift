@@ -73,6 +73,7 @@ import { requestDeleteFrames } from './requestDeleteFrames';
 import { requestModel } from './requestModel';
 import { requestPrediction } from './requestPrediction';
 import { requestFrameSummarySlice } from './requestFrameSummarySlice';
+import { requestFrameSummary } from './requestFrameSummary';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -116,7 +117,7 @@ import { postAsH2OFrameFromRDDRequest } from '../h2oProxy/postAsH2OFrameFromRDDR
 import { postAsH2OFrameFromDFRequest } from '../h2oProxy/postAsH2OFrameFromDFRequest';
 import { postAsDataFrameRequest } from '../h2oProxy/postAsDataFrameRequest';
 import { postPredictRequest } from '../h2oProxy/postPredictRequest';
-import { getFrameSummarySliceRequest } from '../h2oProxy/getFrameSummarySliceRequest';
+
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -302,12 +303,6 @@ export function routines() {
       render_(predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
-    const requestFrameSummary = (frameKey, go) => getFrameSummarySliceRequest(_, frameKey, void 0, 0, 20, (error, frame) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendFrameSummary(_, frameKey, frame));
-    });
     // depends on `assist`
     const createFrame = opts => {
       if (opts) {
@@ -376,7 +371,7 @@ export function routines() {
     const getFrameSummary = frameKey => {
       switch (flowPrelude.typeOf(frameKey)) {
         case 'String':
-          return _fork(requestFrameSummary, frameKey);
+          return _fork(requestFrameSummary, _, frameKey);
         default:
           return assist(getFrameSummary);
       }

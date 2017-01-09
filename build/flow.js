@@ -6174,6 +6174,15 @@
     });
   }
 
+  function requestFrameSummary(_, frameKey, go) {
+    return getFrameSummarySliceRequest(_, frameKey, void 0, 0, 20, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrameSummary(_, frameKey, frame));
+    });
+  }
+
   const flowPrelude$34 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7945,16 +7954,11 @@
       };
       // abstracting this out produces an error
       // defer for now
+      // the call to the `render_` function is the problematic part
       const extendPredictions = (opts, predictions) => {
         render_(predictions, h2oPredictsOutput, opts, predictions);
         return predictions;
       };
-      const requestFrameSummary = (frameKey, go) => getFrameSummarySliceRequest(_, frameKey, void 0, 0, 20, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrameSummary(_, frameKey, frame));
-      });
       // depends on `assist`
       const createFrame = opts => {
         if (opts) {
@@ -8015,7 +8019,7 @@
       const getFrameSummary = frameKey => {
         switch (flowPrelude$5.typeOf(frameKey)) {
           case 'String':
-            return _fork(requestFrameSummary, frameKey);
+            return _fork(requestFrameSummary, _, frameKey);
           default:
             return assist(getFrameSummary);
         }
@@ -12702,7 +12706,7 @@
     });
   }
 
-  function requestFrameSummary(_, key, go) {
+  function requestFrameSummary$1(_, key, go) {
     const lodash = window._;
     doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, result => lodash.head(result.frames)));
   }
@@ -12757,7 +12761,7 @@
     Flow.Dataflow.link(_.requestSplitFrame, requestSplitFrame$1);
     Flow.Dataflow.link(_.requestFrames, requestFrames$1);
     Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
-    Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary);
+    Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary$1);
     Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
     Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame$1);
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
