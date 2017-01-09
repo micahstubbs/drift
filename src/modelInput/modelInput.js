@@ -1,6 +1,7 @@
 import { createControl } from './createControl';
 import { createTextboxControl } from './createTextboxControl';
 import { createGridableValues } from './createGridableValues';
+import { createDropdownControl } from './createDropdownControl';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { postModelInputValidationRequest } from '../h2oProxy/postModelInputValidationRequest';
@@ -12,14 +13,6 @@ export function modelInput() {
   const lodash = window._;
   const Flow = window.Flow;
   const H2O = window.H2O;
-  const createDropdownControl = parameter => {
-    const _value = Flow.Dataflow.signal(parameter.actual_value);
-    const control = createControl('dropdown', parameter);
-    control.values = Flow.Dataflow.signals(parameter.values);
-    control.value = _value;
-    control.gridedValues = Flow.Dataflow.lift(control.values, values => createGridableValues(values));
-    return control;
-  };
   const createListControl = parameter => {
     let _isUpdatingSelectionCount;
     let _lastUsedIgnoreNaTerm;

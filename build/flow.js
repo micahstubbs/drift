@@ -330,6 +330,16 @@
     }));
   }
 
+  function createDropdownControl(parameter) {
+    const Flow = window.Flow;
+    const _value = Flow.Dataflow.signal(parameter.actual_value);
+    const control = createControl('dropdown', parameter);
+    control.values = Flow.Dataflow.signals(parameter.values);
+    control.value = _value;
+    control.gridedValues = Flow.Dataflow.lift(control.values, values => createGridableValues(values));
+    return control;
+  }
+
   function optsToString(opts) {
     let str;
     if (opts != null) {
@@ -564,14 +574,6 @@
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const createDropdownControl = parameter => {
-      const _value = Flow.Dataflow.signal(parameter.actual_value);
-      const control = createControl('dropdown', parameter);
-      control.values = Flow.Dataflow.signals(parameter.values);
-      control.value = _value;
-      control.gridedValues = Flow.Dataflow.lift(control.values, values => createGridableValues(values));
-      return control;
-    };
     const createListControl = parameter => {
       let _isUpdatingSelectionCount;
       let _lastUsedIgnoreNaTerm;
