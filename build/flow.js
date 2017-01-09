@@ -6159,6 +6159,21 @@
     return getPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
   }
 
+  function getFrameSummarySliceRequest(_, key, searchTerm, offset, count, go) {
+    const lodash = window._;
+    const urlString = `/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`;
+    return doGet(_, urlString, unwrap(go, result => lodash.head(result.frames)));
+  }
+
+  function requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, go) {
+    return getFrameSummarySliceRequest(_, frameKey, searchTerm, offset, length, (error, frame) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendFrameSummary(_, frameKey, frame));
+    });
+  }
+
   const flowPrelude$34 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7755,12 +7770,6 @@
     return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
   }
 
-  function getFrameSummarySliceRequest(_, key, searchTerm, offset, count, go) {
-    const lodash = window._;
-    const urlString = `/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`;
-    return doGet(_, urlString, unwrap(go, result => lodash.head(result.frames)));
-  }
-
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -7940,12 +7949,6 @@
         render_(predictions, h2oPredictsOutput, opts, predictions);
         return predictions;
       };
-      const requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => getFrameSummarySliceRequest(_, frameKey, searchTerm, offset, length, (error, frame) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendFrameSummary(_, frameKey, frame));
-      });
       const requestFrameSummary = (frameKey, go) => getFrameSummarySliceRequest(_, frameKey, void 0, 0, 20, (error, frame) => {
         if (error) {
           return go(error);

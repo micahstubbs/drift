@@ -72,6 +72,7 @@ import { requestModelsByKeys } from './requestModelsByKeys';
 import { requestDeleteFrames } from './requestDeleteFrames';
 import { requestModel } from './requestModel';
 import { requestPrediction } from './requestPrediction';
+import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -300,12 +301,6 @@ export function routines() {
       render_(predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
-    const requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => getFrameSummarySliceRequest(_, frameKey, searchTerm, offset, length, (error, frame) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, extendFrameSummary(_, frameKey, frame));
-    });
     const requestFrameSummary = (frameKey, go) => getFrameSummarySliceRequest(_, frameKey, void 0, 0, 20, (error, frame) => {
       if (error) {
         return go(error);
