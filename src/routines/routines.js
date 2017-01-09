@@ -731,6 +731,14 @@ export function routines() {
     //
     // start Sparkling Water Routines
     //
+
+    // Sparkling Water Routines are hard to test
+    // since we have to build h2o-3
+    // then also build Sparkling Water
+    // everytime we want to make a change to here that interacts
+    // with Sparkling Water
+    // this takes about 4 minutes each time
+    // for that reason, defer abstracting these routines out
     const extendRDDs = rdds => {
       render_(rdds, h2oRDDsOutput, rdds);
       return rdds;
