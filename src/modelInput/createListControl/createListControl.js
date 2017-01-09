@@ -1,9 +1,10 @@
 import { createControl } from '../createControl';
 
+import { blockSelectionUpdates } from './blockSelectionUpdates';
+
 export function createListControl(parameter) {
   const lodash = window._;
   const Flow = window.Flow;
-  let _isUpdatingSelectionCount;
   let _lastUsedIgnoreNaTerm;
   let _lastUsedSearchTerm;
   const MaxItemsPerPage = 100;
@@ -11,13 +12,7 @@ export function createListControl(parameter) {
   const _ignoreNATerm = Flow.Dataflow.signal('');
   const _values = Flow.Dataflow.signal([]);
   const _selectionCount = Flow.Dataflow.signal(0);
-  _isUpdatingSelectionCount = false;
-  const blockSelectionUpdates = f => {
-    _isUpdatingSelectionCount = true;
-    f();
-    _isUpdatingSelectionCount = false;
-    return _isUpdatingSelectionCount;
-  };
+  const _isUpdatingSelectionCount = false;
   const incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
   const createEntry = value => {
     const isSelected = Flow.Dataflow.signal(false);
