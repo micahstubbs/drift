@@ -1,7 +1,8 @@
+import { getFrameSummarySliceRequest } from '../h2oProxy/getFrameSummarySliceRequest';
 import { extendFrameSummary } from './extendFrameSummary';
 
 export function requestFrameSummary(_, frameKey, go) {
-  return _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
+  return getFrameSummarySliceRequest(_, frameKey, void 0, 0, 20, (error, frame) => {
     if (error) {
       return go(error);
     }

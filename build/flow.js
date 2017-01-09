@@ -7755,6 +7755,12 @@
     return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
   }
 
+  function getFrameSummarySliceRequest(_, key, searchTerm, offset, count, go) {
+    const lodash = window._;
+    const urlString = `/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`;
+    return doGet(_, urlString, unwrap(go, result => lodash.head(result.frames)));
+  }
+
   const flowPrelude$5 = flowPreludeFunction();
 
   function routines() {
@@ -7934,13 +7940,13 @@
         render_(predictions, h2oPredictsOutput, opts, predictions);
         return predictions;
       };
-      const requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, (error, frame) => {
+      const requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => getFrameSummarySliceRequest(_, frameKey, searchTerm, offset, length, (error, frame) => {
         if (error) {
           return go(error);
         }
         return go(null, extendFrameSummary(_, frameKey, frame));
       });
-      const requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
+      const requestFrameSummary = (frameKey, go) => getFrameSummarySliceRequest(_, frameKey, void 0, 0, 20, (error, frame) => {
         if (error) {
           return go(error);
         }
@@ -12661,7 +12667,6 @@
     _.requestFrameSlice = Flow.Dataflow.slot();
     _.requestFrameSummary = Flow.Dataflow.slot();
     _.requestFrameDataE = Flow.Dataflow.slot();
-    _.requestFrameSummarySlice = Flow.Dataflow.slot();
     _.requestFrameSummarySliceE = Flow.Dataflow.slot();
     _.requestFrameSummaryWithoutData = Flow.Dataflow.slot();
     _.requestDeleteFrame = Flow.Dataflow.slot();
@@ -12697,12 +12702,6 @@
   function requestFrameSummary(_, key, go) {
     const lodash = window._;
     doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, result => lodash.head(result.frames)));
-  }
-
-  function requestFrameSummarySlice(_, key, searchTerm, offset, count, go) {
-    const lodash = window._;
-    const urlString = `/3/Frames/${ encodeURIComponent(key) }/summary?column_offset=${ offset }&column_count=${ count }&_exclude_fields=frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`;
-    return doGet(_, urlString, unwrap(go, result => lodash.head(result.frames)));
   }
 
   function requestFrameSummaryWithoutData(_, key, go) {
@@ -12757,7 +12756,6 @@
     Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
     Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary);
     Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
-    Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
     Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame$1);
     Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
     Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);

@@ -14,7 +14,6 @@ import { requestSplitFrame } from './requestSplitFrame';
 import { requestFrames } from './requestFrames';
 import { requestFrameSlice } from './requestFrameSlice';
 import { requestFrameSummary } from './requestFrameSummary';
-import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummaryWithoutData } from './requestFrameSummaryWithoutData';
 import { requestDeleteFrame } from './requestDeleteFrame';
 import { requestFileGlob } from './requestFileGlob';
@@ -51,7 +50,6 @@ export function h2oProxy(_) {
   Flow.Dataflow.link(_.requestFrameSlice, requestFrameSlice);
   Flow.Dataflow.link(_.requestFrameSummary, requestFrameSummary);
   Flow.Dataflow.link(_.requestFrameSummaryWithoutData, requestFrameSummaryWithoutData);
-  Flow.Dataflow.link(_.requestFrameSummarySlice, requestFrameSummarySlice);
   Flow.Dataflow.link(_.requestDeleteFrame, requestDeleteFrame);
   Flow.Dataflow.link(_.requestFileGlob, requestFileGlob);
   Flow.Dataflow.link(_.requestImportFiles, requestImportFiles);

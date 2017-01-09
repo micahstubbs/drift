@@ -115,6 +115,7 @@ import { postAsH2OFrameFromRDDRequest } from '../h2oProxy/postAsH2OFrameFromRDDR
 import { postAsH2OFrameFromDFRequest } from '../h2oProxy/postAsH2OFrameFromDFRequest';
 import { postAsDataFrameRequest } from '../h2oProxy/postAsDataFrameRequest';
 import { postPredictRequest } from '../h2oProxy/postPredictRequest';
+import { getFrameSummarySliceRequest } from '../h2oProxy/getFrameSummarySliceRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -299,13 +300,13 @@ export function routines() {
       render_(predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
     };
-    const requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => _.requestFrameSummarySlice(_, frameKey, searchTerm, offset, length, (error, frame) => {
+    const requestFrameSummarySlice = (frameKey, searchTerm, offset, length, go) => getFrameSummarySliceRequest(_, frameKey, searchTerm, offset, length, (error, frame) => {
       if (error) {
         return go(error);
       }
       return go(null, extendFrameSummary(_, frameKey, frame));
     });
-    const requestFrameSummary = (frameKey, go) => _.requestFrameSummarySlice(_, frameKey, void 0, 0, 20, (error, frame) => {
+    const requestFrameSummary = (frameKey, go) => getFrameSummarySliceRequest(_, frameKey, void 0, 0, 20, (error, frame) => {
       if (error) {
         return go(error);
       }
