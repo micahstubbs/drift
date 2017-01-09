@@ -71,6 +71,7 @@ import { requestDeleteModels } from './requestDeleteModels';
 import { requestModelsByKeys } from './requestModelsByKeys';
 import { requestDeleteFrames } from './requestDeleteFrames';
 import { requestModel } from './requestModel';
+import { requestPrediction } from './requestPrediction';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -292,7 +293,6 @@ export function routines() {
       inspect_(grid, inspections);
       return render_(grid, h2oGridOutput, grid);
     };
-    const requestPrediction = (modelKey, frameKey, go) => getPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
     // abstracting this out produces an error
     // defer for now
     const extendPredictions = (opts, predictions) => {
@@ -718,7 +718,7 @@ export function routines() {
       const model = opts.model;
       const frame = opts.frame;
       if (model && frame) {
-        return _fork(requestPrediction, model, frame);
+        return _fork(requestPrediction, _, model, frame);
       }
       return assist(getPrediction, {
         predictions_frame,

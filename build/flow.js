@@ -6146,6 +6146,19 @@
     });
   }
 
+  function getPredictionRequest(_, modelKey, frameKey, go) {
+    return doGet(_, `/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, result);
+    });
+  }
+
+  function requestPrediction(_, modelKey, frameKey, go) {
+    return getPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
+  }
+
   const flowPrelude$34 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
@@ -7656,15 +7669,6 @@
     return doGet(_, composePath(`/99/Grids/${ encodeURIComponent(key) }`, params), go);
   }
 
-  function getPredictionRequest(_, modelKey, frameKey, go) {
-    return doGet(_, `/3/ModelMetrics/models/${ encodeURIComponent(modelKey) }/frames/${ encodeURIComponent(frameKey) }`, (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, result);
-    });
-  }
-
   function getPredictionsRequest(_, modelKey, frameKey, _go) {
     const go = (error, result) => {
       let prediction;
@@ -7924,7 +7928,6 @@
         inspect_(grid, inspections);
         return render_(grid, h2oGridOutput, grid);
       };
-      const requestPrediction = (modelKey, frameKey, go) => getPredictionRequest(_, modelKey, frameKey, unwrapPrediction(_, go));
       // abstracting this out produces an error
       // defer for now
       const extendPredictions = (opts, predictions) => {
@@ -8343,7 +8346,7 @@
         const model = opts.model;
         const frame = opts.frame;
         if (model && frame) {
-          return _fork(requestPrediction, model, frame);
+          return _fork(requestPrediction, _, model, frame);
         }
         return assist(getPrediction, {
           predictions_frame,
