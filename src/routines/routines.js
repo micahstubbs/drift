@@ -548,7 +548,7 @@ export function routines() {
       }
       return assist(setupParse);
     };
-    // blocked by CoffeeScript codecell `_` issue
+    // blocked by CoffeeScript codecell `_` issue - has arguments
     const parseFiles = opts => {
       const destinationKey = opts.destination_frame;
       const parseType = opts.parse_type;
@@ -693,7 +693,7 @@ export function routines() {
         return go(null, extendPredictions(opts, predictions));
       });
     };
-    // blocked by CoffeeScript codecell `_` issue
+    // blocked by CoffeeScript codecell `_` issue - has arguments
     const getPrediction = opts => {
       if (opts == null) {
         opts = {};
@@ -711,14 +711,14 @@ export function routines() {
         frame,
       });
     };
-    // blocked by CoffeeScript codecell `_` issue
+    // blocked by CoffeeScript codecell `_` issue - has arguements
     const getPredictions = opts => {
       if (opts == null) {
         opts = {};
       }
       return _fork(requestPredictions, opts);
     };
-    // blocked by CoffeeScript codecell `_` issue
+    // blocked by CoffeeScript codecell `_` issue - has arguements
     const getLogFile = (nodeIndex, fileType) => {
       if (nodeIndex == null) {
         nodeIndex = -1;
@@ -735,7 +735,6 @@ export function routines() {
       render_(rdds, h2oRDDsOutput, rdds);
       return rdds;
     };
-    // calls _.self
     const requestRDDs = go => getRDDsRequest(_, (error, result) => {
       if (error) {
         return go(error);
@@ -747,7 +746,6 @@ export function routines() {
       render_(dataframes, h2oDataFramesOutput, dataframes);
       return dataframes;
     };
-    // calls _.self
     const requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
       if (error) {
         return go(error);
@@ -759,7 +757,6 @@ export function routines() {
       render_(result, h2oH2OFrameOutput, result);
       return result;
     };
-    // calls _.self
     // eslint-disable-next-line camelcase
     const requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
       if (error) {
@@ -773,7 +770,6 @@ export function routines() {
       }
       return _fork(requestAsH2OFrameFromRDD, rddId, name);
     };
-    // calls _.self
     const requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
       if (error) {
         return go(error);
@@ -790,7 +786,6 @@ export function routines() {
       render_(result, h2oDataFrameOutput, result);
       return result;
     };
-    // calls _.self
     const requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
       if (error) {
         return go(error);
@@ -803,7 +798,6 @@ export function routines() {
       }
       return _fork(requestAsDataFrame, hfId, name);
     };
-    // calls _.self
     const requestScalaCode = (session_id, code, go) => { // eslint-disable-line camelcase
       console.log('session_id from routines requestScalaCode', session_id);
       return postScalaCodeRequest(_, session_id, code, (error, result) => {
@@ -821,7 +815,6 @@ export function routines() {
       console.log('session_id from routines runScalaCode', session_id);
       return _fork(requestScalaCode, session_id, code);
     };
-    // calls _.self
     const requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
       if (error) {
         return go(error);
