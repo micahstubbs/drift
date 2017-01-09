@@ -321,6 +321,15 @@
     return control;
   }
 
+  function createGridableValues(values, defaultValue) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    return lodash.map(values, value => ({
+      label: value,
+      value: Flow.Dataflow.signal(true)
+    }));
+  }
+
   function optsToString(opts) {
     let str;
     if (opts != null) {
@@ -555,10 +564,6 @@
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const createGridableValues = (values, defaultValue) => lodash.map(values, value => ({
-      label: value,
-      value: Flow.Dataflow.signal(true)
-    }));
     const createDropdownControl = parameter => {
       const _value = Flow.Dataflow.signal(parameter.actual_value);
       const control = createControl('dropdown', parameter);

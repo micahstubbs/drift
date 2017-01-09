@@ -1,5 +1,6 @@
 import { createControl } from './createControl';
 import { createTextboxControl } from './createTextboxControl';
+import { createGridableValues } from './createGridableValues';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { postModelInputValidationRequest } from '../h2oProxy/postModelInputValidationRequest';
@@ -11,10 +12,6 @@ export function modelInput() {
   const lodash = window._;
   const Flow = window.Flow;
   const H2O = window.H2O;
-  const createGridableValues = (values, defaultValue) => lodash.map(values, value => ({
-    label: value,
-    value: Flow.Dataflow.signal(true),
-  }));
   const createDropdownControl = parameter => {
     const _value = Flow.Dataflow.signal(parameter.actual_value);
     const control = createControl('dropdown', parameter);
