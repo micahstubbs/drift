@@ -297,6 +297,7 @@ export function routines() {
     };
     // abstracting this out produces an error
     // defer for now
+    // the call to the `render_` function is the problematic part
     const extendPredictions = (opts, predictions) => {
       render_(predictions, h2oPredictsOutput, opts, predictions);
       return predictions;
