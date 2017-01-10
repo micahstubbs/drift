@@ -10,6 +10,7 @@ import { makePage } from './makePage';
 import { filterColumns } from './filterColumns';
 import { parseFiles } from './parseFiles';
 import { _columnsAccessorFunction } from './_columnsAccessorFunction';
+import { goToNextPage } from './goToNextPage';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -98,10 +99,6 @@ export function parseInput() {
     });
     const _canGoToNextPage = Flow.Dataflow.lift(_activePage, currentPage => (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length);
     const _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, currentPage => currentPage.index > 0);
-    const goToNextPage = () => {
-      const currentPage = _activePage();
-      return _activePage(makePage(currentPage.index + 1, currentPage.columns));
-    };
     const goToPreviousPage = () => {
       const currentPage = _activePage();
       if (currentPage.index > 0) {
@@ -126,7 +123,7 @@ export function parseInput() {
       columnNameSearchTerm: _columnNameSearchTerm,
       canGoToNextPage: _canGoToNextPage,
       canGoToPreviousPage: _canGoToPreviousPage,
-      goToNextPage,
+      goToNextPage: goToNextPage.bind(this, _activePage),
       goToPreviousPage,
       template: 'flow-parse-raw-input',
     };
