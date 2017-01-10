@@ -1,5 +1,9 @@
+// import constants
 import { whitespaceSeparators } from './whitespaceSeparators';
 import { parseTypesArray } from './parseTypesArray';
+import { dataTypes } from './dataTypes';
+
+// import functions
 import { createDelimiter } from './createDelimiter';
 
 import { postParseSetupPreviewRequest } from '../h2oProxy/postParseSetupPreviewRequest';
@@ -28,15 +32,6 @@ export function parseInput() {
     }];
     return whitespaceDelimiters.concat(characterDelimiters, otherDelimiters);
   })();
-  const dataTypes = [
-    'Unknown',
-    'Numeric',
-    'Enum',
-    'Time',
-    'UUID',
-    'String',
-    'Invalid',
-  ];
   H2O.SetupParseOutput = (_, _go, _inputs, _result) => {
     let _currentPage;
     const _inputKey = _inputs.paths ? 'paths' : 'source_frames';
