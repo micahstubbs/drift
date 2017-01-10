@@ -57,20 +57,24 @@ export function parseInput() {
     const _columns = Flow.Dataflow.lift(_preview, preview => _columnsAccessorFunction(preview));
     const _columnCount = Flow.Dataflow.lift(_columns, columns => (columns != null ? columns.length : void 0) || 0);
     _currentPage = 0;
-    Flow.Dataflow.act(_columns, columns => lodash.forEach(columns, column => Flow.Dataflow.react(column.type, () => {
-      _currentPage = _activePage().index;
-      return refreshPreview(
-        _,
-        _columns,
-        _sourceKeys,
-        _parseType,
-        _delimiter,
-        _useSingleQuotes,
-        _headerOptions,
-        _headerOption,
-        _preview
-      );
-    })));
+    Flow.Dataflow.act(_columns, columns => { // eslint-disable-line arrow-body-style
+      return columns.forEach(column => { // eslint-disable-line arrow-body-style
+        return Flow.Dataflow.react(column.type, () => {
+          _currentPage = _activePage().index;
+          return refreshPreview(
+            _,
+            _columns,
+            _sourceKeys,
+            _parseType,
+            _delimiter,
+            _useSingleQuotes,
+            _headerOptions,
+            _headerOption,
+            _preview
+          );
+        });
+      });
+    });
     Flow.Dataflow.react(_parseType, _delimiter, _useSingleQuotes, _headerOption, () => {
       _currentPage = 0;
       return refreshPreview(
