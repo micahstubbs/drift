@@ -237,6 +237,10 @@
     }));
   }
 
+  function parameterTemplateOf(control) {
+    return `flow-${ control.kind }-model-parameter`;
+  }
+
   function createTextboxControl(parameter, type) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -777,7 +781,6 @@
         _form.push(control);
       }
     }
-    const parameterTemplateOf = control => `flow-${ control.kind }-model-parameter`;
     const findFormField = name => lodash.find(_form, field => field.name === name);
     (() => {
       const _ref = lodash.map(['training_frame', 'validation_frame', 'response_column', 'ignored_columns', 'offset_column', 'weights_column', 'fold_column'], findFormField);

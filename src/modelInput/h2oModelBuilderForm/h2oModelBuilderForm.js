@@ -1,3 +1,5 @@
+import { parameterTemplateOf } from './parameterTemplateOf';
+
 import { createControlFromParameter } from '../createControlFromParameter';
 import { postModelInputValidationRequest } from '../../h2oProxy/postModelInputValidationRequest';
 
@@ -105,7 +107,6 @@ export function h2oModelBuilderForm(_, _algorithm, _parameters) {
       _form.push(control);
     }
   }
-  const parameterTemplateOf = control => `flow-${control.kind}-model-parameter`;
   const findFormField = name => lodash.find(_form, field => field.name === name);
   ((() => {
     const _ref = lodash.map([
