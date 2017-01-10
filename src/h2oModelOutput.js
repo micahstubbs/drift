@@ -1,4 +1,5 @@
 import { requestPojoPreview } from './h2oProxy/requestPojoPreview';
+import { highlight } from './coreUtils/highlight';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -634,7 +635,7 @@ export function h2oModelOutput(_, _go, _model, refresh) {
       if (error) {
         return _pojoPreview(`<pre>${lodash.escape(error)}</pre>`);
       }
-      return _pojoPreview(`<pre>${Flow.Util.highlight(result, 'java')}</pre>`);
+      return _pojoPreview(`<pre>${highlight(result, 'java')}</pre>`);
     });
     const downloadPojo = () => window.open(`/3/Models.java/${encodeURIComponent(_model.model_id.name)}`, '_blank');
     const downloadMojo = () => window.open(`/3/Models/${encodeURIComponent(_model.model_id.name)}/mojo`, '_blank');

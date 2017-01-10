@@ -4403,6 +4403,13 @@
     return download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
   }
 
+  function highlight(code, lang) {
+    if (window.hljs) {
+      return window.hljs.highlightAuto(code, [lang]).value;
+    }
+    return code;
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oModelOutput(_, _go, _model, refresh) {
@@ -5036,7 +5043,7 @@
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
         }
-        return _pojoPreview(`<pre>${ Flow.Util.highlight(result, 'java') }</pre>`);
+        return _pojoPreview(`<pre>${ highlight(result, 'java') }</pre>`);
       });
       const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
       const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
@@ -8789,15 +8796,8 @@
   function coreUtils() {
     const lodash = window._;
     const Flow = window.Flow;
-    const highlight = (code, lang) => {
-      if (window.hljs) {
-        return window.hljs.highlightAuto(code, [lang]).value;
-      }
-      return code;
-    };
     Flow.Util = {
-      uuid: (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null,
-      highlight
+      uuid: (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null
     };
   }
 
