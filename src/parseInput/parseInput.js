@@ -1,4 +1,5 @@
 import { whitespaceSeparators } from './whitespaceSeparators';
+import { parseTypesArray } from './parseTypesArray';
 
 import { postParseSetupPreviewRequest } from '../h2oProxy/postParseSetupPreviewRequest';
 
@@ -10,17 +11,7 @@ export function parseInput() {
   const Flow = window.Flow;
   const H2O = window.H2O;
   const MaxItemsPerPage = 15;
-  const parseTypes = lodash.map([
-    'AUTO',
-    'ARFF',
-    'XLS',
-    'XLSX',
-    'CSV',
-    'SVMLight',
-    'ORC',
-    'AVRO',
-    'PARQUET',
-  ], type => ({
+  const parseTypes = parseTypesArray.map(type => ({
     type,
     caption: type,
   }));
