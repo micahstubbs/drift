@@ -7,6 +7,7 @@ import { requestPack } from '../h2oProxy/requestPack';
 import { requestFlow } from '../h2oProxy/requestFlow';
 import { requestHelpIndex } from '../h2oProxy/requestHelpIndex';
 import { requestHelpContent } from '../h2oProxy/requestHelpContent';
+import { validateFileExtension } from '../util/validateFileExtension';
 
 export function help() {
   const lodash = window._;
@@ -112,7 +113,7 @@ export function help() {
             if (accept) {
               packName = $el.attr('data-pack-name');
               flowName = $el.attr('data-flow-name');
-              if (H2O.Util.validateFileExtension(flowName, '.flow')) {
+              if (validateFileExtension(flowName, '.flow')) {
                 return requestFlow(packName, flowName, (error, flow) => {
                   if (!error) {
                     return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);

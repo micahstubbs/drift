@@ -1,5 +1,6 @@
 import { getObjectExistsRequest } from './h2oProxy/getObjectExistsRequest';
 import { postUploadObjectRequest } from './h2oProxy/postUploadObjectRequest';
+import { validateFileExtension } from './util/validateFileExtension';
 
 export function flowFileOpenDialog(_, _go) {
   const Flow = window.Flow;
@@ -9,7 +10,7 @@ export function flowFileOpenDialog(_, _go) {
   const _file = Flow.Dataflow.signal(null);
   const _canAccept = Flow.Dataflow.lift(_file, file => {
     if (file != null ? file.name : void 0) {
-      return H2O.Util.validateFileExtension(file.name, '.flow');
+      return validateFileExtension(file.name, '.flow');
     }
     return false;
   });
