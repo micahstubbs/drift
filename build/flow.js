@@ -9470,6 +9470,33 @@
     return false;
   }
 
+  function _link(source, func) {
+    const lodash = window._;
+    console.assert(lodash.isFunction(source, '[signal] is not a function'));
+    console.assert(lodash.isFunction(source.subscribe, '[signal] does not have a [dispose] method'));
+    console.assert(lodash.isFunction(func, '[func] is not a function'));
+    return source.subscribe(func);
+  }
+
+  function _unlink(arrows) {
+    const lodash = window._;
+    let arrow;
+    let _i;
+    let _len;
+    let _results;
+    if (lodash.isArray(arrows)) {
+      _results = [];
+      for (_i = 0, _len = arrows.length; _i < _len; _i++) {
+        arrow = arrows[_i];
+        console.assert(lodash.isFunction(arrow.dispose, '[arrow] does not have a [dispose] method'));
+        _results.push(arrow.dispose());
+      }
+      return _results;
+    }
+    console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
+    return arrows.dispose();
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   //
@@ -9494,6 +9521,9 @@
         createObservableArray = createObservable;
         isObservable = isObservableFunction;
       }
+      // abstracting out `createSignal` breaks the cell left border color
+      // should turn blue when the cell executes
+      // stays orange if this is abstracted
       const createSignal = function (value, equalityComparer) {
         if (arguments.length === 0) {
           return createSignal(void 0, flowPrelude$49.never);
@@ -9506,29 +9536,6 @@
       };
       const _isSignal = isObservable;
       const createSignals = array => createObservableArray(array || []);
-      const _link = (source, func) => {
-        console.assert(lodash.isFunction(source, '[signal] is not a function'));
-        console.assert(lodash.isFunction(source.subscribe, '[signal] does not have a [dispose] method'));
-        console.assert(lodash.isFunction(func, '[func] is not a function'));
-        return source.subscribe(func);
-      };
-      const _unlink = arrows => {
-        let arrow;
-        let _i;
-        let _len;
-        let _results;
-        if (lodash.isArray(arrows)) {
-          _results = [];
-          for (_i = 0, _len = arrows.length; _i < _len; _i++) {
-            arrow = arrows[_i];
-            console.assert(lodash.isFunction(arrow.dispose, '[arrow] does not have a [dispose] method'));
-            _results.push(arrow.dispose());
-          }
-          return _results;
-        }
-        console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
-        return arrows.dispose();
-      };
       //
       // Combinators
       //

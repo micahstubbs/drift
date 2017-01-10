@@ -2,6 +2,8 @@ import { createSlot } from './createSlot';
 import { createSlots } from './createSlots';
 import { createObservableFunction } from './createObservableFunction';
 import { isObservableFunction } from './isObservableFunction';
+import { _link } from './_link';
+import { _unlink } from './_unlink';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -43,29 +45,6 @@ export function dataflow() {
     };
     const _isSignal = isObservable;
     const createSignals = array => createObservableArray(array || []);
-    const _link = (source, func) => {
-      console.assert(lodash.isFunction(source, '[signal] is not a function'));
-      console.assert(lodash.isFunction(source.subscribe, '[signal] does not have a [dispose] method'));
-      console.assert(lodash.isFunction(func, '[func] is not a function'));
-      return source.subscribe(func);
-    };
-    const _unlink = arrows => {
-      let arrow;
-      let _i;
-      let _len;
-      let _results;
-      if (lodash.isArray(arrows)) {
-        _results = [];
-        for (_i = 0, _len = arrows.length; _i < _len; _i++) {
-          arrow = arrows[_i];
-          console.assert(lodash.isFunction(arrow.dispose, '[arrow] does not have a [dispose] method'));
-          _results.push(arrow.dispose());
-        }
-        return _results;
-      }
-      console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
-      return arrows.dispose();
-    };
     //
     // Combinators
     //
