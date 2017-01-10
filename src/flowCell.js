@@ -1,3 +1,5 @@
+import { formatElapsedTime } from './coreUtils/formatElapsedTime';
+
 export function flowCell(_, _renderers, type, input) {
   const lodash = window._;
   const Flow = window.Flow;
@@ -130,7 +132,7 @@ export function flowCell(_, _renderers, type, input) {
       end() {
         _hasInput(_isCode());
         _isBusy(false);
-        _time(Flow.Util.formatElapsedTime(Date.now() - startTime));
+        _time(formatElapsedTime(Date.now() - startTime));
         if (go) {
           go(_hasError() ? _errors.slice(0) : null);
         }
