@@ -5,8 +5,7 @@ import { dataTypes } from './dataTypes';
 
 // import functions
 import { createDelimiter } from './createDelimiter';
-
-import { postParseSetupPreviewRequest } from '../h2oProxy/postParseSetupPreviewRequest';
+import { refreshPreview } from './refreshPreview';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -51,25 +50,6 @@ export function parseInput() {
     const _columnNameSearchTerm = Flow.Dataflow.signal('');
     const _preview = Flow.Dataflow.signal(_result);
     const _chunkSize = Flow.Dataflow.lift(_preview, preview => preview.chunk_size);
-    const refreshPreview = () => {
-      let column;
-      const columnTypes = (() => {
-        let _i;
-        let _len;
-        const _ref = _columns();
-        const _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          column = _ref[_i];
-          _results.push(column.type());
-        }
-        return _results;
-      })();
-      return postParseSetupPreviewRequest(_, _sourceKeys, _parseType().type, _delimiter().charCode, _useSingleQuotes(), _headerOptions[_headerOption()], columnTypes, (error, result) => {
-        if (!error) {
-          return _preview(result);
-        }
-      });
-    };
     const _columns = Flow.Dataflow.lift(_preview, preview => {
       let data;
       let i;
@@ -101,11 +81,31 @@ export function parseInput() {
     _currentPage = 0;
     Flow.Dataflow.act(_columns, columns => lodash.forEach(columns, column => Flow.Dataflow.react(column.type, () => {
       _currentPage = _activePage().index;
-      return refreshPreview();
+      return refreshPreview(
+        _,
+        _columns,
+        _sourceKeys,
+        _parseType,
+        _delimiter,
+        _useSingleQuotes,
+        _headerOptions,
+        _headerOption,
+        _preview
+      );
     })));
     Flow.Dataflow.react(_parseType, _delimiter, _useSingleQuotes, _headerOption, () => {
       _currentPage = 0;
-      return refreshPreview();
+      return refreshPreview(
+        _,
+        _columns,
+        _sourceKeys,
+        _parseType,
+        _delimiter,
+        _useSingleQuotes,
+        _headerOptions,
+        _headerOption,
+        _preview
+      );
     });
     const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
     const makePage = (index, columns) => ({
