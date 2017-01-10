@@ -357,6 +357,229 @@
     return parameters;
   }
 
+  function optsToString(opts) {
+    let str;
+    if (opts != null) {
+      str = ` with opts ${ JSON.stringify(opts) }`;
+      if (str.length > 50) {
+        return `${ str.substr(0, 50) }...`;
+      }
+      return str;
+    }
+    return '';
+  }
+
+  function trackPath(_, path) {
+    let base;
+    let e;
+    let name;
+    let other;
+    let root;
+    let version;
+    let _ref;
+    let _ref1;
+    try {
+      _ref = path.split('/');
+      root = _ref[0];
+      version = _ref[1];
+      name = _ref[2];
+      _ref1 = name.split('?');
+      base = _ref1[0];
+      other = _ref1[1];
+      if (base !== 'Typeahead' && base !== 'Jobs') {
+        _.trackEvent('api', base, version);
+      }
+    } catch (_error) {
+      e = _error;
+    }
+  }
+
+  function http(_, method, path, opts, go) {
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    if (path.substring(0, 1) === '/') {
+      path = window.Flow.ContextPath + path.substring(1);
+    }
+    _.status('server', 'request', path);
+    trackPath(_, path);
+    const req = (() => {
+      switch (method) {
+        case 'GET':
+          return $.getJSON(path);
+        case 'POST':
+          return $.post(path, opts);
+        case 'POSTJSON':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify(opts)
+          });
+        case 'PUT':
+          return $.ajax({
+            url: path,
+            type: method,
+            data: opts
+          });
+        case 'DELETE':
+          return $.ajax({
+            url: path,
+            type: method
+          });
+        case 'UPLOAD':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            data: opts,
+            cache: false,
+            contentType: false,
+            processData: false
+          });
+        default:
+        // do nothing
+      }
+    })();
+    req.done((data, status, xhr) => {
+      let error;
+      _.status('server', 'response', path);
+      try {
+        return go(null, data);
+      } catch (_error) {
+        error = _error;
+        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
+      }
+    });
+    return req.fail((xhr, status, error) => {
+      let serverError;
+      _.status('server', 'error', path);
+      const response = xhr.responseJSON;
+      const meta = response;
+      // special-case net::ERR_CONNECTION_REFUSED
+      // if status is 'error' and xhr.status is 0
+      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
+    });
+  }
+
+  function doPost(_, path, opts, go) {
+    return http(_, 'POST', path, opts, go);
+  }
+
+  function encodeArrayForPost(array) {
+    const lodash = window._;
+    if (array) {
+      if (array.length === 0) {
+        return null;
+      }
+      return `[${ lodash.map(array, element => {
+        if (lodash.isNumber(element)) {
+          return element;
+        }return `"${ element }"`;
+      }).join(',') } ]`;
+    }
+    return null;
+  }
+
+  function encodeObjectForPost(source) {
+    const lodash = window._;
+    let k;
+    let v;
+    const target = {};
+    for (k in source) {
+      if ({}.hasOwnProperty.call(source, k)) {
+        v = source[k];
+        target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
+      }
+    }
+    return target;
+  }
+
+  function postModelInputValidationRequest(_, algo, parameters, go) {
+    return doPost(_, `${ _.__.modelBuilderEndpoints[algo] }/parameters`, encodeObjectForPost(parameters), go);
+  }
+
+  function performValidations(_, checkForErrors, go, _exception, collectParameters, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric, _validationFailureMessage, _algorithm) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    _exception(null);
+    const parameters = collectParameters(true, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric);
+    if (parameters.hyper_parameters) {
+      // parameter validation fails with hyper_parameters, so skip.
+      return go();
+    }
+    _validationFailureMessage('');
+    return postModelInputValidationRequest(_, _algorithm, parameters, (error, modelBuilder) => {
+      let controls;
+      let hasErrors;
+      let validation;
+      let validations;
+      let validationsByControlName;
+      let _l;
+      let _len3;
+      let _len4;
+      let _len5;
+      let _m;
+      let _n;
+      if (error) {
+        return _exception(Flow.failure(_, new Flow.Error('Error fetching initial model builder state', error)));
+      }
+      hasErrors = false;
+      if (modelBuilder.messages.length) {
+        validationsByControlName = lodash.groupBy(modelBuilder.messages, validation => validation.field_name);
+        for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
+          controls = _controlGroups[_l];
+          for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
+            control = controls[_m];
+            validations = validationsByControlName[control.name];
+            if (validations) {
+              for (_n = 0, _len5 = validations.length; _n < _len5; _n++) {
+                validation = validations[_n];
+                if (validation.message_type === 'TRACE') {
+                  control.isVisible(false);
+                } else {
+                  control.isVisible(true);
+                  if (checkForErrors) {
+                    switch (validation.message_type) {
+                      case 'INFO':
+                        control.hasInfo(true);
+                        control.message(validation.message);
+                        break;
+                      case 'WARN':
+                        control.hasWarning(true);
+                        control.message(validation.message);
+                        break;
+                      case 'ERRR':
+                        control.hasError(true);
+                        control.message(validation.message);
+                        hasErrors = true;
+                        break;
+                      default:
+                      // do nothing
+                    }
+                  }
+                }
+              }
+            } else {
+              control.isVisible(true);
+              control.hasInfo(false);
+              control.hasWarning(false);
+              control.hasError(false);
+              control.message('');
+            }
+          }
+        }
+      }
+      if (hasErrors) {
+        // Do not pass go(). Do not collect $200.
+        return _validationFailureMessage('Your model parameters have one or more errors. Please fix them and try again.');
+      }
+      // Proceed with form submission
+      _validationFailureMessage('');
+      return go();
+    });
+  }
+
   function createTextboxControl(parameter, type) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -668,148 +891,6 @@
     }
   }
 
-  function optsToString(opts) {
-    let str;
-    if (opts != null) {
-      str = ` with opts ${ JSON.stringify(opts) }`;
-      if (str.length > 50) {
-        return `${ str.substr(0, 50) }...`;
-      }
-      return str;
-    }
-    return '';
-  }
-
-  function trackPath(_, path) {
-    let base;
-    let e;
-    let name;
-    let other;
-    let root;
-    let version;
-    let _ref;
-    let _ref1;
-    try {
-      _ref = path.split('/');
-      root = _ref[0];
-      version = _ref[1];
-      name = _ref[2];
-      _ref1 = name.split('?');
-      base = _ref1[0];
-      other = _ref1[1];
-      if (base !== 'Typeahead' && base !== 'Jobs') {
-        _.trackEvent('api', base, version);
-      }
-    } catch (_error) {
-      e = _error;
-    }
-  }
-
-  function http(_, method, path, opts, go) {
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    if (path.substring(0, 1) === '/') {
-      path = window.Flow.ContextPath + path.substring(1);
-    }
-    _.status('server', 'request', path);
-    trackPath(_, path);
-    const req = (() => {
-      switch (method) {
-        case 'GET':
-          return $.getJSON(path);
-        case 'POST':
-          return $.post(path, opts);
-        case 'POSTJSON':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            contentType: 'application/json',
-            cache: false,
-            data: JSON.stringify(opts)
-          });
-        case 'PUT':
-          return $.ajax({
-            url: path,
-            type: method,
-            data: opts
-          });
-        case 'DELETE':
-          return $.ajax({
-            url: path,
-            type: method
-          });
-        case 'UPLOAD':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            data: opts,
-            cache: false,
-            contentType: false,
-            processData: false
-          });
-        default:
-        // do nothing
-      }
-    })();
-    req.done((data, status, xhr) => {
-      let error;
-      _.status('server', 'response', path);
-      try {
-        return go(null, data);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
-      }
-    });
-    return req.fail((xhr, status, error) => {
-      let serverError;
-      _.status('server', 'error', path);
-      const response = xhr.responseJSON;
-      const meta = response;
-      // special-case net::ERR_CONNECTION_REFUSED
-      // if status is 'error' and xhr.status is 0
-      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
-      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
-    });
-  }
-
-  function doPost(_, path, opts, go) {
-    return http(_, 'POST', path, opts, go);
-  }
-
-  function encodeArrayForPost(array) {
-    const lodash = window._;
-    if (array) {
-      if (array.length === 0) {
-        return null;
-      }
-      return `[${ lodash.map(array, element => {
-        if (lodash.isNumber(element)) {
-          return element;
-        }return `"${ element }"`;
-      }).join(',') } ]`;
-    }
-    return null;
-  }
-
-  function encodeObjectForPost(source) {
-    const lodash = window._;
-    let k;
-    let v;
-    const target = {};
-    for (k in source) {
-      if ({}.hasOwnProperty.call(source, k)) {
-        v = source[k];
-        target[k] = lodash.isArray(v) ? encodeArrayForPost(v) : v;
-      }
-    }
-    return target;
-  }
-
-  function postModelInputValidationRequest(_, algo, parameters, go) {
-    return doPost(_, `${ _.__.modelBuilderEndpoints[algo] }/parameters`, encodeObjectForPost(parameters), go);
-  }
-
   const flowPrelude$3 = flowPreludeFunction();
 
   function h2oModelBuilderForm(_, _algorithm, _parameters) {
@@ -965,101 +1046,25 @@
     //  passed in as 'false', and during form submission, checkForErrors is
     //  passsed in as 'true'.
     //
-    const performValidations = (checkForErrors, go) => {
-      _exception(null);
-      const parameters = collectParameters(true, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric);
-      if (parameters.hyper_parameters) {
-        // parameter validation fails with hyper_parameters, so skip.
-        return go();
-      }
-      _validationFailureMessage('');
-      return postModelInputValidationRequest(_, _algorithm, parameters, (error, modelBuilder) => {
-        let controls;
-        let hasErrors;
-        let validation;
-        let validations;
-        let validationsByControlName;
-        let _l;
-        let _len3;
-        let _len4;
-        let _len5;
-        let _m;
-        let _n;
-        if (error) {
-          return _exception(Flow.failure(_, new Flow.Error('Error fetching initial model builder state', error)));
-        }
-        hasErrors = false;
-        if (modelBuilder.messages.length) {
-          validationsByControlName = lodash.groupBy(modelBuilder.messages, validation => validation.field_name);
-          for (_l = 0, _len3 = _controlGroups.length; _l < _len3; _l++) {
-            controls = _controlGroups[_l];
-            for (_m = 0, _len4 = controls.length; _m < _len4; _m++) {
-              control = controls[_m];
-              validations = validationsByControlName[control.name];
-              if (validations) {
-                for (_n = 0, _len5 = validations.length; _n < _len5; _n++) {
-                  validation = validations[_n];
-                  if (validation.message_type === 'TRACE') {
-                    control.isVisible(false);
-                  } else {
-                    control.isVisible(true);
-                    if (checkForErrors) {
-                      switch (validation.message_type) {
-                        case 'INFO':
-                          control.hasInfo(true);
-                          control.message(validation.message);
-                          break;
-                        case 'WARN':
-                          control.hasWarning(true);
-                          control.message(validation.message);
-                          break;
-                        case 'ERRR':
-                          control.hasError(true);
-                          control.message(validation.message);
-                          hasErrors = true;
-                          break;
-                        default:
-                        // do nothing
-                      }
-                    }
-                  }
-                }
-              } else {
-                control.isVisible(true);
-                control.hasInfo(false);
-                control.hasWarning(false);
-                control.hasError(false);
-                control.message('');
-              }
-            }
-          }
-        }
-        if (hasErrors) {
-          // Do not pass go(). Do not collect $200.
-          return _validationFailureMessage('Your model parameters have one or more errors. Please fix them and try again.');
-        }
-        // Proceed with form submission
-        _validationFailureMessage('');
-        return go();
-      });
-    };
+    // looks tightly coupled
     const createModel = () => {
       _exception(null);
-      return performValidations(true, () => {
+      const createModelContinuationFunction = () => {
         const parameters = collectParameters(false, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric);
         return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ flowPrelude$3.stringify(parameters) }`);
-      });
+      };
+      return performValidations(_, true, createModelContinuationFunction, _exception, collectParameters, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric, _validationFailureMessage, _algorithm);
     };
     const _revalidate = value => {
       // HACK: ko seems to be raising change notifications when dropdown boxes are initialized.
       if (value !== void 0) {
-        return performValidations(false, () => {});
+        return performValidations(_, false, () => {}, _exception, collectParameters, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric, _validationFailureMessage, _algorithm);
       }
     };
     const revalidate = lodash.throttle(_revalidate, 100, { leading: false });
 
     // Kick off validations (minus error checking) to get hidden parameters
-    performValidations(false, () => {
+    const validationContinuationFunction = () => {
       let controls;
       let _l;
       let _len3;
@@ -1072,7 +1077,8 @@
           Flow.Dataflow.react(control.value, revalidate);
         }
       }
-    });
+    };
+    performValidations(_, false, validationContinuationFunction, _exception, collectParameters, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric, _validationFailureMessage, _algorithm);
     return {
       form: _form,
       isGrided: _isGrided,
