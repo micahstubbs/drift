@@ -1,5 +1,5 @@
 import { getJobsRequest } from './h2oProxy/getJobsRequest';
-import { formatMilliseconds } from './coreUtils/formatMilliseconds';
+import { formatMilliseconds } from './utils/formatMilliseconds';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();

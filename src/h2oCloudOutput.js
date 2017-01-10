@@ -1,5 +1,5 @@
 import { getCloudRequest } from './h2oProxy/getCloudRequest';
-import { fromNow } from './coreUtils/fromNow';
+import { fromNow } from './utils/fromNow';
 
 export function h2oCloudOutput(_, _go, _cloud) {
   const lodash = window._;

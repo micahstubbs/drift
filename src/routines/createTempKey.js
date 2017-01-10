@@ -1,4 +1,4 @@
-import { uuid } from '../coreUtils/uuid';
+import { uuid } from '../utils/uuid';
 
 export function createTempKey() {
   const Flow = window.Flow;

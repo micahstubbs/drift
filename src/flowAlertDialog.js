@@ -1,4 +1,4 @@
-import { multilineTextToHTML } from './coreUtils/multilineTextToHTML';
+import { multilineTextToHTML } from './utils/multilineTextToHTML';
 
 export function flowAlertDialog(_, _message, _opts, _go) {
   const lodash = window._;

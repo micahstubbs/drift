@@ -1,5 +1,7 @@
 import { getObjectExistsRequest } from './h2oProxy/getObjectExistsRequest';
 import { postUploadObjectRequest } from './h2oProxy/postUploadObjectRequest';
+import { validateFileExtension } from './utils/validateFileExtension';
+import { getFileBaseName } from './utils/getFileBaseName';
 
 export function flowFileOpenDialog(_, _go) {
   const Flow = window.Flow;
@@ -9,7 +11,7 @@ export function flowFileOpenDialog(_, _go) {
   const _file = Flow.Dataflow.signal(null);
   const _canAccept = Flow.Dataflow.lift(_file, file => {
     if (file != null ? file.name : void 0) {
-      return H2O.Util.validateFileExtension(file.name, '.flow');
+      return validateFileExtension(file.name, '.flow');
     }
     return false;
   });
@@ -22,7 +24,7 @@ export function flowFileOpenDialog(_, _go) {
     let basename;
     const file = _file();
     if (file) {
-      basename = H2O.Util.getFileBaseName(file.name, '.flow');
+      basename = getFileBaseName(file.name, '.flow');
       if (_overwrite()) {
         return uploadFile(basename);
       }

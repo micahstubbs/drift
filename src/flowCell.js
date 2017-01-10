@@ -1,5 +1,5 @@
-import { formatElapsedTime } from './coreUtils/formatElapsedTime';
-import { formatClockTime } from './coreUtils/formatClockTime';
+import { formatElapsedTime } from './utils/formatElapsedTime';
+import { formatClockTime } from './utils/formatClockTime';
 
 export function flowCell(_, _renderers, type, input) {
   const lodash = window._;

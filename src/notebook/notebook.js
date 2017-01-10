@@ -6,7 +6,7 @@ import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
 import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
 import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
 
-import { sanitizeName } from '../coreUtils/sanitizeName';
+import { sanitizeName } from '../utils/sanitizeName';
 
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';

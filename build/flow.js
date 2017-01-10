@@ -768,21 +768,6 @@
     };
   }
 
-  function sanitizeName(name) {
-    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
-  }
-
-  function util() {
-    const Flow = window.Flow;
-    const H2O = window.H2O;
-    const validateFileExtension = (filename, extension) => filename.indexOf(extension, filename.length - extension.length) !== -1;
-    const getFileBaseName = (filename, extension) => sanitizeName(filename.substr(0, filename.length - extension.length));
-    H2O.Util = {
-      validateFileExtension,
-      getFileBaseName
-    };
-  }
-
   function getTwoDimData(table, columnName) {
     const lodash = window._;
     const columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
@@ -10408,6 +10393,18 @@
     return download('text', `/flow/help/${ name }.html`, go);
   }
 
+  function validateFileExtension(filename, extension) {
+    return filename.indexOf(extension, filename.length - extension.length) !== -1;
+  }
+
+  function sanitizeName(name) {
+    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
+  }
+
+  function getFileBaseName(filename, extension) {
+    return sanitizeName(filename.substr(0, filename.length - extension.length));
+  }
+
   function help() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -10508,10 +10505,10 @@
               if (accept) {
                 packName = $el.attr('data-pack-name');
                 flowName = $el.attr('data-flow-name');
-                if (H2O.Util.validateFileExtension(flowName, '.flow')) {
+                if (validateFileExtension(flowName, '.flow')) {
                   return requestFlow(packName, flowName, (error, flow) => {
                     if (!error) {
-                      return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
+                      return _.open(getFileBaseName(flowName, '.flow'), flow);
                     }
                   });
                 }
@@ -11562,7 +11559,7 @@
     const _file = Flow.Dataflow.signal(null);
     const _canAccept = Flow.Dataflow.lift(_file, file => {
       if (file != null ? file.name : void 0) {
-        return H2O.Util.validateFileExtension(file.name, '.flow');
+        return validateFileExtension(file.name, '.flow');
       }
       return false;
     });
@@ -11575,7 +11572,7 @@
       let basename;
       const file = _file();
       if (file) {
-        basename = H2O.Util.getFileBaseName(file.name, '.flow');
+        basename = getFileBaseName(file.name, '.flow');
         if (_overwrite()) {
           return uploadFile(basename);
         }
@@ -13106,7 +13103,6 @@
       });
     }).call(this);
     routines();
-    util();
     jobOutput();
     parseInput();
   }).call(undefined);
