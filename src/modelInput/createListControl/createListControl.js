@@ -1,7 +1,7 @@
 import { createControl } from '../createControl';
 
 import { blockSelectionUpdates } from './blockSelectionUpdates';
-import { incrementSelectionCount } from './incrementSelectionCount';
+import { createEntry } from './createEntry';
 
 export function createListControl(parameter) {
   const lodash = window._;
@@ -14,26 +14,11 @@ export function createListControl(parameter) {
   const _values = Flow.Dataflow.signal([]);
   const _selectionCount = Flow.Dataflow.signal(0);
   const _isUpdatingSelectionCount = false;
-  const createEntry = value => {
-    const isSelected = Flow.Dataflow.signal(false);
-    Flow.Dataflow.react(isSelected, isSelected => {
-      if (!_isUpdatingSelectionCount) {
-        if (isSelected) {
-          incrementSelectionCount(1, _selectionCount);
-        } else {
-          incrementSelectionCount(-1, _selectionCount);
-        }
-      }
+  const _entries = Flow.Dataflow.lift(_values, values => { // eslint-disable-line arrow-body-style
+    return values.map(value => { // eslint-disable-line arrow-body-style
+      return createEntry(value, _selectionCount, _isUpdatingSelectionCount);
     });
-    return {
-      isSelected,
-      value: value.value,
-      type: value.type,
-      missingLabel: value.missingLabel,
-      missingPercent: value.missingPercent,
-    };
-  };
-  const _entries = Flow.Dataflow.lift(_values, values => lodash.map(values, createEntry));
+  });
   const _filteredItems = Flow.Dataflow.signal([]);
   const _visibleItems = Flow.Dataflow.signal([]);
   const _hasFilteredItems = Flow.Dataflow.lift(_filteredItems, entries => entries.length > 0);
