@@ -11,6 +11,7 @@ import { createSignals } from './createSignals';
 //
 import { _apply } from './_apply';
 import { _act } from './_act';
+import { _react } from './_react';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -54,12 +55,6 @@ export function dataflow() {
     //
     // Combinators
     //
-    const _react = (...args) => {
-      let _i;
-      const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
-      const func = args[_i++];
-      return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
-    };
     const _lift = (...args) => {
       let _i;
       const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
