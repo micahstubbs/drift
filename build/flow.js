@@ -228,6 +228,15 @@
     };
   }
 
+  function createGridableValues(values, defaultValue) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    return lodash.map(values, value => ({
+      label: value,
+      value: Flow.Dataflow.signal(true)
+    }));
+  }
+
   function createTextboxControl(parameter, type) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -319,15 +328,6 @@
     control.valueGrided = _valueGrided;
     control.isArrayValued = isArrayValued;
     return control;
-  }
-
-  function createGridableValues(values, defaultValue) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    return lodash.map(values, value => ({
-      label: value,
-      value: Flow.Dataflow.signal(true)
-    }));
   }
 
   function createDropdownControl(parameter) {
@@ -513,6 +513,39 @@
     control.clientId = lodash.uniqueId();
     control.value = _value;
     return control;
+  }
+
+  function createControlFromParameter(parameter) {
+    switch (parameter.type) {
+      case 'enum':
+      case 'Key<Frame>':
+      case 'VecSpecifier':
+        return createDropdownControl(parameter);
+      case 'string[]':
+      case 'Key<Frame>[]':
+      case 'Key<Model>[]':
+        return createListControl(parameter);
+      case 'boolean':
+        return createCheckboxControl(parameter);
+      case 'Key<Model>':
+      case 'string':
+      case 'byte':
+      case 'short':
+      case 'int':
+      case 'long':
+      case 'float':
+      case 'double':
+      case 'byte[]':
+      case 'short[]':
+      case 'int[]':
+      case 'long[]':
+      case 'float[]':
+      case 'double[]':
+        return createTextboxControl(parameter, parameter.type);
+      default:
+        console.error('Invalid field', JSON.stringify(parameter, null, 2));
+        return null;
+    }
   }
 
   function optsToString(opts) {
@@ -749,38 +782,6 @@
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const createControlFromParameter = parameter => {
-      switch (parameter.type) {
-        case 'enum':
-        case 'Key<Frame>':
-        case 'VecSpecifier':
-          return createDropdownControl(parameter);
-        case 'string[]':
-        case 'Key<Frame>[]':
-        case 'Key<Model>[]':
-          return createListControl(parameter);
-        case 'boolean':
-          return createCheckboxControl(parameter);
-        case 'Key<Model>':
-        case 'string':
-        case 'byte':
-        case 'short':
-        case 'int':
-        case 'long':
-        case 'float':
-        case 'double':
-        case 'byte[]':
-        case 'short[]':
-        case 'int[]':
-        case 'long[]':
-        case 'float[]':
-        case 'double[]':
-          return createTextboxControl(parameter, parameter.type);
-        default:
-          console.error('Invalid field', JSON.stringify(parameter, null, 2));
-          return null;
-      }
-    };
     H2O.modelBuilderForm = (_, _algorithm, _parameters) => {
       let control;
       let _i;
