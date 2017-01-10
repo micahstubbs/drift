@@ -1,8 +1,9 @@
+import { padTime } from './padTime';
+
 export function coreUtils() {
   const lodash = window._;
   const Flow = window.Flow;
   const moment = window.moment;
-  const padTime = n => `${(n < 10 ? '0' : '')}${n}`;
   const splitTime = s => {
     const ms = s % 1000;
     s = (s - ms) / 1000;
