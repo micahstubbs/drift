@@ -1,23 +1,10 @@
 import { padTime } from './padTime';
+import { splitTime } from './splitTime';
 
 export function coreUtils() {
   const lodash = window._;
   const Flow = window.Flow;
   const moment = window.moment;
-  const splitTime = s => {
-    const ms = s % 1000;
-    s = (s - ms) / 1000;
-    const secs = s % 60;
-    s = (s - secs) / 60;
-    const mins = s % 60;
-    const hrs = (s - mins) / 60;
-    return [
-      hrs,
-      mins,
-      secs,
-      ms,
-    ];
-  };
   const formatMilliseconds = s => {
     const _ref = splitTime(s);
     const hrs = _ref[0];
