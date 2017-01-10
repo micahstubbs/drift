@@ -1,4 +1,5 @@
 import { getJobsRequest } from './h2oProxy/getJobsRequest';
+import { formatMilliseconds } from './coreUtils/formatMilliseconds';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -33,7 +34,7 @@ export function h2oJobsOutput(_, _go, jobs) {
       description: job.description,
       startTime: Flow.Format.time(new Date(job.start_time)),
       endTime: Flow.Format.time(new Date(job.start_time + job.msec)),
-      elapsedTime: Flow.Util.formatMilliseconds(job.msec),
+      elapsedTime: formatMilliseconds(job.msec),
       status: job.status,
       view,
     };

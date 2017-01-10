@@ -542,6 +542,29 @@
     });
   }
 
+  function splitTime(s) {
+    const ms = s % 1000;
+    s = (s - ms) / 1000;
+    const secs = s % 60;
+    s = (s - secs) / 60;
+    const mins = s % 60;
+    const hrs = (s - mins) / 60;
+    return [hrs, mins, secs, ms];
+  }
+
+  function padTime(n) {
+    return `${ n < 10 ? '0' : '' }${ n }`;
+  }
+
+  function formatMilliseconds(s) {
+    const _ref = splitTime(s);
+    const hrs = _ref[0];
+    const mins = _ref[1];
+    const secs = _ref[2];
+    const ms = _ref[3];
+    return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
+  }
+
   const flowPrelude$3 = flowPreludeFunction();
 
   function jobOutput() {
@@ -624,9 +647,9 @@
         let cause;
         let message;
         let messages;
-        _runTime(Flow.Util.formatMilliseconds(job.msec));
+        _runTime(formatMilliseconds(job.msec));
         _progress(getJobProgressPercent(job.progress));
-        _remainingTime(job.progress ? Flow.Util.formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
+        _remainingTime(job.progress ? formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
         _progressMessage(job.progress_msg);
         _status(job.status);
         _statusColor(getJobOutputStatusColor(job.status));
@@ -1418,7 +1441,7 @@
         description: job.description,
         startTime: Flow.Format.time(new Date(job.start_time)),
         endTime: Flow.Format.time(new Date(job.start_time + job.msec)),
-        elapsedTime: Flow.Util.formatMilliseconds(job.msec),
+        elapsedTime: formatMilliseconds(job.msec),
         status: job.status,
         view
       };
@@ -8759,33 +8782,14 @@
     };
   }
 
-  function padTime(n) {
-    return `${ n < 10 ? '0' : '' }${ n }`;
-  }
-
-  function splitTime(s) {
-    const ms = s % 1000;
-    s = (s - ms) / 1000;
-    const secs = s % 60;
-    s = (s - secs) / 60;
-    const mins = s % 60;
-    const hrs = (s - mins) / 60;
-    return [hrs, mins, secs, ms];
+  function format1d0(n) {
+    return Math.round(n * 10) / 10;
   }
 
   function coreUtils() {
     const lodash = window._;
     const Flow = window.Flow;
     const moment = window.moment;
-    const formatMilliseconds = s => {
-      const _ref = splitTime(s);
-      const hrs = _ref[0];
-      const mins = _ref[1];
-      const secs = _ref[2];
-      const ms = _ref[3];
-      return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
-    };
-    const format1d0 = n => Math.round(n * 10) / 10;
     const formatElapsedTime = s => {
       const _ref = splitTime(s);
       const hrs = _ref[0];
@@ -8812,7 +8816,6 @@
       return code;
     };
     Flow.Util = {
-      formatMilliseconds,
       formatElapsedTime,
       formatClockTime,
       multilineTextToHTML,
