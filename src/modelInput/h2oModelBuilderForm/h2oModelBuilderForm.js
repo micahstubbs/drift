@@ -107,6 +107,7 @@ export function h2oModelBuilderForm(_, _algorithm, _parameters) {
       _form.push(control);
     }
   }
+  // looks tightly coupled
   const findFormField = name => lodash.find(_form, field => field.name === name);
   ((() => {
     const _ref = lodash.map([
