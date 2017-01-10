@@ -9508,6 +9508,11 @@
     return createObservableArray(array || []);
   }
 
+  function _apply$1(sources, func) {
+    const lodash = window._;
+    return func(...lodash.map(sources, source => source()));
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   //
@@ -9549,25 +9554,24 @@
       //
       // Combinators
       //
-      const _apply = (sources, func) => func(...lodash.map(sources, source => source()));
       const _act = (...args) => {
         let _i;
         const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
         const func = args[_i++];
-        _apply(sources, func);
-        return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
+        _apply$1(sources, func);
+        return lodash.map(sources, source => _link(source, () => _apply$1(sources, func)));
       };
       const _react = (...args) => {
         let _i;
         const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
         const func = args[_i++];
-        return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
+        return lodash.map(sources, source => _link(source, () => _apply$1(sources, func)));
       };
       const _lift = (...args) => {
         let _i;
         const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
         const func = args[_i++];
-        const evaluate = () => _apply(sources, func);
+        const evaluate = () => _apply$1(sources, func);
         const target = createSignal(evaluate());
         lodash.map(sources, source => _link(source, () => target(evaluate())));
         return target;
@@ -9577,7 +9581,7 @@
         const sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []);
         const target = args[_i++];
         const func = args[_i++];
-        const evaluate = () => _apply(sources, func);
+        const evaluate = () => _apply$1(sources, func);
         target(evaluate());
         return lodash.map(sources, source => _link(source, () => target(evaluate())));
       };

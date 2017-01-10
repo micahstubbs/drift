@@ -6,6 +6,11 @@ import { _link } from './_link';
 import { _unlink } from './_unlink';
 import { createSignals } from './createSignals';
 
+//
+// Combinators
+//
+import { _apply } from './_apply';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -48,7 +53,6 @@ export function dataflow() {
     //
     // Combinators
     //
-    const _apply = (sources, func) => func(...lodash.map(sources, source => source()));
     const _act = (...args) => {
       let _i;
       const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
