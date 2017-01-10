@@ -1,3 +1,6 @@
+import { createSlot } from './createSlot';
+import { createSlots } from './createSlots';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -14,58 +17,6 @@ export function dataflow() {
     let createObservable;
     let createObservableArray;
     let isObservable;
-    const createSlot = () => {
-      let arrow;
-      arrow = null;
-      const self = function () {
-        const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
-        if (arrow) {
-          return arrow.func.apply(null, args);
-        }
-        return void 0;
-      };
-      self.subscribe = func => {
-        console.assert(lodash.isFunction(func));
-        if (arrow) {
-          throw new Error('Cannot re-attach slot');
-        } else {
-          arrow = {
-            func,
-            dispose() {
-              arrow = null;
-              return arrow;
-            },
-          };
-          return arrow;
-        }
-      };
-      self.dispose = () => {
-        if (arrow) {
-          return arrow.dispose();
-        }
-      };
-      return self;
-    };
-    const createSlots = () => {
-      const arrows = [];
-      const self = function () {
-        const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
-        return lodash.map(arrows, arrow => arrow.func.apply(null, args));
-      };
-      self.subscribe = func => {
-        let arrow;
-        console.assert(lodash.isFunction(func));
-        arrows.push(arrow = {
-          func,
-          dispose() {
-            return flowPrelude.remove(arrows, arrow);
-          },
-        });
-        return arrow;
-      };
-      self.dispose = () => lodash.forEach(flowPrelude.copy(arrows), arrow => arrow.dispose());
-      return self;
-    };
     if (typeof ko !== 'undefined' && ko !== null) {
       createObservable = ko.observable;
       createObservableArray = ko.observableArray;

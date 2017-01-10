@@ -9362,6 +9362,66 @@
     };
   }
 
+  function createSlot() {
+    const lodash = window._;
+    const __slice = [].slice;
+    let arrow;
+    arrow = null;
+    const self = function () {
+      const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
+      if (arrow) {
+        return arrow.func.apply(null, args);
+      }
+      return void 0;
+    };
+    self.subscribe = func => {
+      console.assert(lodash.isFunction(func));
+      if (arrow) {
+        throw new Error('Cannot re-attach slot');
+      } else {
+        arrow = {
+          func,
+          dispose() {
+            arrow = null;
+            return arrow;
+          }
+        };
+        return arrow;
+      }
+    };
+    self.dispose = () => {
+      if (arrow) {
+        return arrow.dispose();
+      }
+    };
+    return self;
+  }
+
+  const flowPrelude$50 = flowPreludeFunction();
+
+  function createSlots() {
+    const lodash = window._;
+    const __slice = [].slice;
+    const arrows = [];
+    const self = function () {
+      const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
+      return lodash.map(arrows, arrow => arrow.func.apply(null, args));
+    };
+    self.subscribe = func => {
+      let arrow;
+      console.assert(lodash.isFunction(func));
+      arrows.push(arrow = {
+        func,
+        dispose() {
+          return flowPrelude$50.remove(arrows, arrow);
+        }
+      });
+      return arrow;
+    };
+    self.dispose = () => lodash.forEach(flowPrelude$50.copy(arrows), arrow => arrow.dispose());
+    return self;
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   //
@@ -9377,58 +9437,6 @@
       let createObservable;
       let createObservableArray;
       let isObservable;
-      const createSlot = () => {
-        let arrow;
-        arrow = null;
-        const self = function () {
-          const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
-          if (arrow) {
-            return arrow.func.apply(null, args);
-          }
-          return void 0;
-        };
-        self.subscribe = func => {
-          console.assert(lodash.isFunction(func));
-          if (arrow) {
-            throw new Error('Cannot re-attach slot');
-          } else {
-            arrow = {
-              func,
-              dispose() {
-                arrow = null;
-                return arrow;
-              }
-            };
-            return arrow;
-          }
-        };
-        self.dispose = () => {
-          if (arrow) {
-            return arrow.dispose();
-          }
-        };
-        return self;
-      };
-      const createSlots = () => {
-        const arrows = [];
-        const self = function () {
-          const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
-          return lodash.map(arrows, arrow => arrow.func.apply(null, args));
-        };
-        self.subscribe = func => {
-          let arrow;
-          console.assert(lodash.isFunction(func));
-          arrows.push(arrow = {
-            func,
-            dispose() {
-              return flowPrelude$49.remove(arrows, arrow);
-            }
-          });
-          return arrow;
-        };
-        self.dispose = () => lodash.forEach(flowPrelude$49.copy(arrows), arrow => arrow.dispose());
-        return self;
-      };
       if (typeof ko !== 'undefined' && ko !== null) {
         createObservable = ko.observable;
         createObservableArray = ko.observableArray;
@@ -9874,7 +9882,7 @@
     };
   }
 
-  const flowPrelude$50 = flowPreludeFunction();
+  const flowPrelude$51 = flowPreludeFunction();
 
   function async() {
     const lodash = window._;
@@ -10136,9 +10144,9 @@
           a = args[0];
           b = args[1];
           c = args[2];
-          ta = flowPrelude$50.typeOf(a);
-          tb = flowPrelude$50.typeOf(b);
-          tc = flowPrelude$50.typeOf(c);
+          ta = flowPrelude$51.typeOf(a);
+          tb = flowPrelude$51.typeOf(b);
+          tc = flowPrelude$51.typeOf(c);
           if (ta === 'Array' && tb === 'String') {
             return _find$3(b, c, a);
           } else if (ta === 'String' && tc === 'Array') {
@@ -10191,7 +10199,7 @@
     };
   }
 
-  const flowPrelude$51 = flowPreludeFunction();
+  const flowPrelude$52 = flowPreludeFunction();
 
   function objectBrowser() {
     const lodash = window._;
@@ -10254,7 +10262,7 @@
       if (recurse == null) {
         recurse = false;
       }
-      const type = flowPrelude$51.typeOf(element);
+      const type = flowPrelude$52.typeOf(element);
       switch (type) {
         case 'Boolean':
         case 'String':
@@ -10284,7 +10292,7 @@
     Flow.objectBrowserElement = (key, object) => {
       const _expansions = Flow.Dataflow.signal(null);
       const _isExpanded = Flow.Dataflow.signal(false);
-      const _type = flowPrelude$51.typeOf(object);
+      const _type = flowPrelude$52.typeOf(object);
       const _canExpand = isExpandable(_type);
       const toggle = () => {
         let expansions;
@@ -11584,7 +11592,7 @@
     return render;
   }
 
-  const flowPrelude$52 = flowPreludeFunction();
+  const flowPrelude$53 = flowPreludeFunction();
 
   function notebook() {
     const lodash = window._;
@@ -12007,7 +12015,7 @@
             return _.growl(_ref != null ? _ref : error);
           }
           _.growl('File uploaded successfully!');
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$52.stringify(result.result.destination_frame) }]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$53.stringify(result.result.destination_frame) }]`);
         }
       });
       const toggleInput = () => _selectedCell.toggleInput();
@@ -12263,7 +12271,7 @@
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
       }
       const initializeMenus = builder => {
-        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$52.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
+        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$53.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
         return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
         // TODO Cluster I/O
         createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')),
@@ -12446,7 +12454,7 @@
     };
   }
 
-  const flowPrelude$53 = flowPreludeFunction();
+  const flowPrelude$54 = flowPreludeFunction();
 
   function clipboard() {
     const lodash = window._;
@@ -12473,7 +12481,7 @@
         }
         const execute = () => _.insertAndExecuteCell(_type, _input);
         const insert = () => _.insertCell(_type, _input);
-        flowPrelude$53.remove = () => {
+        flowPrelude$54.remove = () => {
           if (_canRemove) {
             return removeClip(_list, self);
           }
@@ -12483,7 +12491,7 @@
           input: _input,
           execute,
           insert,
-          remove: flowPrelude$53.remove,
+          remove: flowPrelude$54.remove,
           canRemove: _canRemove
         };
         return self;
@@ -12770,7 +12778,7 @@
     return requestWithOpts(_, '/3/Typeahead/files', opts, go);
   }
 
-  const flowPrelude$54 = flowPreludeFunction();
+  const flowPrelude$55 = flowPreludeFunction();
 
   function h2oProxy(_) {
     const lodash = window._;
