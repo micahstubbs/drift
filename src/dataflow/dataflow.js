@@ -12,6 +12,7 @@ import { createSignals } from './createSignals';
 import { _apply } from './_apply';
 import { _act } from './_act';
 import { _react } from './_react';
+import { _merge } from './_merge';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -63,15 +64,6 @@ export function dataflow() {
       const target = createSignal(evaluate());
       lodash.map(sources, source => _link(source, () => target(evaluate())));
       return target;
-    };
-    const _merge = (...args) => {
-      let _i;
-      const sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []);
-      const target = args[_i++];
-      const func = args[_i++];
-      const evaluate = () => _apply(sources, func);
-      target(evaluate());
-      return lodash.map(sources, source => _link(source, () => target(evaluate())));
     };
     return {
       slot: createSlot,

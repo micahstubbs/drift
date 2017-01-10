@@ -9532,6 +9532,18 @@
     return lodash.map(sources, source => _link(source, () => _apply$1(sources, func)));
   }
 
+  function _merge(...args) {
+    const lodash = window._;
+    const __slice = [].slice;
+    let _i;
+    const sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []);
+    const target = args[_i++];
+    const func = args[_i++];
+    const evaluate = () => _apply$1(sources, func);
+    target(evaluate());
+    return lodash.map(sources, source => _link(source, () => target(evaluate())));
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   //
@@ -9581,15 +9593,6 @@
         const target = createSignal(evaluate());
         lodash.map(sources, source => _link(source, () => target(evaluate())));
         return target;
-      };
-      const _merge = (...args) => {
-        let _i;
-        const sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []);
-        const target = args[_i++];
-        const func = args[_i++];
-        const evaluate = () => _apply$1(sources, func);
-        target(evaluate());
-        return lodash.map(sources, source => _link(source, () => target(evaluate())));
       };
       return {
         slot: createSlot,
