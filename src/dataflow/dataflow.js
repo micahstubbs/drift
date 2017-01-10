@@ -28,6 +28,9 @@ export function dataflow() {
       createObservableArray = createObservable;
       isObservable = isObservableFunction;
     }
+    // abstracting out `createSignal` breaks the cell left border color
+    // should turn blue when the cell executes
+    // stays orange if this is abstracted
     const createSignal = function (value, equalityComparer) {
       if (arguments.length === 0) {
         return createSignal(void 0, flowPrelude.never);
