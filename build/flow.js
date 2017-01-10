@@ -199,6 +199,13 @@
 
   const parseTypesArray = ['AUTO', 'ARFF', 'XLS', 'XLSX', 'CSV', 'SVMLight', 'ORC', 'AVRO', 'PARQUET'];
 
+  function createDelimiter(caption, charCode) {
+    return {
+      charCode,
+      caption: `${ caption }: \'${ `00${ charCode }`.slice(-2) }\'`
+    };
+  }
+
   function optsToString(opts) {
     let str;
     if (opts != null) {
@@ -347,10 +354,6 @@
       caption: type
     }));
     const parseDelimiters = (() => {
-      const createDelimiter = (caption, charCode) => ({
-        charCode,
-        caption: `${ caption }: \'${ `00${ charCode }`.slice(-2) }\'`
-      });
       const whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
       const characterDelimiters = lodash.times(126 - whitespaceSeparators.length, i => {
         const charCode = i + whitespaceSeparators.length;
