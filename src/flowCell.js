@@ -1,4 +1,5 @@
 import { formatElapsedTime } from './coreUtils/formatElapsedTime';
+import { formatClockTime } from './coreUtils/formatClockTime';
 
 export function flowCell(_, _renderers, type, input) {
   const lodash = window._;
@@ -86,7 +87,7 @@ export function flowCell(_, _renderers, type, input) {
   };
   const execute = go => {
     const startTime = Date.now();
-    _time(`Started at ${Flow.Util.formatClockTime(startTime)}`);
+    _time(`Started at ${formatClockTime(startTime)}`);
     input = _input().trim();
     if (!input) {
       if (go) {

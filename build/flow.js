@@ -8785,8 +8785,6 @@
   function coreUtils() {
     const lodash = window._;
     const Flow = window.Flow;
-    const moment = window.moment;
-    const formatClockTime = date => moment(date).format('h:mm:ss a');
     const EOL = '\n';
     const multilineTextToHTML = text => lodash.map(text.split(EOL), str => lodash.escape(str)).join('<br/>');
     const sanitizeName = name => name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
@@ -8797,7 +8795,6 @@
       return code;
     };
     Flow.Util = {
-      formatClockTime,
       multilineTextToHTML,
       uuid: (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null,
       sanitizeName,
@@ -11355,6 +11352,11 @@
     return `${ ms }ms`;
   }
 
+  function formatClockTime(date) {
+    const moment = window.moment;
+    return moment(date).format('h:mm:ss a');
+  }
+
   function flowCell(_, _renderers, type, input) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -11441,7 +11443,7 @@
     };
     const execute = go => {
       const startTime = Date.now();
-      _time(`Started at ${ Flow.Util.formatClockTime(startTime) }`);
+      _time(`Started at ${ formatClockTime(startTime) }`);
       input = _input().trim();
       if (!input) {
         if (go) {
