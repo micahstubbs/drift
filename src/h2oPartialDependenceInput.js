@@ -1,4 +1,5 @@
 import { getModelsRequest } from './h2oProxy/getModelsRequest';
+import { uuid } from './coreUtils/uuid';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -9,7 +10,7 @@ export function h2oPartialDependenceInput(_, _go) {
 
   // TODO display in .jade
   const _exception = Flow.Dataflow.signal(null);
-  const _destinationKey = Flow.Dataflow.signal(`ppd-${Flow.Util.uuid()}`);
+  const _destinationKey = Flow.Dataflow.signal(`ppd-${uuid()}`);
   const _frames = Flow.Dataflow.signals([]);
   const _models = Flow.Dataflow.signals([]);
   const _selectedModel = Flow.Dataflow.signals(null);

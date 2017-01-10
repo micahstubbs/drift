@@ -1,4 +1,6 @@
+import { uuid } from '../coreUtils/uuid';
+
 export function createTempKey() {
   const Flow = window.Flow;
-  return `flow_${Flow.Util.uuid().replace(/\-/g, '')}`;
+  return `flow_${uuid().replace(/\-/g, '')}`;
 }

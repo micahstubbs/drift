@@ -542,6 +542,29 @@
     });
   }
 
+  function splitTime(s) {
+    const ms = s % 1000;
+    s = (s - ms) / 1000;
+    const secs = s % 60;
+    s = (s - secs) / 60;
+    const mins = s % 60;
+    const hrs = (s - mins) / 60;
+    return [hrs, mins, secs, ms];
+  }
+
+  function padTime(n) {
+    return `${ n < 10 ? '0' : '' }${ n }`;
+  }
+
+  function formatMilliseconds(s) {
+    const _ref = splitTime(s);
+    const hrs = _ref[0];
+    const mins = _ref[1];
+    const secs = _ref[2];
+    const ms = _ref[3];
+    return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
+  }
+
   const flowPrelude$3 = flowPreludeFunction();
 
   function jobOutput() {
@@ -624,9 +647,9 @@
         let cause;
         let message;
         let messages;
-        _runTime(Flow.Util.formatMilliseconds(job.msec));
+        _runTime(formatMilliseconds(job.msec));
         _progress(getJobProgressPercent(job.progress));
-        _remainingTime(job.progress ? Flow.Util.formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
+        _remainingTime(job.progress ? formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
         _progressMessage(job.progress_msg);
         _status(job.status);
         _statusColor(getJobOutputStatusColor(job.status));
@@ -745,11 +768,15 @@
     };
   }
 
+  function sanitizeName(name) {
+    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
+  }
+
   function util() {
     const Flow = window.Flow;
     const H2O = window.H2O;
     const validateFileExtension = (filename, extension) => filename.indexOf(extension, filename.length - extension.length) !== -1;
-    const getFileBaseName = (filename, extension) => Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
+    const getFileBaseName = (filename, extension) => sanitizeName(filename.substr(0, filename.length - extension.length));
     H2O.Util = {
       validateFileExtension,
       getFileBaseName
@@ -1418,7 +1445,7 @@
         description: job.description,
         startTime: Flow.Format.time(new Date(job.start_time)),
         endTime: Flow.Format.time(new Date(job.start_time + job.msec)),
-        elapsedTime: Flow.Util.formatMilliseconds(job.msec),
+        elapsedTime: formatMilliseconds(job.msec),
         status: job.status,
         view
       };
@@ -1626,6 +1653,15 @@
     };
   }
 
+  function formatBytes(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) {
+      return '0 Byte';
+    }
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+    return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
+  }
+
   const flowPrelude$11 = flowPreludeFunction();
 
   function h2oFrameOutput(_, _go, _frame) {
@@ -1725,7 +1761,7 @@
       key: _frame.frame_id.name,
       rowCount: _frame.rows,
       columnCount: _frame.total_column_count,
-      size: Flow.Util.formatBytes(_frame.byte_size),
+      size: formatBytes(_frame.byte_size),
       chunkSummary: _chunkSummary,
       distributionSummary: _distributionSummary,
       columnNameSearchTerm: _columnNameSearchTerm,
@@ -2389,9 +2425,13 @@
     return result;
   }
 
+  function uuid() {
+    return (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null;
+  }
+
   function createTempKey() {
     const Flow = window.Flow;
-    return `flow_${ Flow.Util.uuid().replace(/\-/g, '') }`;
+    return `flow_${ uuid().replace(/\-/g, '') }`;
   }
 
   function computeSplits(ratios, keys) {
@@ -3539,7 +3579,7 @@
       return {
         key: frame.frame_id.name,
         isChecked: _isChecked,
-        size: Flow.Util.formatBytes(frame.byte_size),
+        size: formatBytes(frame.byte_size),
         rowCount: frame.rows,
         columnCount: frame.columns,
         isText: frame.is_text,
@@ -3689,6 +3729,11 @@
     return doGet(_, '/3/Cloud', go);
   }
 
+  function fromNow(date) {
+    const moment = window.moment;
+    return moment(date).fromNow();
+  }
+
   function h2oCloudOutput(_, _go, _cloud) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -3708,7 +3753,7 @@
     const _hasConsensus = Flow.Dataflow.signal();
     const _isLocked = Flow.Dataflow.signal();
     const _nodes = Flow.Dataflow.signals();
-    const formatMilliseconds = ms => Flow.Util.fromNow(new Date(new Date().getTime() - ms));
+    const formatMilliseconds = ms => fromNow(new Date(new Date().getTime() - ms));
 
     // precision = 3
     const format3f = d3.format('.3f');
@@ -4362,6 +4407,13 @@
     return download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
   }
 
+  function highlight(code, lang) {
+    if (window.hljs) {
+      return window.hljs.highlightAuto(code, [lang]).value;
+    }
+    return code;
+  }
+
   const flowPrelude$32 = flowPreludeFunction();
 
   function h2oModelOutput(_, _go, _model, refresh) {
@@ -4995,7 +5047,7 @@
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
         }
-        return _pojoPreview(`<pre>${ Flow.Util.highlight(result, 'java') }</pre>`);
+        return _pojoPreview(`<pre>${ highlight(result, 'java') }</pre>`);
       });
       const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
       const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
@@ -5670,6 +5722,20 @@
     };
   }
 
+  function describeCount(count, singular, plural) {
+    if (!plural) {
+      plural = `${ singular }s`;
+    }
+    switch (count) {
+      case 0:
+        return `No ${ plural }`;
+      case 1:
+        return `1 ${ singular }`;
+      default:
+        return `${ count } ${ plural }`;
+    }
+  }
+
   const flowPrelude$38 = flowPreludeFunction();
 
   function h2oImportFilesInput(_, _go) {
@@ -5704,7 +5770,7 @@
     const _importedFiles = Flow.Dataflow.signals([]);
     const _importedFileCount = Flow.Dataflow.lift(_importedFiles, files => {
       if (files.length) {
-        return `Found ${ Flow.Util.describeCount(files.length, 'file') }:`;
+        return `Found ${ describeCount(files.length, 'file') }:`;
       }
       return '';
     });
@@ -5724,7 +5790,7 @@
     });
     const _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, files => {
       if (files.length) {
-        return `${ Flow.Util.describeCount(files.length, 'file') } selected:`;
+        return `${ describeCount(files.length, 'file') } selected:`;
       }
       return '(No files selected)';
     });
@@ -5932,7 +5998,7 @@
     const lodash = window._;
     const Flow = window.Flow;
     const _ref = opt.predictions_frame;
-    const _destinationKey = Flow.Dataflow.signal(_ref != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
+    const _destinationKey = Flow.Dataflow.signal(_ref != null ? _ref : `prediction-${ uuid() }`);
     const _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
     const _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
     const _selectedModelsCaption = _selectedModels.join(', ');
@@ -6362,7 +6428,7 @@
     const Flow = window.Flow;
     // TODO display in .jade
     const _exception = Flow.Dataflow.signal(null);
-    const _destinationKey = Flow.Dataflow.signal(`merged-${ Flow.Util.uuid() }`);
+    const _destinationKey = Flow.Dataflow.signal(`merged-${ uuid() }`);
     const _frames = Flow.Dataflow.signals([]);
     const _selectedLeftFrame = Flow.Dataflow.signal(null);
     const _leftColumns = Flow.Dataflow.signals([]);
@@ -6444,7 +6510,7 @@
 
     // TODO display in .jade
     const _exception = Flow.Dataflow.signal(null);
-    const _destinationKey = Flow.Dataflow.signal(`ppd-${ Flow.Util.uuid() }`);
+    const _destinationKey = Flow.Dataflow.signal(`ppd-${ uuid() }`);
     const _frames = Flow.Dataflow.signals([]);
     const _models = Flow.Dataflow.signals([]);
     const _selectedModel = Flow.Dataflow.signals(null);
@@ -6652,7 +6718,7 @@
     const Flow = window.Flow;
     const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
     if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
-      destinationKeyParameter.actual_value = `${ algorithm }-${ Flow.Util.uuid() }`;
+      destinationKeyParameter.actual_value = `${ algorithm }-${ uuid() }`;
     }
 
     //
@@ -7277,7 +7343,7 @@
     const _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$48.isTruthy);
     const _gridStrategies = ['Cartesian', 'RandomDiscrete'];
     const _isGrided = Flow.Dataflow.signal(false);
-    const _gridId = Flow.Dataflow.signal(`grid-${ Flow.Util.uuid() }`);
+    const _gridId = Flow.Dataflow.signal(`grid-${ uuid() }`);
     const _gridStrategy = Flow.Dataflow.signal('Cartesian');
     const _isGridRandomDiscrete = Flow.Dataflow.lift(_gridStrategy, strategy => strategy !== _gridStrategies[0]);
     const _gridMaxModels = Flow.Dataflow.signal(1000);
@@ -8731,90 +8797,6 @@
     };
   }
 
-  function coreUtils() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const moment = window.moment;
-    const describeCount = (count, singular, plural) => {
-      if (!plural) {
-        plural = `${ singular }s`;
-      }
-      switch (count) {
-        case 0:
-          return `No ${ plural }`;
-        case 1:
-          return `1 ${ singular }`;
-        default:
-          return `${ count } ${ plural }`;
-      }
-    };
-    const fromNow = date => moment(date).fromNow();
-    const formatBytes = bytes => {
-      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-      if (bytes === 0) {
-        return '0 Byte';
-      }
-      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
-      return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
-    };
-    const padTime = n => `${ n < 10 ? '0' : '' }${ n }`;
-    const splitTime = s => {
-      const ms = s % 1000;
-      s = (s - ms) / 1000;
-      const secs = s % 60;
-      s = (s - secs) / 60;
-      const mins = s % 60;
-      const hrs = (s - mins) / 60;
-      return [hrs, mins, secs, ms];
-    };
-    const formatMilliseconds = s => {
-      const _ref = splitTime(s);
-      const hrs = _ref[0];
-      const mins = _ref[1];
-      const secs = _ref[2];
-      const ms = _ref[3];
-      return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
-    };
-    const format1d0 = n => Math.round(n * 10) / 10;
-    const formatElapsedTime = s => {
-      const _ref = splitTime(s);
-      const hrs = _ref[0];
-      const mins = _ref[1];
-      const secs = _ref[2];
-      const ms = _ref[3];
-      if (hrs !== 0) {
-        return `${ format1d0((hrs * 60 + mins) / 60) }h`;
-      } else if (mins !== 0) {
-        return `${ format1d0((mins * 60 + secs) / 60) }m`;
-      } else if (secs !== 0) {
-        return `${ format1d0((secs * 1000 + ms) / 1000) }s`;
-      }
-      return `${ ms }ms`;
-    };
-    const formatClockTime = date => moment(date).format('h:mm:ss a');
-    const EOL = '\n';
-    const multilineTextToHTML = text => lodash.map(text.split(EOL), str => lodash.escape(str)).join('<br/>');
-    const sanitizeName = name => name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
-    const highlight = (code, lang) => {
-      if (window.hljs) {
-        return window.hljs.highlightAuto(code, [lang]).value;
-      }
-      return code;
-    };
-    Flow.Util = {
-      describeCount,
-      fromNow,
-      formatBytes,
-      formatMilliseconds,
-      formatElapsedTime,
-      formatClockTime,
-      multilineTextToHTML,
-      uuid: (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null,
-      sanitizeName,
-      highlight
-    };
-  }
-
   function localStorage() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -9268,6 +9250,12 @@
     Flow.Error = FlowError;
   }
 
+  function multilineTextToHTML(text) {
+    const lodash = window._;
+    const EOL = '\n';
+    return lodash.map(text.split(EOL), str => lodash.escape(str)).join('<br/>');
+  }
+
   function flowConfirmDialog(_, _message, _opts, _go) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -9285,7 +9273,7 @@
       title: _opts.title,
       acceptCaption: _opts.acceptCaption,
       declineCaption: _opts.declineCaption,
-      message: Flow.Util.multilineTextToHTML(_message),
+      message: multilineTextToHTML(_message),
       accept,
       decline,
       template: 'confirm-dialog'
@@ -9306,7 +9294,7 @@
     return {
       title: _opts.title,
       acceptCaption: _opts.acceptCaption,
-      message: Flow.Util.multilineTextToHTML(_message),
+      message: multilineTextToHTML(_message),
       accept,
       template: 'alert-dialog'
     };
@@ -11255,7 +11243,7 @@
     const createNotebookView = notebook => {
       const _name = notebook.name;
       const _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
-      const _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
+      const _fromNow = Flow.Dataflow.lift(_date, fromNow);
       const load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
         acceptCaption: 'Load Notebook',
         declineCaption: 'Cancel'
@@ -11345,6 +11333,31 @@
     };
   }
 
+  function format1d0(n) {
+    return Math.round(n * 10) / 10;
+  }
+
+  function formatElapsedTime(s) {
+    const _ref = splitTime(s);
+    const hrs = _ref[0];
+    const mins = _ref[1];
+    const secs = _ref[2];
+    const ms = _ref[3];
+    if (hrs !== 0) {
+      return `${ format1d0((hrs * 60 + mins) / 60) }h`;
+    } else if (mins !== 0) {
+      return `${ format1d0((mins * 60 + secs) / 60) }m`;
+    } else if (secs !== 0) {
+      return `${ format1d0((secs * 1000 + ms) / 1000) }s`;
+    }
+    return `${ ms }ms`;
+  }
+
+  function formatClockTime(date) {
+    const moment = window.moment;
+    return moment(date).format('h:mm:ss a');
+  }
+
   function flowCell(_, _renderers, type, input) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -11431,7 +11444,7 @@
     };
     const execute = go => {
       const startTime = Date.now();
-      _time(`Started at ${ Flow.Util.formatClockTime(startTime) }`);
+      _time(`Started at ${ formatClockTime(startTime) }`);
       input = _input().trim();
       if (!input) {
         if (go) {
@@ -11477,7 +11490,7 @@
         end() {
           _hasInput(_isCode());
           _isBusy(false);
-          _time(Flow.Util.formatElapsedTime(Date.now() - startTime));
+          _time(formatElapsedTime(Date.now() - startTime));
           if (go) {
             go(_hasError() ? _errors.slice(0) : null);
           }
@@ -12007,7 +12020,7 @@
         return _.saved();
       });
       const saveNotebook = () => {
-        const localName = Flow.Util.sanitizeName(_localName());
+        const localName = sanitizeName(_localName());
         if (localName === '') {
           return _.alert('Invalid notebook name.');
         }
@@ -13092,7 +13105,6 @@
         }
       });
     }).call(this);
-    coreUtils();
     routines();
     util();
     jobOutput();

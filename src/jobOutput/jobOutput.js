@@ -1,5 +1,6 @@
 import { getJobRequest } from '../h2oProxy/getJobRequest';
 import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
+import { formatMilliseconds } from '../coreUtils/formatMilliseconds';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -84,9 +85,9 @@ export function jobOutput() {
       let cause;
       let message;
       let messages;
-      _runTime(Flow.Util.formatMilliseconds(job.msec));
+      _runTime(formatMilliseconds(job.msec));
       _progress(getJobProgressPercent(job.progress));
-      _remainingTime(job.progress ? Flow.Util.formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
+      _remainingTime(job.progress ? formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
       _progressMessage(job.progress_msg);
       _status(job.status);
       _statusColor(getJobOutputStatusColor(job.status));

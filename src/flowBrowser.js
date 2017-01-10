@@ -1,5 +1,6 @@
 import { getObjectsRequest } from './h2oProxy/getObjectsRequest';
 import { deleteObjectRequest } from './h2oProxy/deleteObjectRequest';
+import { fromNow } from './coreUtils/fromNow';
 
 export function flowBrowser(_) {
   const lodash = window._;
@@ -10,7 +11,7 @@ export function flowBrowser(_) {
   const createNotebookView = notebook => {
     const _name = notebook.name;
     const _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
-    const _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
+    const _fromNow = Flow.Dataflow.lift(_date, fromNow);
     const load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
       acceptCaption: 'Load Notebook',
       declineCaption: 'Cancel',

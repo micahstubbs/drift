@@ -1,3 +1,5 @@
+import { formatBytes } from './coreUtils/formatBytes';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -57,7 +59,7 @@ export function h2oFramesOutput(_, _go, _frames) {
     return {
       key: frame.frame_id.name,
       isChecked: _isChecked,
-      size: Flow.Util.formatBytes(frame.byte_size),
+      size: formatBytes(frame.byte_size),
       rowCount: frame.rows,
       columnCount: frame.columns,
       isText: frame.is_text,

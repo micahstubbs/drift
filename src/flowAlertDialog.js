@@ -1,3 +1,5 @@
+import { multilineTextToHTML } from './coreUtils/multilineTextToHTML';
+
 export function flowAlertDialog(_, _message, _opts, _go) {
   const lodash = window._;
   const Flow = window.Flow;
@@ -12,7 +14,7 @@ export function flowAlertDialog(_, _message, _opts, _go) {
   return {
     title: _opts.title,
     acceptCaption: _opts.acceptCaption,
-    message: Flow.Util.multilineTextToHTML(_message),
+    message: multilineTextToHTML(_message),
     accept,
     template: 'alert-dialog',
   };
