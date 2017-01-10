@@ -7,6 +7,7 @@ import { dataTypes } from './dataTypes';
 import { createDelimiter } from './createDelimiter';
 import { refreshPreview } from './refreshPreview';
 import { makePage } from './makePage';
+import { filterColumns } from './filterColumns';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -110,8 +111,7 @@ export function parseInput() {
     });
     const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
     const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
-    const filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
-    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));
+    Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns.bind(this, _activePage, _columns, _columnNameSearchTerm), 500));
     const _visibleColumns = Flow.Dataflow.lift(_activePage, currentPage => {
       const start = currentPage.index * MaxItemsPerPage;
       return currentPage.columns.slice(start, start + MaxItemsPerPage);

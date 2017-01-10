@@ -371,6 +371,11 @@
     };
   }
 
+  function filterColumns(_activePage, _columns, _columnNameSearchTerm) {
+    const lodash = window._;
+    return _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
+  }
+
   const flowPrelude$2 = flowPreludeFunction();
 
   function parseInput() {
@@ -452,8 +457,7 @@
       });
       const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
       const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
-      const filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
-      Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));
+      Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns.bind(this, _activePage, _columns, _columnNameSearchTerm), 500));
       const _visibleColumns = Flow.Dataflow.lift(_activePage, currentPage => {
         const start = currentPage.index * MaxItemsPerPage;
         return currentPage.columns.slice(start, start + MaxItemsPerPage);
