@@ -104,6 +104,7 @@ import { h2oNoAssist } from '../h2oNoAssist';
 import { h2oModelOutput } from '../h2oModelOutput';
 import { h2oDataFrameOutput } from '../h2oDataFrameOutput';
 import { h2oModelInput } from '../h2oModelInput/h2oModelInput';
+import { h2oImputeInput } from '../h2oImputeInput/h2oImputeInput';
 
 import { getGridRequest } from '../h2oProxy/getGridRequest';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
@@ -900,7 +901,7 @@ export function routines() {
         case exportFrame:
           return _fork(proceed, _, h2oExportFrameInput, args);
         case imputeColumn:
-          return _fork(proceed, _, H2O.ImputeInput, args);
+          return _fork(proceed, _, h2oImputeInput, args);
         case importModel:
           return _fork(proceed, _, h2oImportModelInput, args);
         case exportModel:
