@@ -12,6 +12,7 @@ import { createSignals } from './createSignals';
 import { _apply } from './_apply';
 import { _act } from './_act';
 import { _react } from './_react';
+import { _lift } from './_lift';
 import { _merge } from './_merge';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
@@ -33,18 +34,6 @@ export function dataflow() {
       isObservable = isObservableFunction;
     }
     const _isSignal = isObservable;
-    //
-    // Combinators
-    //
-    const _lift = (...args) => {
-      let _i;
-      const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
-      const func = args[_i++];
-      const evaluate = () => _apply(sources, func);
-      const target = createSignal(evaluate());
-      lodash.map(sources, source => _link(source, () => target(evaluate())));
-      return target;
-    };
     return {
       slot: createSlot,
       slots: createSlots,

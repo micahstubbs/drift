@@ -9558,6 +9558,18 @@
     return lodash.map(sources, source => _link(source, () => _apply$1(sources, func)));
   }
 
+  function _lift(...args) {
+    const lodash = window._;
+    const __slice = [].slice;
+    let _i;
+    const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
+    const func = args[_i++];
+    const evaluate = () => _apply$1(sources, func);
+    const target = createSignal(evaluate());
+    lodash.map(sources, source => _link(source, () => target(evaluate())));
+    return target;
+  }
+
   function _merge(...args) {
     const lodash = window._;
     const __slice = [].slice;
@@ -9588,18 +9600,6 @@
         isObservable = isObservableFunction;
       }
       const _isSignal = isObservable;
-      //
-      // Combinators
-      //
-      const _lift = (...args) => {
-        let _i;
-        const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
-        const func = args[_i++];
-        const evaluate = () => _apply$1(sources, func);
-        const target = createSignal(evaluate());
-        lodash.map(sources, source => _link(source, () => target(evaluate())));
-        return target;
-      };
       return {
         slot: createSlot,
         slots: createSlots,
