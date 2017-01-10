@@ -10,7 +10,6 @@ import { parseInput } from './parseInput/parseInput';
 import { jobOutput } from './jobOutput/jobOutput';
 import { util } from './util/util';
 import { routines } from './routines/routines';
-import { coreUtils } from './coreUtils/coreUtils';
 import { localStorage } from './localStorage/localStorage';
 import { knockout } from './knockout/knockout';
 import { html } from './html/html';
@@ -71,7 +70,6 @@ import { flow } from './flow/flow';
       },
     });
   }.call(this));
-  coreUtils();
   routines();
   util();
   jobOutput();

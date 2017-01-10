@@ -8797,12 +8797,6 @@
     };
   }
 
-  function coreUtils() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    Flow.Util = {};
-  }
-
   function localStorage() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -13111,7 +13105,6 @@
         }
       });
     }).call(this);
-    coreUtils();
     routines();
     util();
     jobOutput();
