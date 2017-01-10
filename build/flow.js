@@ -533,7 +533,7 @@
         headerOption: _headerOption,
         deleteOnDone: _deleteOnDone,
         columns: _visibleColumns,
-        parseFiles,
+        parseFiles: parseFiles.bind(this, _columns, _headerOptions, _headerOption),
         columnNameSearchTerm: _columnNameSearchTerm,
         canGoToNextPage: _canGoToNextPage,
         canGoToPreviousPage: _canGoToPreviousPage,
