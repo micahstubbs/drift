@@ -1,3 +1,5 @@
+import { describeCount } from './coreUtils/describeCount';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -33,7 +35,7 @@ export function h2oImportFilesInput(_, _go) {
   const _importedFiles = Flow.Dataflow.signals([]);
   const _importedFileCount = Flow.Dataflow.lift(_importedFiles, files => {
     if (files.length) {
-      return `Found ${Flow.Util.describeCount(files.length, 'file')}:`;
+      return `Found ${describeCount(files.length, 'file')}:`;
     }
     return '';
   });
@@ -53,7 +55,7 @@ export function h2oImportFilesInput(_, _go) {
   });
   const _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, files => {
     if (files.length) {
-      return `${Flow.Util.describeCount(files.length, 'file')} selected:`;
+      return `${describeCount(files.length, 'file')} selected:`;
     }
     return '(No files selected)';
   });

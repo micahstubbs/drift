@@ -1,5 +1,3 @@
-import { describeCount } from './describeCount';
-
 export function coreUtils() {
   const lodash = window._;
   const Flow = window.Flow;
@@ -69,7 +67,6 @@ export function coreUtils() {
     return code;
   };
   Flow.Util = {
-    describeCount,
     fromNow,
     formatBytes,
     formatMilliseconds,

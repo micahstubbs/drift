@@ -5670,6 +5670,20 @@
     };
   }
 
+  function describeCount(count, singular, plural) {
+    if (!plural) {
+      plural = `${ singular }s`;
+    }
+    switch (count) {
+      case 0:
+        return `No ${ plural }`;
+      case 1:
+        return `1 ${ singular }`;
+      default:
+        return `${ count } ${ plural }`;
+    }
+  }
+
   const flowPrelude$38 = flowPreludeFunction();
 
   function h2oImportFilesInput(_, _go) {
@@ -5704,7 +5718,7 @@
     const _importedFiles = Flow.Dataflow.signals([]);
     const _importedFileCount = Flow.Dataflow.lift(_importedFiles, files => {
       if (files.length) {
-        return `Found ${ Flow.Util.describeCount(files.length, 'file') }:`;
+        return `Found ${ describeCount(files.length, 'file') }:`;
       }
       return '';
     });
@@ -5724,7 +5738,7 @@
     });
     const _selectedFileCount = Flow.Dataflow.lift(_selectedFiles, files => {
       if (files.length) {
-        return `${ Flow.Util.describeCount(files.length, 'file') } selected:`;
+        return `${ describeCount(files.length, 'file') } selected:`;
       }
       return '(No files selected)';
     });
@@ -8731,20 +8745,6 @@
     };
   }
 
-  function describeCount(count, singular, plural) {
-    if (!plural) {
-      plural = `${ singular }s`;
-    }
-    switch (count) {
-      case 0:
-        return `No ${ plural }`;
-      case 1:
-        return `1 ${ singular }`;
-      default:
-        return `${ count } ${ plural }`;
-    }
-  }
-
   function coreUtils() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -8803,7 +8803,6 @@
       return code;
     };
     Flow.Util = {
-      describeCount,
       fromNow,
       formatBytes,
       formatMilliseconds,
