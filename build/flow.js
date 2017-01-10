@@ -768,17 +768,10 @@
     };
   }
 
-  function sanitizeName(name) {
-    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
-  }
-
   function util() {
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const getFileBaseName = (filename, extension) => sanitizeName(filename.substr(0, filename.length - extension.length));
-    H2O.Util = {
-      getFileBaseName
-    };
+    H2O.Util = {};
   }
 
   function getTwoDimData(table, columnName) {
@@ -10410,6 +10403,14 @@
     return filename.indexOf(extension, filename.length - extension.length) !== -1;
   }
 
+  function sanitizeName(name) {
+    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
+  }
+
+  function getFileBaseName(filename, extension) {
+    return sanitizeName(filename.substr(0, filename.length - extension.length));
+  }
+
   function help() {
     const lodash = window._;
     const Flow = window.Flow;
@@ -10513,7 +10514,7 @@
                 if (validateFileExtension(flowName, '.flow')) {
                   return requestFlow(packName, flowName, (error, flow) => {
                     if (!error) {
-                      return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
+                      return _.open(getFileBaseName(flowName, '.flow'), flow);
                     }
                   });
                 }
@@ -11577,7 +11578,7 @@
       let basename;
       const file = _file();
       if (file) {
-        basename = H2O.Util.getFileBaseName(file.name, '.flow');
+        basename = getFileBaseName(file.name, '.flow');
         if (_overwrite()) {
           return uploadFile(basename);
         }

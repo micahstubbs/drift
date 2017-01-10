@@ -8,6 +8,7 @@ import { requestFlow } from '../h2oProxy/requestFlow';
 import { requestHelpIndex } from '../h2oProxy/requestHelpIndex';
 import { requestHelpContent } from '../h2oProxy/requestHelpContent';
 import { validateFileExtension } from '../util/validateFileExtension';
+import { getFileBaseName } from '../util/getFileBaseName';
 
 export function help() {
   const lodash = window._;
@@ -116,7 +117,7 @@ export function help() {
               if (validateFileExtension(flowName, '.flow')) {
                 return requestFlow(packName, flowName, (error, flow) => {
                   if (!error) {
-                    return _.open(H2O.Util.getFileBaseName(flowName, '.flow'), flow);
+                    return _.open(getFileBaseName(flowName, '.flow'), flow);
                   }
                 });
               }
