@@ -8,7 +8,6 @@ const flowPrelude = flowPreludeFunction();
 
 import { parseInput } from './parseInput/parseInput';
 import { jobOutput } from './jobOutput/jobOutput';
-import { util } from './util/util';
 import { routines } from './routines/routines';
 import { localStorage } from './localStorage/localStorage';
 import { knockout } from './knockout/knockout';
@@ -71,7 +70,6 @@ import { flow } from './flow/flow';
     });
   }.call(this));
   routines();
-  util();
   jobOutput();
   parseInput();
 }).call(this);

@@ -768,12 +768,6 @@
     };
   }
 
-  function util() {
-    const Flow = window.Flow;
-    const H2O = window.H2O;
-    H2O.Util = {};
-  }
-
   function getTwoDimData(table, columnName) {
     const lodash = window._;
     const columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
@@ -13109,7 +13103,6 @@
       });
     }).call(this);
     routines();
-    util();
     jobOutput();
     parseInput();
   }).call(undefined);
