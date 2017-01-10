@@ -1,3 +1,5 @@
+import { multilineTextToHTML } from './coreUtils/multilineTextToHTML';
+
 export function flowConfirmDialog(_, _message, _opts, _go) {
   const lodash = window._;
   const Flow = window.Flow;
@@ -15,7 +17,7 @@ export function flowConfirmDialog(_, _message, _opts, _go) {
     title: _opts.title,
     acceptCaption: _opts.acceptCaption,
     declineCaption: _opts.declineCaption,
-    message: Flow.Util.multilineTextToHTML(_message),
+    message: multilineTextToHTML(_message),
     accept,
     decline,
     template: 'confirm-dialog',
