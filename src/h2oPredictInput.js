@@ -1,6 +1,6 @@
 import { getModelRequest } from './h2oProxy/getModelRequest';
 import { getModelsRequest } from './h2oProxy/getModelsRequest';
-import { uuid } from './coreUtils/uuid';
+import { uuid } from './utils/uuid';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();

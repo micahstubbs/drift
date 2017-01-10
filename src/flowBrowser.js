@@ -1,6 +1,6 @@
 import { getObjectsRequest } from './h2oProxy/getObjectsRequest';
 import { deleteObjectRequest } from './h2oProxy/deleteObjectRequest';
-import { fromNow } from './coreUtils/fromNow';
+import { fromNow } from './utils/fromNow';
 
 export function flowBrowser(_) {
   const lodash = window._;

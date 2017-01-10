@@ -1,5 +1,5 @@
 import { requestPojoPreview } from './h2oProxy/requestPojoPreview';
-import { highlight } from './coreUtils/highlight';
+import { highlight } from './utils/highlight';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();

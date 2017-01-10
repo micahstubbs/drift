@@ -1,4 +1,4 @@
-import { describeCount } from './coreUtils/describeCount';
+import { describeCount } from './utils/describeCount';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();

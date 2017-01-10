@@ -1,4 +1,4 @@
-import { uuid } from '../coreUtils/uuid';
+import { uuid } from '../utils/uuid';
 
 export function populateFramesAndColumns(_, frameKey, algorithm, parameters, go) {
   const lodash = window._;

@@ -1,4 +1,4 @@
-import { formatBytes } from './coreUtils/formatBytes';
+import { formatBytes } from './utils/formatBytes';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
