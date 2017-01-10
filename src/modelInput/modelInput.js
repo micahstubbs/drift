@@ -1,5 +1,4 @@
 import { createControl } from './createControl';
-
 import { createGridableValues } from './createGridableValues';
 import { createControlFromParameter } from './createControlFromParameter';
 
