@@ -1,20 +1,9 @@
+import { describeCount } from './describeCount';
+
 export function coreUtils() {
   const lodash = window._;
   const Flow = window.Flow;
   const moment = window.moment;
-  const describeCount = (count, singular, plural) => {
-    if (!plural) {
-      plural = `${singular}s`;
-    }
-    switch (count) {
-      case 0:
-        return `No ${plural}`;
-      case 1:
-        return `1 ${singular}`;
-      default:
-        return `${count} ${plural}`;
-    }
-  };
   const fromNow = date => moment(date).fromNow();
   const formatBytes = bytes => {
     const sizes = [
