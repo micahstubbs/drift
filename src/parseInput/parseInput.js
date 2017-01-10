@@ -21,7 +21,7 @@ export function parseInput() {
     caption: type,
   }));
   const parseDelimiters = (() => {
-    const whitespaceDelimiters = lodash.map(whitespaceSeparators, createDelimiter);
+    const whitespaceDelimiters = whitespaceSeparators.map(createDelimiter);
     const characterDelimiters = lodash.times(126 - whitespaceSeparators.length, i => {
       const charCode = i + whitespaceSeparators.length;
       return createDelimiter(String.fromCharCode(charCode), charCode);
@@ -35,7 +35,7 @@ export function parseInput() {
   H2O.SetupParseOutput = (_, _go, _inputs, _result) => {
     let _currentPage;
     const _inputKey = _inputs.paths ? 'paths' : 'source_frames';
-    const _sourceKeys = lodash.map(_result.source_frames, src => src.name);
+    const _sourceKeys = _result.source_frames.map(src => src.name);
     const _parseType = Flow.Dataflow.signal(lodash.find(parseTypes, parseType => parseType.type === _result.parse_type));
     const _canReconfigure = Flow.Dataflow.lift(_parseType, parseType => parseType.type !== 'SVMLight');
     const _delimiter = Flow.Dataflow.signal(lodash.find(parseDelimiters, delimiter => delimiter.charCode === _result.separator));
