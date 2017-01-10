@@ -2425,9 +2425,13 @@
     return result;
   }
 
+  function uuid() {
+    return (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null;
+  }
+
   function createTempKey() {
     const Flow = window.Flow;
-    return `flow_${ Flow.Util.uuid().replace(/\-/g, '') }`;
+    return `flow_${ uuid().replace(/\-/g, '') }`;
   }
 
   function computeSplits(ratios, keys) {
@@ -5994,7 +5998,7 @@
     const lodash = window._;
     const Flow = window.Flow;
     const _ref = opt.predictions_frame;
-    const _destinationKey = Flow.Dataflow.signal(_ref != null ? _ref : `prediction-${ Flow.Util.uuid() }`);
+    const _destinationKey = Flow.Dataflow.signal(_ref != null ? _ref : `prediction-${ uuid() }`);
     const _selectedModels = opt.models ? opt.models : opt.model ? [opt.model] : [];
     const _selectedFrames = opt.frames ? opt.frames : opt.frame ? [opt.frame] : [];
     const _selectedModelsCaption = _selectedModels.join(', ');
@@ -6424,7 +6428,7 @@
     const Flow = window.Flow;
     // TODO display in .jade
     const _exception = Flow.Dataflow.signal(null);
-    const _destinationKey = Flow.Dataflow.signal(`merged-${ Flow.Util.uuid() }`);
+    const _destinationKey = Flow.Dataflow.signal(`merged-${ uuid() }`);
     const _frames = Flow.Dataflow.signals([]);
     const _selectedLeftFrame = Flow.Dataflow.signal(null);
     const _leftColumns = Flow.Dataflow.signals([]);
@@ -6506,7 +6510,7 @@
 
     // TODO display in .jade
     const _exception = Flow.Dataflow.signal(null);
-    const _destinationKey = Flow.Dataflow.signal(`ppd-${ Flow.Util.uuid() }`);
+    const _destinationKey = Flow.Dataflow.signal(`ppd-${ uuid() }`);
     const _frames = Flow.Dataflow.signals([]);
     const _models = Flow.Dataflow.signals([]);
     const _selectedModel = Flow.Dataflow.signals(null);
@@ -6714,7 +6718,7 @@
     const Flow = window.Flow;
     const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
     if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
-      destinationKeyParameter.actual_value = `${ algorithm }-${ Flow.Util.uuid() }`;
+      destinationKeyParameter.actual_value = `${ algorithm }-${ uuid() }`;
     }
 
     //
@@ -7339,7 +7343,7 @@
     const _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$48.isTruthy);
     const _gridStrategies = ['Cartesian', 'RandomDiscrete'];
     const _isGrided = Flow.Dataflow.signal(false);
-    const _gridId = Flow.Dataflow.signal(`grid-${ Flow.Util.uuid() }`);
+    const _gridId = Flow.Dataflow.signal(`grid-${ uuid() }`);
     const _gridStrategy = Flow.Dataflow.signal('Cartesian');
     const _isGridRandomDiscrete = Flow.Dataflow.lift(_gridStrategy, strategy => strategy !== _gridStrategies[0]);
     const _gridMaxModels = Flow.Dataflow.signal(1000);
@@ -8796,9 +8800,7 @@
   function coreUtils() {
     const lodash = window._;
     const Flow = window.Flow;
-    Flow.Util = {
-      uuid: (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null
-    };
+    Flow.Util = {};
   }
 
   function localStorage() {

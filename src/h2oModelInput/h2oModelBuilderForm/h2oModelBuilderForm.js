@@ -4,6 +4,8 @@ import { performValidations } from './performValidations';
 
 import { createControlFromParameter } from '../createControlFromParameter';
 
+import { uuid } from '../../coreUtils/uuid';
+
 import { flowPreludeFunction } from '../../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -25,7 +27,7 @@ export function h2oModelBuilderForm(_, _algorithm, _parameters) {
     'RandomDiscrete',
   ];
   const _isGrided = Flow.Dataflow.signal(false);
-  const _gridId = Flow.Dataflow.signal(`grid-${Flow.Util.uuid()}`);
+  const _gridId = Flow.Dataflow.signal(`grid-${uuid()}`);
   const _gridStrategy = Flow.Dataflow.signal('Cartesian');
   const _isGridRandomDiscrete = Flow.Dataflow.lift(_gridStrategy, strategy => strategy !== _gridStrategies[0]);
   const _gridMaxModels = Flow.Dataflow.signal(1000);

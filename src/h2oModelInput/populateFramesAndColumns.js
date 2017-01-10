@@ -1,9 +1,11 @@
+import { uuid } from '../coreUtils/uuid';
+
 export function populateFramesAndColumns(_, frameKey, algorithm, parameters, go) {
   const lodash = window._;
   const Flow = window.Flow;
   const destinationKeyParameter = lodash.find(parameters, parameter => parameter.name === 'model_id');
   if (destinationKeyParameter && !destinationKeyParameter.actual_value) {
-    destinationKeyParameter.actual_value = `${algorithm}-${Flow.Util.uuid()}`;
+    destinationKeyParameter.actual_value = `${algorithm}-${uuid()}`;
   }
 
       //

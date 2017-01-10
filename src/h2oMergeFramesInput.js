@@ -1,3 +1,5 @@
+import { uuid } from './coreUtils/uuid';
+
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -6,7 +8,7 @@ export function h2oMergeFramesInput(_, _go) {
   const Flow = window.Flow;
   // TODO display in .jade
   const _exception = Flow.Dataflow.signal(null);
-  const _destinationKey = Flow.Dataflow.signal(`merged-${Flow.Util.uuid()}`);
+  const _destinationKey = Flow.Dataflow.signal(`merged-${uuid()}`);
   const _frames = Flow.Dataflow.signals([]);
   const _selectedLeftFrame = Flow.Dataflow.signal(null);
   const _leftColumns = Flow.Dataflow.signals([]);
