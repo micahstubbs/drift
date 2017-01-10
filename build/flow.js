@@ -9422,47 +9422,6 @@
     return self;
   }
 
-  const flowPrelude$51 = flowPreludeFunction();
-
-  function createObservableFunction(initialValue) {
-    const lodash = window._;
-    let currentValue;
-    const arrows = [];
-    currentValue = initialValue;
-    const notifySubscribers = (arrows, newValue) => {
-      let arrow;
-      let _i;
-      let _len;
-      for (_i = 0, _len = arrows.length; _i < _len; _i++) {
-        arrow = arrows[_i];
-        arrow.func(newValue);
-      }
-    };
-    const self = function (newValue) {
-      if (arguments.length === 0) {
-        return currentValue;
-      }
-      const unchanged = self.equalityComparer ? self.equalityComparer(currentValue, newValue) : currentValue === newValue;
-      if (!unchanged) {
-        currentValue = newValue;
-        return notifySubscribers(arrows, newValue);
-      }
-    };
-    self.subscribe = func => {
-      let arrow;
-      console.assert(lodash.isFunction(func));
-      arrows.push(arrow = {
-        func,
-        dispose() {
-          return flowPrelude$51.remove(arrows, arrow);
-        }
-      });
-      return arrow;
-    };
-    self.__observable__ = true;
-    return self;
-  }
-
   function isObservableFunction(obj) {
     if (obj.__observable__) {
       return true;
@@ -9495,6 +9454,73 @@
     }
     console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
     return arrows.dispose();
+  }
+
+  const flowPrelude$52 = flowPreludeFunction();
+
+  function createObservableFunction(initialValue) {
+    const lodash = window._;
+    let currentValue;
+    const arrows = [];
+    currentValue = initialValue;
+    const notifySubscribers = (arrows, newValue) => {
+      let arrow;
+      let _i;
+      let _len;
+      for (_i = 0, _len = arrows.length; _i < _len; _i++) {
+        arrow = arrows[_i];
+        arrow.func(newValue);
+      }
+    };
+    const self = function (newValue) {
+      if (arguments.length === 0) {
+        return currentValue;
+      }
+      const unchanged = self.equalityComparer ? self.equalityComparer(currentValue, newValue) : currentValue === newValue;
+      if (!unchanged) {
+        currentValue = newValue;
+        return notifySubscribers(arrows, newValue);
+      }
+    };
+    self.subscribe = func => {
+      let arrow;
+      console.assert(lodash.isFunction(func));
+      arrows.push(arrow = {
+        func,
+        dispose() {
+          return flowPrelude$52.remove(arrows, arrow);
+        }
+      });
+      return arrow;
+    };
+    self.__observable__ = true;
+    return self;
+  }
+
+  const flowPrelude$51 = flowPreludeFunction();
+
+  function createSignal(value, equalityComparer) {
+    const lodash = window._;
+    const ko = window.ko;
+
+    // decide if we use knockout observables
+    // or Flow custom observables
+    let createObservable;
+    if (typeof ko !== 'undefined' && ko !== null) {
+      createObservable = ko.observable;
+    } else {
+      createObservable = createObservableFunction;
+    }
+
+    // create the signal
+    if (arguments.length === 0) {
+      return createSignal(void 0, flowPrelude$51.never);
+    }
+    const observable = createObservable(value);
+    if (lodash.isFunction(equalityComparer)) {
+      observable.equalityComparer = equalityComparer;
+    }
+    return observable;
   }
 
   function createSignals(array) {
@@ -9547,40 +9573,20 @@
   const flowPrelude$49 = flowPreludeFunction();
 
   //
-  // Reactive programming / Dataflow programming wrapper over ko
+  // Reactive programming / Dataflow programming wrapper over knockout
   //
-
   function dataflow() {
     const lodash = window._;
     const Flow = window.Flow;
     const ko = window.ko;
     const __slice = [].slice;
     Flow.Dataflow = (() => {
-      let createObservable;
-      let createObservableArray;
       let isObservable;
       if (typeof ko !== 'undefined' && ko !== null) {
-        createObservable = ko.observable;
-        createObservableArray = ko.observableArray;
         isObservable = ko.isObservable;
       } else {
-        createObservable = createObservableFunction;
-        createObservableArray = createObservable;
         isObservable = isObservableFunction;
       }
-      // abstracting out `createSignal` breaks the cell left border color
-      // should turn blue when the cell executes
-      // stays orange if this is abstracted
-      const createSignal = function (value, equalityComparer) {
-        if (arguments.length === 0) {
-          return createSignal(void 0, flowPrelude$49.never);
-        }
-        const observable = createObservable(value);
-        if (lodash.isFunction(equalityComparer)) {
-          observable.equalityComparer = equalityComparer;
-        }
-        return observable;
-      };
       const _isSignal = isObservable;
       //
       // Combinators
@@ -9919,7 +9925,7 @@
     };
   }
 
-  const flowPrelude$52 = flowPreludeFunction();
+  const flowPrelude$53 = flowPreludeFunction();
 
   function async() {
     const lodash = window._;
@@ -10181,9 +10187,9 @@
           a = args[0];
           b = args[1];
           c = args[2];
-          ta = flowPrelude$52.typeOf(a);
-          tb = flowPrelude$52.typeOf(b);
-          tc = flowPrelude$52.typeOf(c);
+          ta = flowPrelude$53.typeOf(a);
+          tb = flowPrelude$53.typeOf(b);
+          tc = flowPrelude$53.typeOf(c);
           if (ta === 'Array' && tb === 'String') {
             return _find$3(b, c, a);
           } else if (ta === 'String' && tc === 'Array') {
@@ -10236,7 +10242,7 @@
     };
   }
 
-  const flowPrelude$53 = flowPreludeFunction();
+  const flowPrelude$54 = flowPreludeFunction();
 
   function objectBrowser() {
     const lodash = window._;
@@ -10299,7 +10305,7 @@
       if (recurse == null) {
         recurse = false;
       }
-      const type = flowPrelude$53.typeOf(element);
+      const type = flowPrelude$54.typeOf(element);
       switch (type) {
         case 'Boolean':
         case 'String':
@@ -10329,7 +10335,7 @@
     Flow.objectBrowserElement = (key, object) => {
       const _expansions = Flow.Dataflow.signal(null);
       const _isExpanded = Flow.Dataflow.signal(false);
-      const _type = flowPrelude$53.typeOf(object);
+      const _type = flowPrelude$54.typeOf(object);
       const _canExpand = isExpandable(_type);
       const toggle = () => {
         let expansions;
@@ -11629,7 +11635,7 @@
     return render;
   }
 
-  const flowPrelude$54 = flowPreludeFunction();
+  const flowPrelude$55 = flowPreludeFunction();
 
   function notebook() {
     const lodash = window._;
@@ -12052,7 +12058,7 @@
             return _.growl(_ref != null ? _ref : error);
           }
           _.growl('File uploaded successfully!');
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$54.stringify(result.result.destination_frame) }]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$55.stringify(result.result.destination_frame) }]`);
         }
       });
       const toggleInput = () => _selectedCell.toggleInput();
@@ -12308,7 +12314,7 @@
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
       }
       const initializeMenus = builder => {
-        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$54.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
+        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$55.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
         return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
         // TODO Cluster I/O
         createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')),
@@ -12491,7 +12497,7 @@
     };
   }
 
-  const flowPrelude$55 = flowPreludeFunction();
+  const flowPrelude$56 = flowPreludeFunction();
 
   function clipboard() {
     const lodash = window._;
@@ -12518,7 +12524,7 @@
         }
         const execute = () => _.insertAndExecuteCell(_type, _input);
         const insert = () => _.insertCell(_type, _input);
-        flowPrelude$55.remove = () => {
+        flowPrelude$56.remove = () => {
           if (_canRemove) {
             return removeClip(_list, self);
           }
@@ -12528,7 +12534,7 @@
           input: _input,
           execute,
           insert,
-          remove: flowPrelude$55.remove,
+          remove: flowPrelude$56.remove,
           canRemove: _canRemove
         };
         return self;
@@ -12815,7 +12821,7 @@
     return requestWithOpts(_, '/3/Typeahead/files', opts, go);
   }
 
-  const flowPrelude$56 = flowPreludeFunction();
+  const flowPrelude$57 = flowPreludeFunction();
 
   function h2oProxy(_) {
     const lodash = window._;
