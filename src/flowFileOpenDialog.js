@@ -1,7 +1,7 @@
 import { getObjectExistsRequest } from './h2oProxy/getObjectExistsRequest';
 import { postUploadObjectRequest } from './h2oProxy/postUploadObjectRequest';
-import { validateFileExtension } from './util/validateFileExtension';
-import { getFileBaseName } from './util/getFileBaseName';
+import { validateFileExtension } from './utils/validateFileExtension';
+import { getFileBaseName } from './utils/getFileBaseName';
 
 export function flowFileOpenDialog(_, _go) {
   const Flow = window.Flow;

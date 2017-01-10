@@ -7,8 +7,8 @@ import { requestPack } from '../h2oProxy/requestPack';
 import { requestFlow } from '../h2oProxy/requestFlow';
 import { requestHelpIndex } from '../h2oProxy/requestHelpIndex';
 import { requestHelpContent } from '../h2oProxy/requestHelpContent';
-import { validateFileExtension } from '../util/validateFileExtension';
-import { getFileBaseName } from '../util/getFileBaseName';
+import { validateFileExtension } from '../utils/validateFileExtension';
+import { getFileBaseName } from '../utils/getFileBaseName';
 
 export function help() {
   const lodash = window._;
