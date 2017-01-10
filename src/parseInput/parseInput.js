@@ -9,6 +9,7 @@ import { refreshPreview } from './refreshPreview';
 import { makePage } from './makePage';
 import { filterColumns } from './filterColumns';
 import { parseFiles } from './parseFiles';
+import { _columnsAccessorFunction } from './_columnsAccessorFunction';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -53,33 +54,7 @@ export function parseInput() {
     const _columnNameSearchTerm = Flow.Dataflow.signal('');
     const _preview = Flow.Dataflow.signal(_result);
     const _chunkSize = Flow.Dataflow.lift(_preview, preview => preview.chunk_size);
-    const _columns = Flow.Dataflow.lift(_preview, preview => {
-      let data;
-      let i;
-      let j;
-      let row;
-      let _i;
-      let _j;
-      const columnTypes = preview.column_types;
-      const columnCount = columnTypes.length;
-      const previewData = preview.data;
-      const rowCount = previewData.length;
-      const columnNames = preview.column_names;
-      const rows = new Array(columnCount);
-      for (j = _i = 0; columnCount >= 0 ? _i < columnCount : _i > columnCount; j = columnCount >= 0 ? ++_i : --_i) {
-        data = new Array(rowCount);
-        for (i = _j = 0; rowCount >= 0 ? _j < rowCount : _j > rowCount; i = rowCount >= 0 ? ++_j : --_j) {
-          data[i] = previewData[i][j];
-        }
-        rows[j] = row = {
-          index: `${(j + 1)}`,
-          name: Flow.Dataflow.signal(columnNames ? columnNames[j] : ''),
-          type: Flow.Dataflow.signal(columnTypes[j]),
-          data,
-        };
-      }
-      return rows;
-    });
+    const _columns = Flow.Dataflow.lift(_preview, preview => _columnsAccessorFunction(preview));
     const _columnCount = Flow.Dataflow.lift(_columns, columns => (columns != null ? columns.length : void 0) || 0);
     _currentPage = 0;
     Flow.Dataflow.act(_columns, columns => lodash.forEach(columns, column => Flow.Dataflow.react(column.type, () => {

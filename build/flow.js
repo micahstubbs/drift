@@ -411,6 +411,35 @@
     return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
   }
 
+  function _columnsAccessorFunction(preview) {
+    const Flow = window.Flow;
+    let data;
+    let i;
+    let j;
+    let row;
+    let _i;
+    let _j;
+    const columnTypes = preview.column_types;
+    const columnCount = columnTypes.length;
+    const previewData = preview.data;
+    const rowCount = previewData.length;
+    const columnNames = preview.column_names;
+    const rows = new Array(columnCount);
+    for (j = _i = 0; columnCount >= 0 ? _i < columnCount : _i > columnCount; j = columnCount >= 0 ? ++_i : --_i) {
+      data = new Array(rowCount);
+      for (i = _j = 0; rowCount >= 0 ? _j < rowCount : _j > rowCount; i = rowCount >= 0 ? ++_j : --_j) {
+        data[i] = previewData[i][j];
+      }
+      rows[j] = row = {
+        index: `${ j + 1 }`,
+        name: Flow.Dataflow.signal(columnNames ? columnNames[j] : ''),
+        type: Flow.Dataflow.signal(columnTypes[j]),
+        data
+      };
+    }
+    return rows;
+  }
+
   const flowPrelude$3 = flowPreludeFunction();
 
   function parseInput() {
@@ -453,33 +482,7 @@
       const _columnNameSearchTerm = Flow.Dataflow.signal('');
       const _preview = Flow.Dataflow.signal(_result);
       const _chunkSize = Flow.Dataflow.lift(_preview, preview => preview.chunk_size);
-      const _columns = Flow.Dataflow.lift(_preview, preview => {
-        let data;
-        let i;
-        let j;
-        let row;
-        let _i;
-        let _j;
-        const columnTypes = preview.column_types;
-        const columnCount = columnTypes.length;
-        const previewData = preview.data;
-        const rowCount = previewData.length;
-        const columnNames = preview.column_names;
-        const rows = new Array(columnCount);
-        for (j = _i = 0; columnCount >= 0 ? _i < columnCount : _i > columnCount; j = columnCount >= 0 ? ++_i : --_i) {
-          data = new Array(rowCount);
-          for (i = _j = 0; rowCount >= 0 ? _j < rowCount : _j > rowCount; i = rowCount >= 0 ? ++_j : --_j) {
-            data[i] = previewData[i][j];
-          }
-          rows[j] = row = {
-            index: `${ j + 1 }`,
-            name: Flow.Dataflow.signal(columnNames ? columnNames[j] : ''),
-            type: Flow.Dataflow.signal(columnTypes[j]),
-            data
-          };
-        }
-        return rows;
-      });
+      const _columns = Flow.Dataflow.lift(_preview, preview => _columnsAccessorFunction(preview));
       const _columnCount = Flow.Dataflow.lift(_columns, columns => (columns != null ? columns.length : void 0) || 0);
       _currentPage = 0;
       Flow.Dataflow.act(_columns, columns => lodash.forEach(columns, column => Flow.Dataflow.react(column.type, () => {
