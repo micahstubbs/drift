@@ -745,24 +745,25 @@
     };
   }
 
+  function createOptions(options) {
+    let option;
+    let _i;
+    let _len;
+    const _results = [];
+    for (_i = 0, _len = options.length; _i < _len; _i++) {
+      option = options[_i];
+      _results.push({
+        caption: option,
+        value: option.toLowerCase()
+      });
+    }
+    return _results;
+  }
+
   function imputeInput() {
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const createOptions = options => {
-      let option;
-      let _i;
-      let _len;
-      const _results = [];
-      for (_i = 0, _len = options.length; _i < _len; _i++) {
-        option = options[_i];
-        _results.push({
-          caption: option,
-          value: option.toLowerCase()
-        });
-      }
-      return _results;
-    };
     const _allMethods = createOptions(['Mean', 'Median', 'Mode']);
     const _allCombineMethods = createOptions(['Interpolate', 'Average', 'Low', 'High']);
     H2O.ImputeInput = (_, _go, opts) => {
