@@ -9422,13 +9422,6 @@
     return self;
   }
 
-  function isObservableFunction(obj) {
-    if (obj.__observable__) {
-      return true;
-    }
-    return false;
-  }
-
   function _link(source, func) {
     const lodash = window._;
     console.assert(lodash.isFunction(source, '[signal] is not a function'));
@@ -9534,6 +9527,24 @@
     return createObservableArray(array || []);
   }
 
+  function isObservableFunction(obj) {
+    if (obj.__observable__) {
+      return true;
+    }
+    return false;
+  }
+
+  function _isSignal() {
+    const ko = window.ko;
+    let isObservable;
+    if (typeof ko !== 'undefined' && ko !== null) {
+      isObservable = ko.isObservable;
+    } else {
+      isObservable = isObservableFunction;
+    }
+    return isObservable;
+  }
+
   function _apply$1(sources, func) {
     const lodash = window._;
     return func(...lodash.map(sources, source => source()));
@@ -9588,32 +9599,20 @@
   // Reactive programming / Dataflow programming wrapper over knockout
   //
   function dataflow() {
-    const lodash = window._;
     const Flow = window.Flow;
-    const ko = window.ko;
-    const __slice = [].slice;
-    Flow.Dataflow = (() => {
-      let isObservable;
-      if (typeof ko !== 'undefined' && ko !== null) {
-        isObservable = ko.isObservable;
-      } else {
-        isObservable = isObservableFunction;
-      }
-      const _isSignal = isObservable;
-      return {
-        slot: createSlot,
-        slots: createSlots,
-        signal: createSignal,
-        signals: createSignals,
-        isSignal: _isSignal,
-        link: _link,
-        unlink: _unlink,
-        act: _act,
-        react: _react,
-        lift: _lift,
-        merge: _merge
-      };
-    })();
+    Flow.Dataflow = (() => ({
+      slot: createSlot,
+      slots: createSlots,
+      signal: createSignal,
+      signals: createSignals,
+      isSignal: _isSignal,
+      link: _link,
+      unlink: _unlink,
+      act: _act,
+      react: _react,
+      lift: _lift,
+      merge: _merge
+    }))();
   }
 
   //
