@@ -42,7 +42,7 @@ export function createListControl(parameter) {
   _lastUsedSearchTerm = null;
   _lastUsedIgnoreNaTerm = null;
   // abstracting this out produces errors
-  // this is too tightly coupled
+  // this is too tightly coupled 
   // defer for now
   const filterItems = force => {
     let entry;
@@ -91,12 +91,14 @@ export function createListControl(parameter) {
     blockSelectionUpdates(() => changeSelection(_filteredItems(), false));
     return _selectionCount(0);
   };
+  // depends on `filterItems()`
   const goToPreviousPage = () => {
     if (_canGoToPreviousPage()) {
       _currentPage(_currentPage() - 1);
       filterItems();
     }
   };
+  // depends on `filterItems()`
   const goToNextPage = () => {
     if (_canGoToNextPage()) {
       _currentPage(_currentPage() + 1);
