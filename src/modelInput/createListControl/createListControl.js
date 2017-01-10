@@ -2,6 +2,7 @@ import { createControl } from '../createControl';
 
 import { blockSelectionUpdates } from './blockSelectionUpdates';
 import { createEntry } from './createEntry';
+import { changeSelection } from './changeSelection';
 
 export function createListControl(parameter) {
   const lodash = window._;
@@ -40,6 +41,9 @@ export function createListControl(parameter) {
   Flow.Dataflow.react(_entries, () => filterItems(true));
   _lastUsedSearchTerm = null;
   _lastUsedIgnoreNaTerm = null;
+  // abstracting this out produces errors
+  // this is too tightly coupled
+  // defer for now
   const filterItems = force => {
     let entry;
     let filteredItems;
@@ -77,15 +81,6 @@ export function createListControl(parameter) {
     }
     const start = _currentPage() * MaxItemsPerPage;
     _visibleItems(_filteredItems().slice(start, start + MaxItemsPerPage));
-  };
-  const changeSelection = (source, value) => {
-    let entry;
-    let _i;
-    let _len;
-    for (_i = 0, _len = source.length; _i < _len; _i++) {
-      entry = source[_i];
-      entry.isSelected(value);
-    }
   };
   const selectFiltered = () => {
     const entries = _filteredItems();
