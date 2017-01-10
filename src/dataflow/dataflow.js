@@ -1,6 +1,6 @@
 import { createSlot } from './createSlot';
 import { createSlots } from './createSlots';
-import { createObservable } from './createObservable';
+import { createObservableFunction } from './createObservableFunction';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -23,6 +23,7 @@ export function dataflow() {
       createObservableArray = ko.observableArray;
       isObservable = ko.isObservable;
     } else {
+      createObservable = createObservableFunction;
       createObservableArray = createObservable;
       isObservable = obj => {
         if (obj.__observable__) {

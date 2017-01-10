@@ -1,7 +1,7 @@
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
-export function createObservable(initialValue) {
+export function createObservableFunction(initialValue) {
   const lodash = window._;
   let currentValue;
   const arrows = [];
