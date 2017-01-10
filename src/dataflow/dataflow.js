@@ -4,6 +4,7 @@ import { createObservableFunction } from './createObservableFunction';
 import { isObservableFunction } from './isObservableFunction';
 import { _link } from './_link';
 import { _unlink } from './_unlink';
+import { createSignals } from './createSignals';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -44,7 +45,6 @@ export function dataflow() {
       return observable;
     };
     const _isSignal = isObservable;
-    const createSignals = array => createObservableArray(array || []);
     //
     // Combinators
     //
