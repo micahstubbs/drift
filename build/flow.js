@@ -472,12 +472,14 @@
       blockSelectionUpdates(() => changeSelection(_filteredItems(), false));
       return _selectionCount(0);
     };
+    // depends on `filterItems()`
     const goToPreviousPage = () => {
       if (_canGoToPreviousPage()) {
         _currentPage(_currentPage() - 1);
         filterItems();
       }
     };
+    // depends on `filterItems()`
     const goToNextPage = () => {
       if (_canGoToNextPage()) {
         _currentPage(_currentPage() + 1);
@@ -500,6 +502,16 @@
     control.goToNextPage = goToNextPage;
     control.canGoToPreviousPage = _canGoToPreviousPage;
     control.canGoToNextPage = _canGoToNextPage;
+    return control;
+  }
+
+  function createCheckboxControl(parameter) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _value = Flow.Dataflow.signal(parameter.actual_value);
+    const control = createControl('checkbox', parameter);
+    control.clientId = lodash.uniqueId();
+    control.value = _value;
     return control;
   }
 
@@ -737,13 +749,6 @@
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const createCheckboxControl = parameter => {
-      const _value = Flow.Dataflow.signal(parameter.actual_value);
-      const control = createControl('checkbox', parameter);
-      control.clientId = lodash.uniqueId();
-      control.value = _value;
-      return control;
-    };
     const createControlFromParameter = parameter => {
       switch (parameter.type) {
         case 'enum':

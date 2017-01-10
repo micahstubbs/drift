@@ -42,7 +42,7 @@ export function createListControl(parameter) {
   _lastUsedSearchTerm = null;
   _lastUsedIgnoreNaTerm = null;
   // abstracting this out produces errors
-  // this is too tightly coupled 
+  // this is too tightly coupled
   // defer for now
   const filterItems = force => {
     let entry;

@@ -3,6 +3,7 @@ import { createTextboxControl } from './createTextboxControl';
 import { createGridableValues } from './createGridableValues';
 import { createDropdownControl } from './createDropdownControl';
 import { createListControl } from './createListControl/createListControl';
+import { createCheckboxControl } from './createCheckboxControl';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { postModelInputValidationRequest } from '../h2oProxy/postModelInputValidationRequest';
@@ -14,13 +15,6 @@ export function modelInput() {
   const lodash = window._;
   const Flow = window.Flow;
   const H2O = window.H2O;
-  const createCheckboxControl = parameter => {
-    const _value = Flow.Dataflow.signal(parameter.actual_value);
-    const control = createControl('checkbox', parameter);
-    control.clientId = lodash.uniqueId();
-    control.value = _value;
-    return control;
-  };
   const createControlFromParameter = parameter => {
     switch (parameter.type) {
       case 'enum':
