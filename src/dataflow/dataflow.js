@@ -1,6 +1,7 @@
 import { createSlot } from './createSlot';
 import { createSlots } from './createSlots';
 import { createObservableFunction } from './createObservableFunction';
+import { isObservableFunction } from './isObservableFunction';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -25,12 +26,7 @@ export function dataflow() {
     } else {
       createObservable = createObservableFunction;
       createObservableArray = createObservable;
-      isObservable = obj => {
-        if (obj.__observable__) {
-          return true;
-        }
-        return false;
-      };
+      isObservable = isObservableFunction;
     }
     const createSignal = function (value, equalityComparer) {
       if (arguments.length === 0) {

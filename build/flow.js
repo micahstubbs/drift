@@ -9463,6 +9463,13 @@
     return self;
   }
 
+  function isObservableFunction(obj) {
+    if (obj.__observable__) {
+      return true;
+    }
+    return false;
+  }
+
   const flowPrelude$49 = flowPreludeFunction();
 
   //
@@ -9485,12 +9492,7 @@
       } else {
         createObservable = createObservableFunction;
         createObservableArray = createObservable;
-        isObservable = obj => {
-          if (obj.__observable__) {
-            return true;
-          }
-          return false;
-        };
+        isObservable = isObservableFunction;
       }
       const createSignal = function (value, equalityComparer) {
         if (arguments.length === 0) {
