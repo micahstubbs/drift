@@ -6,6 +6,7 @@ import { dataTypes } from './dataTypes';
 // import functions
 import { createDelimiter } from './createDelimiter';
 import { refreshPreview } from './refreshPreview';
+import { makePage } from './makePage';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -108,10 +109,6 @@ export function parseInput() {
       );
     });
     const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
-    const makePage = (index, columns) => ({
-      index,
-      columns,
-    });
     const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
     const filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
     Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));

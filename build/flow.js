@@ -364,6 +364,13 @@
     });
   }
 
+  function makePage(index, columns) {
+    return {
+      index,
+      columns
+    };
+  }
+
   const flowPrelude$2 = flowPreludeFunction();
 
   function parseInput() {
@@ -444,10 +451,6 @@
         return refreshPreview(_, _columns, _sourceKeys, _parseType, _delimiter, _useSingleQuotes, _headerOptions, _headerOption, _preview);
       });
       const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
-      const makePage = (index, columns) => ({
-        index,
-        columns
-      });
       const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
       const filterColumns = () => _activePage(makePage(0, lodash.filter(_columns(), column => column.name().toLowerCase().indexOf(_columnNameSearchTerm().toLowerCase()) > -1)));
       Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns, 500));
