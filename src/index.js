@@ -6,7 +6,6 @@ import { flowForm } from './flowForm';
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
-import { modelInput } from './modelInput/modelInput';
 import { parseInput } from './parseInput/parseInput';
 import { jobOutput } from './jobOutput/jobOutput';
 import { imputeInput } from './imputeInput/imputeInput';
@@ -78,6 +77,5 @@ import { flow } from './flow/flow';
   util();
   imputeInput();
   jobOutput();
-  modelInput();
   parseInput();
 }).call(this);

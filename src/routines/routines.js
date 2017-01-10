@@ -103,6 +103,7 @@ import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
 import { h2oModelOutput } from '../h2oModelOutput';
 import { h2oDataFrameOutput } from '../h2oDataFrameOutput';
+import { h2oModelInput } from '../h2oModelInput/h2oModelInput';
 
 import { getGridRequest } from '../h2oProxy/getGridRequest';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
@@ -882,7 +883,7 @@ export function routines() {
         case importFiles:
           return _fork(proceed, _, h2oImportFilesInput, []);
         case buildModel:
-          return _fork(proceed, _, H2O.ModelInput, args);
+          return _fork(proceed, _, h2oModelInput, args);
         case buildAutoModel:
           return _fork(proceed, _, h2oAutoModelInput, args);
         case predict:
