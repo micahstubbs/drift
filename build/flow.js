@@ -3689,6 +3689,11 @@
     return doGet(_, '/3/Cloud', go);
   }
 
+  function fromNow(date) {
+    const moment = window.moment;
+    return moment(date).fromNow();
+  }
+
   function h2oCloudOutput(_, _go, _cloud) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -3708,7 +3713,7 @@
     const _hasConsensus = Flow.Dataflow.signal();
     const _isLocked = Flow.Dataflow.signal();
     const _nodes = Flow.Dataflow.signals();
-    const formatMilliseconds = ms => Flow.Util.fromNow(new Date(new Date().getTime() - ms));
+    const formatMilliseconds = ms => fromNow(new Date(new Date().getTime() - ms));
 
     // precision = 3
     const format3f = d3.format('.3f');
@@ -8749,7 +8754,6 @@
     const lodash = window._;
     const Flow = window.Flow;
     const moment = window.moment;
-    const fromNow = date => moment(date).fromNow();
     const formatBytes = bytes => {
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
       if (bytes === 0) {
@@ -8803,7 +8807,6 @@
       return code;
     };
     Flow.Util = {
-      fromNow,
       formatBytes,
       formatMilliseconds,
       formatElapsedTime,
@@ -11255,7 +11258,7 @@
     const createNotebookView = notebook => {
       const _name = notebook.name;
       const _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
-      const _fromNow = Flow.Dataflow.lift(_date, Flow.Util.fromNow);
+      const _fromNow = Flow.Dataflow.lift(_date, fromNow);
       const load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
         acceptCaption: 'Load Notebook',
         declineCaption: 'Cancel'

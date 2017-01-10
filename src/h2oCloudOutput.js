@@ -1,4 +1,5 @@
 import { getCloudRequest } from './h2oProxy/getCloudRequest';
+import { fromNow } from './coreUtils/fromNow';
 
 export function h2oCloudOutput(_, _go, _cloud) {
   const lodash = window._;
@@ -19,7 +20,7 @@ export function h2oCloudOutput(_, _go, _cloud) {
   const _hasConsensus = Flow.Dataflow.signal();
   const _isLocked = Flow.Dataflow.signal();
   const _nodes = Flow.Dataflow.signals();
-  const formatMilliseconds = ms => Flow.Util.fromNow(new Date(new Date().getTime() - ms));
+  const formatMilliseconds = ms => fromNow(new Date(new Date().getTime() - ms));
 
   // precision = 3
   const format3f = d3.format('.3f');

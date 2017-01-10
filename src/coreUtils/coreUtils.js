@@ -2,7 +2,6 @@ export function coreUtils() {
   const lodash = window._;
   const Flow = window.Flow;
   const moment = window.moment;
-  const fromNow = date => moment(date).fromNow();
   const formatBytes = bytes => {
     const sizes = [
       'Bytes',
@@ -67,7 +66,6 @@ export function coreUtils() {
     return code;
   };
   Flow.Util = {
-    fromNow,
     formatBytes,
     formatMilliseconds,
     formatElapsedTime,
