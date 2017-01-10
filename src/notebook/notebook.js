@@ -6,6 +6,8 @@ import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
 import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
 import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
 
+import { sanitizeName } from '../coreUtils/sanitizeName';
+
 import { flowHeading } from '../flowHeading';
 import { flowCoffeescript } from '../flowCoffeescript';
 import { flowRaw } from '../flowRaw';
@@ -392,7 +394,7 @@ export function notebook() {
       return _.saved();
     });
     const saveNotebook = () => {
-      const localName = Flow.Util.sanitizeName(_localName());
+      const localName = sanitizeName(_localName());
       if (localName === '') {
         return _.alert('Invalid notebook name.');
       }

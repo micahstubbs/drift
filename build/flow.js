@@ -768,11 +768,15 @@
     };
   }
 
+  function sanitizeName(name) {
+    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
+  }
+
   function util() {
     const Flow = window.Flow;
     const H2O = window.H2O;
     const validateFileExtension = (filename, extension) => filename.indexOf(extension, filename.length - extension.length) !== -1;
-    const getFileBaseName = (filename, extension) => Flow.Util.sanitizeName(filename.substr(0, filename.length - extension.length));
+    const getFileBaseName = (filename, extension) => sanitizeName(filename.substr(0, filename.length - extension.length));
     H2O.Util = {
       validateFileExtension,
       getFileBaseName
@@ -8785,7 +8789,6 @@
   function coreUtils() {
     const lodash = window._;
     const Flow = window.Flow;
-    const sanitizeName = name => name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
     const highlight = (code, lang) => {
       if (window.hljs) {
         return window.hljs.highlightAuto(code, [lang]).value;
@@ -8794,7 +8797,6 @@
     };
     Flow.Util = {
       uuid: (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null,
-      sanitizeName,
       highlight
     };
   }
@@ -12022,7 +12024,7 @@
         return _.saved();
       });
       const saveNotebook = () => {
-        const localName = Flow.Util.sanitizeName(_localName());
+        const localName = sanitizeName(_localName());
         if (localName === '') {
           return _.alert('Invalid notebook name.');
         }
