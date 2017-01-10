@@ -1626,6 +1626,15 @@
     };
   }
 
+  function formatBytes(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) {
+      return '0 Byte';
+    }
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+    return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
+  }
+
   const flowPrelude$11 = flowPreludeFunction();
 
   function h2oFrameOutput(_, _go, _frame) {
@@ -1725,7 +1734,7 @@
       key: _frame.frame_id.name,
       rowCount: _frame.rows,
       columnCount: _frame.total_column_count,
-      size: Flow.Util.formatBytes(_frame.byte_size),
+      size: formatBytes(_frame.byte_size),
       chunkSummary: _chunkSummary,
       distributionSummary: _distributionSummary,
       columnNameSearchTerm: _columnNameSearchTerm,
@@ -3539,7 +3548,7 @@
       return {
         key: frame.frame_id.name,
         isChecked: _isChecked,
-        size: Flow.Util.formatBytes(frame.byte_size),
+        size: formatBytes(frame.byte_size),
         rowCount: frame.rows,
         columnCount: frame.columns,
         isText: frame.is_text,
@@ -8754,14 +8763,6 @@
     const lodash = window._;
     const Flow = window.Flow;
     const moment = window.moment;
-    const formatBytes = bytes => {
-      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-      if (bytes === 0) {
-        return '0 Byte';
-      }
-      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
-      return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
-    };
     const padTime = n => `${ n < 10 ? '0' : '' }${ n }`;
     const splitTime = s => {
       const ms = s % 1000;
@@ -8807,7 +8808,6 @@
       return code;
     };
     Flow.Util = {
-      formatBytes,
       formatMilliseconds,
       formatElapsedTime,
       formatClockTime,
