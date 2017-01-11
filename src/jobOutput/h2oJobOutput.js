@@ -1,5 +1,6 @@
 import { getJobOutputStatusColor } from './getJobOutputStatusColor';
 import { getJobProgressPercent } from './getJobProgressPercent';
+import { isJobRunning } from './isJobRunning';
 
 import { getJobRequest } from '../h2oProxy/getJobRequest';
 import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
@@ -45,7 +46,6 @@ export function h2oJobOutput(_, _go, _job) {
   const _messages = Flow.Dataflow.signal(null);
   const _canView = Flow.Dataflow.signal(false);
   const _canCancel = Flow.Dataflow.signal(false);
-  const isJobRunning = job => job.status === 'CREATED' || job.status === 'RUNNING';
   const messageIcons = {
     ERROR: 'fa-times-circle red',
     WARN: 'fa-warning orange',

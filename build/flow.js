@@ -838,6 +838,10 @@
     return `${ Math.ceil(100 * progress) }%`;
   }
 
+  function isJobRunning(job) {
+    return job.status === 'CREATED' || job.status === 'RUNNING';
+  }
+
   function optsToString(opts) {
     let str;
     if (opts != null) {
@@ -1034,7 +1038,6 @@
     const _messages = Flow.Dataflow.signal(null);
     const _canView = Flow.Dataflow.signal(false);
     const _canCancel = Flow.Dataflow.signal(false);
-    const isJobRunning = job => job.status === 'CREATED' || job.status === 'RUNNING';
     const messageIcons = {
       ERROR: 'fa-times-circle red',
       WARN: 'fa-warning orange',
