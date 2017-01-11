@@ -195,6 +195,30 @@
     };
   }
 
+  const jobOutputStatusColors = {
+    failed: '#d9534f',
+    done: '#ccc',
+    running: '#f0ad4e'
+  };
+
+  function getJobOutputStatusColor(status) {
+    // CREATED   Job was created
+    // RUNNING   Job is running
+    // CANCELLED Job was cancelled by user
+    // FAILED    Job crashed, error message/exception is available
+    // DONE      Job was successfully finished
+    switch (status) {
+      case 'DONE':
+        return jobOutputStatusColors.done;
+      case 'CREATED':
+      case 'RUNNING':
+        return jobOutputStatusColors.running;
+      default:
+        // 'CANCELLED', 'FAILED'
+        return jobOutputStatusColors.failed;
+    }
+  }
+
   function optsToString(opts) {
     let str;
     if (opts != null) {
@@ -352,35 +376,12 @@
     return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
   }
 
-  const jobOutputStatusColors = {
-    failed: '#d9534f',
-    done: '#ccc',
-    running: '#f0ad4e'
-  };
-
   const flowPrelude$3 = flowPreludeFunction();
 
   function jobOutput() {
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const getJobOutputStatusColor = status => {
-      // CREATED   Job was created
-      // RUNNING   Job is running
-      // CANCELLED Job was cancelled by user
-      // FAILED    Job crashed, error message/exception is available
-      // DONE      Job was successfully finished
-      switch (status) {
-        case 'DONE':
-          return jobOutputStatusColors.done;
-        case 'CREATED':
-        case 'RUNNING':
-          return jobOutputStatusColors.running;
-        default:
-          // 'CANCELLED', 'FAILED'
-          return jobOutputStatusColors.failed;
-      }
-    };
     const getJobProgressPercent = progress => `${ Math.ceil(100 * progress) }%`;
     H2O.JobOutput = (_, _go, _job) => {
       const _isBusy = Flow.Dataflow.signal(false);
