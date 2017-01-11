@@ -842,6 +842,16 @@
     return job.status === 'CREATED' || job.status === 'RUNNING';
   }
 
+  function canView(job, _destinationType) {
+    switch (_destinationType) {
+      case 'Model':
+      case 'Grid':
+        return job.ready_for_view;
+      default:
+        return !isJobRunning(job);
+    }
+  }
+
   function optsToString(opts) {
     let str;
     if (opts != null) {
@@ -1043,15 +1053,6 @@
       WARN: 'fa-warning orange',
       INFO: 'fa-info-circle'
     };
-    const canView = job => {
-      switch (_destinationType) {
-        case 'Model':
-        case 'Grid':
-          return job.ready_for_view;
-        default:
-          return !isJobRunning(job);
-      }
-    };
     const updateJob = job => {
       let cause;
       let message;
@@ -1087,7 +1088,7 @@
         }
         _exception(Flow.failure(_, new Flow.Error('Job failure.', cause)));
       }
-      _canView(canView(job));
+      _canView(canView(_destinationType, job));
       return _canCancel(isJobRunning(job));
     };
     const refresh = () => {
@@ -1168,7 +1169,7 @@
       messages: _messages,
       exception: _exception,
       isLive: _isLive,
-      canView: _canView,
+      canView: _canView.bind(this, _destinationType),
       canCancel: _canCancel,
       cancel,
       view,

@@ -1,10 +1,12 @@
 import { getJobOutputStatusColor } from './getJobOutputStatusColor';
 import { getJobProgressPercent } from './getJobProgressPercent';
 import { isJobRunning } from './isJobRunning';
+import { canView } from './canView';
 
 import { getJobRequest } from '../h2oProxy/getJobRequest';
 import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
 import { formatMilliseconds } from '../utils/formatMilliseconds';
+
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -51,15 +53,6 @@ export function h2oJobOutput(_, _go, _job) {
     WARN: 'fa-warning orange',
     INFO: 'fa-info-circle',
   };
-  const canView = job => {
-    switch (_destinationType) {
-      case 'Model':
-      case 'Grid':
-        return job.ready_for_view;
-      default:
-        return !isJobRunning(job);
-    }
-  };
   const updateJob = job => {
     let cause;
     let message;
@@ -95,7 +88,7 @@ export function h2oJobOutput(_, _go, _job) {
       }
       _exception(Flow.failure(_, new Flow.Error('Job failure.', cause)));
     }
-    _canView(canView(job));
+    _canView(canView(_destinationType, job));
     return _canCancel(isJobRunning(job));
   };
   const refresh = () => {
@@ -176,7 +169,7 @@ export function h2oJobOutput(_, _go, _job) {
     messages: _messages,
     exception: _exception,
     isLive: _isLive,
-    canView: _canView,
+    canView: _canView.bind(this, _destinationType),
     canCancel: _canCancel,
     cancel,
     view,
