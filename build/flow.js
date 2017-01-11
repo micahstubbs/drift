@@ -445,6 +445,13 @@
     return _activePage(makePage(currentPage.index + 1, currentPage.columns));
   }
 
+  function goToPreviousPage(_activePage) {
+    const currentPage = _activePage();
+    if (currentPage.index > 0) {
+      return _activePage(makePage(currentPage.index - 1, currentPage.columns));
+    }
+  }
+
   const flowPrelude$3 = flowPreludeFunction();
 
   function parseInput() {
@@ -513,12 +520,6 @@
       });
       const _canGoToNextPage = Flow.Dataflow.lift(_activePage, currentPage => (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length);
       const _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, currentPage => currentPage.index > 0);
-      const goToPreviousPage = () => {
-        const currentPage = _activePage();
-        if (currentPage.index > 0) {
-          return _activePage(makePage(currentPage.index - 1, currentPage.columns));
-        }
-      };
       lodash.defer(_go);
       return {
         sourceKeys: _inputs[_inputKey],
@@ -538,7 +539,7 @@
         canGoToNextPage: _canGoToNextPage,
         canGoToPreviousPage: _canGoToPreviousPage,
         goToNextPage: goToNextPage.bind(this, _activePage),
-        goToPreviousPage,
+        goToPreviousPage: goToPreviousPage.bind(this, _activePage),
         template: 'flow-parse-raw-input'
       };
     };

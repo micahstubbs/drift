@@ -11,6 +11,7 @@ import { filterColumns } from './filterColumns';
 import { parseFiles } from './parseFiles';
 import { _columnsAccessorFunction } from './_columnsAccessorFunction';
 import { goToNextPage } from './goToNextPage';
+import { goToPreviousPage } from './goToPreviousPage';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -73,8 +74,8 @@ export function parseInput() {
             _headerOption,
             _preview
           );
-        });
-      });
+        })
+      })
     });
     Flow.Dataflow.react(_parseType, _delimiter, _useSingleQuotes, _headerOption, () => {
       _currentPage = 0;
@@ -91,7 +92,7 @@ export function parseInput() {
       );
     });
     const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
-    const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
+    const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns)); 
     Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(filterColumns.bind(this, _activePage, _columns, _columnNameSearchTerm), 500));
     const _visibleColumns = Flow.Dataflow.lift(_activePage, currentPage => {
       const start = currentPage.index * MaxItemsPerPage;
@@ -99,12 +100,6 @@ export function parseInput() {
     });
     const _canGoToNextPage = Flow.Dataflow.lift(_activePage, currentPage => (currentPage.index + 1) * MaxItemsPerPage < currentPage.columns.length);
     const _canGoToPreviousPage = Flow.Dataflow.lift(_activePage, currentPage => currentPage.index > 0);
-    const goToPreviousPage = () => {
-      const currentPage = _activePage();
-      if (currentPage.index > 0) {
-        return _activePage(makePage(currentPage.index - 1, currentPage.columns));
-      }
-    };
     lodash.defer(_go);
     return {
       sourceKeys: _inputs[_inputKey],
@@ -124,7 +119,7 @@ export function parseInput() {
       canGoToNextPage: _canGoToNextPage,
       canGoToPreviousPage: _canGoToPreviousPage,
       goToNextPage: goToNextPage.bind(this, _activePage),
-      goToPreviousPage,
+      goToPreviousPage: goToPreviousPage.bind(this, _activePage),
       template: 'flow-parse-raw-input',
     };
   };
