@@ -1,4 +1,5 @@
 import { getJobOutputStatusColor } from './getJobOutputStatusColor';
+import { getJobProgressPercent } from './getJobProgressPercent';
 
 import { getJobRequest } from '../h2oProxy/getJobRequest';
 import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
@@ -11,7 +12,6 @@ export function jobOutput() {
   const lodash = window._;
   const Flow = window.Flow;
   const H2O = window.H2O;
-  const getJobProgressPercent = progress => `${Math.ceil(100 * progress)}%`;
   H2O.JobOutput = (_, _go, _job) => {
     const _isBusy = Flow.Dataflow.signal(false);
     const _isLive = Flow.Dataflow.signal(false);

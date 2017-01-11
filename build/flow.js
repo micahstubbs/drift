@@ -219,6 +219,10 @@
     }
   }
 
+  function getJobProgressPercent(progress) {
+    return `${ Math.ceil(100 * progress) }%`;
+  }
+
   function optsToString(opts) {
     let str;
     if (opts != null) {
@@ -382,7 +386,6 @@
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const getJobProgressPercent = progress => `${ Math.ceil(100 * progress) }%`;
     H2O.JobOutput = (_, _go, _job) => {
       const _isBusy = Flow.Dataflow.signal(false);
       const _isLive = Flow.Dataflow.signal(false);
