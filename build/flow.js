@@ -957,6 +957,30 @@
     });
   }
 
+  function doPost(_, path, opts, go) {
+    return http(_, 'POST', path, opts, go);
+  }
+
+  function postCancelJobRequest(_, key, go) {
+    const Flow = window.Flow;
+    return doPost(_, `/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
+      if (error) {
+        return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
+      }
+      return go(null);
+    });
+  }
+
+  function cancel(_, _key, _job, updateJob) {
+    console.log('arguments passed to jobOutput cancel', arguments);
+    return postCancelJobRequest(_, _key, (error, result) => {
+      if (error) {
+        return console.debug(error);
+      }
+      return updateJob(_job);
+    });
+  }
+
   function doGet(_, path, go) {
     return http(_, 'GET', path, null, go);
   }
@@ -969,20 +993,6 @@
         return go(new Flow.Error(`Error fetching job \'${ key }\'`, error));
       }
       return go(null, lodash.head(result.jobs));
-    });
-  }
-
-  function doPost(_, path, opts, go) {
-    return http(_, 'POST', path, opts, go);
-  }
-
-  function postCancelJobRequest(_, key, go) {
-    const Flow = window.Flow;
-    return doPost(_, `/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
-      if (error) {
-        return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
-      }
-      return go(null);
     });
   }
 
@@ -1139,12 +1149,6 @@
         // do nothing
       }
     };
-    const cancel = () => postCancelJobRequest(_, _key, (error, result) => {
-      if (error) {
-        return console.debug(error);
-      }
-      return updateJob(_job);
-    });
     const initialize = job => {
       updateJob(job);
       if (isJobRunning(job)) {
@@ -1155,6 +1159,7 @@
       }
     };
     initialize(_job);
+    console.log('_ object before return from h2oJobOutput', _);
     return {
       key: _key,
       description: _description,
@@ -1171,7 +1176,7 @@
       isLive: _isLive,
       canView: _canView.bind(this, _destinationType),
       canCancel: _canCancel,
-      cancel,
+      cancel: cancel.bind(this, _, _key, _job, updateJob),
       view,
       template: 'flow-job-output'
     };
@@ -2133,6 +2138,7 @@
   }
 
   function requestCreateFrame(_, opts, go) {
+    console.log('arguments from requestCreateFrame', arguments);
     return postCreateFrameRequest(_, opts, (error, result) => {
       if (error) {
         return go(error);

@@ -2,9 +2,9 @@ import { getJobOutputStatusColor } from './getJobOutputStatusColor';
 import { getJobProgressPercent } from './getJobProgressPercent';
 import { isJobRunning } from './isJobRunning';
 import { canView } from './canView';
+import { cancel } from './cancel';
 
 import { getJobRequest } from '../h2oProxy/getJobRequest';
-import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
 import { formatMilliseconds } from '../utils/formatMilliseconds';
 
 
@@ -139,12 +139,6 @@ export function h2oJobOutput(_, _go, _job) {
           // do nothing
     }
   };
-  const cancel = () => postCancelJobRequest(_, _key, (error, result) => {
-    if (error) {
-      return console.debug(error);
-    }
-    return updateJob(_job);
-  });
   const initialize = job => {
     updateJob(job);
     if (isJobRunning(job)) {
@@ -171,7 +165,7 @@ export function h2oJobOutput(_, _go, _job) {
     isLive: _isLive,
     canView: _canView.bind(this, _destinationType),
     canCancel: _canCancel,
-    cancel,
+    cancel: cancel.bind(this, _, _key, _job, updateJob),
     view,
     template: 'flow-job-output',
   };
