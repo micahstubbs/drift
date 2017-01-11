@@ -810,6 +810,24 @@
     }
   };
 
+  function isJobRunning(job) {
+    return job.status === 'CREATED' || job.status === 'RUNNING';
+  }
+
+  function canView(_destinationType, job) {
+    switch (_destinationType) {
+      case 'Model':
+      case 'Grid':
+        return job.ready_for_view;
+      default:
+        return !isJobRunning(job);
+    }
+  }
+
+  function getJobProgressPercent(progress) {
+    return `${ Math.ceil(100 * progress) }%`;
+  }
+
   const jobOutputStatusColors = {
     failed: '#d9534f',
     done: '#ccc',
@@ -834,22 +852,67 @@
     }
   }
 
-  function getJobProgressPercent(progress) {
-    return `${ Math.ceil(100 * progress) }%`;
+  function splitTime(s) {
+    const ms = s % 1000;
+    s = (s - ms) / 1000;
+    const secs = s % 60;
+    s = (s - secs) / 60;
+    const mins = s % 60;
+    const hrs = (s - mins) / 60;
+    return [hrs, mins, secs, ms];
   }
 
-  function isJobRunning(job) {
-    return job.status === 'CREATED' || job.status === 'RUNNING';
+  function padTime(n) {
+    return `${ n < 10 ? '0' : '' }${ n }`;
   }
 
-  function canView(_destinationType, job) {
-    switch (_destinationType) {
-      case 'Model':
-      case 'Grid':
-        return job.ready_for_view;
-      default:
-        return !isJobRunning(job);
+  function formatMilliseconds(s) {
+    const _ref = splitTime(s);
+    const hrs = _ref[0];
+    const mins = _ref[1];
+    const secs = _ref[2];
+    const ms = _ref[3];
+    return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
+  }
+
+  function updateJob(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, canView, _destinationType, _canCancel, job) {
+    const Flow = window.Flow;
+    let cause;
+    let message;
+    let messages;
+    _runTime(formatMilliseconds(job.msec));
+    _progress(getJobProgressPercent(job.progress));
+    _remainingTime(job.progress ? formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
+    _progressMessage(job.progress_msg);
+    _status(job.status);
+    _statusColor(getJobOutputStatusColor(job.status));
+    if (job.error_count) {
+      messages = (() => {
+        let _i;
+        let _len;
+        const _ref = job.messages;
+        const _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          message = _ref[_i];
+          if (message.message_type !== 'HIDE') {
+            _results.push({
+              icon: messageIcons[message.message_type],
+              message: `${ message.field_name }: ${ message.message }`
+            });
+          }
+        }
+        return _results;
+      })();
+      _messages(messages);
+    } else if (job.exception) {
+      cause = new Error(job.exception);
+      if (job.stacktrace) {
+        cause.stack = job.stacktrace;
+      }
+      _exception(Flow.failure(_, new Flow.Error('Job failure.', cause)));
     }
+    _canView(canView(_destinationType, job));
+    return _canCancel(isJobRunning(job));
   }
 
   function optsToString(opts) {
@@ -971,8 +1034,7 @@
     });
   }
 
-  function cancel(_, _key, _job, updateJob) {
-    console.log('arguments passed to jobOutput cancel', arguments);
+  function cancel(_, _key, _job) {
     return postCancelJobRequest(_, _key, (error, result) => {
       if (error) {
         return console.debug(error);
@@ -994,29 +1056,6 @@
       }
       return go(null, lodash.head(result.jobs));
     });
-  }
-
-  function splitTime(s) {
-    const ms = s % 1000;
-    s = (s - ms) / 1000;
-    const secs = s % 60;
-    s = (s - secs) / 60;
-    const mins = s % 60;
-    const hrs = (s - mins) / 60;
-    return [hrs, mins, secs, ms];
-  }
-
-  function padTime(n) {
-    return `${ n < 10 ? '0' : '' }${ n }`;
-  }
-
-  function formatMilliseconds(s) {
-    const _ref = splitTime(s);
-    const hrs = _ref[0];
-    const mins = _ref[1];
-    const secs = _ref[2];
-    const ms = _ref[3];
-    return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
   }
 
   const flowPrelude$7 = flowPreludeFunction();
@@ -1063,44 +1102,6 @@
       WARN: 'fa-warning orange',
       INFO: 'fa-info-circle'
     };
-    const updateJob = job => {
-      let cause;
-      let message;
-      let messages;
-      _runTime(formatMilliseconds(job.msec));
-      _progress(getJobProgressPercent(job.progress));
-      _remainingTime(job.progress ? formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
-      _progressMessage(job.progress_msg);
-      _status(job.status);
-      _statusColor(getJobOutputStatusColor(job.status));
-      if (job.error_count) {
-        messages = (() => {
-          let _i;
-          let _len;
-          const _ref = job.messages;
-          const _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            message = _ref[_i];
-            if (message.message_type !== 'HIDE') {
-              _results.push({
-                icon: messageIcons[message.message_type],
-                message: `${ message.field_name }: ${ message.message }`
-              });
-            }
-          }
-          return _results;
-        })();
-        _messages(messages);
-      } else if (job.exception) {
-        cause = new Error(job.exception);
-        if (job.stacktrace) {
-          cause.stack = job.stacktrace;
-        }
-        _exception(Flow.failure(_, new Flow.Error('Job failure.', cause)));
-      }
-      _canView(canView(_destinationType, job));
-      return _canCancel(isJobRunning(job));
-    };
     const refresh = () => {
       _isBusy(true);
       return getJobRequest(_, _key, (error, job) => {
@@ -1109,7 +1110,7 @@
           _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
           return _isLive(false);
         }
-        updateJob(job);
+        updateJob(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, canView, _destinationType, _canCancel, job);
         if (isJobRunning(job)) {
           if (_isLive()) {
             return lodash.delay(refresh, 1000);
@@ -1150,7 +1151,7 @@
       }
     };
     const initialize = job => {
-      updateJob(job);
+      updateJob(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, canView, _destinationType, _canCancel, job);
       if (isJobRunning(job)) {
         return _isLive(true);
       }
@@ -1159,7 +1160,6 @@
       }
     };
     initialize(_job);
-    console.log('_ object before return from h2oJobOutput', _);
     return {
       key: _key,
       description: _description,
@@ -1176,7 +1176,7 @@
       isLive: _isLive,
       canView: _canView.bind(this, _destinationType),
       canCancel: _canCancel,
-      cancel: cancel.bind(this, _, _key, _job, updateJob),
+      cancel: cancel.bind(this, _, _key, _job),
       view,
       template: 'flow-job-output'
     };
