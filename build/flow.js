@@ -842,7 +842,7 @@
     return job.status === 'CREATED' || job.status === 'RUNNING';
   }
 
-  function canView(job, _destinationType) {
+  function canView(_destinationType, job) {
     switch (_destinationType) {
       case 'Model':
       case 'Grid':

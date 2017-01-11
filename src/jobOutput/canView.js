@@ -1,6 +1,6 @@
 import { isJobRunning } from './isJobRunning';
 
-export function canView(job, _destinationType) {
+export function canView(_destinationType, job) {
   switch (_destinationType) {
     case 'Model':
     case 'Grid':
