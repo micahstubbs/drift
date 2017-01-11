@@ -6,7 +6,6 @@ import { flowForm } from './flowForm';
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
-import { parseInput } from './parseInput/parseInput';
 import { jobOutput } from './jobOutput/jobOutput';
 import { routines } from './routines/routines';
 import { localStorage } from './localStorage/localStorage';
@@ -71,5 +70,4 @@ import { flow } from './flow/flow';
   }.call(this));
   routines();
   jobOutput();
-  parseInput();
 }).call(this);
