@@ -1,6 +1,7 @@
 import { getJobRequest } from '../h2oProxy/getJobRequest';
 import { postCancelJobRequest } from '../h2oProxy/postCancelJobRequest';
 import { formatMilliseconds } from '../utils/formatMilliseconds';
+import { jobOutputStatusColors } from './jobOutputStatusColors';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -9,11 +10,6 @@ export function jobOutput() {
   const lodash = window._;
   const Flow = window.Flow;
   const H2O = window.H2O;
-  const jobOutputStatusColors = {
-    failed: '#d9534f',
-    done: '#ccc',
-    running: '#f0ad4e',
-  };
   const getJobOutputStatusColor = status => {
     // CREATED   Job was created
     // RUNNING   Job is running

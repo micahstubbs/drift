@@ -352,17 +352,18 @@
     return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
   }
 
+  const jobOutputStatusColors = {
+    failed: '#d9534f',
+    done: '#ccc',
+    running: '#f0ad4e'
+  };
+
   const flowPrelude$3 = flowPreludeFunction();
 
   function jobOutput() {
     const lodash = window._;
     const Flow = window.Flow;
     const H2O = window.H2O;
-    const jobOutputStatusColors = {
-      failed: '#d9534f',
-      done: '#ccc',
-      running: '#f0ad4e'
-    };
     const getJobOutputStatusColor = status => {
       // CREATED   Job was created
       // RUNNING   Job is running
