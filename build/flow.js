@@ -1043,6 +1043,31 @@
     });
   }
 
+  const flowPrelude$7 = flowPreludeFunction();
+
+  function view(_, _canView, _destinationType, _job, _destinationKey) {
+    if (!_canView()) {
+      return;
+    }
+    switch (_destinationType) {
+      case 'Frame':
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$7.stringify(_destinationKey) }`);
+      case 'Model':
+        return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$7.stringify(_destinationKey) }`);
+      case 'Grid':
+        return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$7.stringify(_destinationKey) }`);
+      case 'PartialDependence':
+        return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$7.stringify(_destinationKey) }`);
+      case 'Auto Model':
+        // FIXME getGrid() for AutoML is hosed; resort to getGrids() for now.
+        return _.insertAndExecuteCell('cs', 'getGrids');
+      case 'Void':
+        return alert(`This frame was exported to\n${ _job.dest.name }`);
+      default:
+      // do nothing
+    }
+  }
+
   function doGet(_, path, go) {
     return http(_, 'GET', path, null, go);
   }
@@ -1057,8 +1082,6 @@
       return go(null, lodash.head(result.jobs));
     });
   }
-
-  const flowPrelude$7 = flowPreludeFunction();
 
   function h2oJobOutput(_, _go, _job) {
     const lodash = window._;
@@ -1102,6 +1125,8 @@
       WARN: 'fa-warning orange',
       INFO: 'fa-info-circle'
     };
+    // abstracting this out produces an error
+    // defer for now
     const refresh = () => {
       _isBusy(true);
       return getJobRequest(_, _key, (error, job) => {
@@ -1128,28 +1153,6 @@
         return refresh();
       }
     });
-    const view = () => {
-      if (!_canView()) {
-        return;
-      }
-      switch (_destinationType) {
-        case 'Frame':
-          return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$7.stringify(_destinationKey) }`);
-        case 'Model':
-          return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$7.stringify(_destinationKey) }`);
-        case 'Grid':
-          return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$7.stringify(_destinationKey) }`);
-        case 'PartialDependence':
-          return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$7.stringify(_destinationKey) }`);
-        case 'Auto Model':
-          // FIXME getGrid() for AutoML is hosed; resort to getGrids() for now.
-          return _.insertAndExecuteCell('cs', 'getGrids');
-        case 'Void':
-          return alert(`This frame was exported to\n${ _job.dest.name }`);
-        default:
-        // do nothing
-      }
-    };
     const initialize = job => {
       updateJob(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, canView, _destinationType, _canCancel, job);
       if (isJobRunning(job)) {
@@ -1177,7 +1180,7 @@
       canView: _canView.bind(this, _destinationType),
       canCancel: _canCancel,
       cancel: cancel.bind(this, _, _key, _job),
-      view,
+      view: view.bind(this, _, _canView, _destinationType, _job, _destinationKey),
       template: 'flow-job-output'
     };
   }

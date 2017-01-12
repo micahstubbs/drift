@@ -1,13 +1,10 @@
-
 import { isJobRunning } from './isJobRunning';
 import { canView } from './canView';
 import { cancel } from './cancel';
 import { updateJob } from './updateJob';
+import { view } from './view';
 
 import { getJobRequest } from '../h2oProxy/getJobRequest';
-
-import { flowPreludeFunction } from '../flowPreludeFunction';
-const flowPrelude = flowPreludeFunction();
 
 export function h2oJobOutput(_, _go, _job) {
   const lodash = window._;
@@ -51,6 +48,8 @@ export function h2oJobOutput(_, _go, _job) {
     WARN: 'fa-warning orange',
     INFO: 'fa-info-circle',
   };
+  // abstracting this out produces an error
+  // defer for now
   const refresh = () => {
     _isBusy(true);
     return getJobRequest(_, _key, (error, job) => {
@@ -93,28 +92,6 @@ export function h2oJobOutput(_, _go, _job) {
       return refresh();
     }
   });
-  const view = () => {
-    if (!_canView()) {
-      return;
-    }
-    switch (_destinationType) {
-      case 'Frame':
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${flowPrelude.stringify(_destinationKey)}`);
-      case 'Model':
-        return _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(_destinationKey)}`);
-      case 'Grid':
-        return _.insertAndExecuteCell('cs', `getGrid ${flowPrelude.stringify(_destinationKey)}`);
-      case 'PartialDependence':
-        return _.insertAndExecuteCell('cs', `getPartialDependence ${flowPrelude.stringify(_destinationKey)}`);
-      case 'Auto Model':
-          // FIXME getGrid() for AutoML is hosed; resort to getGrids() for now.
-        return _.insertAndExecuteCell('cs', 'getGrids');
-      case 'Void':
-        return alert(`This frame was exported to\n${_job.dest.name}`);
-      default:
-          // do nothing
-    }
-  };
   const initialize = job => {
     updateJob(
       _,
@@ -158,7 +135,14 @@ export function h2oJobOutput(_, _go, _job) {
     canView: _canView.bind(this, _destinationType),
     canCancel: _canCancel,
     cancel: cancel.bind(this, _, _key, _job),
-    view,
+    view: view.bind(
+      this,
+      _,
+      _canView,
+      _destinationType,
+      _job,
+      _destinationKey
+    ),
     template: 'flow-job-output',
   };
 }
