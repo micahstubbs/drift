@@ -11092,33 +11092,33 @@
     }
   }
 
+  function createLocalScope(node) {
+    let param;
+    let _i;
+    let _len;
+    // parse all declarations in this scope
+    const localScope = parseDeclarations(node.body);
+
+    // include formal parameters
+    const _ref = node.params;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      param = _ref[_i];
+      if (param.type === 'Identifier') {
+        localScope[param.name] = {
+          name: param.name,
+          object: 'local'
+        };
+      }
+    }
+    return localScope;
+  }
+
   function flowCoffeescriptKernel() {
     const lodash = window._;
     const Flow = window.Flow;
     const escodegen = window.escodegen;
     const esprima = window.esprima;
     const CoffeeScript = window.CoffeeScript;
-    const createLocalScope = node => {
-      let param;
-      let _i;
-      let _len;
-      // parse all declarations in this scope
-      const localScope = parseDeclarations(node.body);
-
-      // include formal parameters
-      const _ref = node.params;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        param = _ref[_i];
-        if (param.type === 'Identifier') {
-          localScope[param.name] = {
-            name: param.name,
-            object: 'local'
-          };
-        }
-      }
-      return localScope;
-    };
-
     // redefine scope by coalescing down to non-local identifiers
     const coalesceScopes = scopes => {
       let i;
