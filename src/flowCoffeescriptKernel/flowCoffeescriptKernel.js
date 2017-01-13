@@ -1,4 +1,5 @@
 import { safetyWrapCoffeescript } from './safetyWrapCoffeescript';
+import { compileCoffeescript } from './compileCoffeescript';
 
 export function flowCoffeescriptKernel() {
   const lodash = window._;
@@ -6,15 +7,6 @@ export function flowCoffeescriptKernel() {
   const escodegen = window.escodegen;
   const esprima = window.esprima;
   const CoffeeScript = window.CoffeeScript;
-  const compileCoffeescript = (cs, go) => {
-    let error;
-    try {
-      return go(null, CoffeeScript.compile(cs, { bare: true }));
-    } catch (_error) {
-      error = _error;
-      return go(new Flow.Error('Error compiling coffee-script', error));
-    }
-  };
   const parseJavascript = (js, go) => {
     let error;
     try {
