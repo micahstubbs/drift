@@ -3,6 +3,7 @@ import { compileCoffeescript } from './compileCoffeescript';
 import { parseJavascript } from './parseJavascript';
 import { parseDeclarations } from './parseDeclarations';
 import { traverseJavascript } from './traverseJavascript';
+import { deleteAstNode } from './deleteAstNode';
 
 export function flowCoffeescriptKernel() {
   const lodash = window._;
@@ -10,13 +11,6 @@ export function flowCoffeescriptKernel() {
   const escodegen = window.escodegen;
   const esprima = window.esprima;
   const CoffeeScript = window.CoffeeScript;
-  const deleteAstNode = (parent, i) => {
-    if (lodash.isArray(parent)) {
-      return parent.splice(i, 1);
-    } else if (lodash.isObject(parent)) {
-      return delete parent[i];
-    }
-  };
   const createLocalScope = node => {
     let param;
     let _i;
