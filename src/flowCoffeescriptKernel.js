@@ -1,3 +1,5 @@
+import { h2oRoutines } from './routines/h2oRoutines';
+
 export function flowCoffeescriptKernel() {
   const lodash = window._;
   const Flow = window.Flow;
@@ -279,7 +281,7 @@ export function flowCoffeescriptKernel() {
   };
   const rewriteJavascript = sandbox => (rootScope, program, go) => {
     let error;
-    const globalScope = createGlobalScope(rootScope, sandbox.routines);
+    const globalScope = createGlobalScope(rootScope, h2oRoutines);
     try {
       traverseJavascriptScoped([globalScope], globalScope, null, null, program, (globalScope, parent, key, node) => {
         let identifier;
@@ -343,7 +345,7 @@ export function flowCoffeescriptKernel() {
     console.log('sandbox from flowCoffeescriptKernel executeJavascript', sandbox);
     let error;
     try {
-      return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
+      return go(null, closure(h2oRoutines, sandbox.context, sandbox.results, print));
     } catch (_error) {
       error = _error;
       return go(new Flow.Error('Error executing javascript', error));

@@ -195,6 +195,2172 @@
     };
   }
 
+  function localStorage() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    if (!(typeof window !== 'undefined' && window !== null ? window.localStorage : void 0)) {
+      return;
+    }
+    const _ls = window.localStorage;
+    const keyOf = (type, id) => `${ type }:${ id }`;
+    const list = type => {
+      let i;
+      let id;
+      let key;
+      let t;
+      let _i;
+      let _ref;
+      let _ref1;
+      const objs = [];
+      for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
+        key = _ls.key(i);
+        _ref1 = key.split(':');
+        t = _ref1[0];
+        id = _ref1[1];
+        if (type === t) {
+          objs.push([type, id, JSON.parse(_ls.getItem(key))]);
+        }
+      }
+      return objs;
+    };
+    const read = (type, id) => {
+      const raw = _ls.getobj(keyOf(type, id));
+      if (raw) {
+        return JSON.parse(raw);
+      }
+      return null;
+    };
+    const write = (type, id, obj) => _ls.setItem(keyOf(type, id), JSON.stringify(obj));
+    const purge = (type, id) => {
+      if (id) {
+        return _ls.removeItem(keyOf(type, id));
+      }
+      return purgeAll(type);
+    };
+    const purgeAll = type => {
+      let i;
+      let key;
+      let _i;
+      let _len;
+      const allKeys = (() => {
+        let _i;
+        let _ref;
+        const _results = [];
+        for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
+          _results.push(_ls.key(i));
+        }
+        return _results;
+      })();
+      for (_i = 0, _len = allKeys.length; _i < _len; _i++) {
+        key = allKeys[_i];
+        if (type === lodash.head(key.split(':'))) {
+          _ls.removeItem(key);
+        }
+      }
+    };
+    Flow.LocalStorage = {
+      list,
+      read,
+      write,
+      purge
+    };
+  }
+
+  //
+  // Custom Knockout.js binding handlers
+  //
+  // init:
+  //   This will be called when the binding is first applied to an element
+  //   Set up any initial state, event handlers, etc. here
+  //
+  // update:
+  //   This will be called once when the binding is first applied to an element,
+  //    and again whenever the associated observable changes value.
+  //   Update the DOM element based on the supplied values here.
+  //
+  // Registering a callback on the disposal of an element
+  //
+  // To register a function to run when a node is removed,
+  // you can call ko.utils.domNodeDisposal.addDisposeCallback(node, callback).
+  // As an example, suppose you create a custom binding to instantiate a widget.
+  // When the element with the binding is removed,
+  // you may want to call the destroy method of the widget:
+  //
+  // ko.bindingHandlers.myWidget = {
+  //     init: function(element, valueAccessor) {
+  //         var options = ko.unwrap(valueAccessor()),
+  //             $el = $(element);
+  //
+  //         $el.myWidget(options);
+  //
+  //         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+  //             // This will be called when the element is removed by Knockout or
+  //             // if some other part of your code calls ko.removeNode(element)
+  //             $el.myWidget("destroy");
+  //         });
+  //     }
+  // };
+  //
+
+  function knockout() {
+    const lodash = window._;
+    const $ = window.jQuery;
+    const CodeMirror = window.CodeMirror;
+    const ko = window.ko;
+    const marked = window.marked;
+    if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
+      return;
+    }
+    ko.bindingHandlers.raw = {
+      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let $element;
+        const arg = ko.unwrap(valueAccessor());
+        if (arg) {
+          $element = $(element);
+          $element.empty();
+          $element.append(arg);
+        }
+      }
+    };
+    ko.bindingHandlers.markdown = {
+      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let error;
+        let html;
+        const data = ko.unwrap(valueAccessor());
+        try {
+          html = marked(data || '');
+        } catch (_error) {
+          error = _error;
+          html = error.message || 'Error rendering markdown.';
+        }
+        return $(element).html(html);
+      }
+    };
+    ko.bindingHandlers.stringify = {
+      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        const data = ko.unwrap(valueAccessor());
+        return $(element).text(JSON.stringify(data, null, 2));
+      }
+    };
+    ko.bindingHandlers.enterKey = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let $element;
+        const action = ko.unwrap(valueAccessor());
+        if (action) {
+          if (lodash.isFunction(action)) {
+            $element = $(element);
+            $element.keydown(e => {
+              if (e.which === 13) {
+                action(viewModel);
+              }
+            });
+          } else {
+            throw new Error('Enter key action is not a function');
+          }
+        }
+      }
+    };
+    ko.bindingHandlers.typeahead = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let $element;
+        const action = ko.unwrap(valueAccessor());
+        if (action) {
+          if (lodash.isFunction(action)) {
+            $element = $(element);
+            $element.typeahead(null, {
+              displayKey: 'value',
+              source: action
+            });
+          } else {
+            throw new Error('Typeahead action is not a function');
+          }
+        }
+      }
+    };
+    ko.bindingHandlers.cursorPosition = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        const arg = ko.unwrap(valueAccessor());
+        if (arg) {
+          // Bit of a hack.
+          // Attaches a method to the bound object that returns the cursor position.
+          // Uses dwieeb/jquery-textrange.
+          arg.getCursorPosition = () => $(element).textrange('get', 'position');
+        }
+      }
+    };
+    ko.bindingHandlers.autoResize = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let $el;
+        const arg = ko.unwrap(valueAccessor());
+        let resize;
+        if (arg) {
+          // Bit of a hack.
+          // Attaches a method to the bound object that resizes the element to fit its content.
+          arg.autoResize = resize = () => lodash.defer(() => $el.css('height', 'auto').height(element.scrollHeight));
+          $el = $(element).on('input', resize);
+          resize();
+        }
+      }
+    };
+    ko.bindingHandlers.scrollIntoView = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let $el;
+        let $viewport;
+        const arg = ko.unwrap(valueAccessor());
+        if (arg) {
+          // Bit of a hack.
+          // Attaches a method to the bound object that scrolls the cell into view
+          $el = $(element);
+          $viewport = $el.closest('.flow-box-notebook');
+          arg.scrollIntoView = immediate => {
+            if (immediate == null) {
+              immediate = false;
+            }
+            const position = $viewport.scrollTop();
+            const top = $el.position().top + position;
+            const height = $viewport.height();
+            // scroll if element is outside the viewport
+            if (top - 20 < position || top + 20 > position + height) {
+              if (immediate) {
+                return $viewport.scrollTop(top);
+              }
+              return $viewport.animate({ scrollTop: top }, 'fast');
+            }
+          };
+        }
+      }
+    };
+    ko.bindingHandlers.collapse = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let isCollapsed;
+        const caretDown = 'fa-caret-down';
+        const caretRight = 'fa-caret-right';
+        isCollapsed = ko.unwrap(valueAccessor());
+        const caretEl = document.createElement('i');
+        caretEl.className = 'fa';
+        caretEl.style.marginRight = '3px';
+        element.insertBefore(caretEl, element.firstChild);
+        const $el = $(element);
+        const $nextEl = $el.next();
+        if (!$nextEl.length) {
+          throw new Error('No collapsible sibling found');
+        }
+        const $caretEl = $(caretEl);
+        const toggle = () => {
+          if (isCollapsed) {
+            $caretEl.removeClass(caretDown).addClass(caretRight);
+            $nextEl.hide();
+          } else {
+            $caretEl.removeClass(caretRight).addClass(caretDown);
+            $nextEl.show();
+          }
+          isCollapsed = !isCollapsed;
+          return isCollapsed;
+        };
+        $el.css('cursor', 'pointer');
+        $el.attr('title', 'Click to expand/collapse');
+        $el.on('click', toggle);
+        toggle();
+        ko.utils.domNodeDisposal.addDisposeCallback(element, () => $el.off('click'));
+      }
+    };
+    ko.bindingHandlers.dom = {
+      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let $element;
+        const arg = ko.unwrap(valueAccessor());
+        if (arg) {
+          $element = $(element);
+          $element.empty();
+          $element.append(arg);
+        }
+      }
+    };
+    ko.bindingHandlers.dump = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        const object = ko.unwrap(valueAccessor());
+        return object;
+      }
+    };
+    ko.bindingHandlers.element = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        return valueAccessor()(element);
+      }
+    };
+    ko.bindingHandlers.file = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        let $file;
+        const file = valueAccessor();
+        if (file) {
+          $file = $(element);
+          $file.change(function () {
+            return file(this.files[0]);
+          });
+        }
+      }
+    };
+    ko.bindingHandlers.codemirror = {
+      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        // get the code mirror options
+        const options = ko.unwrap(valueAccessor());
+        // created editor replaces the textarea on which it was created
+        const editor = CodeMirror.fromTextArea(element, options);
+        editor.on('change', cm => allBindings().value(cm.getValue()));
+        element.editor = editor;
+        if (allBindings().value()) {
+          editor.setValue(allBindings().value());
+        }
+        const internalTextArea = $(editor.getWrapperElement()).find('div textarea');
+        internalTextArea.attr('rows', '1');
+        internalTextArea.attr('spellcheck', 'false');
+        internalTextArea.removeAttr('wrap');
+        return editor.refresh();
+      },
+      update(element, valueAccessor) {
+        if (element.editor) {
+          return element.editor.refresh();
+        }
+      }
+    };
+  }
+
+  function html() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const diecut = window.diecut;
+    if ((typeof window !== 'undefined' && window !== null ? window.diecut : void 0) == null) {
+      return;
+    }
+    Flow.HTML = {
+      template: diecut,
+      render(name, html) {
+        const el = document.createElement(name);
+        if (html) {
+          if (lodash.isString(html)) {
+            el.innerHTML = html;
+          } else {
+            el.appendChild(html);
+          }
+        }
+        return el;
+      }
+    };
+  }
+
+  function format() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const d3 = window.d3;
+    let formatTime;
+    const significantDigitsBeforeDecimal = value => 1 + Math.floor(Math.log(Math.abs(value)) / Math.LN10);
+    const Digits = (digits, value) => {
+      if (value === 0) {
+        return 0;
+      }
+      const sd = significantDigitsBeforeDecimal(value);
+      if (sd >= digits) {
+        return value.toFixed(0);
+      }
+      const magnitude = Math.pow(10, digits - sd);
+      return Math.round(value * magnitude) / magnitude;
+    };
+    if (typeof exports === 'undefined' || exports === null) {
+      formatTime = d3.time.format('%Y-%m-%d %H:%M:%S');
+    }
+    const formatDate = time => {
+      if (time) {
+        return formatTime(new Date(time));
+      }
+      return '-';
+    };
+    const __formatReal = {};
+    const formatReal = precision => {
+      const cached = __formatReal[precision];
+      //
+      // will leave the nested ternary statement commented for now
+      // may be useful to confirm later that the translation to an if else block
+      // was an accurate translation
+      //
+      // const format = cached ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${precision}f`);
+      let format;
+      if (cached) {
+        format = cached;
+      } else {
+        __formatReal[precision] = precision;
+        // __formatReal[precision] === -1 ? lodash.identity : d3.format(`.${precision}f`);
+        if (__formatReal[precision] === -1) {
+          format = lodash.identity;
+        } else {
+          format = d3.format(`.${ precision }f`);
+        }
+      }
+      return value => format(value);
+    };
+    Flow.Format = {
+      Digits,
+      Real: formatReal,
+      Date: formatDate,
+      time: formatTime
+    };
+  }
+
+  function error() {
+    const Flow = window.Flow;
+    const printStackTrace = window.printStackTrace;
+    const __hasProp = {}.hasOwnProperty;
+
+    const __extends = (child, parent) => {
+      let key;
+      for (key in parent) {
+        if (__hasProp.call(parent, key)) {
+          child[key] = parent[key];
+        }
+      }
+      function Ctor() {
+        this.constructor = child;
+      }
+      Ctor.prototype = parent.prototype;
+      child.prototype = new Ctor();
+      child.__super__ = parent.prototype;
+      return child;
+    };
+
+    const FlowError = (_super => {
+      __extends(FlowError, _super);
+      function FlowError(message, cause) {
+        let error;
+        const _ref = this.cause;
+        this.message = message;
+        this.cause = cause;
+        this.name = 'FlowError';
+        if (_ref != null ? _ref.stack : void 0) {
+          this.stack = this.cause.stack;
+        } else {
+          error = new Error();
+          if (error.stack) {
+            this.stack = error.stack;
+          } else {
+            this.stack = printStackTrace();
+          }
+        }
+      }
+      return FlowError;
+    })(Error);
+    Flow.Error = FlowError;
+  }
+
+  function multilineTextToHTML(text) {
+    const lodash = window._;
+    const EOL = '\n';
+    return lodash.map(text.split(EOL), str => lodash.escape(str)).join('<br/>');
+  }
+
+  function flowConfirmDialog(_, _message, _opts, _go) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    if (_opts == null) {
+      _opts = {};
+    }
+    lodash.defaults(_opts, {
+      title: 'Confirm',
+      acceptCaption: 'Yes',
+      declineCaption: 'No'
+    });
+    const accept = () => _go(true);
+    const decline = () => _go(false);
+    return {
+      title: _opts.title,
+      acceptCaption: _opts.acceptCaption,
+      declineCaption: _opts.declineCaption,
+      message: multilineTextToHTML(_message),
+      accept,
+      decline,
+      template: 'confirm-dialog'
+    };
+  }
+
+  function flowAlertDialog(_, _message, _opts, _go) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    if (_opts == null) {
+      _opts = {};
+    }
+    lodash.defaults(_opts, {
+      title: 'Alert',
+      acceptCaption: 'OK'
+    });
+    const accept = () => _go(true);
+    return {
+      title: _opts.title,
+      acceptCaption: _opts.acceptCaption,
+      message: multilineTextToHTML(_message),
+      accept,
+      template: 'alert-dialog'
+    };
+  }
+
+  function dialogs() {
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    const __slice = [].slice;
+    Flow.dialogs = _ => {
+      const _dialog = Flow.Dataflow.signal(null);
+      const showDialog = (ctor, args, _go) => {
+        let dialog;
+        let responded;
+        responded = false;
+        _dialog(dialog = ctor(...[_].concat(args).concat(go)));
+        const $dialog = $(`#${ dialog.template }`);
+        $dialog.modal();
+        $dialog.on('hidden.bs.modal', e => {
+          if (!responded) {
+            responded = true;
+            _dialog(null);
+            if (_go) {
+              return _go(null);
+            }
+          }
+        });
+        function go(response) {
+          if (!responded) {
+            responded = true;
+            $dialog.modal('hide');
+            if (_go) {
+              return _go(response);
+            }
+          }
+        }
+      };
+      Flow.Dataflow.link(_.dialog, function () {
+        let _i;
+        const ctor = arguments[0];
+        const args = arguments.length >= 3 ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []);
+        const go = arguments[_i++];
+        return showDialog(ctor, args, go);
+      });
+      Flow.Dataflow.link(_.confirm, (message, opts, go) => showDialog(flowConfirmDialog, [message, opts], go));
+      Flow.Dataflow.link(_.alert, (message, opts, go) => showDialog(flowAlertDialog, [message, opts], go));
+      return {
+        dialog: _dialog,
+        template(dialog) {
+          return `flow-${ dialog.template }`;
+        }
+      };
+    };
+  }
+
+  function createSlot() {
+    const lodash = window._;
+    const __slice = [].slice;
+    let arrow;
+    arrow = null;
+    const self = function () {
+      const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
+      if (arrow) {
+        return arrow.func.apply(null, args);
+      }
+      return void 0;
+    };
+    self.subscribe = func => {
+      console.assert(lodash.isFunction(func));
+      if (arrow) {
+        throw new Error('Cannot re-attach slot');
+      } else {
+        arrow = {
+          func,
+          dispose() {
+            arrow = null;
+            return arrow;
+          }
+        };
+        return arrow;
+      }
+    };
+    self.dispose = () => {
+      if (arrow) {
+        return arrow.dispose();
+      }
+    };
+    return self;
+  }
+
+  const flowPrelude$4 = flowPreludeFunction();
+
+  function createSlots() {
+    const lodash = window._;
+    const __slice = [].slice;
+    const arrows = [];
+    const self = function () {
+      const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
+      return lodash.map(arrows, arrow => arrow.func.apply(null, args));
+    };
+    self.subscribe = func => {
+      let arrow;
+      console.assert(lodash.isFunction(func));
+      arrows.push(arrow = {
+        func,
+        dispose() {
+          return flowPrelude$4.remove(arrows, arrow);
+        }
+      });
+      return arrow;
+    };
+    self.dispose = () => lodash.forEach(flowPrelude$4.copy(arrows), arrow => arrow.dispose());
+    return self;
+  }
+
+  function _link(source, func) {
+    const lodash = window._;
+    console.assert(lodash.isFunction(source, '[signal] is not a function'));
+    console.assert(lodash.isFunction(source.subscribe, '[signal] does not have a [dispose] method'));
+    console.assert(lodash.isFunction(func, '[func] is not a function'));
+    return source.subscribe(func);
+  }
+
+  function _unlink(arrows) {
+    const lodash = window._;
+    let arrow;
+    let _i;
+    let _len;
+    let _results;
+    if (lodash.isArray(arrows)) {
+      _results = [];
+      for (_i = 0, _len = arrows.length; _i < _len; _i++) {
+        arrow = arrows[_i];
+        console.assert(lodash.isFunction(arrow.dispose, '[arrow] does not have a [dispose] method'));
+        _results.push(arrow.dispose());
+      }
+      return _results;
+    }
+    console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
+    return arrows.dispose();
+  }
+
+  const flowPrelude$6 = flowPreludeFunction();
+
+  function createObservableFunction(initialValue) {
+    const lodash = window._;
+    let currentValue;
+    const arrows = [];
+    currentValue = initialValue;
+    const notifySubscribers = (arrows, newValue) => {
+      let arrow;
+      let _i;
+      let _len;
+      for (_i = 0, _len = arrows.length; _i < _len; _i++) {
+        arrow = arrows[_i];
+        arrow.func(newValue);
+      }
+    };
+    const self = function (newValue) {
+      if (arguments.length === 0) {
+        return currentValue;
+      }
+      const unchanged = self.equalityComparer ? self.equalityComparer(currentValue, newValue) : currentValue === newValue;
+      if (!unchanged) {
+        currentValue = newValue;
+        return notifySubscribers(arrows, newValue);
+      }
+    };
+    self.subscribe = func => {
+      let arrow;
+      console.assert(lodash.isFunction(func));
+      arrows.push(arrow = {
+        func,
+        dispose() {
+          return flowPrelude$6.remove(arrows, arrow);
+        }
+      });
+      return arrow;
+    };
+    self.__observable__ = true;
+    return self;
+  }
+
+  const flowPrelude$5 = flowPreludeFunction();
+
+  function createSignal(value, equalityComparer) {
+    const lodash = window._;
+    const ko = window.ko;
+
+    // decide if we use knockout observables
+    // or Flow custom observables
+    let createObservable;
+    if (typeof ko !== 'undefined' && ko !== null) {
+      createObservable = ko.observable;
+    } else {
+      createObservable = createObservableFunction;
+    }
+
+    // create the signal
+    if (arguments.length === 0) {
+      return createSignal(void 0, flowPrelude$5.never);
+    }
+    const observable = createObservable(value);
+    if (lodash.isFunction(equalityComparer)) {
+      observable.equalityComparer = equalityComparer;
+    }
+    return observable;
+  }
+
+  function createSignals(array) {
+    const ko = window.ko;
+    let createObservableArray;
+    if (typeof ko !== 'undefined' && ko !== null) {
+      createObservableArray = ko.observableArray;
+    } else {
+      createObservableArray = createObservableFunction;
+    }
+    return createObservableArray(array || []);
+  }
+
+  function isObservableFunction(obj) {
+    if (obj.__observable__) {
+      return true;
+    }
+    return false;
+  }
+
+  function _isSignal() {
+    const ko = window.ko;
+    let isObservable;
+    if (typeof ko !== 'undefined' && ko !== null) {
+      isObservable = ko.isObservable;
+    } else {
+      isObservable = isObservableFunction;
+    }
+    return isObservable;
+  }
+
+  function _apply(sources, func) {
+    const lodash = window._;
+    return func(...lodash.map(sources, source => source()));
+  }
+
+  function _act(...args) {
+    const lodash = window._;
+    const __slice = [].slice;
+    let _i;
+    const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
+    const func = args[_i++];
+    _apply(sources, func);
+    return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
+  }
+
+  function _react(...args) {
+    const lodash = window._;
+    const __slice = [].slice;
+    let _i;
+    const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
+    const func = args[_i++];
+    return lodash.map(sources, source => _link(source, () => _apply(sources, func)));
+  }
+
+  function _lift(...args) {
+    const lodash = window._;
+    const __slice = [].slice;
+    let _i;
+    const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
+    const func = args[_i++];
+    const evaluate = () => _apply(sources, func);
+    const target = createSignal(evaluate());
+    lodash.map(sources, source => _link(source, () => target(evaluate())));
+    return target;
+  }
+
+  function _merge(...args) {
+    const lodash = window._;
+    const __slice = [].slice;
+    let _i;
+    const sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []);
+    const target = args[_i++];
+    const func = args[_i++];
+    const evaluate = () => _apply(sources, func);
+    target(evaluate());
+    return lodash.map(sources, source => _link(source, () => target(evaluate())));
+  }
+
+  const flowPrelude$3 = flowPreludeFunction();
+
+  //
+  // Reactive programming / Dataflow programming wrapper over knockout
+  //
+  function dataflow() {
+    const Flow = window.Flow;
+    Flow.Dataflow = (() => ({
+      slot: createSlot,
+      slots: createSlots,
+      signal: createSignal,
+      signals: createSignals,
+      isSignal: _isSignal,
+      link: _link,
+      unlink: _unlink,
+      act: _act,
+      react: _react,
+      lift: _lift,
+      merge: _merge
+    }))();
+  }
+
+  //
+  // Insane hack to compress large 2D data tables.
+  // The basis for doing this is described here:
+  // http://www.html5rocks.com/en/tutorials/speed/v8/
+  // See Tip #1 "Hidden Classes"
+  //
+  // Applies to IE as well:
+  // http://msdn.microsoft.com/en-us/library/windows/apps/hh781219.aspx#optimize_property_access
+  //
+  // http://jsperf.com/big-data-matrix/3
+  // As of 31 Oct 2014, for a 10000 row, 100 column table in Chrome,
+  //   retained memory sizes:
+  // raw json: 31,165 KB
+  // array of objects: 41,840 KB
+  // array of arrays: 14,960 KB
+  // array of prototyped instances: 14,840 KB
+  //
+  // Usage:
+  // Foo = Flow.Data.createCompiledPrototype [ 'bar', 'baz', 'qux', ... ]
+  // foo = new Foo()
+  //
+  function data() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    let _prototypeId;
+    const __slice = [].slice;
+    _prototypeId = 0;
+    const nextPrototypeName = () => `Map${ ++_prototypeId }`;
+    const _prototypeCache = {};
+    const createCompiledPrototype = attrs => {
+      // Since the prototype depends only on attribute names,
+      // return a cached prototype, if any.
+      let attr;
+      let i;
+      const proto = _prototypeCache[cacheKey];
+      const cacheKey = attrs.join('\0');
+      if (proto) {
+        return proto;
+      }
+      const params = (() => {
+        let _i;
+        let _ref;
+        const _results = [];
+        for (i = _i = 0, _ref = attrs.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
+          _results.push(`a${ i }`);
+        }
+        return _results;
+      })();
+      const inits = (() => {
+        let _i;
+        let _len;
+        const _results = [];
+        for (i = _i = 0, _len = attrs.length; _i < _len; i = ++_i) {
+          attr = attrs[i];
+          _results.push(`this[${ JSON.stringify(attr) }]=a${ i };`);
+        }
+        return _results;
+      })();
+      const prototypeName = nextPrototypeName();
+      _prototypeCache[cacheKey] = new Function(`function ${ prototypeName }(${ params.join(',') }){${ inits.join('') }} return ${ prototypeName };`)(); // eslint-disable-line
+      return _prototypeCache[cacheKey];
+    };
+    const createRecordConstructor = variables => {
+      let variable;
+      return createCompiledPrototype((() => {
+        let _i;
+        let _len;
+        const _results = [];
+        for (_i = 0, _len = variables.length; _i < _len; _i++) {
+          variable = variables[_i];
+          _results.push(variable.label);
+        }
+        return _results;
+      })());
+    };
+    const createTable = opts => {
+      let description;
+      let label;
+      let variable;
+      let _i;
+      let _len;
+      label = opts.label;
+      description = opts.description;
+      const variables = opts.variables;
+      const rows = opts.rows;
+      const meta = opts.meta;
+      if (!description) {
+        description = 'No description available.';
+      }
+      const schema = {};
+      for (_i = 0, _len = variables.length; _i < _len; _i++) {
+        variable = variables[_i];
+        schema[variable.label] = variable;
+      }
+      const fill = (i, go) => {
+        _fill(i, (error, result) => {
+          // eslint-disable-line
+          let index;
+          let value;
+          let _j;
+          let _len1;
+          if (error) {
+            return go(error);
+          }
+          const startIndex = result.index;
+          lodash.values = result.values;
+          for (index = _j = 0, _len1 = lodash.values.length; _j < _len1; index = ++_j) {
+            value = lodash.values[index];
+            rows[startIndex + index] = lodash.values[index];
+          }
+          return go(null);
+        });
+      };
+      const expand = (...args) => {
+        let type;
+        let _j;
+        let _len1;
+        const types = args.length >= 1 ? __slice.call(args, 0) : [];
+        const _results = [];
+        for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
+          type = types[_j];
+          // TODO attach to prototype
+          label = lodash.uniqueId('__flow_variable_');
+          _results.push(schema[label] = createNumericVariable(label));
+        }
+        return _results;
+      };
+      return {
+        label,
+        description,
+        schema,
+        variables,
+        rows,
+        meta,
+        fill,
+        expand,
+        _is_table_: true
+      };
+    };
+    const includeZeroInRange = range => {
+      const lo = range[0];
+      const hi = range[1];
+      if (lo > 0 && hi > 0) {
+        return [0, hi];
+      } else if (lo < 0 && hi < 0) {
+        return [lo, 0];
+      }
+      return range;
+    };
+    const combineRanges = (...args) => {
+      let hi;
+      let lo;
+      let range;
+      let value;
+      let _i;
+      let _len;
+      const ranges = args.length >= 1 ? __slice.call(args, 0) : [];
+      lo = Number.POSITIVE_INFINITY;
+      hi = Number.NEGATIVE_INFINITY;
+      for (_i = 0, _len = ranges.length; _i < _len; _i++) {
+        range = ranges[_i];
+        value = range[0];
+        if (lo > value) {
+          lo = value;
+        }
+        value = range[1];
+        if (hi < value) {
+          hi = value;
+        }
+      }
+      return [lo, hi];
+    };
+    const computeRange = (rows, attr) => {
+      let hi;
+      let lo;
+      let row;
+      let value;
+      let _i;
+      let _len;
+      if (rows.length) {
+        lo = Number.POSITIVE_INFINITY;
+        hi = Number.NEGATIVE_INFINITY;
+        for (_i = 0, _len = rows.length; _i < _len; _i++) {
+          row = rows[_i];
+          value = row[attr];
+          if (value < lo) {
+            lo = value;
+          }
+          if (value > hi) {
+            hi = value;
+          }
+        }
+        return [lo, hi];
+      }
+      return [-1, 1];
+    };
+    const permute = (array, indices) => {
+      let i;
+      let index;
+      let _i;
+      let _len;
+      const permuted = new Array(array.length);
+      for (i = _i = 0, _len = indices.length; _i < _len; i = ++_i) {
+        index = indices[i];
+        permuted[i] = array[index];
+      }
+      return permuted;
+    };
+    const createAbstractVariable = (_label, _type, _domain, _format, _read) => ({
+      label: _label,
+      type: _type,
+      domain: _domain || [],
+      format: _format || lodash.identity,
+      read: _read
+    });
+    function createNumericVariable(_label, _domain, _format, _read) {
+      const self = createAbstractVariable(_label, 'Number', _domain || [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY], _format, _read);
+      if (!self.read) {
+        self.read = datum => {
+          if (datum < self.domain[0]) {
+            self.domain[0] = datum;
+          }
+          if (datum > self.domain[1]) {
+            self.domain[1] = datum;
+          }
+          return datum;
+        };
+      }
+      return self;
+    }
+    const createVariable = (_label, _type, _domain, _format, _read) => {
+      if (_type === 'Number') {
+        return createNumericVariable(_label, _domain, _format, _read);
+      }
+      return createAbstractVariable(_label, _type, _domain, _format, _read);
+    };
+    const createFactor = (_label, _domain, _format, _read) => {
+      let level;
+      let _i;
+      let _id;
+      let _len;
+      let _ref;
+      const self = createAbstractVariable(_label, 'Factor', _domain || [], _format, _read);
+      _id = 0;
+      const _levels = {};
+      if (self.domain.length) {
+        _ref = self.domain;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          level = _ref[_i];
+          _levels[level] = _id++;
+        }
+      }
+      if (!self.read) {
+        self.read = datum => {
+          let id;
+          level = datum === void 0 || datum === null ? 'null' : datum;
+          id = _levels[level];
+          if (void 0 === id) {
+            _levels[level] = id = _id++;
+            self.domain.push(level);
+          }
+          return id;
+        };
+      }
+      return self;
+    };
+    const factor = array => {
+      let i;
+      let id;
+      let level;
+      let _i;
+      let _id;
+      let _len;
+      _id = 0;
+      const levels = {};
+      const domain = [];
+      const data = new Array(array.length);
+      for (i = _i = 0, _len = array.length; _i < _len; i = ++_i) {
+        level = array[i];
+        id = levels[level];
+        if (void 0 === id) {
+          levels[level] = id = _id++;
+          domain.push(level);
+        }
+        data[i] = id;
+      }
+      return [domain, data];
+    };
+    Flow.Data = {
+      Table: createTable,
+      Variable: createVariable,
+      Factor: createFactor,
+      computeColumnInterpretation(type) {
+        if (type === 'Number') {
+          return 'c';
+        } else if (type === 'Factor') {
+          return 'd';
+        }
+        return 't';
+      },
+      Record: createRecordConstructor,
+      computeRange,
+      combineRanges,
+      includeZeroInRange,
+      factor,
+      permute
+    };
+  }
+
+  const flowPrelude$7 = flowPreludeFunction();
+
+  function async() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const __slice = [].slice;
+    const createBuffer = array => {
+      let _go;
+      const _array = array || [];
+      _go = null;
+      const buffer = element => {
+        if (element === void 0) {
+          return _array;
+        }
+        _array.push(element);
+        if (_go) {
+          _go(element);
+        }
+        return element;
+      };
+      buffer.subscribe = go => {
+        _go = go;
+        return _go;
+      };
+      buffer.buffer = _array;
+      buffer.isBuffer = true;
+      return buffer;
+    };
+    const _noop = go => go(null);
+    const _applicate = go => (error, args) => {
+      if (lodash.isFunction(go)) {
+        return go(...[error].concat(args));
+      }
+    };
+    const _fork = (f, args) => {
+      if (!lodash.isFunction(f)) {
+        throw new Error('Not a function.');
+      }
+      const self = go => {
+        const canGo = lodash.isFunction(go);
+        if (self.settled) {
+          // proceed with cached error/result
+          if (self.rejected) {
+            if (canGo) {
+              return go(self.error);
+            }
+          } else {
+            if (canGo) {
+              return go(null, self.result);
+            }
+          }
+        } else {
+          return _join(args, (error, args) => {
+            if (error) {
+              self.error = error;
+              self.fulfilled = false;
+              self.rejected = true;
+              if (canGo) {
+                return go(error);
+              }
+            } else {
+              return f(...args.concat((error, result) => {
+                if (error) {
+                  self.error = error;
+                  self.fulfilled = false;
+                  self.rejected = true;
+                  if (canGo) {
+                    go(error);
+                  }
+                } else {
+                  self.result = result;
+                  self.fulfilled = true;
+                  self.rejected = false;
+                  if (canGo) {
+                    go(null, result);
+                  }
+                }
+                self.settled = true;
+                self.pending = false;
+                return self.pending;
+              }));
+            }
+          });
+        }
+      };
+      self.method = f;
+      self.args = args;
+      self.fulfilled = false;
+      self.rejected = false;
+      self.settled = false;
+      self.pending = true;
+      self.isFuture = true;
+      return self;
+    };
+    const _isFuture = a => {
+      if (a != null ? a.isFuture : void 0) {
+        return true;
+      }
+      return false;
+    };
+    function _join(args, go) {
+      let arg;
+      let i;
+      let _actual;
+      let _i;
+      let _len;
+      let _settled;
+      if (args.length === 0) {
+        return go(null, []);
+      }
+      const _tasks = [];
+      const _results = [];
+      for (i = _i = 0, _len = args.length; _i < _len; i = ++_i) {
+        arg = args[i];
+        if (arg != null ? arg.isFuture : void 0) {
+          _tasks.push({
+            future: arg,
+            resultIndex: i
+          });
+        } else {
+          _results[i] = arg;
+        }
+      }
+      if (_tasks.length === 0) {
+        return go(null, _results);
+      }
+      _actual = 0;
+      _settled = false;
+      lodash.forEach(_tasks, task => task.future.call(null, (error, result) => {
+        if (_settled) {
+          return;
+        }
+        if (error) {
+          _settled = true;
+          go(new Flow.Error(`Error evaluating future[${ task.resultIndex }]`, error));
+        } else {
+          _results[task.resultIndex] = result;
+          _actual++;
+          if (_actual === _tasks.length) {
+            _settled = true;
+            go(null, _results);
+          }
+        }
+      }));
+    }
+    // Like _.compose, but async.
+    // Equivalent to caolan/async.waterfall()
+    const pipe = tasks => {
+      const _tasks = tasks.slice(0);
+      const next = (args, go) => {
+        const task = _tasks.shift();
+        if (task) {
+          return task(...args.concat(function () {
+            const error = arguments[0];
+            const results = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
+            if (error) {
+              return go(error);
+            }
+            return next(results, go);
+          }));
+        }
+        return go(...[null].concat(args));
+      };
+      return function () {
+        let _i;
+        const args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []);
+        const go = arguments[_i++];
+        return next(args, go);
+      };
+    };
+    const iterate = tasks => {
+      const _tasks = tasks.slice(0);
+      const _results = [];
+      const next = go => {
+        const task = _tasks.shift();
+        if (task) {
+          return task((error, result) => {
+            if (error) {
+              return go(error);
+            }
+            _results.push(result);
+            return next(go);
+          });
+        }
+        // XXX should errors be included in arg #1?
+        return go(null, _results);
+      };
+      return go => next(go);
+    };
+
+    //
+    // Gives a synchronous operation an asynchronous signature.
+    // Used to pass synchronous functions to callers that expect
+    // asynchronous signatures.
+    //
+    const _async = function () {
+      const f = arguments[0];
+      const args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
+      const later = function () {
+        let error;
+        let result;
+        let _i;
+        const args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []);
+        const go = arguments[_i++];
+        try {
+          result = f(...args);
+          return go(null, result);
+        } catch (_error) {
+          error = _error;
+          return go(error);
+        }
+      };
+      return _fork(later, args);
+    };
+
+    //
+    // Asynchronous find operation.
+    //
+    // find attr, prop, array
+    // find array, attr, prop
+    // find attr, obj
+    // find obj, attr
+    //
+    const _find$3 = (attr, prop, obj) => {
+      let v;
+      let _i;
+      let _len;
+      if (_isFuture(obj)) {
+        return _async(_find$3, attr, prop, obj);
+      } else if (lodash.isArray(obj)) {
+        for (_i = 0, _len = obj.length; _i < _len; _i++) {
+          v = obj[_i];
+          if (v[attr] === prop) {
+            return v;
+          }
+        }
+        return;
+      }
+    };
+    const _find$2 = (attr, obj) => {
+      if (_isFuture(obj)) {
+        return _async(_find$2, attr, obj);
+      } else if (lodash.isString(attr)) {
+        if (lodash.isArray(obj)) {
+          return _find$3('name', attr, obj);
+        }
+        return obj[attr];
+      }
+    };
+    const _find = function () {
+      let a;
+      let b;
+      let c;
+      let ta;
+      let tb;
+      let tc;
+      const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
+      switch (args.length) {
+        case 3:
+          a = args[0];
+          b = args[1];
+          c = args[2];
+          ta = flowPrelude$7.typeOf(a);
+          tb = flowPrelude$7.typeOf(b);
+          tc = flowPrelude$7.typeOf(c);
+          if (ta === 'Array' && tb === 'String') {
+            return _find$3(b, c, a);
+          } else if (ta === 'String' && tc === 'Array') {
+            return _find$3(a, b, c);
+          }
+          break;
+        case 2:
+          a = args[0];
+          b = args[1];
+          if (!a) {
+            return;
+          }
+          if (!b) {
+            return;
+          }
+          if (lodash.isString(b)) {
+            return _find$2(b, a);
+          } else if (lodash.isString(a)) {
+            return _find$2(a, b);
+          }
+          break;
+        default:
+        // do nothing
+      }
+    };
+
+    // Duplicate of _find$2
+    const _get = (attr, obj) => {
+      if (_isFuture(obj)) {
+        return _async(_get, attr, obj);
+      } else if (lodash.isString(attr)) {
+        if (lodash.isArray(obj)) {
+          return _find$3('name', attr, obj);
+        }
+        return obj[attr];
+      }
+    };
+    Flow.Async = {
+      createBuffer, // XXX rename
+      noop: _noop,
+      applicate: _applicate,
+      isFuture: _isFuture,
+      fork: _fork,
+      join: _join,
+      pipe,
+      iterate,
+      async: _async,
+      find: _find,
+      get: _get
+    };
+  }
+
+  const flowPrelude$8 = flowPreludeFunction();
+
+  function objectBrowser() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const isExpandable = type => {
+      switch (type) {
+        case 'null':
+        case 'undefined':
+        case 'Boolean':
+        case 'String':
+        case 'Number':
+        case 'Date':
+        case 'RegExp':
+        case 'Arguments':
+        case 'Function':
+          return false;
+        default:
+          return true;
+      }
+    };
+    const previewArray = array => {
+      let element;
+      const ellipsis = array.length > 5 ? ', ...' : '';
+      const previews = (() => {
+        let _i;
+        let _len;
+        const _ref = lodash.head(array, 5);
+        const _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          element = _ref[_i];
+          _results.push(preview(element));
+        }
+        return _results;
+      })();
+      return `[${ previews.join(', ') }${ ellipsis }]`;
+    };
+    const previewObject = object => {
+      let count;
+      let key;
+      let value;
+      count = 0;
+      const previews = [];
+      let ellipsis = '';
+      for (key in object) {
+        if ({}.hasOwnProperty.call(object, key)) {
+          value = object[key];
+          if (!(key !== '_flow_')) {
+            continue;
+          }
+          previews.push(`${ key }: ${ preview(value) }`);
+          if (++count === 5) {
+            ellipsis = ', ...';
+            break;
+          }
+        }
+      }
+      return `{${ previews.join(', ') }${ ellipsis }}`;
+    };
+    const preview = (element, recurse) => {
+      if (recurse == null) {
+        recurse = false;
+      }
+      const type = flowPrelude$8.typeOf(element);
+      switch (type) {
+        case 'Boolean':
+        case 'String':
+        case 'Number':
+        case 'Date':
+        case 'RegExp':
+          return element;
+        case 'undefined':
+        case 'null':
+        case 'Function':
+        case 'Arguments':
+          return type;
+        case 'Array':
+          if (recurse) {
+            return previewArray(element);
+          }
+          return type;
+        // break; // no-unreachable
+        default:
+          if (recurse) {
+            return previewObject(element);
+          }
+          return type;
+      }
+    };
+    // TODO slice large arrays
+    Flow.objectBrowserElement = (key, object) => {
+      const _expansions = Flow.Dataflow.signal(null);
+      const _isExpanded = Flow.Dataflow.signal(false);
+      const _type = flowPrelude$8.typeOf(object);
+      const _canExpand = isExpandable(_type);
+      const toggle = () => {
+        let expansions;
+        let value;
+        if (!_canExpand) {
+          return;
+        }
+        if (_expansions() === null) {
+          expansions = [];
+          for (key in object) {
+            if ({}.hasOwnProperty.call(object, key)) {
+              value = object[key];
+              if (key !== '_flow_') {
+                expansions.push(Flow.objectBrowserElement(key, value));
+              }
+            }
+          }
+          _expansions(expansions);
+        }
+        return _isExpanded(!_isExpanded());
+      };
+      return {
+        key,
+        preview: preview(object, true),
+        toggle,
+        expansions: _expansions,
+        isExpanded: _isExpanded,
+        canExpand: _canExpand
+      };
+    };
+    Flow.objectBrowser = (_, _go, key, object) => {
+      lodash.defer(_go);
+      return {
+        object: Flow.objectBrowserElement(key, object),
+        template: 'flow-object'
+      };
+    };
+  }
+
+  function optsToString(opts) {
+    let str;
+    if (opts != null) {
+      str = ` with opts ${ JSON.stringify(opts) }`;
+      if (str.length > 50) {
+        return `${ str.substr(0, 50) }...`;
+      }
+      return str;
+    }
+    return '';
+  }
+
+  function trackPath(_, path) {
+    let base;
+    let e;
+    let name;
+    let other;
+    let root;
+    let version;
+    let _ref;
+    let _ref1;
+    try {
+      _ref = path.split('/');
+      root = _ref[0];
+      version = _ref[1];
+      name = _ref[2];
+      _ref1 = name.split('?');
+      base = _ref1[0];
+      other = _ref1[1];
+      if (base !== 'Typeahead' && base !== 'Jobs') {
+        _.trackEvent('api', base, version);
+      }
+    } catch (_error) {
+      e = _error;
+    }
+  }
+
+  function http(_, method, path, opts, go) {
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    if (path.substring(0, 1) === '/') {
+      path = window.Flow.ContextPath + path.substring(1);
+    }
+    _.status('server', 'request', path);
+    trackPath(_, path);
+    const req = (() => {
+      switch (method) {
+        case 'GET':
+          return $.getJSON(path);
+        case 'POST':
+          return $.post(path, opts);
+        case 'POSTJSON':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify(opts)
+          });
+        case 'PUT':
+          return $.ajax({
+            url: path,
+            type: method,
+            data: opts
+          });
+        case 'DELETE':
+          return $.ajax({
+            url: path,
+            type: method
+          });
+        case 'UPLOAD':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            data: opts,
+            cache: false,
+            contentType: false,
+            processData: false
+          });
+        default:
+        // do nothing
+      }
+    })();
+    req.done((data, status, xhr) => {
+      let error;
+      _.status('server', 'response', path);
+      try {
+        return go(null, data);
+      } catch (_error) {
+        error = _error;
+        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
+      }
+    });
+    return req.fail((xhr, status, error) => {
+      let serverError;
+      _.status('server', 'error', path);
+      const response = xhr.responseJSON;
+      const meta = response;
+      // special-case net::ERR_CONNECTION_REFUSED
+      // if status is 'error' and xhr.status is 0
+      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
+    });
+  }
+
+  function doGet(_, path, go) {
+    return http(_, 'GET', path, null, go);
+  }
+
+  function getEndpointsRequest(_, go) {
+    return doGet(_, '/3/Metadata/endpoints', go);
+  }
+
+  function getEndpointRequest(_, index, go) {
+    return doGet(_, `/3/Metadata/endpoints/${ index }`, go);
+  }
+
+  function getSchemasRequest(_, go) {
+    return doGet(_, '/3/Metadata/schemas', go);
+  }
+
+  function getSchemaRequest(_, name, go) {
+    return doGet(_, `/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
+  }
+
+  function download(type, url, go) {
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    if (url.substring(0, 1) === '/') {
+      url = window.Flow.ContextPath + url.substring(1);
+    }
+    return $.ajax({
+      dataType: type,
+      url,
+      success(data, status, xhr) {
+        return go(null, data);
+      },
+      error(xhr, status, error) {
+        return go(new Flow.Error(error));
+      }
+    });
+  }
+
+  function unwrap(go, transform) {
+    return (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, transform(result));
+    };
+  }
+
+  function getLines(data) {
+    const lodash = window._;
+    return lodash.filter(data.split('\n'), line => {
+      if (line.trim()) {
+        return true;
+      }
+      return false;
+    });
+  }
+
+  function requestPacks(go) {
+    return download('text', '/flow/packs/index.list', unwrap(go, getLines));
+  }
+
+  function requestPack(packName, go) {
+    return download('text', `/flow/packs/${ encodeURIComponent(packName) }/index.list`, unwrap(go, getLines));
+  }
+
+  function requestFlow(packName, flowName, go) {
+    return download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
+  }
+
+  function requestHelpIndex(go) {
+    return download('json', '/flow/help/catalog.json', go);
+  }
+
+  function requestHelpContent(name, go) {
+    return download('text', `/flow/help/${ name }.html`, go);
+  }
+
+  function validateFileExtension(filename, extension) {
+    return filename.indexOf(extension, filename.length - extension.length) !== -1;
+  }
+
+  function sanitizeName(name) {
+    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
+  }
+
+  function getFileBaseName(filename, extension) {
+    return sanitizeName(filename.substr(0, filename.length - extension.length));
+  }
+
+  function help() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const H2O = window.H2O;
+    const marked = window.marked;
+    const $ = window.jQuery;
+    let _catalog;
+    let _homeContent;
+    _catalog = null;
+    const _index = {};
+    _homeContent = null;
+    const _homeMarkdown = '<blockquote>\nUsing Flow for the first time?\n<br/>\n<div style=\'margin-top:10px\'>\n  <button type=\'button\' data-action=\'get-flow\' data-pack-name=\'examples\' data-flow-name=\'QuickStartVideos.flow\' class=\'flow-button\'><i class=\'fa fa-file-movie-o\'></i><span>Quickstart Videos</span>\n  </button>\n</div>\n</blockquote>\n\nOr, <a href=\'#\' data-action=\'get-pack\' data-pack-name=\'examples\'>view example Flows</a> to explore and learn H<sub>2</sub>O.\n\n###### Star H2O on Github!\n\n<iframe src="https://ghbtns.com/github-btn.html?user=h2oai&repo=h2o-3&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>\n\n###### General\n\n%HELP_TOPICS%\n\n###### Examples\n\nFlow packs are a great way to explore and learn H<sub>2</sub>O. Try out these Flows and run them in your browser.<br/><a href=\'#\' data-action=\'get-packs\'>Browse installed packs...</a>\n\n###### H<sub>2</sub>O REST API\n\n- <a href=\'#\' data-action=\'endpoints\'>Routes</a>\n- <a href=\'#\' data-action=\'schemas\'>Schemas</a>\n';
+    Flow.help = _ => {
+      let _historyIndex;
+      const _content = Flow.Dataflow.signal(null);
+      const _history = [];
+      _historyIndex = -1;
+      const _canGoBack = Flow.Dataflow.signal(false);
+      const _canGoForward = Flow.Dataflow.signal(false);
+      const goTo = index => {
+        const content = _history[_historyIndex = index];
+        $('a, button', $(content)).each(function (i) {
+          const $a = $(this);
+          const action = $a.attr('data-action');
+          if (action) {
+            return $a.click(() => performAction(action, $a));
+          }
+        });
+        _content(content);
+        _canGoForward(_historyIndex < _history.length - 1);
+        _canGoBack(_historyIndex > 0);
+      };
+      const goBack = () => {
+        if (_historyIndex > 0) {
+          return goTo(_historyIndex - 1);
+        }
+      };
+      const goForward = () => {
+        if (_historyIndex < _history.length - 1) {
+          return goTo(_historyIndex + 1);
+        }
+      };
+      const displayHtml = content => {
+        if (_historyIndex < _history.length - 1) {
+          _history.splice(_historyIndex + 1, _history.length - (_historyIndex + 1), content);
+        } else {
+          _history.push(content);
+        }
+        return goTo(_history.length - 1);
+      };
+      const fixImageSources = html => html.replace(/\s+src\s*=\s*"images\//g, ' src="help/images/');
+      function performAction(action, $el) {
+        let packName;
+        let routeIndex;
+        let schemaName;
+        let topic;
+        switch (action) {
+          case 'help':
+            topic = _index[$el.attr('data-topic')];
+            requestHelpContent(topic.name, (error, html) => {
+              const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6');
+              const div = _ref[0];
+              const mark = _ref[1];
+              const h5 = _ref[2];
+              const h6 = _ref[3];
+              const contents = [mark('Help'), h5(topic.title), fixImageSources(div(html))];
+              if (topic.children.length) {
+                contents.push(h6('Topics'));
+                contents.push(buildToc(topic.children));
+              }
+              return displayHtml(Flow.HTML.render('div', div(contents)));
+            });
+            break;
+          case 'assist':
+            _.insertAndExecuteCell('cs', 'assist');
+            break;
+          case 'get-packs':
+            requestPacks((error, packNames) => {
+              if (!error) {
+                return displayPacks(lodash.filter(packNames, packName => packName !== 'test'));
+              }
+            });
+            break;
+          case 'get-pack':
+            packName = $el.attr('data-pack-name');
+            requestPack(packName, (error, flowNames) => {
+              if (!error) {
+                return displayFlows(packName, flowNames);
+              }
+            });
+            break;
+          case 'get-flow':
+            _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
+              acceptCaption: 'Load Notebook',
+              declineCaption: 'Cancel'
+            }, accept => {
+              let flowName;
+              if (accept) {
+                packName = $el.attr('data-pack-name');
+                flowName = $el.attr('data-flow-name');
+                if (validateFileExtension(flowName, '.flow')) {
+                  return requestFlow(packName, flowName, (error, flow) => {
+                    if (!error) {
+                      return _.open(getFileBaseName(flowName, '.flow'), flow);
+                    }
+                  });
+                }
+              }
+            });
+            break;
+          case 'endpoints':
+            getEndpointsRequest(_, (error, response) => {
+              if (!error) {
+                return displayEndpoints(response.routes);
+              }
+            });
+            break;
+          case 'endpoint':
+            routeIndex = $el.attr('data-index');
+            getEndpointRequest(_, routeIndex, (error, response) => {
+              if (!error) {
+                return displayEndpoint(lodash.head(response.routes));
+              }
+            });
+            break;
+          case 'schemas':
+            getSchemasRequest(_, (error, response) => {
+              if (!error) {
+                return displaySchemas(lodash.sortBy(response.schemas, schema => schema.name));
+              }
+            });
+            break;
+          case 'schema':
+            schemaName = $el.attr('data-schema');
+            getSchemaRequest(_, schemaName, (error, response) => {
+              if (!error) {
+                return displaySchema(lodash.head(response.schemas));
+              }
+            });
+            break;
+          default:
+          // do nothing
+        }
+      }
+      function buildToc(nodes) {
+        const _ref = Flow.HTML.template('ul', 'li', 'a href=\'#\' data-action=\'help\' data-topic=\'$1\'');
+        const ul = _ref[0];
+        const li = _ref[1];
+        const a = _ref[2];
+        return ul(lodash.map(nodes, node => li(a(node.title, node.name))));
+      }
+      const buildTopics = (index, topics) => {
+        let topic;
+        let _i;
+        let _len;
+        for (_i = 0, _len = topics.length; _i < _len; _i++) {
+          topic = topics[_i];
+          index[topic.name] = topic;
+          if (topic.children.length) {
+            buildTopics(index, topic.children);
+          }
+        }
+      };
+      function displayPacks(packNames) {
+        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-folder-o', 'a href=\'#\' data-action=\'get-pack\' data-pack-name=\'$1\'');
+        const div = _ref[0];
+        const mark = _ref[1];
+        const h5 = _ref[2];
+        const p = _ref[3];
+        const i = _ref[4];
+        const a = _ref[5];
+        displayHtml(Flow.HTML.render('div', div([mark('Packs'), h5('Installed Packs'), div(lodash.map(packNames, packName => p([i(), a(packName, packName)])))])));
+      }
+      function displayFlows(packName, flowNames) {
+        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-file-text-o', `a href=\'#\' data-action=\'get-flow\' data-pack-name=\'${ packName }\' data-flow-name=\'$1\'`);
+        const div = _ref[0];
+        const mark = _ref[1];
+        const h5 = _ref[2];
+        const p = _ref[3];
+        const i = _ref[4];
+        const a = _ref[5];
+        displayHtml(Flow.HTML.render('div', div([mark('Pack'), h5(packName), div(lodash.map(flowNames, flowName => p([i(), a(flowName, flowName)])))])));
+      }
+      function displayEndpoints(routes) {
+        let route;
+        let routeIndex;
+        let _i;
+        let _len;
+        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'a href=\'#\' data-action=\'endpoint\' data-index=\'$1\'', 'code');
+        const div = _ref[0];
+        const mark = _ref[1];
+        const h5 = _ref[2];
+        const p = _ref[3];
+        const action = _ref[4];
+        const code = _ref[5];
+        const els = [mark('API'), h5('List of Routes')];
+        for (routeIndex = _i = 0, _len = routes.length; _i < _len; routeIndex = ++_i) {
+          route = routes[routeIndex];
+          els.push(p(`${ action(code(`${ route.http_method } ${ route.url_pattern }`), routeIndex) }<br/>${ route.summary }`));
+        }
+        displayHtml(Flow.HTML.render('div', div(els)));
+      }
+      const goHome = () => displayHtml(Flow.HTML.render('div', _homeContent));
+      function displayEndpoint(route) {
+        const _ref1 = route.path_params;
+        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'', 'code');
+        const div = _ref[0];
+        const mark = _ref[1];
+        const h5 = _ref[2];
+        const h6 = _ref[3];
+        const p = _ref[4];
+        const action = _ref[5];
+        const code = _ref[6];
+        return displayHtml(Flow.HTML.render('div', div([mark('Route'), h5(route.url_pattern), h6('Method'), p(code(route.http_method)), h6('Summary'), p(route.summary), h6('Parameters'), p((_ref1 != null ? _ref1.length : void 0) ? route.path_params.join(', ') : '-'), h6('Input Schema'), p(action(code(route.input_schema), route.input_schema)), h6('Output Schema'), p(action(code(route.output_schema), route.output_schema))])));
+      }
+      function displaySchemas(schemas) {
+        let schema;
+        const _ref = Flow.HTML.template('div', 'h5', 'ul', 'li', 'var', 'mark', 'code', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'');
+        const div = _ref[0];
+        const h5 = _ref[1];
+        const ul = _ref[2];
+        const li = _ref[3];
+        const variable = _ref[4];
+        const mark = _ref[5];
+        const code = _ref[6];
+        const action = _ref[7];
+        const els = [mark('API'), h5('List of Schemas'), ul((() => {
+          let _i;
+          let _len;
+          const _results = [];
+          for (_i = 0, _len = schemas.length; _i < _len; _i++) {
+            schema = schemas[_i];
+            _results.push(li(`${ action(code(schema.name), schema.name) } ${ variable(lodash.escape(schema.type)) }`));
+          }
+          return _results;
+        })())];
+        return displayHtml(Flow.HTML.render('div', div(els)));
+      }
+      function displaySchema(schema) {
+        let field;
+        let _i;
+        let _len;
+        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'code', 'var', 'small');
+        const div = _ref[0];
+        const mark = _ref[1];
+        const h5 = _ref[2];
+        const h6 = _ref[3];
+        const p = _ref[4];
+        const code = _ref[5];
+        const variable = _ref[6];
+        const small = _ref[7];
+        const content = [mark('Schema'), h5(`${ schema.name } (${ lodash.escape(schema.type) })`), h6('Fields')];
+        const _ref1 = schema.fields;
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          field = _ref1[_i];
+          if (field.name !== '__meta') {
+            content.push(p(`${ variable(field.name) }${ field.required ? '*' : '' } ${ code(lodash.escape(field.type)) }<br/>${ small(field.help) }`));
+          }
+        }
+        return displayHtml(Flow.HTML.render('div', div(content)));
+      }
+      const initialize = catalog => {
+        _catalog = catalog;
+        buildTopics(_index, _catalog);
+        _homeContent = marked(_homeMarkdown).replace('%HELP_TOPICS%', buildToc(_catalog));
+        return goHome();
+      };
+      Flow.Dataflow.link(_.ready, () => requestHelpIndex((error, catalog) => {
+        if (!error) {
+          return initialize(catalog);
+        }
+      }));
+      return {
+        content: _content,
+        goHome,
+        goBack,
+        canGoBack: _canGoBack,
+        goForward,
+        canGoForward: _canGoForward
+      };
+    };
+  }
+
+  function cacheModelBuilders(_, modelBuilders) {
+    let modelBuilder;
+    let _i;
+    let _len;
+    const modelBuilderEndpoints = {};
+    const gridModelBuilderEndpoints = {};
+    for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
+      modelBuilder = modelBuilders[_i];
+      modelBuilderEndpoints[modelBuilder.algo] = `/${ modelBuilder.__meta.schema_version }/ModelBuilders/${ modelBuilder.algo }`;
+      gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${ modelBuilder.algo }`;
+    }
+    _.__.modelBuilderEndpoints = modelBuilderEndpoints;
+    _.__.gridModelBuilderEndpoints = gridModelBuilderEndpoints;
+    _.__.modelBuilders = modelBuilders;
+    return _.__.modelBuilders;
+  }
+
+  function requestModelBuilders(_, go) {
+    const modelBuilders = _.__.modelBuilders;
+    if (modelBuilders) {
+      return go(null, modelBuilders);
+    }
+    const visibility = 'Stable';
+    return doGet(_, '/3/ModelBuilders', unwrap(go, result => {
+      let algo;
+      let builder;
+      const builders = (() => {
+        const _ref = result.model_builders;
+        const _results = [];
+        for (algo in _ref) {
+          if ({}.hasOwnProperty.call(_ref, algo)) {
+            builder = _ref[algo];
+            _results.push(builder);
+          }
+        }
+        return _results;
+      })();
+      const availableBuilders = (() => {
+        let _i;
+        let _j;
+        let _len;
+        let _len1;
+        let _results;
+        let _results1;
+        switch (visibility) {
+          case 'Stable':
+            _results = [];
+            for (_i = 0, _len = builders.length; _i < _len; _i++) {
+              builder = builders[_i];
+              if (builder.visibility === visibility) {
+                _results.push(builder);
+              }
+            }
+            return _results;
+          // break; // no-unreachable
+          case 'Beta':
+            _results1 = [];
+            for (_j = 0, _len1 = builders.length; _j < _len1; _j++) {
+              builder = builders[_j];
+              if (builder.visibility === visibility || builder.visibility === 'Stable') {
+                _results1.push(builder);
+              }
+            }
+            return _results1;
+          // break; // no-unreachable
+          default:
+            return builders;
+        }
+      })();
+      return cacheModelBuilders(_, availableBuilders);
+    }));
+  }
+
+  function getObjectExistsRequest(_, type, name, go) {
+    const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
+    return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
+  }
+
+  function getObjectRequest(_, type, name, go) {
+    const urlString = `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`;
+    return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
+  }
+
+  function doDelete(_, path, go) {
+    return http(_, 'DELETE', path, null, go);
+  }
+
+  function deleteObjectRequest(_, type, name, go) {
+    return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
+  }
+
+  function doPost(_, path, opts, go) {
+    return http(_, 'POST', path, opts, go);
+  }
+
+  function postPutObjectRequest(_, type, name, value, go) {
+    let uri;
+    uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
+    if (name) {
+      uri += `/${ encodeURIComponent(name) }`;
+    }
+    return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
+  }
+
+  function postShutdownRequest(_, go) {
+    return doPost(_, '/3/Shutdown', {}, go);
+  }
+
+  function postScalaIntpRequest(_, go) {
+    return doPost(_, '/3/scalaint', {}, go);
+  }
+
+  function flowHeading(_, level) {
+    const render = (input, output) => {
+      output.data({
+        text: input.trim() || '(Untitled)',
+        template: `flow-${ level }`
+      });
+      return output.end();
+    };
+    render.isCode = false;
+    return render;
+  }
+
   function getTwoDimData(table, columnName) {
     const lodash = window._;
     const columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
@@ -238,7 +2404,7 @@
     return target;
   }
 
-  const flowPrelude$4 = flowPreludeFunction();
+  const flowPrelude$11 = flowPreludeFunction();
 
   function parseAndFormatObjectArray(source) {
     const lodash = window._;
@@ -253,7 +2419,7 @@
       element = source[i];
       _ref = element.__meta;
       _ref1 = element.__meta;
-      target[i] = element != null ? (_ref != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$4.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : (_ref1 != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$4.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : element : void 0;
+      target[i] = element != null ? (_ref != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$11.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : (_ref1 != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$11.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : element : void 0;
     }
     return target;
   }
@@ -283,7 +2449,7 @@
     return Flow.Async.join(args, Flow.Async.applicate(go));
   }
 
-  function _apply(go, args) {
+  function _apply$1(go, args) {
     const Flow = window.Flow;
     return Flow.Async.join(args, go);
   }
@@ -643,7 +2809,7 @@
     return transforms;
   }
 
-  const flowPrelude$6 = flowPreludeFunction();
+  const flowPrelude$13 = flowPreludeFunction();
 
   function blacklistedAttributesBySchema() {
     let attrs;
@@ -659,7 +2825,7 @@
         attrs = _schemaHacks[schema];
         dicts[schema] = dict = { __meta: true };
         if (attrs.fields) {
-          _ref1 = flowPrelude$6.words(attrs.fields);
+          _ref1 = flowPrelude$13.words(attrs.fields);
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             field = _ref1[_i];
             dict[field] = true;
@@ -670,7 +2836,7 @@
     return dicts;
   }
 
-  const flowPrelude$5 = flowPreludeFunction();
+  const flowPrelude$12 = flowPreludeFunction();
 
   function inspectObject(inspections, name, origin, obj) {
     const lodash = window._;
@@ -714,11 +2880,11 @@
                 meta = v.__meta;
                 if (meta) {
                   if (meta.schema_type === 'Key<Frame>') {
-                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$12.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
                   } else if (meta.schema_type === 'Key<Model>') {
-                    record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$5.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$12.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
                   } else if (meta.schema_type === 'Frame') {
-                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$12.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
                   } else {
                     inspectObject(inspections, `${ name } - ${ k }`, origin, v);
                   }
@@ -748,7 +2914,7 @@
     return go(null, extendGuiForm(_, Flow.Dataflow.signals(controls || [])));
   }
 
-  // not used anywhere beyond src/routines/routines?
+  // not used anywhere beyond src/routines/h2oRoutines?
   // replaced by src/gui/gui?
   function gui(_, controls) {
     const Flow = window.Flow;
@@ -915,115 +3081,6 @@
     return _canCancel(isJobRunning(job));
   }
 
-  function optsToString(opts) {
-    let str;
-    if (opts != null) {
-      str = ` with opts ${ JSON.stringify(opts) }`;
-      if (str.length > 50) {
-        return `${ str.substr(0, 50) }...`;
-      }
-      return str;
-    }
-    return '';
-  }
-
-  function trackPath(_, path) {
-    let base;
-    let e;
-    let name;
-    let other;
-    let root;
-    let version;
-    let _ref;
-    let _ref1;
-    try {
-      _ref = path.split('/');
-      root = _ref[0];
-      version = _ref[1];
-      name = _ref[2];
-      _ref1 = name.split('?');
-      base = _ref1[0];
-      other = _ref1[1];
-      if (base !== 'Typeahead' && base !== 'Jobs') {
-        _.trackEvent('api', base, version);
-      }
-    } catch (_error) {
-      e = _error;
-    }
-  }
-
-  function http(_, method, path, opts, go) {
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    if (path.substring(0, 1) === '/') {
-      path = window.Flow.ContextPath + path.substring(1);
-    }
-    _.status('server', 'request', path);
-    trackPath(_, path);
-    const req = (() => {
-      switch (method) {
-        case 'GET':
-          return $.getJSON(path);
-        case 'POST':
-          return $.post(path, opts);
-        case 'POSTJSON':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            contentType: 'application/json',
-            cache: false,
-            data: JSON.stringify(opts)
-          });
-        case 'PUT':
-          return $.ajax({
-            url: path,
-            type: method,
-            data: opts
-          });
-        case 'DELETE':
-          return $.ajax({
-            url: path,
-            type: method
-          });
-        case 'UPLOAD':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            data: opts,
-            cache: false,
-            contentType: false,
-            processData: false
-          });
-        default:
-        // do nothing
-      }
-    })();
-    req.done((data, status, xhr) => {
-      let error;
-      _.status('server', 'response', path);
-      try {
-        return go(null, data);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
-      }
-    });
-    return req.fail((xhr, status, error) => {
-      let serverError;
-      _.status('server', 'error', path);
-      const response = xhr.responseJSON;
-      const meta = response;
-      // special-case net::ERR_CONNECTION_REFUSED
-      // if status is 'error' and xhr.status is 0
-      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
-      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
-    });
-  }
-
-  function doPost(_, path, opts, go) {
-    return http(_, 'POST', path, opts, go);
-  }
-
   function postCancelJobRequest(_, key, go) {
     const Flow = window.Flow;
     return doPost(_, `/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
@@ -1043,7 +3100,7 @@
     });
   }
 
-  const flowPrelude$7 = flowPreludeFunction();
+  const flowPrelude$14 = flowPreludeFunction();
 
   function view(_, _canView, _destinationType, _job, _destinationKey) {
     if (!_canView()) {
@@ -1051,13 +3108,13 @@
     }
     switch (_destinationType) {
       case 'Frame':
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$7.stringify(_destinationKey) }`);
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$14.stringify(_destinationKey) }`);
       case 'Model':
-        return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$7.stringify(_destinationKey) }`);
+        return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$14.stringify(_destinationKey) }`);
       case 'Grid':
-        return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$7.stringify(_destinationKey) }`);
+        return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$14.stringify(_destinationKey) }`);
       case 'PartialDependence':
-        return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$7.stringify(_destinationKey) }`);
+        return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$14.stringify(_destinationKey) }`);
       case 'Auto Model':
         // FIXME getGrid() for AutoML is hosed; resort to getGrids() for now.
         return _.insertAndExecuteCell('cs', 'getGrids');
@@ -1077,10 +3134,6 @@
     if (_go) {
       return lodash.defer(_go);
     }
-  }
-
-  function doGet(_, path, go) {
-    return http(_, 'GET', path, null, go);
   }
 
   function getJobRequest(_, key, go) {
@@ -1201,7 +3254,7 @@
     });
   }
 
-  const flowPrelude$8 = flowPreludeFunction();
+  const flowPrelude$15 = flowPreludeFunction();
 
   function h2oJobsOutput(_, _go, jobs) {
     const lodash = window._;
@@ -1212,7 +3265,7 @@
     const _isBusy = Flow.Dataflow.signal(false);
     const _exception = Flow.Dataflow.signal(null);
     const createJobView = job => {
-      const view = () => _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$8.stringify(job.key.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getJob ${ flowPrelude$15.stringify(job.key.name) }`);
       const type = (() => {
         switch (job.dest.type) {
           case 'Key<Frame>':
@@ -1286,7 +3339,7 @@
     return render_(_, jobs, h2oJobsOutput, jobs);
   }
 
-  const flowPrelude$10 = flowPreludeFunction();
+  const flowPrelude$17 = flowPreludeFunction();
 
   function inspectFrameColumns(tableLabel, frameKey, frame, frameColumns) {
     return function () {
@@ -1305,17 +3358,17 @@
       let i;
       let title;
       const attrs = ['label', 'type', 'missing_count|Missing', 'zero_count|Zeros', 'positive_infinity_count|+Inf', 'negative_infinity_count|-Inf', 'min', 'max', 'mean', 'sigma', 'cardinality'];
-      const toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${ flowPrelude$10.stringify(label) }>${ lodash.escape(label) }</a>`;
+      const toColumnSummaryLink = label => `<a href=\'#\' data-type=\'summary-link\' data-key=${ flowPrelude$17.stringify(label) }>${ lodash.escape(label) }</a>`;
       const toConversionLink = value => {
         const _ref1 = value.split('\0');
         const type = _ref1[0];
         const label = _ref1[1];
         switch (type) {
           case 'enum':
-            return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${ flowPrelude$10.stringify(label) }>Convert to numeric</a>`;
+            return `<a href=\'#\' data-type=\'as-numeric-link\' data-key=${ flowPrelude$17.stringify(label) }>Convert to numeric</a>`;
           case 'int':
           case 'string':
-            return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${ flowPrelude$10.stringify(label) }>Convert to enum</a>`;
+            return `<a href=\'#\' data-type=\'as-factor-link\' data-key=${ flowPrelude$17.stringify(label) }>Convert to enum</a>`;
           default:
             return void 0;
         }
@@ -1435,8 +3488,8 @@
       vectors.push(createFactor('Actions', 'String', actionsData, null, toConversionLink));
       return createDataframe(tableLabel, vectors, lodash.range(frameColumns.length), null, {
         description: `A list of ${ tableLabel } in the H2O Frame.`,
-        origin: `getFrameSummary ${ flowPrelude$10.stringify(frameKey) }`,
-        plot: `plot inspect \'${ tableLabel }\', getFrameSummary ${ flowPrelude$10.stringify(frameKey) }`
+        origin: `getFrameSummary ${ flowPrelude$17.stringify(frameKey) }`,
+        plot: `plot inspect \'${ tableLabel }\', getFrameSummary ${ flowPrelude$17.stringify(frameKey) }`
       });
     };
   }
@@ -1450,7 +3503,7 @@
     return Math.round(bytes / Math.pow(1024, i), 2) + sizes[i];
   }
 
-  const flowPrelude$11 = flowPreludeFunction();
+  const flowPrelude$18 = flowPreludeFunction();
 
   function h2oFrameOutput(_, _go, _frame) {
     const lodash = window._;
@@ -1480,30 +3533,30 @@
         const $a = $(e.target);
         switch ($a.attr('data-type')) {
           case 'summary-link':
-            return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$11.stringify(_frame.frame_id.name) }, ${ flowPrelude$11.stringify($a.attr('data-key')) }`);
+            return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$18.stringify(_frame.frame_id.name) }, ${ flowPrelude$18.stringify($a.attr('data-key')) }`);
           case 'as-factor-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$11.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$11.stringify($a.attr('data-key')) }, type: \'enum\'`);
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$18.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$18.stringify($a.attr('data-key')) }, type: \'enum\'`);
           case 'as-numeric-link':
-            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$11.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$11.stringify($a.attr('data-key')) }, type: \'int\'`);
+            return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$18.stringify(_frame.frame_id.name) }, column: ${ flowPrelude$18.stringify($a.attr('data-key')) }, type: \'int\'`);
           default:
           // do nothing
         }
       });
       return _grid(vis.element);
     });
-    const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$11.stringify(_frame.frame_id.name) }`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$11.stringify(_frame.frame_id.name) }`);
-    const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$11.stringify(_frame.frame_id.name) }`);
-    const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$11.stringify(_frame.frame_id.name) }`);
-    const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$11.stringify(_frame.frame_id.name) }`);
+    const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$18.stringify(_frame.frame_id.name) }`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$18.stringify(_frame.frame_id.name) }`);
+    const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${ flowPrelude$18.stringify(_frame.frame_id.name) }`);
+    const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${ flowPrelude$18.stringify(_frame.frame_id.name) }`);
+    const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$18.stringify(_frame.frame_id.name) }`);
     const download = () => window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_frame.frame_id.name) }` }`, '_blank');
-    const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$11.stringify(_frame.frame_id.name) }`);
+    const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$18.stringify(_frame.frame_id.name) }`);
     const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
       acceptCaption: 'Delete Frame',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$11.stringify(_frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `deleteFrame ${ flowPrelude$18.stringify(_frame.frame_id.name) }`);
       }
     });
     const renderFrame = frame => {
@@ -1570,7 +3623,7 @@
     };
   }
 
-  const flowPrelude$9 = flowPreludeFunction();
+  const flowPrelude$16 = flowPreludeFunction();
 
   function extendFrameSummary(_, frameKey, frame) {
     let column;
@@ -1592,14 +3645,14 @@
     if (enumColumns.length > 0) {
       inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
     }
-    const origin = `getFrameSummary ${ flowPrelude$9.stringify(frameKey) }`;
+    const origin = `getFrameSummary ${ flowPrelude$16.stringify(frameKey) }`;
     inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
     inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
     inspect_(frame, inspections);
     return render_(_, frame, h2oFrameOutput, frame);
   }
 
-  const flowPrelude$13 = flowPreludeFunction();
+  const flowPrelude$20 = flowPreludeFunction();
 
   function h2oPredictOutput(_, _go, prediction) {
     const lodash = window._;
@@ -1624,7 +3677,7 @@
       const combineWithFrame = () => {
         const predictionsFrameName = prediction.predictions.frame_id.name;
         const targetFrameName = `combined-${ predictionsFrameName }`;
-        return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$13.stringify(targetFrameName) }, [ ${ flowPrelude$13.stringify(predictionsFrameName) }, ${ flowPrelude$13.stringify(frame.name) } ]`);
+        return _.insertAndExecuteCell('cs', `bindFrames ${ flowPrelude$20.stringify(targetFrameName) }, [ ${ flowPrelude$20.stringify(predictionsFrameName) }, ${ flowPrelude$20.stringify(frame.name) } ]`);
       };
       render((error, vis) => {
         if (error) {
@@ -1634,9 +3687,9 @@
           const $a = $(e.target);
           switch ($a.attr('data-type')) {
             case 'frame':
-              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$13.stringify($a.attr('data-key')) }`);
+              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$20.stringify($a.attr('data-key')) }`);
             case 'model':
-              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$13.stringify($a.attr('data-key')) }`);
+              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$20.stringify($a.attr('data-key')) }`);
             default:
             // do nothing
           }
@@ -1679,7 +3732,7 @@
     const inspect = () => {
       // eslint-disable-line
       // XXX get this from prediction table
-      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$13.stringify(model.name) }, frame: ${ flowPrelude$13.stringify(frame.name) }`);
+      return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$20.stringify(model.name) }, frame: ${ flowPrelude$20.stringify(frame.name) }`);
     };
     lodash.defer(_go);
     return {
@@ -1690,7 +3743,7 @@
     };
   }
 
-  const flowPrelude$12 = flowPreludeFunction();
+  const flowPrelude$19 = flowPreludeFunction();
 
   function extendPrediction(_, result) {
     const lodash = window._;
@@ -1702,10 +3755,10 @@
     const predictionFrame = result.predictions_frame;
     const inspections = {};
     if (prediction) {
-      inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$12.stringify(modelKey) }, frame: ${ flowPrelude$12.stringify(frameKey) }`, prediction);
+      inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$19.stringify(modelKey) }, frame: ${ flowPrelude$19.stringify(frameKey) }`, prediction);
     } else {
       prediction = {};
-      inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$12.stringify(modelKey) }, frame: ${ flowPrelude$12.stringify(frameKey) }`, { prediction_frame: predictionFrame });
+      inspectObject(inspections, 'Prediction', `getPrediction model: ${ flowPrelude$19.stringify(modelKey) }, frame: ${ flowPrelude$19.stringify(frameKey) }`, { prediction_frame: predictionFrame });
     }
     inspect_(prediction, inspections);
     return render_(_, prediction, h2oPredictOutput, prediction);
@@ -1737,7 +3790,7 @@
     return target;
   }
 
-  const flowPrelude$14 = flowPreludeFunction();
+  const flowPrelude$21 = flowPreludeFunction();
 
   function inspectFrameData(frameKey, frame) {
     return function () {
@@ -1806,12 +3859,12 @@
       })()));
       return createDataframe('data', vectors, lodash.range(frame.row_count - frame.row_offset), null, {
         description: 'A partial list of rows in the H2O Frame.',
-        origin: `getFrameData ${ flowPrelude$14.stringify(frameKey) }`
+        origin: `getFrameData ${ flowPrelude$21.stringify(frameKey) }`
       });
     };
   }
 
-  const flowPrelude$15 = flowPreludeFunction();
+  const flowPrelude$22 = flowPreludeFunction();
 
   function extendFrame(_, frameKey, frame) {
     let column;
@@ -1835,20 +3888,11 @@
     if (enumColumns.length > 0) {
       inspections.factors = inspectFrameColumns('factors', frameKey, frame, enumColumns);
     }
-    const origin = `getFrameSummary ${ flowPrelude$15.stringify(frameKey) }`;
+    const origin = `getFrameSummary ${ flowPrelude$22.stringify(frameKey) }`;
     inspections[frame.chunk_summary.name] = inspectTwoDimTable_(origin, frame.chunk_summary.name, frame.chunk_summary);
     inspections[frame.distribution_summary.name] = inspectTwoDimTable_(origin, frame.distribution_summary.name, frame.distribution_summary);
     inspect_(frame, inspections);
     return render_(_, frame, h2oFrameOutput, frame);
-  }
-
-  function unwrap(go, transform) {
-    return (error, result) => {
-      if (error) {
-        return go(error);
-      }
-      return go(null, transform(result));
-    };
   }
 
   function requestFrameSlice(_, key, searchTerm, offset, count, go) {
@@ -1866,11 +3910,11 @@
     });
   }
 
-  const flowPrelude$16 = flowPreludeFunction();
+  const flowPrelude$23 = flowPreludeFunction();
 
   function extendFrameData(_, frameKey, frame) {
     const inspections = { data: inspectFrameData(frameKey, frame) };
-    const origin = `getFrameData ${ flowPrelude$16.stringify(frameKey) }`;
+    const origin = `getFrameData ${ flowPrelude$23.stringify(frameKey) }`;
     inspect_(frame, inspections);
     return render_(_, frame, h2oFrameDataOutput, frame);
   }
@@ -1884,7 +3928,7 @@
     });
   }
 
-  const flowPrelude$18 = flowPreludeFunction();
+  const flowPrelude$25 = flowPreludeFunction();
 
   function h2oColumnSummaryOutput(_, _go, frameKey, frame, columnName) {
     const lodash = window._;
@@ -1917,8 +3961,8 @@
     if (table) {
       renderPlot(_domainPlot, _.plot(g => g(g.rect(g.position('count', 'label')), g.from(table), g.limit(1000))));
     }
-    const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$18.stringify(frameKey) }, column: ${ flowPrelude$18.stringify(columnName) }`);
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$18.stringify(frameKey) }, ${ flowPrelude$18.stringify(columnName) }`);
+    const impute = () => _.insertAndExecuteCell('cs', `imputeColumn frame: ${ flowPrelude$25.stringify(frameKey) }, column: ${ flowPrelude$25.stringify(columnName) }`);
+    const inspect = () => _.insertAndExecuteCell('cs', `inspect getColumnSummary ${ flowPrelude$25.stringify(frameKey) }, ${ flowPrelude$25.stringify(columnName) }`);
     lodash.defer(_go);
     return {
       label: column.label,
@@ -1932,7 +3976,7 @@
     };
   }
 
-  const flowPrelude$17 = flowPreludeFunction();
+  const flowPrelude$24 = flowPreludeFunction();
 
   function extendColumnSummary(_, frameKey, frame, columnName) {
     const lodash = window._;
@@ -1951,7 +3995,7 @@
       const vectors = [createVector('percentile', 'Number', frame.default_percentiles), createVector('value', 'Number', column.percentiles)];
       return createDataframe('percentiles', vectors, lodash.range(frame.default_percentiles.length), null, {
         description: `Percentiles for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspectDistribution = () => {
@@ -2021,8 +4065,8 @@
       const vectors = [createFactor('interval', 'String', intervalData), createVector('width', 'Number', widthData), createVector('count', 'Number', countData)];
       return createDataframe('distribution', vectors, lodash.range(binCount), null, {
         description: `Distribution for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`,
-        plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`,
+        plot: `plot inspect \'distribution\', getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspectCharacteristics = () => {
@@ -2051,8 +4095,8 @@
       const vectors = [createFactor('characteristic', 'String', characteristicData), createVector('count', 'Number', countData), createVector('percent', 'Number', percentData)];
       return createDataframe('characteristics', vectors, lodash.range(characteristicData.length), null, {
         description: `Characteristics for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`,
-        plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`,
+        plot: `plot inspect \'characteristics\', getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspectSummary = () => {
@@ -2068,8 +4112,8 @@
       const vectors = [createFactor('column', 'String', [columnName]), createVector('mean', 'Number', [mean]), createVector('q1', 'Number', [q1]), createVector('q2', 'Number', [q2]), createVector('q3', 'Number', [q3]), createVector('min', 'Number', [minimum]), createVector('max', 'Number', [maximum])];
       return createDataframe('summary', vectors, lodash.range(1), null, {
         description: `Summary for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`,
-        plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`,
+        plot: `plot inspect \'summary\', getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspectDomain = () => {
@@ -2095,8 +4139,8 @@
       const vectors = [createFactor('label', 'String', labels), createVector('count', 'Number', counts), createVector('percent', 'Number', percents)];
       return createDataframe('domain', vectors, lodash.range(sortedLevels.length), null, {
         description: `Domain for column \'${ column.label }\' in frame \'${ frameKey }\'.`,
-        origin: `getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`,
-        plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$17.stringify(frameKey) }, ${ flowPrelude$17.stringify(columnName) }`
+        origin: `getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`,
+        plot: `plot inspect \'domain\', getColumnSummary ${ flowPrelude$24.stringify(frameKey) }, ${ flowPrelude$24.stringify(columnName) }`
       });
     };
     const inspections = { characteristics: inspectCharacteristics };
@@ -2157,7 +4201,7 @@
     });
   }
 
-  const flowPrelude$19 = flowPreludeFunction();
+  const flowPrelude$26 = flowPreludeFunction();
 
   function h2oSplitFrameOutput(_, _go, _splitFrameResult) {
     const lodash = window._;
@@ -2182,7 +4226,7 @@
       return ratios;
     };
     const createFrameView = (key, ratio) => {
-      const view = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$19.stringify(key) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$26.stringify(key) }`);
       const self = {
         key,
         ratio,
@@ -2215,7 +4259,7 @@
   }
 
   function uuid() {
-    if (typeof window !== 'undefined ' && window !== null) {
+    if (typeof window !== 'undefined' && window !== null) {
       return window.uuid();
     }
     return null;
@@ -2325,13 +4369,13 @@
     return go(new Flow.Error('The number of split ratios should be one less than the number of split keys'));
   }
 
-  const flowPrelude$20 = flowPreludeFunction();
+  const flowPrelude$27 = flowPreludeFunction();
 
   function h2oMergeFramesOutput(_, _go, _mergeFramesResult) {
     const lodash = window._;
     const Flow = window.Flow;
     const _frameKey = _mergeFramesResult.key;
-    const _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$20.stringify(_frameKey) }`);
+    const _viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$27.stringify(_frameKey) }`);
     lodash.defer(_go);
     return {
       frameKey: _frameKey,
@@ -2437,7 +4481,7 @@
     });
   }
 
-  const flowPrelude$21 = flowPreludeFunction();
+  const flowPrelude$28 = flowPreludeFunction();
 
   function inspectParametersAcrossModels(models) {
     return function () {
@@ -2529,12 +4573,12 @@
       })();
       return createDataframe('parameters', vectors, lodash.range(models.length), null, {
         description: `Parameters for models ${ modelKeys.join(', ') }`,
-        origin: `getModels ${ flowPrelude$21.stringify(modelKeys) }`
+        origin: `getModels ${ flowPrelude$28.stringify(modelKeys) }`
       });
     };
   }
 
-  const flowPrelude$22 = flowPreludeFunction();
+  const flowPrelude$29 = flowPreludeFunction();
 
   function h2oModelsOutput(_, _go, _models) {
     const lodash = window._;
@@ -2580,11 +4624,11 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$22.stringify(model.model_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$29.stringify(model.model_id.name) }`);
       const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
       alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$22.stringify(model.model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$22.stringify(model.model_id.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$29.stringify(model.model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$29.stringify(model.model_id.name) }`);
       return {
         key: model.model_id.name,
         algo: model.algo_full_name,
@@ -2610,14 +4654,14 @@
       }
       return _results;
     };
-    const compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$22.stringify(collectSelectedKeys()) }`);
-    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$22.stringify(collectSelectedKeys()) }`);
+    const compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$29.stringify(collectSelectedKeys()) }`);
+    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$29.stringify(collectSelectedKeys()) }`);
     const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
       acceptCaption: 'Delete Models',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$22.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$29.stringify(collectSelectedKeys()) }`);
       }
     });
     const inspectAll = () => {
@@ -2634,7 +4678,7 @@
         return _results;
       })();
       // TODO use table origin
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$22.stringify(allKeys) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$29.stringify(allKeys) }`);
     };
     const initialize = models => {
       _modelViews(lodash.map(models, createModelView));
@@ -2788,10 +4832,6 @@
     });
   }
 
-  function doDelete(_, path, go) {
-    return http(_, 'DELETE', path, null, go);
-  }
-
   function deleteModelRequest(_, key, go) {
     return doDelete(_, `/3/Models/${ encodeURIComponent(key) }`, go);
   }
@@ -2836,7 +4876,7 @@
     });
   }
 
-  const flowPrelude$23 = flowPreludeFunction();
+  const flowPrelude$30 = flowPreludeFunction();
 
   function h2oImportFilesOutput(_, _go, _importResults) {
     const lodash = window._;
@@ -2852,7 +4892,7 @@
     });
     const _importViews = lodash.map(_importResults, createImportView);
     const parse = () => {
-      const paths = lodash.map(_allFrames, flowPrelude$23.stringify);
+      const paths = lodash.map(_allFrames, flowPrelude$30.stringify);
       return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ paths.join(',') } ]`);
     };
     lodash.defer(_go);
@@ -3020,7 +5060,7 @@
     }
   }
 
-  const flowPrelude$24 = flowPreludeFunction();
+  const flowPrelude$31 = flowPreludeFunction();
 
   function h2oSetupParseOutput(_, _go, _inputs, _result) {
     const Flow = window.Flow;
@@ -3196,15 +5236,15 @@
     return target;
   }
 
-  const flowPrelude$25 = flowPreludeFunction();
+  const flowPrelude$32 = flowPreludeFunction();
 
   function postModelBuildRequest(_, algo, parameters, go) {
     _.trackEvent('model', algo);
     if (parameters.hyper_parameters) {
       // super-hack: nest this object as stringified json
-      parameters.hyper_parameters = flowPrelude$25.stringify(parameters.hyper_parameters);
+      parameters.hyper_parameters = flowPrelude$32.stringify(parameters.hyper_parameters);
       if (parameters.search_criteria) {
-        parameters.search_criteria = flowPrelude$25.stringify(parameters.search_criteria);
+        parameters.search_criteria = flowPrelude$32.stringify(parameters.search_criteria);
       }
       return doPost(_, _.__.gridModelBuilderEndpoints[algo], encodeObjectForPost(parameters), go);
     }
@@ -3281,7 +5321,7 @@
     return postPredictRequest(_, destinationKey, modelKey, frameKey, options, unwrapPrediction(_, go));
   }
 
-  const flowPrelude$26 = flowPreludeFunction();
+  const flowPrelude$33 = flowPreludeFunction();
 
   function inspectModelParameters(model) {
     return function () {
@@ -3320,7 +5360,7 @@
       })();
       return createDataframe('parameters', vectors, lodash.range(parameters.length), null, {
         description: `Parameters for model \'${ model.model_id.name }\'`, // TODO frame model_id
-        origin: `getModel ${ flowPrelude$26.stringify(model.model_id.name) }`
+        origin: `getModel ${ flowPrelude$33.stringify(model.model_id.name) }`
       });
     };
   }
@@ -3379,7 +5419,7 @@
     });
   }
 
-  const flowPrelude$28 = flowPreludeFunction();
+  const flowPrelude$35 = flowPreludeFunction();
 
   function h2oPartialDependenceOutput(_, _go, _result) {
     const lodash = window._;
@@ -3421,7 +5461,7 @@
         renderPlot(section.frame, _.plot(g => g(g.select(), g.from(table))));
       }
     }
-    const _viewFrame = () => _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ flowPrelude$28.stringify(_destinationKey) }`);
+    const _viewFrame = () => _.insertAndExecuteCell('cs', `requestPartialDependenceData ${ flowPrelude$35.stringify(_destinationKey) }`);
     lodash.defer(_go);
     return {
       destinationKey: _destinationKey,
@@ -3433,7 +5473,7 @@
     };
   }
 
-  const flowPrelude$27 = flowPreludeFunction();
+  const flowPrelude$34 = flowPreludeFunction();
 
   function extendPartialDependence(_, result) {
     let data;
@@ -3446,7 +5486,7 @@
     const _len = _ref1.length;
     for (i = _i, _len; _i < _len; i = ++_i) {
       data = _ref1[i];
-      origin = `getPartialDependence ${ flowPrelude$27.stringify(result.destination_key) }`;
+      origin = `getPartialDependence ${ flowPrelude$34.stringify(result.destination_key) }`;
       inspections[`plot${ i + 1 }`] = inspectTwoDimTable_(origin, `plot${ i + 1 }`, data);
     }
     inspect_(result, inspections);
@@ -3550,7 +5590,7 @@
     return _fork(requestNetworkTest, _);
   }
 
-  const flowPrelude$29 = flowPreludeFunction();
+  const flowPrelude$36 = flowPreludeFunction();
 
   function h2oFramesOutput(_, _go, _frames) {
     const lodash = window._;
@@ -3598,13 +5638,13 @@
       const columnLabels = lodash.head(lodash.map(frame.columns, column => column.label), 15);
       const view = () => {
         if (frame.is_text) {
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$29.stringify(frame.frame_id.name) } ]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$36.stringify(frame.frame_id.name) } ]`);
         }
-        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$29.stringify(frame.frame_id.name) }`);
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$36.stringify(frame.frame_id.name) }`);
       };
-      const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$29.stringify(frame.frame_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$29.stringify(frame.frame_id.name) }`);
-      const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$29.stringify(frame.frame_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${ flowPrelude$36.stringify(frame.frame_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${ flowPrelude$36.stringify(frame.frame_id.name) }`);
+      const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_frame: ${ flowPrelude$36.stringify(frame.frame_id.name) }`);
       return {
         key: frame.frame_id.name,
         isChecked: _isChecked,
@@ -3633,13 +5673,13 @@
       }
       return _results;
     };
-    const predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$29.stringify(collectSelectedKeys()) }`);
+    const predictOnFrames = () => _.insertAndExecuteCell('cs', `predict frames: ${ flowPrelude$36.stringify(collectSelectedKeys()) }`);
     const deleteFrames = () => _.confirm('Are you sure you want to delete these frames?', {
       acceptCaption: 'Delete Frames',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$29.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteFrames ${ flowPrelude$36.stringify(collectSelectedKeys()) }`);
       }
     });
     _frameViews(lodash.map(_frames, createFrameView));
@@ -3674,12 +5714,12 @@
     return _fork(requestFrames, _);
   }
 
-  const flowPrelude$30 = flowPreludeFunction();
+  const flowPrelude$37 = flowPreludeFunction();
 
   function h2oBindFramesOutput(_, _go, key, result) {
     const lodash = window._;
     const Flow = window.Flow;
-    const viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$30.stringify(key) }`);
+    const viewFrame = () => _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$37.stringify(key) }`);
     lodash.defer(_go);
     return {
       viewFrame,
@@ -3700,14 +5740,14 @@
     });
   }
 
-  const flowPrelude$31 = flowPreludeFunction();
+  const flowPrelude$38 = flowPreludeFunction();
 
   function h2oGridsOutput(_, _go, _grids) {
     const lodash = window._;
     const Flow = window.Flow;
     const _gridViews = Flow.Dataflow.signal([]);
     const createGridView = grid => {
-      const view = () => _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$31.stringify(grid.grid_id.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$38.stringify(grid.grid_id.name) }`);
       return {
         key: grid.grid_id.name,
         size: grid.model_ids.length,
@@ -4414,24 +6454,6 @@
     });
   }
 
-  function download(type, url, go) {
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    if (url.substring(0, 1) === '/') {
-      url = window.Flow.ContextPath + url.substring(1);
-    }
-    return $.ajax({
-      dataType: type,
-      url,
-      success(data, status, xhr) {
-        return go(null, data);
-      },
-      error(xhr, status, error) {
-        return go(new Flow.Error(error));
-      }
-    });
-  }
-
   function requestPojoPreview(key, go) {
     return download('text', `/3/Models.java/${ encodeURIComponent(key) }/preview`, go);
   }
@@ -4443,7 +6465,7 @@
     return code;
   }
 
-  const flowPrelude$33 = flowPreludeFunction();
+  const flowPrelude$40 = flowPreludeFunction();
 
   function h2oModelOutput(_, _go, _model, refresh) {
     const lodash = window._;
@@ -4629,9 +6651,9 @@
             const $a = $(e.target);
             switch ($a.attr('data-type')) {
               case 'frame':
-                return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$33.stringify($a.attr('data-key')) }`);
+                return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$40.stringify($a.attr('data-key')) }`);
               case 'model':
-                return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$33.stringify($a.attr('data-key')) }`);
+                return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$40.stringify($a.attr('data-key')) }`);
               default:
               // do nothing
             }
@@ -5070,8 +7092,8 @@
       }
       const toggle = () => _isExpanded(!_isExpanded());
       const cloneModel = () => alert('Not implemented');
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$33.stringify(_model.model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$33.stringify(_model.model_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$40.stringify(_model.model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$40.stringify(_model.model_id.name) }`);
       const previewPojo = () => requestPojoPreview(_model.model_id.name, (error, result) => {
         if (error) {
           return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
@@ -5080,13 +7102,13 @@
       });
       const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
       const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
-      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$33.stringify(_model.model_id.name) }`);
+      const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$40.stringify(_model.model_id.name) }`);
       const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
         acceptCaption: 'Delete Model',
         declineCaption: 'Cancel'
       }, accept => {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$33.stringify(_model.model_id.name) }`);
+          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$40.stringify(_model.model_id.name) }`);
         }
       });
       return {
@@ -5135,7 +7157,7 @@
     };
   }
 
-  const flowPrelude$32 = flowPreludeFunction();
+  const flowPrelude$39 = flowPreludeFunction();
 
   function extendModel(_, model) {
     const lodash = window._;
@@ -5147,7 +7169,7 @@
       let _ref1;
       const inspections = {};
       inspections.parameters = inspectModelParameters(model);
-      const origin = `getModel ${ flowPrelude$32.stringify(model.model_id.name) }`;
+      const origin = `getModel ${ flowPrelude$39.stringify(model.model_id.name) }`;
       inspectObject(inspections, 'output', origin, model.output);
 
       // Obviously, an array of 2d tables calls for a megahack.
@@ -5233,14 +7255,14 @@
     return _fork(requestJobs, _);
   }
 
-  const flowPrelude$34 = flowPreludeFunction();
+  const flowPrelude$41 = flowPreludeFunction();
 
   function h2oInspectsOutput(_, _go, _tables) {
     const lodash = window._;
     const Flow = window.Flow;
     const createTableView = table => {
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$34.stringify(table.label) }, ${ table.metadata.origin }`);
-      const grid = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$34.stringify(table.label) }, ${ table.metadata.origin }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect ${ flowPrelude$41.stringify(table.label) }, ${ table.metadata.origin }`);
+      const grid = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$41.stringify(table.label) }, ${ table.metadata.origin }`);
       const plot = () => _.insertAndExecuteCell('cs', table.metadata.plot);
       return {
         label: table.label,
@@ -5260,12 +7282,12 @@
     };
   }
 
-  const flowPrelude$35 = flowPreludeFunction();
+  const flowPrelude$42 = flowPreludeFunction();
 
   function h2oInspectOutput(_, _go, _frame) {
     const lodash = window._;
     const Flow = window.Flow;
-    const view = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$35.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
+    const view = () => _.insertAndExecuteCell('cs', `grid inspect ${ flowPrelude$42.stringify(_frame.label) }, ${ _frame.metadata.origin }`);
     const plot = () => _.insertAndExecuteCell('cs', _frame.metadata.plot);
     lodash.defer(_go);
     return {
@@ -5287,7 +7309,7 @@
     };
   }
 
-  const flowPrelude$36 = flowPreludeFunction();
+  const flowPrelude$43 = flowPreludeFunction();
 
   function h2oPlotInput(_, _go, _frame) {
     const Flow = window.Flow;
@@ -5314,7 +7336,7 @@
     const _canPlot = Flow.Dataflow.lift(_type, _x, _y, (type, x, y) => type && x && y);
     const plot = () => {
       const color = _color();
-      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$36.stringify(_x()) }, ${ flowPrelude$36.stringify(_y()) }\n    g.color ${ flowPrelude$36.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$36.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$36.stringify(_x()) }, ${ flowPrelude$36.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$36.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
+      const command = color ? `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$43.stringify(_x()) }, ${ flowPrelude$43.stringify(_y()) }\n    g.color ${ flowPrelude$43.stringify(color) }\n  )\n  g.from inspect ${ flowPrelude$43.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)` : `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$43.stringify(_x()) }, ${ flowPrelude$43.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$43.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
       return _.insertAndExecuteCell('cs', command);
     };
     lodash.defer(_go);
@@ -5331,7 +7353,7 @@
     };
   }
 
-  const flowPrelude$37 = flowPreludeFunction();
+  const flowPrelude$44 = flowPreludeFunction();
 
   function h2oGridOutput(_, _go, _grid) {
     const lodash = window._;
@@ -5385,11 +7407,11 @@
         })();
         return _checkedModelCount(checkedViews.length);
       });
-      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$37.stringify(model_id.name) }`);
+      const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$44.stringify(model_id.name) }`);
       const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model_id.name)}`);
       alert('Not implemented');
-      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$37.stringify(model_id.name) }`);
-      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$37.stringify(model_id.name) }`);
+      const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$44.stringify(model_id.name) }`);
+      const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$44.stringify(model_id.name) }`);
       return {
         key: model_id.name,
         isChecked: _isChecked,
@@ -5414,14 +7436,14 @@
       }
       return _results;
     };
-    const compareModels = () => _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$37.stringify(collectSelectedKeys()) }`);
-    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$37.stringify(collectSelectedKeys()) }`);
+    const compareModels = () => _.insertAndExecuteCell('cs', `'inspect getModels ${ flowPrelude$44.stringify(collectSelectedKeys()) }`);
+    const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${ flowPrelude$44.stringify(collectSelectedKeys()) }`);
     const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
       acceptCaption: 'Delete Models',
       declineCaption: 'Cancel'
     }, accept => {
       if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$37.stringify(collectSelectedKeys()) }`);
+        return _.insertAndExecuteCell('cs', `deleteModels ${ flowPrelude$44.stringify(collectSelectedKeys()) }`);
       }
     });
     const inspect = () => {
@@ -5446,7 +7468,7 @@
         return _results;
       })();
       // TODO use table origin
-      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$37.stringify(allKeys) }`);
+      return _.insertAndExecuteCell('cs', `inspect getModels ${ flowPrelude$44.stringify(allKeys) }`);
     };
     const initialize = grid => {
       let i;
@@ -5489,7 +7511,7 @@
     };
   }
 
-  const flowPrelude$38 = flowPreludeFunction();
+  const flowPrelude$45 = flowPreludeFunction();
 
   function h2oPredictsOutput(_, _go, opts, _predictions) {
     const lodash = window._;
@@ -5547,12 +7569,12 @@
       });
       const view = () => {
         if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$38.stringify(_modelKey) }, frame: ${ flowPrelude$38.stringify(_frameKey) }`);
+          return _.insertAndExecuteCell('cs', `getPrediction model: ${ flowPrelude$45.stringify(_modelKey) }, frame: ${ flowPrelude$45.stringify(_frameKey) }`);
         }
       };
       const inspect = () => {
         if (_hasFrame) {
-          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$38.stringify(_modelKey) }, frame: ${ flowPrelude$38.stringify(_frameKey) }`);
+          return _.insertAndExecuteCell('cs', `inspect getPrediction model: ${ flowPrelude$45.stringify(_modelKey) }, frame: ${ flowPrelude$45.stringify(_frameKey) }`);
         }
       };
       return {
@@ -5586,7 +7608,7 @@
         }
         return _results;
       })();
-      return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$38.stringify(selectedKeys) }`);
+      return _.insertAndExecuteCell('cs', `getPredictions ${ flowPrelude$45.stringify(selectedKeys) }`);
     };
     const plotPredictions = () => _.insertAndExecuteCell('cs', _predictionsTable.metadata.plot);
     const plotScores = () => _.insertAndExecuteCell('cs', _scoresTable.metadata.plot);
@@ -5765,7 +7787,7 @@
     }
   }
 
-  const flowPrelude$39 = flowPreludeFunction();
+  const flowPrelude$46 = flowPreludeFunction();
 
   function h2oImportFilesInput(_, _go) {
     //
@@ -5825,7 +7847,7 @@
     });
     const _hasSelectedFiles = Flow.Dataflow.lift(_selectedFiles, files => files.length > 0);
     const importFiles = files => {
-      const paths = lodash.map(files, file => flowPrelude$39.stringify(file.path));
+      const paths = lodash.map(files, file => flowPrelude$46.stringify(file.path));
       return _.insertAndExecuteCell('cs', `importFiles [ ${ paths.join(',') } ]`);
     };
     const importSelectedFiles = () => importFiles(_selectedFiles());
@@ -6021,7 +8043,7 @@
     };
   }
 
-  const flowPrelude$40 = flowPreludeFunction();
+  const flowPrelude$47 = flowPreludeFunction();
 
   function h2oPredictInput(_, _go, opt) {
     const lodash = window._;
@@ -6150,9 +8172,9 @@
         frameArg = _selectedFrame();
       }
       const destinationKey = _destinationKey();
-      cs = `predict model: ${ flowPrelude$40.stringify(modelArg) }, frame: ${ flowPrelude$40.stringify(frameArg) }`;
+      cs = `predict model: ${ flowPrelude$47.stringify(modelArg) }, frame: ${ flowPrelude$47.stringify(frameArg) }`;
       if (destinationKey) {
-        cs += `, predictions_frame: ${ flowPrelude$40.stringify(destinationKey) }`;
+        cs += `, predictions_frame: ${ flowPrelude$47.stringify(destinationKey) }`;
       }
       if (_hasReconError()) {
         if (_computeReconstructionError()) {
@@ -6199,7 +8221,7 @@
     };
   }
 
-  const flowPrelude$41 = flowPreludeFunction();
+  const flowPrelude$48 = flowPreludeFunction();
 
   function h2oCreateFrameInput(_, _go) {
     const lodash = window._;
@@ -6245,7 +8267,7 @@
         response_factors: _responseFactors(),
         has_response: _hasResponse()
       };
-      return _.insertAndExecuteCell('cs', `createFrame ${ flowPrelude$41.stringify(opts) }`);
+      return _.insertAndExecuteCell('cs', `createFrame ${ flowPrelude$48.stringify(opts) }`);
     };
     lodash.defer(_go);
     return {
@@ -6273,7 +8295,7 @@
     };
   }
 
-  const flowPrelude$42 = flowPreludeFunction();
+  const flowPrelude$49 = flowPreludeFunction();
 
   function h2oSplitFrameInput(_, _go, _frameKey) {
     const lodash = window._;
@@ -6391,12 +8413,12 @@
       const _key = Flow.Dataflow.signal('');
       const _ratio = Flow.Dataflow.lift(_ratioText, text => parseFloat(text));
       Flow.Dataflow.react(_ratioText, updateSplitRatiosAndNames);
-      flowPrelude$42.remove = () => _splits.remove(self);
+      flowPrelude$49.remove = () => _splits.remove(self);
       const self = {
         key: _key,
         ratioText: _ratioText,
         ratio: _ratio,
-        remove: flowPrelude$42.remove
+        remove: flowPrelude$49.remove
       };
       return self;
     };
@@ -6407,7 +8429,7 @@
         return _validationMessage(error);
       }
       _validationMessage('');
-      return _.insertAndExecuteCell('cs', `splitFrame ${ flowPrelude$42.stringify(_frame()) }, ${ flowPrelude$42.stringify(splitRatios) }, ${ flowPrelude$42.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
+      return _.insertAndExecuteCell('cs', `splitFrame ${ flowPrelude$49.stringify(_frame()) }, ${ flowPrelude$49.stringify(splitRatios) }, ${ flowPrelude$49.stringify(splitKeys) }, ${ _seed() }`); // eslint-disable-line
     });
     const initialize = () => {
       _.requestFrames(_, (error, frames) => {
@@ -6450,7 +8472,7 @@
     };
   }
 
-  const flowPrelude$43 = flowPreludeFunction();
+  const flowPrelude$50 = flowPreludeFunction();
 
   function h2oMergeFramesInput(_, _go) {
     const lodash = window._;
@@ -6492,7 +8514,7 @@
       if (!_canMerge()) {
         return;
       }
-      const cs = `mergeFrames ${ flowPrelude$43.stringify(_destinationKey()) }, ${ flowPrelude$43.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ flowPrelude$43.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
+      const cs = `mergeFrames ${ flowPrelude$50.stringify(_destinationKey()) }, ${ flowPrelude$50.stringify(_selectedLeftFrame()) }, ${ _selectedLeftColumn().index }, ${ _includeAllLeftRows() }, ${ flowPrelude$50.stringify(_selectedRightFrame()) }, ${ _selectedRightColumn().index }, ${ _includeAllRightRows() }`;
       return _.insertAndExecuteCell('cs', cs);
     };
     _.requestFrames(_, (error, frames) => {
@@ -6531,7 +8553,7 @@
     };
   }
 
-  const flowPrelude$44 = flowPreludeFunction();
+  const flowPrelude$51 = flowPreludeFunction();
 
   function h2oPartialDependenceInput(_, _go) {
     const lodash = window._;
@@ -6567,7 +8589,7 @@
       // assemble a string for the h2o Rapids AST
       // this contains the function to call
       // along with the options to pass in
-      const cs = `buildPartialDependence ${ flowPrelude$44.stringify(opts) }`;
+      const cs = `buildPartialDependence ${ flowPrelude$51.stringify(opts) }`;
 
       // insert a cell with the expression `cs`
       // into the current Flow notebook
@@ -6623,7 +8645,7 @@
     };
   }
 
-  const flowPrelude$45 = flowPreludeFunction();
+  const flowPrelude$52 = flowPreludeFunction();
 
   function h2oExportFrameInput(_, _go, frameKey, path, opt) {
     const lodash = window._;
@@ -6633,7 +8655,7 @@
     const _path = Flow.Dataflow.signal(null);
     const _overwrite = Flow.Dataflow.signal(true);
     const _canExportFrame = Flow.Dataflow.lift(_selectedFrame, _path, (frame, path) => frame && path);
-    const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$45.stringify(_selectedFrame()) }, ${ flowPrelude$45.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${ flowPrelude$52.stringify(_selectedFrame()) }, ${ flowPrelude$52.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     _.requestFrames(_, (error, frames) => {
       let frame;
       if (error) {
@@ -6664,7 +8686,7 @@
     };
   }
 
-  const flowPrelude$46 = flowPreludeFunction();
+  const flowPrelude$53 = flowPreludeFunction();
 
   function h2oImportModelInput(_, _go, path, opt) {
     const lodash = window._;
@@ -6675,7 +8697,7 @@
     const _path = Flow.Dataflow.signal(path);
     const _overwrite = Flow.Dataflow.signal(opt.overwrite);
     const _canImportModel = Flow.Dataflow.lift(_path, path => path && path.length);
-    const importModel = () => _.insertAndExecuteCell('cs', `importModel ${ flowPrelude$46.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    const importModel = () => _.insertAndExecuteCell('cs', `importModel ${ flowPrelude$53.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     lodash.defer(_go);
     return {
       path: _path,
@@ -6686,7 +8708,7 @@
     };
   }
 
-  const flowPrelude$47 = flowPreludeFunction();
+  const flowPrelude$54 = flowPreludeFunction();
 
   function h2oExportModelInput(_, _go, modelKey, path, opt) {
     const lodash = window._;
@@ -6699,7 +8721,7 @@
     const _path = Flow.Dataflow.signal(null);
     const _overwrite = Flow.Dataflow.signal(opt.overwrite);
     const _canExportModel = Flow.Dataflow.lift(_selectedModelKey, _path, (modelKey, path) => modelKey && path);
-    const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$47.stringify(_selectedModelKey()) }, ${ flowPrelude$47.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
+    const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$54.stringify(_selectedModelKey()) }, ${ flowPrelude$54.stringify(_path()) }, overwrite: ${ _overwrite() ? 'true' : 'false' }`);
     getModelsRequest(_, (error, models) => {
       let model;
       if (error) {
@@ -7355,7 +9377,7 @@
     }
   }
 
-  const flowPrelude$49 = flowPreludeFunction();
+  const flowPrelude$56 = flowPreludeFunction();
 
   function h2oModelBuilderForm(_, _algorithm, _parameters) {
     const lodash = window._;
@@ -7369,7 +9391,7 @@
     let _len2;
     const _exception = Flow.Dataflow.signal(null);
     const _validationFailureMessage = Flow.Dataflow.signal('');
-    const _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$49.isTruthy);
+    const _hasValidationFailures = Flow.Dataflow.lift(_validationFailureMessage, flowPrelude$56.isTruthy);
     const _gridStrategies = ['Cartesian', 'RandomDiscrete'];
     const _isGrided = Flow.Dataflow.signal(false);
     const _gridId = Flow.Dataflow.signal(`grid-${ uuid() }`);
@@ -7515,7 +9537,7 @@
       _exception(null);
       const createModelContinuationFunction = () => {
         const parameters = collectParameters(false, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric);
-        return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ flowPrelude$49.stringify(parameters) }`);
+        return _.insertAndExecuteCell('cs', `buildModel \'${ _algorithm }\', ${ flowPrelude$56.stringify(parameters) }`);
       };
       return performValidations(_, true, createModelContinuationFunction, _exception, collectParameters, _controlGroups, control, _gridId, _gridStrategy, _gridMaxModels, _gridMaxRuntime, _gridStoppingRounds, _gridStoppingTolerance, _gridStoppingMetric, _validationFailureMessage, _algorithm);
     };
@@ -7564,80 +9586,7 @@
     };
   }
 
-  function cacheModelBuilders(_, modelBuilders) {
-    let modelBuilder;
-    let _i;
-    let _len;
-    const modelBuilderEndpoints = {};
-    const gridModelBuilderEndpoints = {};
-    for (_i = 0, _len = modelBuilders.length; _i < _len; _i++) {
-      modelBuilder = modelBuilders[_i];
-      modelBuilderEndpoints[modelBuilder.algo] = `/${ modelBuilder.__meta.schema_version }/ModelBuilders/${ modelBuilder.algo }`;
-      gridModelBuilderEndpoints[modelBuilder.algo] = `/99/Grid/${ modelBuilder.algo }`;
-    }
-    _.__.modelBuilderEndpoints = modelBuilderEndpoints;
-    _.__.gridModelBuilderEndpoints = gridModelBuilderEndpoints;
-    _.__.modelBuilders = modelBuilders;
-    return _.__.modelBuilders;
-  }
-
-  function requestModelBuilders(_, go) {
-    const modelBuilders = _.__.modelBuilders;
-    if (modelBuilders) {
-      return go(null, modelBuilders);
-    }
-    const visibility = 'Stable';
-    return doGet(_, '/3/ModelBuilders', unwrap(go, result => {
-      let algo;
-      let builder;
-      const builders = (() => {
-        const _ref = result.model_builders;
-        const _results = [];
-        for (algo in _ref) {
-          if ({}.hasOwnProperty.call(_ref, algo)) {
-            builder = _ref[algo];
-            _results.push(builder);
-          }
-        }
-        return _results;
-      })();
-      const availableBuilders = (() => {
-        let _i;
-        let _j;
-        let _len;
-        let _len1;
-        let _results;
-        let _results1;
-        switch (visibility) {
-          case 'Stable':
-            _results = [];
-            for (_i = 0, _len = builders.length; _i < _len; _i++) {
-              builder = builders[_i];
-              if (builder.visibility === visibility) {
-                _results.push(builder);
-              }
-            }
-            return _results;
-          // break; // no-unreachable
-          case 'Beta':
-            _results1 = [];
-            for (_j = 0, _len1 = builders.length; _j < _len1; _j++) {
-              builder = builders[_j];
-              if (builder.visibility === visibility || builder.visibility === 'Stable') {
-                _results1.push(builder);
-              }
-            }
-            return _results1;
-          // break; // no-unreachable
-          default:
-            return builders;
-        }
-      })();
-      return cacheModelBuilders(_, availableBuilders);
-    }));
-  }
-
-  const flowPrelude$48 = flowPreludeFunction();
+  const flowPrelude$55 = flowPreludeFunction();
 
   function h2oModelInput(_, _go, _algo, _opts) {
     const lodash = window._;
@@ -7662,7 +9611,7 @@
         let parameters;
         if (builder) {
           algorithm = builder.algo;
-          parameters = flowPrelude$48.deepClone(builder.parameters);
+          parameters = flowPrelude$55.deepClone(builder.parameters);
           return populateFramesAndColumns(_, frameKey, algorithm, parameters, () => _modelForm(h2oModelBuilderForm(_, algorithm, parameters)));
         }
         return _modelForm(null);
@@ -7887,10 +9836,6 @@
     return doGet(_, '/3/dataframes', go);
   }
 
-  function postScalaIntpRequest(_, go) {
-    return doPost(_, '/3/scalaint', {}, go);
-  }
-
   function postScalaCodeRequest(_, sessionId, code, go) {
     return doPost(_, `/3/scalaint/${ sessionId }`, { code }, go);
   }
@@ -7916,9 +9861,9 @@
     return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
   }
 
-  const flowPrelude$3 = flowPreludeFunction();
+  const flowPrelude$10 = flowPreludeFunction();
 
-  function routines() {
+  function h2oRoutines(_) {
     const lodash = window._;
     const $ = window.jQuery;
     const Flow = window.Flow;
@@ -7933,2842 +9878,895 @@
     const createFactor = lightning.createFactor;
     const createList = lightning.createList;
     const createDataframe = lightning.createFrame;
-    H2O.Routines = _ => {
-      let attrname;
-      let f;
-      let name;
-      let routinesOnSw;
+    let attrname;
+    let f;
+    let name;
+    let routinesOnSw;
 
-      // TODO move these into Flow.Async
-      let _ref;
-      let _schemaHacks;
-      const _isFuture = Flow.Async.isFuture;
-      const _async = Flow.Async.async;
-      const _get = Flow.Async.get;
+    // TODO move these into Flow.Async
+    let _ref;
+    let _schemaHacks;
+    const _isFuture = Flow.Async.isFuture;
+    const _async = Flow.Async.async;
+    const _get = Flow.Async.get;
 
-      const render_ = function () {
-        const raw = arguments[0];
-        const render = arguments[1];
-        const args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
-        // Prepend current context (_) and a continuation (go)
-        flow_(raw).render = go => render(...[_, go].concat(args));
-        return raw;
-      };
-      const extendModel = model => {
-        lodash.extend = model => {
-          let table;
-          let tableName;
-          let _i;
-          let _len;
-          let _ref1;
-          const inspections = {};
-          inspections.parameters = inspectModelParameters(model);
-          const origin = `getModel ${ flowPrelude$3.stringify(model.model_id.name) }`;
-          inspectObject(inspections, 'output', origin, model.output);
+    const render_ = function () {
+      const raw = arguments[0];
+      const render = arguments[1];
+      const args = arguments.length >= 3 ? __slice.call(arguments, 2) : [];
+      // Prepend current context (_) and a continuation (go)
+      flow_(raw).render = go => render(...[_, go].concat(args));
+      return raw;
+    };
+    const extendModel = model => {
+      lodash.extend = model => {
+        let table;
+        let tableName;
+        let _i;
+        let _len;
+        let _ref1;
+        const inspections = {};
+        inspections.parameters = inspectModelParameters(model);
+        const origin = `getModel ${ flowPrelude$10.stringify(model.model_id.name) }`;
+        inspectObject(inspections, 'output', origin, model.output);
 
-          // Obviously, an array of 2d tables calls for a megahack.
-          if (model.__meta.schema_type === 'NaiveBayesModel') {
-            if (lodash.isArray(model.output.pcond)) {
-              _ref1 = model.output.pcond;
-              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                table = _ref1[_i];
-                tableName = `output - pcond - ${ table.name }`;
-                inspections[tableName] = inspectTwoDimTable_(origin, tableName, table);
-              }
+        // Obviously, an array of 2d tables calls for a megahack.
+        if (model.__meta.schema_type === 'NaiveBayesModel') {
+          if (lodash.isArray(model.output.pcond)) {
+            _ref1 = model.output.pcond;
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+              table = _ref1[_i];
+              tableName = `output - pcond - ${ table.name }`;
+              inspections[tableName] = inspectTwoDimTable_(origin, tableName, table);
             }
           }
-          inspect_(model, inspections);
-          return model;
-        };
-        const refresh = go => getModelRequest(_, model.model_id.name, (error, model) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, lodash.extend(model));
-        });
-        lodash.extend(model);
-        return render_(model, h2oModelOutput, model, refresh);
+        }
+        inspect_(model, inspections);
+        return model;
       };
-      const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
-      const createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
+      const refresh = go => getModelRequest(_, model.model_id.name, (error, model) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendPlot(vis));
+        return go(null, lodash.extend(model));
       });
-      const inspect = function (a, b) {
-        if (arguments.length === 1) {
-          return inspect$1(a);
+      lodash.extend(model);
+      return render_(model, h2oModelOutput, model, refresh);
+    };
+    const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
+    const createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendPlot(vis));
+    });
+    const inspect = function (a, b) {
+      if (arguments.length === 1) {
+        return inspect$1(a);
+      }
+      return inspect$2(a, b);
+    };
+    const inspect$1 = obj => {
+      let attr;
+      let inspections;
+      let _ref1;
+      if (_isFuture(obj)) {
+        return _async(inspect, obj);
+      }
+      let inspectors = void 0;
+      if (obj != null) {
+        _ref1 = obj._flow_;
+        if (_ref1 != null) {
+          inspectors = _ref1.inspect;
         }
-        return inspect$2(a, b);
-      };
-      const inspect$1 = obj => {
-        let attr;
-        let inspections;
-        let _ref1;
-        if (_isFuture(obj)) {
-          return _async(inspect, obj);
-        }
-        let inspectors = void 0;
-        if (obj != null) {
-          _ref1 = obj._flow_;
-          if (_ref1 != null) {
-            inspectors = _ref1.inspect;
+      }
+      if (inspectors) {
+        inspections = [];
+        for (attr in inspectors) {
+          if ({}.hasOwnProperty.call(inspectors, attr)) {
+            f = inspectors[attr];
+            inspections.push(inspect$2(attr, obj));
           }
         }
-        if (inspectors) {
-          inspections = [];
-          for (attr in inspectors) {
-            if ({}.hasOwnProperty.call(inspectors, attr)) {
-              f = inspectors[attr];
-              inspections.push(inspect$2(attr, obj));
-            }
-          }
-          render_(inspections, h2oInspectsOutput, inspections);
-          return inspections;
-        }
-        return {};
-      };
-      const inspect$2 = (attr, obj) => {
-        let inspection;
-        if (!attr) {
-          return;
-        }
-        if (_isFuture(obj)) {
-          return _async(inspect, attr, obj);
-        }
-        if (!obj) {
-          return;
-        }
-        const root = obj._flow_;
-        if (!root) {
-          return;
-        }
-        const inspectors = root.inspect;
-        if (!inspectors) {
-          return;
-        }
-        const key = `inspect_${ attr }`;
-        const cached = root._cache_[key];
-        if (cached) {
-          return cached;
-        }
-        f = inspectors[attr];
-        if (!f) {
-          return;
-        }
-        if (!lodash.isFunction(f)) {
-          return;
-        }
-        root._cache_[key] = inspection = f();
-        render_(inspection, h2oInspectOutput, inspection);
-        return inspection;
-      };
-      const plot = f => {
-        if (_isFuture(f)) {
-          return _fork(proceed, h2oPlotInput, f);
-        } else if (lodash.isFunction(f)) {
-          return _fork(createPlot, f);
-        }
-        return assist(plot);
-      };
-      // depends on `plot`
-      const grid = f => plot(g => g(g.select(), g.from(f)));
+        render_(inspections, h2oInspectsOutput, inspections);
+        return inspections;
+      }
+      return {};
+    };
+    const inspect$2 = (attr, obj) => {
+      let inspection;
+      if (!attr) {
+        return;
+      }
+      if (_isFuture(obj)) {
+        return _async(inspect, attr, obj);
+      }
+      if (!obj) {
+        return;
+      }
+      const root = obj._flow_;
+      if (!root) {
+        return;
+      }
+      const inspectors = root.inspect;
+      if (!inspectors) {
+        return;
+      }
+      const key = `inspect_${ attr }`;
+      const cached = root._cache_[key];
+      if (cached) {
+        return cached;
+      }
+      f = inspectors[attr];
+      if (!f) {
+        return;
+      }
+      if (!lodash.isFunction(f)) {
+        return;
+      }
+      root._cache_[key] = inspection = f();
+      render_(inspection, h2oInspectOutput, inspection);
+      return inspection;
+    };
+    const plot = f => {
+      if (_isFuture(f)) {
+        return _fork(proceed, h2oPlotInput, f);
+      } else if (lodash.isFunction(f)) {
+        return _fork(createPlot, f);
+      }
+      return assist(plot);
+    };
+    // depends on `plot`
+    const grid = f => plot(g => g(g.select(), g.from(f)));
 
-      // depends on `grid`
-      const extendGrid = (grid, opts) => {
-        let origin;
-        origin = `getGrid ${ flowPrelude$3.stringify(grid.grid_id.name) }`;
-        if (opts) {
-          origin += `, ${ flowPrelude$3.stringify(opts) }`;
-        }
-        const inspections = {
-          summary: inspectTwoDimTable_(origin, 'summary', grid.summary_table),
-          scoring_history: inspectTwoDimTable_(origin, 'scoring_history', grid.scoring_history)
-        };
-        inspect_(grid, inspections);
-        return render_(grid, h2oGridOutput, grid);
+    // depends on `grid`
+    const extendGrid = (grid, opts) => {
+      let origin;
+      origin = `getGrid ${ flowPrelude$10.stringify(grid.grid_id.name) }`;
+      if (opts) {
+        origin += `, ${ flowPrelude$10.stringify(opts) }`;
+      }
+      const inspections = {
+        summary: inspectTwoDimTable_(origin, 'summary', grid.summary_table),
+        scoring_history: inspectTwoDimTable_(origin, 'scoring_history', grid.scoring_history)
       };
-      // abstracting this out produces an error
-      // defer for now
-      // the call to the `render_` function is the problematic part
-      const extendPredictions = (opts, predictions) => {
-        render_(predictions, h2oPredictsOutput, opts, predictions);
-        return predictions;
-      };
-      // depends on `assist`
-      const createFrame = opts => {
-        if (opts) {
-          return _fork(requestCreateFrame, _, opts);
-        }
-        return assist(createFrame);
-      };
-      // depends on `assist`
-      const splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
-        if (seed == null) {
-          seed = -1;
-        }
-        if (frameKey && splitRatios && splitKeys) {
-          return _fork(requestSplitFrame, _, frameKey, splitRatios, splitKeys, seed);
-        }
-        return assist(splitFrame);
-      };
-      // depends on `assist`
-      const mergeFrames = (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows) => {
-        if (destinationKey && leftFrameKey && rightFrameKey) {
-          return _fork(requestMergeFrames, _, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
-        }
-        return assist(mergeFrames);
-      };
+      inspect_(grid, inspections);
+      return render_(grid, h2oGridOutput, grid);
+    };
+    // abstracting this out produces an error
+    // defer for now
+    // the call to the `render_` function is the problematic part
+    const extendPredictions = (opts, predictions) => {
+      render_(predictions, h2oPredictsOutput, opts, predictions);
+      return predictions;
+    };
+    // depends on `assist`
+    const createFrame = opts => {
+      if (opts) {
+        return _fork(requestCreateFrame, _, opts);
+      }
+      return assist(createFrame);
+    };
+    // depends on `assist`
+    const splitFrame = (frameKey, splitRatios, splitKeys, seed) => {
+      if (seed == null) {
+        seed = -1;
+      }
+      if (frameKey && splitRatios && splitKeys) {
+        return _fork(requestSplitFrame, _, frameKey, splitRatios, splitKeys, seed);
+      }
+      return assist(splitFrame);
+    };
+    // depends on `assist`
+    const mergeFrames = (destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows) => {
+      if (destinationKey && leftFrameKey && rightFrameKey) {
+        return _fork(requestMergeFrames, _, destinationKey, leftFrameKey, leftColumnIndex, includeAllLeftRows, rightFrameKey, rightColumnIndex, includeAllRightRows);
+      }
+      return assist(mergeFrames);
+    };
 
-      // depends on `assist`
-      // define the function that is called when
-      // the Partial Dependence plot input form
-      // is submitted
-      const buildPartialDependence = opts => {
-        if (opts) {
-          return _fork(requestPartialDependence, _, opts);
-        }
-        // specify function to call if user
-        // provides malformed input
-        return assist(buildPartialDependence);
-      };
-      // depends on `assist`
-      const getPartialDependence = destinationKey => {
-        if (destinationKey) {
-          return _fork(requestPartialDependenceData, _, destinationKey);
-        }
-        return assist(getPartialDependence);
-      };
-      // depends on `assist`
-      const getFrame = frameKey => {
-        switch (flowPrelude$3.typeOf(frameKey)) {
-          case 'String':
-            return _fork(requestFrame, _, frameKey);
-          default:
-            return assist(getFrame);
-        }
-      };
-      // blocked by CoffeeScript codecell `_` issue
-      // has multiple parameters
-      const bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
-      // depends on `assist`
-      const getFrameSummary = frameKey => {
-        switch (flowPrelude$3.typeOf(frameKey)) {
-          case 'String':
-            return _fork(requestFrameSummary, _, frameKey);
-          default:
-            return assist(getFrameSummary);
-        }
-      };
-      // depends on `assist`
-      const getFrameData = frameKey => {
-        switch (flowPrelude$3.typeOf(frameKey)) {
-          case 'String':
-            return _fork(requestFrameData, _, frameKey, void 0, 0, 20);
-          default:
-            return assist(getFrameSummary);
-        }
-      };
-      // depends on `assist`
-      const deleteFrame = frameKey => {
-        if (frameKey) {
-          return _fork(requestDeleteFrame, _, frameKey);
-        }
-        return assist(deleteFrame);
-      };
+    // depends on `assist`
+    // define the function that is called when
+    // the Partial Dependence plot input form
+    // is submitted
+    const buildPartialDependence = opts => {
+      if (opts) {
+        return _fork(requestPartialDependence, _, opts);
+      }
+      // specify function to call if user
+      // provides malformed input
+      return assist(buildPartialDependence);
+    };
+    // depends on `assist`
+    const getPartialDependence = destinationKey => {
+      if (destinationKey) {
+        return _fork(requestPartialDependenceData, _, destinationKey);
+      }
+      return assist(getPartialDependence);
+    };
+    // depends on `assist`
+    const getFrame = frameKey => {
+      switch (flowPrelude$10.typeOf(frameKey)) {
+        case 'String':
+          return _fork(requestFrame, _, frameKey);
+        default:
+          return assist(getFrame);
+      }
+    };
+    // blocked by CoffeeScript codecell `_` issue
+    // has multiple parameters
+    const bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
+    // depends on `assist`
+    const getFrameSummary = frameKey => {
+      switch (flowPrelude$10.typeOf(frameKey)) {
+        case 'String':
+          return _fork(requestFrameSummary, _, frameKey);
+        default:
+          return assist(getFrameSummary);
+      }
+    };
+    // depends on `assist`
+    const getFrameData = frameKey => {
+      switch (flowPrelude$10.typeOf(frameKey)) {
+        case 'String':
+          return _fork(requestFrameData, _, frameKey, void 0, 0, 20);
+        default:
+          return assist(getFrameSummary);
+      }
+    };
+    // depends on `assist`
+    const deleteFrame = frameKey => {
+      if (frameKey) {
+        return _fork(requestDeleteFrame, _, frameKey);
+      }
+      return assist(deleteFrame);
+    };
 
-      // depends on `assist`
-      const exportFrame = (frameKey, path, opts) => {
-        if (opts == null) {
-          opts = {};
-        }
-        if (frameKey && path) {
-          return _fork(requestExportFrame, _, frameKey, path, opts);
-        }
-        return assist(exportFrame, frameKey, path, opts);
-      };
-      // depends on `assist`
-      const deleteFrames = frameKeys => {
-        switch (frameKeys.length) {
-          case 0:
-            return assist(deleteFrames);
-          case 1:
-            return deleteFrame(lodash.head(frameKeys));
-          default:
-            return _fork(requestDeleteFrames, _, frameKeys);
-        }
-      };
-      // blocked by CoffeeScript codecell `_` issue - multiple parameters
-      const getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
-      // blocked by CoffeeScript codecell `_` issue - multiple parameters
-      const getModels = modelKeys => {
-        if (lodash.isArray(modelKeys)) {
-          if (modelKeys.length) {
-            return _fork(requestModelsByKeys, _, modelKeys);
-          }
-          return _fork(requestModels, _);
+    // depends on `assist`
+    const exportFrame = (frameKey, path, opts) => {
+      if (opts == null) {
+        opts = {};
+      }
+      if (frameKey && path) {
+        return _fork(requestExportFrame, _, frameKey, path, opts);
+      }
+      return assist(exportFrame, frameKey, path, opts);
+    };
+    // depends on `assist`
+    const deleteFrames = frameKeys => {
+      switch (frameKeys.length) {
+        case 0:
+          return assist(deleteFrames);
+        case 1:
+          return deleteFrame(lodash.head(frameKeys));
+        default:
+          return _fork(requestDeleteFrames, _, frameKeys);
+      }
+    };
+    // blocked by CoffeeScript codecell `_` issue - multiple parameters
+    const getColumnSummary = (frameKey, columnName) => _fork(requestColumnSummary, _, frameKey, columnName);
+    // blocked by CoffeeScript codecell `_` issue - multiple parameters
+    const getModels = modelKeys => {
+      if (lodash.isArray(modelKeys)) {
+        if (modelKeys.length) {
+          return _fork(requestModelsByKeys, _, modelKeys);
         }
         return _fork(requestModels, _);
-      };
-      // depends on `assist`
-      const getModel = modelKey => {
-        switch (flowPrelude$3.typeOf(modelKey)) {
-          case 'String':
-            return _fork(requestModel, _, modelKey);
-          default:
-            return assist(getModel);
-        }
-      };
-      // depends on `extendGrid`
-      const requestGrid = (gridKey, opts, go) => getGridRequest(_, gridKey, opts, (error, grid) => {
+      }
+      return _fork(requestModels, _);
+    };
+    // depends on `assist`
+    const getModel = modelKey => {
+      switch (flowPrelude$10.typeOf(modelKey)) {
+        case 'String':
+          return _fork(requestModel, _, modelKey);
+        default:
+          return assist(getModel);
+      }
+    };
+    // depends on `extendGrid`
+    const requestGrid = (gridKey, opts, go) => getGridRequest(_, gridKey, opts, (error, grid) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendGrid(grid, opts));
+    });
+    // depends on `assist`
+    const getGrid = (gridKey, opts) => {
+      switch (flowPrelude$10.typeOf(gridKey)) {
+        case 'String':
+          return _fork(requestGrid, gridKey, opts);
+        default:
+          return assist(getGrid);
+      }
+    };
+    // depends on `assist`
+    const imputeColumn = opts => {
+      if (opts && opts.frame && opts.column && opts.method) {
+        return _fork(requestImputeColumn, _, opts);
+      }
+      return assist(imputeColumn, opts);
+    };
+    // depends on `assist`
+    const changeColumnType = opts => {
+      if (opts && opts.frame && opts.column && opts.type) {
+        return _fork(requestChangeColumnType, _, opts);
+      }
+      return assist(changeColumnType, opts);
+    };
+    // depends on `assist`
+    const deleteModel = modelKey => {
+      if (modelKey) {
+        return _fork(requestDeleteModel, _, modelKey);
+      }
+      return assist(deleteModel);
+    };
+
+    // depends on `assist`
+    const importModel = (path, opts) => {
+      if (path && path.length) {
+        return _fork(requestImportModel, _, path, opts);
+      }
+      return assist(importModel, path, opts);
+    };
+
+    // depends on `assist`
+    const exportModel = (modelKey, path, opts) => {
+      if (modelKey && path) {
+        return _fork(requestExportModel, _, modelKey, path, opts);
+      }
+      return assist(exportModel, modelKey, path, opts);
+    };
+    // depends on `assist`
+    const deleteModels = modelKeys => {
+      switch (modelKeys.length) {
+        case 0:
+          return assist(deleteModels);
+        case 1:
+          return deleteModel(lodash.head(modelKeys));
+        default:
+          return _fork(requestDeleteModels, _, modelKeys);
+      }
+    };
+    // depends on `assist`
+    const getJob = arg => {
+      switch (flowPrelude$10.typeOf(arg)) {
+        case 'String':
+          return _fork(requestJob, _, arg);
+        case 'Object':
+          if (arg.key != null) {
+            return getJob(arg.key);
+          }
+          return assist(getJob);
+        // break; // no-unreachable
+        default:
+          return assist(getJob);
+      }
+    };
+    // depends on `assist`
+    const cancelJob = arg => {
+      switch (flowPrelude$10.typeOf(arg)) {
+        case 'String':
+          return _fork(requestCancelJob, _, arg);
+        default:
+          return assist(cancelJob);
+      }
+    };
+    // abstracting this out causes an error
+    // defer for now
+    const requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendImportResults(_, importResults));
+    });
+    // depends on `assist`
+    const importFiles = paths => {
+      switch (flowPrelude$10.typeOf(paths)) {
+        case 'Array':
+          return _fork(requestImportFiles, paths);
+        default:
+          return assist(importFiles);
+      }
+    };
+    // depends on `assist`
+    const setupParse = args => {
+      if (args.paths && lodash.isArray(args.paths)) {
+        return _fork(requestImportAndParseSetup, _, args.paths);
+      } else if (args.source_frames && lodash.isArray(args.source_frames)) {
+        return _fork(requestParseSetup, _, args.source_frames);
+      }
+      return assist(setupParse);
+    };
+    // blocked by CoffeeScript codecell `_` issue - has arguments
+    const parseFiles = opts => {
+      const destinationKey = opts.destination_frame;
+      const parseType = opts.parse_type;
+      const separator = opts.separator;
+      const columnCount = opts.number_columns;
+      const useSingleQuotes = opts.single_quotes;
+      const columnNames = opts.column_names;
+      const columnTypes = opts.column_types;
+      const deleteOnDone = opts.delete_on_done;
+      const checkHeader = opts.check_header;
+      const chunkSize = opts.chunk_size;
+      if (opts.paths) {
+        return _fork(requestImportAndParseFiles, _, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
+      }
+      return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
+    };
+    // depends on `assist`
+    const buildAutoModel = opts => {
+      if (opts && lodash.keys(opts).length > 1) {
+        return _fork(requestAutoModelBuild, _, opts);
+      }
+      return assist(buildAutoModel, opts);
+    };
+    // depends on `assist`
+    const buildModel = (algo, opts) => {
+      if (algo && opts && lodash.keys(opts).length > 1) {
+        return _fork(requestModelBuild, _, algo, opts);
+      }
+      return assist(buildModel, algo, opts);
+    };
+    // depends on `extendPredictions`
+    const requestPredicts = (opts, go) => {
+      const futures = lodash.map(opts, opt => {
+        const modelKey = opt.model;
+        const frameKey = opt.frame;
+        const options = opt.options;
+        return _fork(_.requestPredict, _, null, modelKey, frameKey, options || {});
+      });
+      return Flow.Async.join(futures, (error, predictions) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendGrid(grid, opts));
+        return go(null, extendPredictions(opts, predictions));
       });
-      // depends on `assist`
-      const getGrid = (gridKey, opts) => {
-        switch (flowPrelude$3.typeOf(gridKey)) {
-          case 'String':
-            return _fork(requestGrid, gridKey, opts);
-          default:
-            return assist(getGrid);
+    };
+    // depends on `assist`
+    const predict = opts => {
+      let combos;
+      let frame;
+      let frames;
+      let model;
+      let models;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      if (opts == null) {
+        opts = {};
+      }
+      // eslint-disable-next-line camelcase
+      const predictions_frame = opts.predictions_frame;
+      model = opts.model;
+      models = opts.models;
+      frame = opts.frame;
+      frames = opts.frames;
+      // eslint-disable-next-line camelcase
+      const reconstruction_error = opts.reconstruction_error;
+      // eslint-disable-next-line camelcase
+      const deep_features_hidden_layer = opts.deep_features_hidden_layer;
+      // eslint-disable-next-line camelcase
+      const leaf_node_assignment = opts.leaf_node_assignment;
+      // eslint-disable-next-line camelcase
+      const exemplar_index = opts.exemplar_index;
+      if (models || frames) {
+        if (!models) {
+          if (model) {
+            models = [model];
+          }
         }
-      };
-      // depends on `assist`
-      const imputeColumn = opts => {
-        if (opts && opts.frame && opts.column && opts.method) {
-          return _fork(requestImputeColumn, _, opts);
+        if (!frames) {
+          if (frame) {
+            frames = [frame];
+          }
         }
-        return assist(imputeColumn, opts);
-      };
-      // depends on `assist`
-      const changeColumnType = opts => {
-        if (opts && opts.frame && opts.column && opts.type) {
-          return _fork(requestChangeColumnType, _, opts);
-        }
-        return assist(changeColumnType, opts);
-      };
-      // depends on `assist`
-      const deleteModel = modelKey => {
-        if (modelKey) {
-          return _fork(requestDeleteModel, _, modelKey);
-        }
-        return assist(deleteModel);
-      };
-
-      // depends on `assist`
-      const importModel = (path, opts) => {
-        if (path && path.length) {
-          return _fork(requestImportModel, _, path, opts);
-        }
-        return assist(importModel, path, opts);
-      };
-
-      // depends on `assist`
-      const exportModel = (modelKey, path, opts) => {
-        if (modelKey && path) {
-          return _fork(requestExportModel, _, modelKey, path, opts);
-        }
-        return assist(exportModel, modelKey, path, opts);
-      };
-      // depends on `assist`
-      const deleteModels = modelKeys => {
-        switch (modelKeys.length) {
-          case 0:
-            return assist(deleteModels);
-          case 1:
-            return deleteModel(lodash.head(modelKeys));
-          default:
-            return _fork(requestDeleteModels, _, modelKeys);
-        }
-      };
-      // depends on `assist`
-      const getJob = arg => {
-        switch (flowPrelude$3.typeOf(arg)) {
-          case 'String':
-            return _fork(requestJob, _, arg);
-          case 'Object':
-            if (arg.key != null) {
-              return getJob(arg.key);
+        if (frames && models) {
+          combos = [];
+          for (_i = 0, _len = models.length; _i < _len; _i++) {
+            model = models[_i];
+            for (_j = 0, _len1 = frames.length; _j < _len1; _j++) {
+              frame = frames[_j];
+              combos.push({
+                model,
+                frame
+              });
             }
-            return assist(getJob);
-          // break; // no-unreachable
-          default:
-            return assist(getJob);
+          }
+          return _fork(requestPredicts, combos);
         }
-      };
-      // depends on `assist`
-      const cancelJob = arg => {
-        switch (flowPrelude$3.typeOf(arg)) {
-          case 'String':
-            return _fork(requestCancelJob, _, arg);
-          default:
-            return assist(cancelJob);
-        }
-      };
-      // abstracting this out causes an error
-      // defer for now
-      const requestImportFiles = (paths, go) => _.requestImportFiles(paths, (error, importResults) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendImportResults(_, importResults));
+        return assist(predict, {
+          predictions_frame,
+          models,
+          frames
+        });
+      }
+      if (model && frame) {
+        return _fork(requestPredict, _, predictions_frame, model, frame, {
+          reconstruction_error,
+          deep_features_hidden_layer,
+          leaf_node_assignment
+        });
+      } else if (model && exemplar_index !== void 0) {
+        // eslint-disable-line camelcase
+        return _fork(requestPredict, _, predictions_frame, model, null, { exemplar_index });
+      }
+      return assist(predict, {
+        predictions_frame,
+        model,
+        frame
       });
-      // depends on `assist`
-      const importFiles = paths => {
-        switch (flowPrelude$3.typeOf(paths)) {
-          case 'Array':
-            return _fork(requestImportFiles, paths);
-          default:
-            return assist(importFiles);
-        }
-      };
-      // depends on `assist`
-      const setupParse = args => {
-        if (args.paths && lodash.isArray(args.paths)) {
-          return _fork(requestImportAndParseSetup, _, args.paths);
-        } else if (args.source_frames && lodash.isArray(args.source_frames)) {
-          return _fork(requestParseSetup, _, args.source_frames);
-        }
-        return assist(setupParse);
-      };
-      // blocked by CoffeeScript codecell `_` issue - has arguments
-      const parseFiles = opts => {
-        const destinationKey = opts.destination_frame;
-        const parseType = opts.parse_type;
-        const separator = opts.separator;
-        const columnCount = opts.number_columns;
-        const useSingleQuotes = opts.single_quotes;
-        const columnNames = opts.column_names;
-        const columnTypes = opts.column_types;
-        const deleteOnDone = opts.delete_on_done;
-        const checkHeader = opts.check_header;
-        const chunkSize = opts.chunk_size;
-        if (opts.paths) {
-          return _fork(requestImportAndParseFiles, _, opts.paths, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
-        }
-        return _fork(requestParseFiles, _, opts.source_frames, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize);
-      };
-      // depends on `assist`
-      const buildAutoModel = opts => {
-        if (opts && lodash.keys(opts).length > 1) {
-          return _fork(requestAutoModelBuild, _, opts);
-        }
-        return assist(buildAutoModel, opts);
-      };
-      // depends on `assist`
-      const buildModel = (algo, opts) => {
-        if (algo && opts && lodash.keys(opts).length > 1) {
-          return _fork(requestModelBuild, _, algo, opts);
-        }
-        return assist(buildModel, algo, opts);
-      };
-      // depends on `extendPredictions`
-      const requestPredicts = (opts, go) => {
+    };
+    // depends on `extendPredictions`
+    const requestPredictions = (opts, go) => {
+      if (lodash.isArray(opts)) {
         const futures = lodash.map(opts, opt => {
           const modelKey = opt.model;
           const frameKey = opt.frame;
-          const options = opt.options;
-          return _fork(_.requestPredict, _, null, modelKey, frameKey, options || {});
+          return _fork(getPredictionsRequest, _, modelKey, frameKey);
         });
         return Flow.Async.join(futures, (error, predictions) => {
           if (error) {
             return go(error);
           }
-          return go(null, extendPredictions(opts, predictions));
+          const uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), prediction => prediction.model.name + prediction.frame.name));
+          return go(null, extendPredictions(opts, uniquePredictions));
         });
-      };
-      // depends on `assist`
-      const predict = opts => {
-        let combos;
-        let frame;
-        let frames;
-        let model;
-        let models;
-        let _i;
-        let _j;
-        let _len;
-        let _len1;
-        if (opts == null) {
-          opts = {};
-        }
-        // eslint-disable-next-line camelcase
-        const predictions_frame = opts.predictions_frame;
-        model = opts.model;
-        models = opts.models;
-        frame = opts.frame;
-        frames = opts.frames;
-        // eslint-disable-next-line camelcase
-        const reconstruction_error = opts.reconstruction_error;
-        // eslint-disable-next-line camelcase
-        const deep_features_hidden_layer = opts.deep_features_hidden_layer;
-        // eslint-disable-next-line camelcase
-        const leaf_node_assignment = opts.leaf_node_assignment;
-        // eslint-disable-next-line camelcase
-        const exemplar_index = opts.exemplar_index;
-        if (models || frames) {
-          if (!models) {
-            if (model) {
-              models = [model];
-            }
-          }
-          if (!frames) {
-            if (frame) {
-              frames = [frame];
-            }
-          }
-          if (frames && models) {
-            combos = [];
-            for (_i = 0, _len = models.length; _i < _len; _i++) {
-              model = models[_i];
-              for (_j = 0, _len1 = frames.length; _j < _len1; _j++) {
-                frame = frames[_j];
-                combos.push({
-                  model,
-                  frame
-                });
-              }
-            }
-            return _fork(requestPredicts, combos);
-          }
-          return assist(predict, {
-            predictions_frame,
-            models,
-            frames
-          });
-        }
-        if (model && frame) {
-          return _fork(requestPredict, _, predictions_frame, model, frame, {
-            reconstruction_error,
-            deep_features_hidden_layer,
-            leaf_node_assignment
-          });
-        } else if (model && exemplar_index !== void 0) {
-          // eslint-disable-line camelcase
-          return _fork(requestPredict, _, predictions_frame, model, null, { exemplar_index });
-        }
-        return assist(predict, {
-          predictions_frame,
-          model,
-          frame
-        });
-      };
-      // depends on `extendPredictions`
-      const requestPredictions = (opts, go) => {
-        if (lodash.isArray(opts)) {
-          const futures = lodash.map(opts, opt => {
-            const modelKey = opt.model;
-            const frameKey = opt.frame;
-            return _fork(getPredictionsRequest, _, modelKey, frameKey);
-          });
-          return Flow.Async.join(futures, (error, predictions) => {
-            if (error) {
-              return go(error);
-            }
-            const uniquePredictions = lodash.values(lodash.indexBy(lodash.flatten(predictions, true), prediction => prediction.model.name + prediction.frame.name));
-            return go(null, extendPredictions(opts, uniquePredictions));
-          });
-        }
-        const modelKey = opts.model;
-        const frameKey = opts.frame;
-        return getPredictionsRequest(_, modelKey, frameKey, (error, predictions) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendPredictions(opts, predictions));
-        });
-      };
-      // blocked by CoffeeScript codecell `_` issue - has arguments
-      const getPrediction = opts => {
-        if (opts == null) {
-          opts = {};
-        }
-        // eslint-disable-next-line camelcase
-        const predictions_frame = opts.predictions_frame;
-        const model = opts.model;
-        const frame = opts.frame;
-        if (model && frame) {
-          return _fork(requestPrediction, _, model, frame);
-        }
-        return assist(getPrediction, {
-          predictions_frame,
-          model,
-          frame
-        });
-      };
-      // blocked by CoffeeScript codecell `_` issue - has arguements
-      const getPredictions = opts => {
-        if (opts == null) {
-          opts = {};
-        }
-        return _fork(requestPredictions, opts);
-      };
-      // blocked by CoffeeScript codecell `_` issue - has arguements
-      const getLogFile = (nodeIndex, fileType) => {
-        if (nodeIndex == null) {
-          nodeIndex = -1;
-        }
-        if (fileType == null) {
-          fileType = 'info';
-        }
-        return _fork(requestLogFile, _, nodeIndex, fileType);
-      };
-      //
-      // start Sparkling Water Routines
-      //
-
-      // Sparkling Water Routines are hard to test
-      // since we have to build h2o-3
-      // then also build Sparkling Water
-      // everytime we want to make a change to here that interacts
-      // with Sparkling Water
-      // this takes about 4 minutes each time
-      // for that reason, defer abstracting these routines out
-      const extendRDDs = rdds => {
-        render_(rdds, h2oRDDsOutput, rdds);
-        return rdds;
-      };
-      const requestRDDs = go => getRDDsRequest(_, (error, result) => {
+      }
+      const modelKey = opts.model;
+      const frameKey = opts.frame;
+      return getPredictionsRequest(_, modelKey, frameKey, (error, predictions) => {
         if (error) {
           return go(error);
         }
-        return go(null, extendRDDs(result.rdds));
+        return go(null, extendPredictions(opts, predictions));
       });
-      const getRDDs = () => _fork(requestRDDs);
-      const extendDataFrames = dataframes => {
-        render_(dataframes, h2oDataFramesOutput, dataframes);
-        return dataframes;
-      };
-      const requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendDataFrames(result.dataframes));
-      });
-      const getDataFrames = () => _fork(requestDataFrames);
-      const extendAsH2OFrame = result => {
-        render_(result, h2oH2OFrameOutput, result);
-        return result;
-      };
+    };
+    // blocked by CoffeeScript codecell `_` issue - has arguments
+    const getPrediction = opts => {
+      if (opts == null) {
+        opts = {};
+      }
       // eslint-disable-next-line camelcase
-      const requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsH2OFrame(h2oframe_id));
+      const predictions_frame = opts.predictions_frame;
+      const model = opts.model;
+      const frame = opts.frame;
+      if (model && frame) {
+        return _fork(requestPrediction, _, model, frame);
+      }
+      return assist(getPrediction, {
+        predictions_frame,
+        model,
+        frame
       });
-      const asH2OFrameFromRDD = (rddId, name) => {
-        if (name == null) {
-          name = void 0;
-        }
-        return _fork(requestAsH2OFrameFromRDD, rddId, name);
-      };
-      const requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsH2OFrame(result));
-      });
-      const asH2OFrameFromDF = (dfId, name) => {
-        if (name == null) {
-          name = void 0;
-        }
-        return _fork(requestAsH2OFrameFromDF, dfId, name);
-      };
-      const extendAsDataFrame = result => {
-        render_(result, h2oDataFrameOutput, result);
-        return result;
-      };
-      const requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendAsDataFrame(result));
-      });
-      const asDataFrame = (hfId, name) => {
-        if (name == null) {
-          name = void 0;
-        }
-        return _fork(requestAsDataFrame, hfId, name);
-      };
-      const requestScalaCode = (session_id, code, go) => {
-        // eslint-disable-line camelcase
-        console.log('session_id from routines requestScalaCode', session_id);
-        return postScalaCodeRequest(_, session_id, code, (error, result) => {
-          if (error) {
-            return go(error);
-          }
-          return go(null, extendScalaCode(result));
-        });
-      };
-      const extendScalaCode = result => {
-        render_(result, h2oScalaCodeOutput, result);
-        return result;
-      };
-      const runScalaCode = (session_id, code) => {
-        // eslint-disable-line camelcase
-        console.log('session_id from routines runScalaCode', session_id);
-        return _fork(requestScalaCode, session_id, code);
-      };
-      const requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, extendScalaIntp(result));
-      });
-      const extendScalaIntp = result => {
-        render_(result, h2oScalaIntpOutput, result);
-        return result;
-      };
-      const getScalaIntp = () => _fork(requestScalaIntp);
-      //
-      // end Sparkling Water Routines
-      //
-      const getProfile = opts => {
-        if (!opts) {
-          opts = { depth: 10 };
-        }
-        return _fork(requestProfile, _, opts.depth);
-      };
-      // `loadScript` is not used anywhere else
-      // but could be called from a codecell in Flow
-      const loadScript = (path, go) => {
-        const onDone = (script, status) => go(null, {
-          script,
-          status
-        });
-        const onFail = (jqxhr, settings, error) => go(error);
-        return $.getScript(path).done(onDone).fail(onFail);
-      };
-      // `dumpFuture` is not used anywhere else
-      // but could be called from a codecell in Flow
-      const dumpFuture = (result, go) => {
-        if (result == null) {
-          result = {};
-        }
-        console.debug(result);
-        return go(null, render_(result, Flow.objectBrowser, 'dump', result));
-      };
-      // `dump` is not used anywhere else
-      // but could be called from a codecell in Flow
-      const dump = f => {
-        if (f != null ? f.isFuture : void 0) {
-          return _fork(dumpFuture, f);
-        }
-        return Flow.Async.async(() => f);
-      };
-      // abstracting this out produces errors
-      // defer for now
-      const assist = function () {
-        const func = arguments[0];
-        const args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-        if (func === void 0) {
-          return _fork(proceed, _, h2oAssist, [_assistance]);
-        }
-        switch (func) {
-          case importFiles:
-            return _fork(proceed, _, h2oImportFilesInput, []);
-          case buildModel:
-            return _fork(proceed, _, h2oModelInput, args);
-          case buildAutoModel:
-            return _fork(proceed, _, h2oAutoModelInput, args);
-          case predict:
-          case getPrediction:
-            return _fork(proceed, _, h2oPredictInput, args);
-          case createFrame:
-            return _fork(proceed, _, h2oCreateFrameInput, args);
-          case splitFrame:
-            return _fork(proceed, _, h2oSplitFrameInput, args);
-          case mergeFrames:
-            return _fork(proceed, _, h2oMergeFramesInput, args);
-          case buildPartialDependence:
-            return _fork(proceed, _, h2oPartialDependenceInput, args);
-          case exportFrame:
-            return _fork(proceed, _, h2oExportFrameInput, args);
-          case imputeColumn:
-            return _fork(proceed, _, h2oImputeInput, args);
-          case importModel:
-            return _fork(proceed, _, h2oImportModelInput, args);
-          case exportModel:
-            return _fork(proceed, _, h2oExportModelInput, args);
-          default:
-            return _fork(proceed, _, h2oNoAssist, []);
-        }
-      };
-      Flow.Dataflow.link(_.ready, () => {
-        Flow.Dataflow.link(_.ls, ls);
-        Flow.Dataflow.link(_.inspect, inspect);
-        Flow.Dataflow.link(_.plot, plot => plot(lightning));
-        Flow.Dataflow.link(_.grid, frame => lightning(lightning.select(), lightning.from(frame)));
-        Flow.Dataflow.link(_.enumerate, frame => lightning(lightning.select(0), lightning.from(frame)));
-        Flow.Dataflow.link(_.requestFrameDataE, requestFrameData);
-        return Flow.Dataflow.link(_.requestFrameSummarySliceE, requestFrameSummarySlice);
-      });
-      const initAssistanceSparklingWater = () => {
-        _assistance.getRDDs = {
-          description: 'Get a list of Spark\'s RDDs',
-          icon: 'table'
-        };
-        _assistance.getDataFrames = {
-          description: 'Get a list of Spark\'s data frames',
-          icon: 'table'
-        };
-      };
-      Flow.Dataflow.link(_.initialized, () => {
-        if (_.onSparklingWater) {
-          return initAssistanceSparklingWater();
-        }
-      });
-      const routines = {
-        //
-        // fork/join
-        //
-        fork: _fork,
-        join: _join,
-        call: _call,
-        apply: _apply,
-        isFuture: _isFuture,
-        //
-        // Dataflow
-        //
-        signal: Flow.Dataflow.signal,
-        signals: Flow.Dataflow.signals,
-        isSignal: Flow.Dataflow.isSignal,
-        act: Flow.Dataflow.act,
-        react: Flow.Dataflow.react,
-        lift: Flow.Dataflow.lift,
-        merge: Flow.Dataflow.merge,
-        //
-        // Generic
-        //
-        dump,
-        inspect,
-        plot,
-        grid,
-        get: _get,
-        //
-        // Meta
-        //
-        assist,
-        //
-        // GUI
-        //
-        gui,
-        //
-        // Util
-        //
-        loadScript,
-        //
-        // H2O
-        //
-        getJobs,
-        getJob,
-        cancelJob,
-        importFiles,
-        setupParse,
-        parseFiles,
-        createFrame,
-        splitFrame,
-        mergeFrames,
-        buildPartialDependence,
-        getPartialDependence,
-        getFrames,
-        getFrame,
-        bindFrames,
-        getFrameSummary,
-        getFrameData,
-        deleteFrames,
-        deleteFrame,
-        exportFrame,
-        getColumnSummary,
-        changeColumnType,
-        imputeColumn,
-        buildModel,
-        buildAutoModel,
-        getGrids,
-        getModels,
-        getModel,
-        getGrid,
-        deleteModels,
-        deleteModel,
-        importModel,
-        exportModel,
-        predict,
-        getPrediction,
-        getPredictions,
-        getCloud,
-        getTimeline,
-        getProfile,
-        getStackTrace,
-        getLogFile,
-        testNetwork,
-        deleteAll
-      };
-      if (_.onSparklingWater) {
-        routinesOnSw = {
-          getDataFrames,
-          getRDDs,
-          getScalaIntp,
-          runScalaCode,
-          asH2OFrameFromRDD,
-          asH2OFrameFromDF,
-          asDataFrame
-        };
-        for (attrname in routinesOnSw) {
-          if ({}.hasOwnProperty.call(routinesOnSw, attrname)) {
-            routines[attrname] = routinesOnSw[attrname];
-          }
-        }
+    };
+    // blocked by CoffeeScript codecell `_` issue - has arguements
+    const getPredictions = opts => {
+      if (opts == null) {
+        opts = {};
       }
-      return routines;
+      return _fork(requestPredictions, opts);
     };
-  }
-
-  function localStorage() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    if (!(typeof window !== 'undefined' && window !== null ? window.localStorage : void 0)) {
-      return;
-    }
-    const _ls = window.localStorage;
-    const keyOf = (type, id) => `${ type }:${ id }`;
-    const list = type => {
-      let i;
-      let id;
-      let key;
-      let t;
-      let _i;
-      let _ref;
-      let _ref1;
-      const objs = [];
-      for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
-        key = _ls.key(i);
-        _ref1 = key.split(':');
-        t = _ref1[0];
-        id = _ref1[1];
-        if (type === t) {
-          objs.push([type, id, JSON.parse(_ls.getItem(key))]);
-        }
+    // blocked by CoffeeScript codecell `_` issue - has arguements
+    const getLogFile = (nodeIndex, fileType) => {
+      if (nodeIndex == null) {
+        nodeIndex = -1;
       }
-      return objs;
-    };
-    const read = (type, id) => {
-      const raw = _ls.getobj(keyOf(type, id));
-      if (raw) {
-        return JSON.parse(raw);
+      if (fileType == null) {
+        fileType = 'info';
       }
-      return null;
+      return _fork(requestLogFile, _, nodeIndex, fileType);
     };
-    const write = (type, id, obj) => _ls.setItem(keyOf(type, id), JSON.stringify(obj));
-    const purge = (type, id) => {
-      if (id) {
-        return _ls.removeItem(keyOf(type, id));
-      }
-      return purgeAll(type);
-    };
-    const purgeAll = type => {
-      let i;
-      let key;
-      let _i;
-      let _len;
-      const allKeys = (() => {
-        let _i;
-        let _ref;
-        const _results = [];
-        for (i = _i = 0, _ref = _ls.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
-          _results.push(_ls.key(i));
-        }
-        return _results;
-      })();
-      for (_i = 0, _len = allKeys.length; _i < _len; _i++) {
-        key = allKeys[_i];
-        if (type === lodash.head(key.split(':'))) {
-          _ls.removeItem(key);
-        }
-      }
-    };
-    Flow.LocalStorage = {
-      list,
-      read,
-      write,
-      purge
-    };
-  }
-
-  //
-  // Custom Knockout.js binding handlers
-  //
-  // init:
-  //   This will be called when the binding is first applied to an element
-  //   Set up any initial state, event handlers, etc. here
-  //
-  // update:
-  //   This will be called once when the binding is first applied to an element,
-  //    and again whenever the associated observable changes value.
-  //   Update the DOM element based on the supplied values here.
-  //
-  // Registering a callback on the disposal of an element
-  //
-  // To register a function to run when a node is removed,
-  // you can call ko.utils.domNodeDisposal.addDisposeCallback(node, callback).
-  // As an example, suppose you create a custom binding to instantiate a widget.
-  // When the element with the binding is removed,
-  // you may want to call the destroy method of the widget:
-  //
-  // ko.bindingHandlers.myWidget = {
-  //     init: function(element, valueAccessor) {
-  //         var options = ko.unwrap(valueAccessor()),
-  //             $el = $(element);
-  //
-  //         $el.myWidget(options);
-  //
-  //         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
-  //             // This will be called when the element is removed by Knockout or
-  //             // if some other part of your code calls ko.removeNode(element)
-  //             $el.myWidget("destroy");
-  //         });
-  //     }
-  // };
-  //
-
-  function knockout() {
-    const lodash = window._;
-    const $ = window.jQuery;
-    const CodeMirror = window.CodeMirror;
-    const ko = window.ko;
-    const marked = window.marked;
-    if ((typeof window !== 'undefined' && window !== null ? window.ko : void 0) == null) {
-      return;
-    }
-    ko.bindingHandlers.raw = {
-      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let $element;
-        const arg = ko.unwrap(valueAccessor());
-        if (arg) {
-          $element = $(element);
-          $element.empty();
-          $element.append(arg);
-        }
-      }
-    };
-    ko.bindingHandlers.markdown = {
-      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let error;
-        let html;
-        const data = ko.unwrap(valueAccessor());
-        try {
-          html = marked(data || '');
-        } catch (_error) {
-          error = _error;
-          html = error.message || 'Error rendering markdown.';
-        }
-        return $(element).html(html);
-      }
-    };
-    ko.bindingHandlers.stringify = {
-      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        const data = ko.unwrap(valueAccessor());
-        return $(element).text(JSON.stringify(data, null, 2));
-      }
-    };
-    ko.bindingHandlers.enterKey = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let $element;
-        const action = ko.unwrap(valueAccessor());
-        if (action) {
-          if (lodash.isFunction(action)) {
-            $element = $(element);
-            $element.keydown(e => {
-              if (e.which === 13) {
-                action(viewModel);
-              }
-            });
-          } else {
-            throw new Error('Enter key action is not a function');
-          }
-        }
-      }
-    };
-    ko.bindingHandlers.typeahead = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let $element;
-        const action = ko.unwrap(valueAccessor());
-        if (action) {
-          if (lodash.isFunction(action)) {
-            $element = $(element);
-            $element.typeahead(null, {
-              displayKey: 'value',
-              source: action
-            });
-          } else {
-            throw new Error('Typeahead action is not a function');
-          }
-        }
-      }
-    };
-    ko.bindingHandlers.cursorPosition = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        const arg = ko.unwrap(valueAccessor());
-        if (arg) {
-          // Bit of a hack.
-          // Attaches a method to the bound object that returns the cursor position.
-          // Uses dwieeb/jquery-textrange.
-          arg.getCursorPosition = () => $(element).textrange('get', 'position');
-        }
-      }
-    };
-    ko.bindingHandlers.autoResize = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let $el;
-        const arg = ko.unwrap(valueAccessor());
-        let resize;
-        if (arg) {
-          // Bit of a hack.
-          // Attaches a method to the bound object that resizes the element to fit its content.
-          arg.autoResize = resize = () => lodash.defer(() => $el.css('height', 'auto').height(element.scrollHeight));
-          $el = $(element).on('input', resize);
-          resize();
-        }
-      }
-    };
-    ko.bindingHandlers.scrollIntoView = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let $el;
-        let $viewport;
-        const arg = ko.unwrap(valueAccessor());
-        if (arg) {
-          // Bit of a hack.
-          // Attaches a method to the bound object that scrolls the cell into view
-          $el = $(element);
-          $viewport = $el.closest('.flow-box-notebook');
-          arg.scrollIntoView = immediate => {
-            if (immediate == null) {
-              immediate = false;
-            }
-            const position = $viewport.scrollTop();
-            const top = $el.position().top + position;
-            const height = $viewport.height();
-            // scroll if element is outside the viewport
-            if (top - 20 < position || top + 20 > position + height) {
-              if (immediate) {
-                return $viewport.scrollTop(top);
-              }
-              return $viewport.animate({ scrollTop: top }, 'fast');
-            }
-          };
-        }
-      }
-    };
-    ko.bindingHandlers.collapse = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let isCollapsed;
-        const caretDown = 'fa-caret-down';
-        const caretRight = 'fa-caret-right';
-        isCollapsed = ko.unwrap(valueAccessor());
-        const caretEl = document.createElement('i');
-        caretEl.className = 'fa';
-        caretEl.style.marginRight = '3px';
-        element.insertBefore(caretEl, element.firstChild);
-        const $el = $(element);
-        const $nextEl = $el.next();
-        if (!$nextEl.length) {
-          throw new Error('No collapsible sibling found');
-        }
-        const $caretEl = $(caretEl);
-        const toggle = () => {
-          if (isCollapsed) {
-            $caretEl.removeClass(caretDown).addClass(caretRight);
-            $nextEl.hide();
-          } else {
-            $caretEl.removeClass(caretRight).addClass(caretDown);
-            $nextEl.show();
-          }
-          isCollapsed = !isCollapsed;
-          return isCollapsed;
-        };
-        $el.css('cursor', 'pointer');
-        $el.attr('title', 'Click to expand/collapse');
-        $el.on('click', toggle);
-        toggle();
-        ko.utils.domNodeDisposal.addDisposeCallback(element, () => $el.off('click'));
-      }
-    };
-    ko.bindingHandlers.dom = {
-      update(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let $element;
-        const arg = ko.unwrap(valueAccessor());
-        if (arg) {
-          $element = $(element);
-          $element.empty();
-          $element.append(arg);
-        }
-      }
-    };
-    ko.bindingHandlers.dump = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        const object = ko.unwrap(valueAccessor());
-        return object;
-      }
-    };
-    ko.bindingHandlers.element = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        return valueAccessor()(element);
-      }
-    };
-    ko.bindingHandlers.file = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        let $file;
-        const file = valueAccessor();
-        if (file) {
-          $file = $(element);
-          $file.change(function () {
-            return file(this.files[0]);
-          });
-        }
-      }
-    };
-    ko.bindingHandlers.codemirror = {
-      init(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        // get the code mirror options
-        const options = ko.unwrap(valueAccessor());
-        // created editor replaces the textarea on which it was created
-        const editor = CodeMirror.fromTextArea(element, options);
-        editor.on('change', cm => allBindings().value(cm.getValue()));
-        element.editor = editor;
-        if (allBindings().value()) {
-          editor.setValue(allBindings().value());
-        }
-        const internalTextArea = $(editor.getWrapperElement()).find('div textarea');
-        internalTextArea.attr('rows', '1');
-        internalTextArea.attr('spellcheck', 'false');
-        internalTextArea.removeAttr('wrap');
-        return editor.refresh();
-      },
-      update(element, valueAccessor) {
-        if (element.editor) {
-          return element.editor.refresh();
-        }
-      }
-    };
-  }
-
-  function html() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const diecut = window.diecut;
-    if ((typeof window !== 'undefined' && window !== null ? window.diecut : void 0) == null) {
-      return;
-    }
-    Flow.HTML = {
-      template: diecut,
-      render(name, html) {
-        const el = document.createElement(name);
-        if (html) {
-          if (lodash.isString(html)) {
-            el.innerHTML = html;
-          } else {
-            el.appendChild(html);
-          }
-        }
-        return el;
-      }
-    };
-  }
-
-  function format() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const d3 = window.d3;
-    let formatTime;
-    const significantDigitsBeforeDecimal = value => 1 + Math.floor(Math.log(Math.abs(value)) / Math.LN10);
-    const Digits = (digits, value) => {
-      if (value === 0) {
-        return 0;
-      }
-      const sd = significantDigitsBeforeDecimal(value);
-      if (sd >= digits) {
-        return value.toFixed(0);
-      }
-      const magnitude = Math.pow(10, digits - sd);
-      return Math.round(value * magnitude) / magnitude;
-    };
-    if (typeof exports === 'undefined' || exports === null) {
-      formatTime = d3.time.format('%Y-%m-%d %H:%M:%S');
-    }
-    const formatDate = time => {
-      if (time) {
-        return formatTime(new Date(time));
-      }
-      return '-';
-    };
-    const __formatReal = {};
-    const formatReal = precision => {
-      const cached = __formatReal[precision];
-      //
-      // will leave the nested ternary statement commented for now
-      // may be useful to confirm later that the translation to an if else block
-      // was an accurate translation
-      //
-      // const format = cached ? cached : __formatReal[precision] = precision === -1 ? lodash.identity : d3.format(`.${precision}f`);
-      let format;
-      if (cached) {
-        format = cached;
-      } else {
-        __formatReal[precision] = precision;
-        // __formatReal[precision] === -1 ? lodash.identity : d3.format(`.${precision}f`);
-        if (__formatReal[precision] === -1) {
-          format = lodash.identity;
-        } else {
-          format = d3.format(`.${ precision }f`);
-        }
-      }
-      return value => format(value);
-    };
-    Flow.Format = {
-      Digits,
-      Real: formatReal,
-      Date: formatDate,
-      time: formatTime
-    };
-  }
-
-  function error() {
-    const Flow = window.Flow;
-    const printStackTrace = window.printStackTrace;
-    const __hasProp = {}.hasOwnProperty;
-
-    const __extends = (child, parent) => {
-      let key;
-      for (key in parent) {
-        if (__hasProp.call(parent, key)) {
-          child[key] = parent[key];
-        }
-      }
-      function Ctor() {
-        this.constructor = child;
-      }
-      Ctor.prototype = parent.prototype;
-      child.prototype = new Ctor();
-      child.__super__ = parent.prototype;
-      return child;
-    };
-
-    const FlowError = (_super => {
-      __extends(FlowError, _super);
-      function FlowError(message, cause) {
-        let error;
-        const _ref = this.cause;
-        this.message = message;
-        this.cause = cause;
-        this.name = 'FlowError';
-        if (_ref != null ? _ref.stack : void 0) {
-          this.stack = this.cause.stack;
-        } else {
-          error = new Error();
-          if (error.stack) {
-            this.stack = error.stack;
-          } else {
-            this.stack = printStackTrace();
-          }
-        }
-      }
-      return FlowError;
-    })(Error);
-    Flow.Error = FlowError;
-  }
-
-  function multilineTextToHTML(text) {
-    const lodash = window._;
-    const EOL = '\n';
-    return lodash.map(text.split(EOL), str => lodash.escape(str)).join('<br/>');
-  }
-
-  function flowConfirmDialog(_, _message, _opts, _go) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    if (_opts == null) {
-      _opts = {};
-    }
-    lodash.defaults(_opts, {
-      title: 'Confirm',
-      acceptCaption: 'Yes',
-      declineCaption: 'No'
-    });
-    const accept = () => _go(true);
-    const decline = () => _go(false);
-    return {
-      title: _opts.title,
-      acceptCaption: _opts.acceptCaption,
-      declineCaption: _opts.declineCaption,
-      message: multilineTextToHTML(_message),
-      accept,
-      decline,
-      template: 'confirm-dialog'
-    };
-  }
-
-  function flowAlertDialog(_, _message, _opts, _go) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    if (_opts == null) {
-      _opts = {};
-    }
-    lodash.defaults(_opts, {
-      title: 'Alert',
-      acceptCaption: 'OK'
-    });
-    const accept = () => _go(true);
-    return {
-      title: _opts.title,
-      acceptCaption: _opts.acceptCaption,
-      message: multilineTextToHTML(_message),
-      accept,
-      template: 'alert-dialog'
-    };
-  }
-
-  function dialogs() {
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    const __slice = [].slice;
-    Flow.dialogs = _ => {
-      const _dialog = Flow.Dataflow.signal(null);
-      const showDialog = (ctor, args, _go) => {
-        let dialog;
-        let responded;
-        responded = false;
-        _dialog(dialog = ctor(...[_].concat(args).concat(go)));
-        const $dialog = $(`#${ dialog.template }`);
-        $dialog.modal();
-        $dialog.on('hidden.bs.modal', e => {
-          if (!responded) {
-            responded = true;
-            _dialog(null);
-            if (_go) {
-              return _go(null);
-            }
-          }
-        });
-        function go(response) {
-          if (!responded) {
-            responded = true;
-            $dialog.modal('hide');
-            if (_go) {
-              return _go(response);
-            }
-          }
-        }
-      };
-      Flow.Dataflow.link(_.dialog, function () {
-        let _i;
-        const ctor = arguments[0];
-        const args = arguments.length >= 3 ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []);
-        const go = arguments[_i++];
-        return showDialog(ctor, args, go);
-      });
-      Flow.Dataflow.link(_.confirm, (message, opts, go) => showDialog(flowConfirmDialog, [message, opts], go));
-      Flow.Dataflow.link(_.alert, (message, opts, go) => showDialog(flowAlertDialog, [message, opts], go));
-      return {
-        dialog: _dialog,
-        template(dialog) {
-          return `flow-${ dialog.template }`;
-        }
-      };
-    };
-  }
-
-  function createSlot() {
-    const lodash = window._;
-    const __slice = [].slice;
-    let arrow;
-    arrow = null;
-    const self = function () {
-      const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
-      if (arrow) {
-        return arrow.func.apply(null, args);
-      }
-      return void 0;
-    };
-    self.subscribe = func => {
-      console.assert(lodash.isFunction(func));
-      if (arrow) {
-        throw new Error('Cannot re-attach slot');
-      } else {
-        arrow = {
-          func,
-          dispose() {
-            arrow = null;
-            return arrow;
-          }
-        };
-        return arrow;
-      }
-    };
-    self.dispose = () => {
-      if (arrow) {
-        return arrow.dispose();
-      }
-    };
-    return self;
-  }
-
-  const flowPrelude$51 = flowPreludeFunction();
-
-  function createSlots() {
-    const lodash = window._;
-    const __slice = [].slice;
-    const arrows = [];
-    const self = function () {
-      const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
-      return lodash.map(arrows, arrow => arrow.func.apply(null, args));
-    };
-    self.subscribe = func => {
-      let arrow;
-      console.assert(lodash.isFunction(func));
-      arrows.push(arrow = {
-        func,
-        dispose() {
-          return flowPrelude$51.remove(arrows, arrow);
-        }
-      });
-      return arrow;
-    };
-    self.dispose = () => lodash.forEach(flowPrelude$51.copy(arrows), arrow => arrow.dispose());
-    return self;
-  }
-
-  function _link(source, func) {
-    const lodash = window._;
-    console.assert(lodash.isFunction(source, '[signal] is not a function'));
-    console.assert(lodash.isFunction(source.subscribe, '[signal] does not have a [dispose] method'));
-    console.assert(lodash.isFunction(func, '[func] is not a function'));
-    return source.subscribe(func);
-  }
-
-  function _unlink(arrows) {
-    const lodash = window._;
-    let arrow;
-    let _i;
-    let _len;
-    let _results;
-    if (lodash.isArray(arrows)) {
-      _results = [];
-      for (_i = 0, _len = arrows.length; _i < _len; _i++) {
-        arrow = arrows[_i];
-        console.assert(lodash.isFunction(arrow.dispose, '[arrow] does not have a [dispose] method'));
-        _results.push(arrow.dispose());
-      }
-      return _results;
-    }
-    console.assert(lodash.isFunction(arrows.dispose, '[arrow] does not have a [dispose] method'));
-    return arrows.dispose();
-  }
-
-  const flowPrelude$53 = flowPreludeFunction();
-
-  function createObservableFunction(initialValue) {
-    const lodash = window._;
-    let currentValue;
-    const arrows = [];
-    currentValue = initialValue;
-    const notifySubscribers = (arrows, newValue) => {
-      let arrow;
-      let _i;
-      let _len;
-      for (_i = 0, _len = arrows.length; _i < _len; _i++) {
-        arrow = arrows[_i];
-        arrow.func(newValue);
-      }
-    };
-    const self = function (newValue) {
-      if (arguments.length === 0) {
-        return currentValue;
-      }
-      const unchanged = self.equalityComparer ? self.equalityComparer(currentValue, newValue) : currentValue === newValue;
-      if (!unchanged) {
-        currentValue = newValue;
-        return notifySubscribers(arrows, newValue);
-      }
-    };
-    self.subscribe = func => {
-      let arrow;
-      console.assert(lodash.isFunction(func));
-      arrows.push(arrow = {
-        func,
-        dispose() {
-          return flowPrelude$53.remove(arrows, arrow);
-        }
-      });
-      return arrow;
-    };
-    self.__observable__ = true;
-    return self;
-  }
-
-  const flowPrelude$52 = flowPreludeFunction();
-
-  function createSignal(value, equalityComparer) {
-    const lodash = window._;
-    const ko = window.ko;
-
-    // decide if we use knockout observables
-    // or Flow custom observables
-    let createObservable;
-    if (typeof ko !== 'undefined' && ko !== null) {
-      createObservable = ko.observable;
-    } else {
-      createObservable = createObservableFunction;
-    }
-
-    // create the signal
-    if (arguments.length === 0) {
-      return createSignal(void 0, flowPrelude$52.never);
-    }
-    const observable = createObservable(value);
-    if (lodash.isFunction(equalityComparer)) {
-      observable.equalityComparer = equalityComparer;
-    }
-    return observable;
-  }
-
-  function createSignals(array) {
-    const ko = window.ko;
-    let createObservableArray;
-    if (typeof ko !== 'undefined' && ko !== null) {
-      createObservableArray = ko.observableArray;
-    } else {
-      createObservableArray = createObservableFunction;
-    }
-    return createObservableArray(array || []);
-  }
-
-  function isObservableFunction(obj) {
-    if (obj.__observable__) {
-      return true;
-    }
-    return false;
-  }
-
-  function _isSignal() {
-    const ko = window.ko;
-    let isObservable;
-    if (typeof ko !== 'undefined' && ko !== null) {
-      isObservable = ko.isObservable;
-    } else {
-      isObservable = isObservableFunction;
-    }
-    return isObservable;
-  }
-
-  function _apply$1(sources, func) {
-    const lodash = window._;
-    return func(...lodash.map(sources, source => source()));
-  }
-
-  function _act(...args) {
-    const lodash = window._;
-    const __slice = [].slice;
-    let _i;
-    const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
-    const func = args[_i++];
-    _apply$1(sources, func);
-    return lodash.map(sources, source => _link(source, () => _apply$1(sources, func)));
-  }
-
-  function _react(...args) {
-    const lodash = window._;
-    const __slice = [].slice;
-    let _i;
-    const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
-    const func = args[_i++];
-    return lodash.map(sources, source => _link(source, () => _apply$1(sources, func)));
-  }
-
-  function _lift(...args) {
-    const lodash = window._;
-    const __slice = [].slice;
-    let _i;
-    const sources = args.length >= 2 ? __slice.call(args, 0, _i = args.length - 1) : (_i = 0, []);
-    const func = args[_i++];
-    const evaluate = () => _apply$1(sources, func);
-    const target = createSignal(evaluate());
-    lodash.map(sources, source => _link(source, () => target(evaluate())));
-    return target;
-  }
-
-  function _merge(...args) {
-    const lodash = window._;
-    const __slice = [].slice;
-    let _i;
-    const sources = args.length >= 3 ? __slice.call(args, 0, _i = args.length - 2) : (_i = 0, []);
-    const target = args[_i++];
-    const func = args[_i++];
-    const evaluate = () => _apply$1(sources, func);
-    target(evaluate());
-    return lodash.map(sources, source => _link(source, () => target(evaluate())));
-  }
-
-  const flowPrelude$50 = flowPreludeFunction();
-
-  //
-  // Reactive programming / Dataflow programming wrapper over knockout
-  //
-  function dataflow() {
-    const Flow = window.Flow;
-    Flow.Dataflow = (() => ({
-      slot: createSlot,
-      slots: createSlots,
-      signal: createSignal,
-      signals: createSignals,
-      isSignal: _isSignal,
-      link: _link,
-      unlink: _unlink,
-      act: _act,
-      react: _react,
-      lift: _lift,
-      merge: _merge
-    }))();
-  }
-
-  //
-  // Insane hack to compress large 2D data tables.
-  // The basis for doing this is described here:
-  // http://www.html5rocks.com/en/tutorials/speed/v8/
-  // See Tip #1 "Hidden Classes"
-  //
-  // Applies to IE as well:
-  // http://msdn.microsoft.com/en-us/library/windows/apps/hh781219.aspx#optimize_property_access
-  //
-  // http://jsperf.com/big-data-matrix/3
-  // As of 31 Oct 2014, for a 10000 row, 100 column table in Chrome,
-  //   retained memory sizes:
-  // raw json: 31,165 KB
-  // array of objects: 41,840 KB
-  // array of arrays: 14,960 KB
-  // array of prototyped instances: 14,840 KB
-  //
-  // Usage:
-  // Foo = Flow.Data.createCompiledPrototype [ 'bar', 'baz', 'qux', ... ]
-  // foo = new Foo()
-  //
-  function data() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    let _prototypeId;
-    const __slice = [].slice;
-    _prototypeId = 0;
-    const nextPrototypeName = () => `Map${ ++_prototypeId }`;
-    const _prototypeCache = {};
-    const createCompiledPrototype = attrs => {
-      // Since the prototype depends only on attribute names,
-      // return a cached prototype, if any.
-      let attr;
-      let i;
-      const proto = _prototypeCache[cacheKey];
-      const cacheKey = attrs.join('\0');
-      if (proto) {
-        return proto;
-      }
-      const params = (() => {
-        let _i;
-        let _ref;
-        const _results = [];
-        for (i = _i = 0, _ref = attrs.length; _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
-          _results.push(`a${ i }`);
-        }
-        return _results;
-      })();
-      const inits = (() => {
-        let _i;
-        let _len;
-        const _results = [];
-        for (i = _i = 0, _len = attrs.length; _i < _len; i = ++_i) {
-          attr = attrs[i];
-          _results.push(`this[${ JSON.stringify(attr) }]=a${ i };`);
-        }
-        return _results;
-      })();
-      const prototypeName = nextPrototypeName();
-      _prototypeCache[cacheKey] = new Function(`function ${ prototypeName }(${ params.join(',') }){${ inits.join('') }} return ${ prototypeName };`)(); // eslint-disable-line
-      return _prototypeCache[cacheKey];
-    };
-    const createRecordConstructor = variables => {
-      let variable;
-      return createCompiledPrototype((() => {
-        let _i;
-        let _len;
-        const _results = [];
-        for (_i = 0, _len = variables.length; _i < _len; _i++) {
-          variable = variables[_i];
-          _results.push(variable.label);
-        }
-        return _results;
-      })());
-    };
-    const createTable = opts => {
-      let description;
-      let label;
-      let variable;
-      let _i;
-      let _len;
-      label = opts.label;
-      description = opts.description;
-      const variables = opts.variables;
-      const rows = opts.rows;
-      const meta = opts.meta;
-      if (!description) {
-        description = 'No description available.';
-      }
-      const schema = {};
-      for (_i = 0, _len = variables.length; _i < _len; _i++) {
-        variable = variables[_i];
-        schema[variable.label] = variable;
-      }
-      const fill = (i, go) => {
-        _fill(i, (error, result) => {
-          // eslint-disable-line
-          let index;
-          let value;
-          let _j;
-          let _len1;
-          if (error) {
-            return go(error);
-          }
-          const startIndex = result.index;
-          lodash.values = result.values;
-          for (index = _j = 0, _len1 = lodash.values.length; _j < _len1; index = ++_j) {
-            value = lodash.values[index];
-            rows[startIndex + index] = lodash.values[index];
-          }
-          return go(null);
-        });
-      };
-      const expand = (...args) => {
-        let type;
-        let _j;
-        let _len1;
-        const types = args.length >= 1 ? __slice.call(args, 0) : [];
-        const _results = [];
-        for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
-          type = types[_j];
-          // TODO attach to prototype
-          label = lodash.uniqueId('__flow_variable_');
-          _results.push(schema[label] = createNumericVariable(label));
-        }
-        return _results;
-      };
-      return {
-        label,
-        description,
-        schema,
-        variables,
-        rows,
-        meta,
-        fill,
-        expand,
-        _is_table_: true
-      };
-    };
-    const includeZeroInRange = range => {
-      const lo = range[0];
-      const hi = range[1];
-      if (lo > 0 && hi > 0) {
-        return [0, hi];
-      } else if (lo < 0 && hi < 0) {
-        return [lo, 0];
-      }
-      return range;
-    };
-    const combineRanges = (...args) => {
-      let hi;
-      let lo;
-      let range;
-      let value;
-      let _i;
-      let _len;
-      const ranges = args.length >= 1 ? __slice.call(args, 0) : [];
-      lo = Number.POSITIVE_INFINITY;
-      hi = Number.NEGATIVE_INFINITY;
-      for (_i = 0, _len = ranges.length; _i < _len; _i++) {
-        range = ranges[_i];
-        value = range[0];
-        if (lo > value) {
-          lo = value;
-        }
-        value = range[1];
-        if (hi < value) {
-          hi = value;
-        }
-      }
-      return [lo, hi];
-    };
-    const computeRange = (rows, attr) => {
-      let hi;
-      let lo;
-      let row;
-      let value;
-      let _i;
-      let _len;
-      if (rows.length) {
-        lo = Number.POSITIVE_INFINITY;
-        hi = Number.NEGATIVE_INFINITY;
-        for (_i = 0, _len = rows.length; _i < _len; _i++) {
-          row = rows[_i];
-          value = row[attr];
-          if (value < lo) {
-            lo = value;
-          }
-          if (value > hi) {
-            hi = value;
-          }
-        }
-        return [lo, hi];
-      }
-      return [-1, 1];
-    };
-    const permute = (array, indices) => {
-      let i;
-      let index;
-      let _i;
-      let _len;
-      const permuted = new Array(array.length);
-      for (i = _i = 0, _len = indices.length; _i < _len; i = ++_i) {
-        index = indices[i];
-        permuted[i] = array[index];
-      }
-      return permuted;
-    };
-    const createAbstractVariable = (_label, _type, _domain, _format, _read) => ({
-      label: _label,
-      type: _type,
-      domain: _domain || [],
-      format: _format || lodash.identity,
-      read: _read
-    });
-    function createNumericVariable(_label, _domain, _format, _read) {
-      const self = createAbstractVariable(_label, 'Number', _domain || [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY], _format, _read);
-      if (!self.read) {
-        self.read = datum => {
-          if (datum < self.domain[0]) {
-            self.domain[0] = datum;
-          }
-          if (datum > self.domain[1]) {
-            self.domain[1] = datum;
-          }
-          return datum;
-        };
-      }
-      return self;
-    }
-    const createVariable = (_label, _type, _domain, _format, _read) => {
-      if (_type === 'Number') {
-        return createNumericVariable(_label, _domain, _format, _read);
-      }
-      return createAbstractVariable(_label, _type, _domain, _format, _read);
-    };
-    const createFactor = (_label, _domain, _format, _read) => {
-      let level;
-      let _i;
-      let _id;
-      let _len;
-      let _ref;
-      const self = createAbstractVariable(_label, 'Factor', _domain || [], _format, _read);
-      _id = 0;
-      const _levels = {};
-      if (self.domain.length) {
-        _ref = self.domain;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          level = _ref[_i];
-          _levels[level] = _id++;
-        }
-      }
-      if (!self.read) {
-        self.read = datum => {
-          let id;
-          level = datum === void 0 || datum === null ? 'null' : datum;
-          id = _levels[level];
-          if (void 0 === id) {
-            _levels[level] = id = _id++;
-            self.domain.push(level);
-          }
-          return id;
-        };
-      }
-      return self;
-    };
-    const factor = array => {
-      let i;
-      let id;
-      let level;
-      let _i;
-      let _id;
-      let _len;
-      _id = 0;
-      const levels = {};
-      const domain = [];
-      const data = new Array(array.length);
-      for (i = _i = 0, _len = array.length; _i < _len; i = ++_i) {
-        level = array[i];
-        id = levels[level];
-        if (void 0 === id) {
-          levels[level] = id = _id++;
-          domain.push(level);
-        }
-        data[i] = id;
-      }
-      return [domain, data];
-    };
-    Flow.Data = {
-      Table: createTable,
-      Variable: createVariable,
-      Factor: createFactor,
-      computeColumnInterpretation(type) {
-        if (type === 'Number') {
-          return 'c';
-        } else if (type === 'Factor') {
-          return 'd';
-        }
-        return 't';
-      },
-      Record: createRecordConstructor,
-      computeRange,
-      combineRanges,
-      includeZeroInRange,
-      factor,
-      permute
-    };
-  }
-
-  const flowPrelude$54 = flowPreludeFunction();
-
-  function async() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const __slice = [].slice;
-    const createBuffer = array => {
-      let _go;
-      const _array = array || [];
-      _go = null;
-      const buffer = element => {
-        if (element === void 0) {
-          return _array;
-        }
-        _array.push(element);
-        if (_go) {
-          _go(element);
-        }
-        return element;
-      };
-      buffer.subscribe = go => {
-        _go = go;
-        return _go;
-      };
-      buffer.buffer = _array;
-      buffer.isBuffer = true;
-      return buffer;
-    };
-    const _noop = go => go(null);
-    const _applicate = go => (error, args) => {
-      if (lodash.isFunction(go)) {
-        return go(...[error].concat(args));
-      }
-    };
-    const _fork = (f, args) => {
-      if (!lodash.isFunction(f)) {
-        throw new Error('Not a function.');
-      }
-      const self = go => {
-        const canGo = lodash.isFunction(go);
-        if (self.settled) {
-          // proceed with cached error/result
-          if (self.rejected) {
-            if (canGo) {
-              return go(self.error);
-            }
-          } else {
-            if (canGo) {
-              return go(null, self.result);
-            }
-          }
-        } else {
-          return _join(args, (error, args) => {
-            if (error) {
-              self.error = error;
-              self.fulfilled = false;
-              self.rejected = true;
-              if (canGo) {
-                return go(error);
-              }
-            } else {
-              return f(...args.concat((error, result) => {
-                if (error) {
-                  self.error = error;
-                  self.fulfilled = false;
-                  self.rejected = true;
-                  if (canGo) {
-                    go(error);
-                  }
-                } else {
-                  self.result = result;
-                  self.fulfilled = true;
-                  self.rejected = false;
-                  if (canGo) {
-                    go(null, result);
-                  }
-                }
-                self.settled = true;
-                self.pending = false;
-                return self.pending;
-              }));
-            }
-          });
-        }
-      };
-      self.method = f;
-      self.args = args;
-      self.fulfilled = false;
-      self.rejected = false;
-      self.settled = false;
-      self.pending = true;
-      self.isFuture = true;
-      return self;
-    };
-    const _isFuture = a => {
-      if (a != null ? a.isFuture : void 0) {
-        return true;
-      }
-      return false;
-    };
-    function _join(args, go) {
-      let arg;
-      let i;
-      let _actual;
-      let _i;
-      let _len;
-      let _settled;
-      if (args.length === 0) {
-        return go(null, []);
-      }
-      const _tasks = [];
-      const _results = [];
-      for (i = _i = 0, _len = args.length; _i < _len; i = ++_i) {
-        arg = args[i];
-        if (arg != null ? arg.isFuture : void 0) {
-          _tasks.push({
-            future: arg,
-            resultIndex: i
-          });
-        } else {
-          _results[i] = arg;
-        }
-      }
-      if (_tasks.length === 0) {
-        return go(null, _results);
-      }
-      _actual = 0;
-      _settled = false;
-      lodash.forEach(_tasks, task => task.future.call(null, (error, result) => {
-        if (_settled) {
-          return;
-        }
-        if (error) {
-          _settled = true;
-          go(new Flow.Error(`Error evaluating future[${ task.resultIndex }]`, error));
-        } else {
-          _results[task.resultIndex] = result;
-          _actual++;
-          if (_actual === _tasks.length) {
-            _settled = true;
-            go(null, _results);
-          }
-        }
-      }));
-    }
-    // Like _.compose, but async.
-    // Equivalent to caolan/async.waterfall()
-    const pipe = tasks => {
-      const _tasks = tasks.slice(0);
-      const next = (args, go) => {
-        const task = _tasks.shift();
-        if (task) {
-          return task(...args.concat(function () {
-            const error = arguments[0];
-            const results = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-            if (error) {
-              return go(error);
-            }
-            return next(results, go);
-          }));
-        }
-        return go(...[null].concat(args));
-      };
-      return function () {
-        let _i;
-        const args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []);
-        const go = arguments[_i++];
-        return next(args, go);
-      };
-    };
-    const iterate = tasks => {
-      const _tasks = tasks.slice(0);
-      const _results = [];
-      const next = go => {
-        const task = _tasks.shift();
-        if (task) {
-          return task((error, result) => {
-            if (error) {
-              return go(error);
-            }
-            _results.push(result);
-            return next(go);
-          });
-        }
-        // XXX should errors be included in arg #1?
-        return go(null, _results);
-      };
-      return go => next(go);
-    };
-
     //
-    // Gives a synchronous operation an asynchronous signature.
-    // Used to pass synchronous functions to callers that expect
-    // asynchronous signatures.
+    // start Sparkling Water Routines
     //
-    const _async = function () {
-      const f = arguments[0];
+
+    // Sparkling Water Routines are hard to test
+    // since we have to build h2o-3
+    // then also build Sparkling Water
+    // everytime we want to make a change to here that interacts
+    // with Sparkling Water
+    // this takes about 4 minutes each time
+    // for that reason, defer abstracting these routines out
+    const extendRDDs = rdds => {
+      render_(rdds, h2oRDDsOutput, rdds);
+      return rdds;
+    };
+    const requestRDDs = go => getRDDsRequest(_, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendRDDs(result.rdds));
+    });
+    const getRDDs = () => _fork(requestRDDs);
+    const extendDataFrames = dataframes => {
+      render_(dataframes, h2oDataFramesOutput, dataframes);
+      return dataframes;
+    };
+    const requestDataFrames = go => getDataFramesRequest(_, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendDataFrames(result.dataframes));
+    });
+    const getDataFrames = () => _fork(requestDataFrames);
+    const extendAsH2OFrame = result => {
+      render_(result, h2oH2OFrameOutput, result);
+      return result;
+    };
+    // eslint-disable-next-line camelcase
+    const requestAsH2OFrameFromRDD = (rddId, name, go) => postAsH2OFrameFromRDDRequest(_, rddId, name, (error, h2oframe_id) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendAsH2OFrame(h2oframe_id));
+    });
+    const asH2OFrameFromRDD = (rddId, name) => {
+      if (name == null) {
+        name = void 0;
+      }
+      return _fork(requestAsH2OFrameFromRDD, rddId, name);
+    };
+    const requestAsH2OFrameFromDF = (dfId, name, go) => postAsH2OFrameFromDFRequest(_, dfId, name, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendAsH2OFrame(result));
+    });
+    const asH2OFrameFromDF = (dfId, name) => {
+      if (name == null) {
+        name = void 0;
+      }
+      return _fork(requestAsH2OFrameFromDF, dfId, name);
+    };
+    const extendAsDataFrame = result => {
+      render_(result, h2oDataFrameOutput, result);
+      return result;
+    };
+    const requestAsDataFrame = (hfId, name, go) => postAsDataFrameRequest(_, hfId, name, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendAsDataFrame(result));
+    });
+    const asDataFrame = (hfId, name) => {
+      if (name == null) {
+        name = void 0;
+      }
+      return _fork(requestAsDataFrame, hfId, name);
+    };
+    const requestScalaCode = (session_id, code, go) => {
+      // eslint-disable-line camelcase
+      console.log('session_id from routines requestScalaCode', session_id);
+      return postScalaCodeRequest(_, session_id, code, (error, result) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, extendScalaCode(result));
+      });
+    };
+    const extendScalaCode = result => {
+      render_(result, h2oScalaCodeOutput, result);
+      return result;
+    };
+    const runScalaCode = (session_id, code) => {
+      // eslint-disable-line camelcase
+      console.log('session_id from routines runScalaCode', session_id);
+      return _fork(requestScalaCode, session_id, code);
+    };
+    const requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
+      if (error) {
+        return go(error);
+      }
+      return go(null, extendScalaIntp(result));
+    });
+    const extendScalaIntp = result => {
+      render_(result, h2oScalaIntpOutput, result);
+      return result;
+    };
+    const getScalaIntp = () => _fork(requestScalaIntp);
+    //
+    // end Sparkling Water Routines
+    //
+    const getProfile = opts => {
+      if (!opts) {
+        opts = { depth: 10 };
+      }
+      return _fork(requestProfile, _, opts.depth);
+    };
+    // `loadScript` is not used anywhere else
+    // but could be called from a codecell in Flow
+    const loadScript = (path, go) => {
+      const onDone = (script, status) => go(null, {
+        script,
+        status
+      });
+      const onFail = (jqxhr, settings, error) => go(error);
+      return $.getScript(path).done(onDone).fail(onFail);
+    };
+    // `dumpFuture` is not used anywhere else
+    // but could be called from a codecell in Flow
+    const dumpFuture = (result, go) => {
+      if (result == null) {
+        result = {};
+      }
+      console.debug(result);
+      return go(null, render_(result, Flow.objectBrowser, 'dump', result));
+    };
+    // `dump` is not used anywhere else
+    // but could be called from a codecell in Flow
+    const dump = f => {
+      if (f != null ? f.isFuture : void 0) {
+        return _fork(dumpFuture, f);
+      }
+      return Flow.Async.async(() => f);
+    };
+    // abstracting this out produces errors
+    // defer for now
+    const assist = function () {
+      const func = arguments[0];
       const args = arguments.length >= 2 ? __slice.call(arguments, 1) : [];
-      const later = function () {
-        let error;
-        let result;
-        let _i;
-        const args = arguments.length >= 2 ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []);
-        const go = arguments[_i++];
-        try {
-          result = f(...args);
-          return go(null, result);
-        } catch (_error) {
-          error = _error;
-          return go(error);
-        }
-      };
-      return _fork(later, args);
-    };
-
-    //
-    // Asynchronous find operation.
-    //
-    // find attr, prop, array
-    // find array, attr, prop
-    // find attr, obj
-    // find obj, attr
-    //
-    const _find$3 = (attr, prop, obj) => {
-      let v;
-      let _i;
-      let _len;
-      if (_isFuture(obj)) {
-        return _async(_find$3, attr, prop, obj);
-      } else if (lodash.isArray(obj)) {
-        for (_i = 0, _len = obj.length; _i < _len; _i++) {
-          v = obj[_i];
-          if (v[attr] === prop) {
-            return v;
-          }
-        }
-        return;
+      if (func === void 0) {
+        return _fork(proceed, _, h2oAssist, [_assistance]);
       }
-    };
-    const _find$2 = (attr, obj) => {
-      if (_isFuture(obj)) {
-        return _async(_find$2, attr, obj);
-      } else if (lodash.isString(attr)) {
-        if (lodash.isArray(obj)) {
-          return _find$3('name', attr, obj);
-        }
-        return obj[attr];
-      }
-    };
-    const _find = function () {
-      let a;
-      let b;
-      let c;
-      let ta;
-      let tb;
-      let tc;
-      const args = arguments.length >= 1 ? __slice.call(arguments, 0) : [];
-      switch (args.length) {
-        case 3:
-          a = args[0];
-          b = args[1];
-          c = args[2];
-          ta = flowPrelude$54.typeOf(a);
-          tb = flowPrelude$54.typeOf(b);
-          tc = flowPrelude$54.typeOf(c);
-          if (ta === 'Array' && tb === 'String') {
-            return _find$3(b, c, a);
-          } else if (ta === 'String' && tc === 'Array') {
-            return _find$3(a, b, c);
-          }
-          break;
-        case 2:
-          a = args[0];
-          b = args[1];
-          if (!a) {
-            return;
-          }
-          if (!b) {
-            return;
-          }
-          if (lodash.isString(b)) {
-            return _find$2(b, a);
-          } else if (lodash.isString(a)) {
-            return _find$2(a, b);
-          }
-          break;
+      switch (func) {
+        case importFiles:
+          return _fork(proceed, _, h2oImportFilesInput, []);
+        case buildModel:
+          return _fork(proceed, _, h2oModelInput, args);
+        case buildAutoModel:
+          return _fork(proceed, _, h2oAutoModelInput, args);
+        case predict:
+        case getPrediction:
+          return _fork(proceed, _, h2oPredictInput, args);
+        case createFrame:
+          return _fork(proceed, _, h2oCreateFrameInput, args);
+        case splitFrame:
+          return _fork(proceed, _, h2oSplitFrameInput, args);
+        case mergeFrames:
+          return _fork(proceed, _, h2oMergeFramesInput, args);
+        case buildPartialDependence:
+          return _fork(proceed, _, h2oPartialDependenceInput, args);
+        case exportFrame:
+          return _fork(proceed, _, h2oExportFrameInput, args);
+        case imputeColumn:
+          return _fork(proceed, _, h2oImputeInput, args);
+        case importModel:
+          return _fork(proceed, _, h2oImportModelInput, args);
+        case exportModel:
+          return _fork(proceed, _, h2oExportModelInput, args);
         default:
-        // do nothing
+          return _fork(proceed, _, h2oNoAssist, []);
       }
     };
-
-    // Duplicate of _find$2
-    const _get = (attr, obj) => {
-      if (_isFuture(obj)) {
-        return _async(_get, attr, obj);
-      } else if (lodash.isString(attr)) {
-        if (lodash.isArray(obj)) {
-          return _find$3('name', attr, obj);
-        }
-        return obj[attr];
-      }
+    Flow.Dataflow.link(_.ready, () => {
+      Flow.Dataflow.link(_.ls, ls);
+      Flow.Dataflow.link(_.inspect, inspect);
+      Flow.Dataflow.link(_.plot, plot => plot(lightning));
+      Flow.Dataflow.link(_.grid, frame => lightning(lightning.select(), lightning.from(frame)));
+      Flow.Dataflow.link(_.enumerate, frame => lightning(lightning.select(0), lightning.from(frame)));
+      Flow.Dataflow.link(_.requestFrameDataE, requestFrameData);
+      return Flow.Dataflow.link(_.requestFrameSummarySliceE, requestFrameSummarySlice);
+    });
+    const initAssistanceSparklingWater = () => {
+      _assistance.getRDDs = {
+        description: 'Get a list of Spark\'s RDDs',
+        icon: 'table'
+      };
+      _assistance.getDataFrames = {
+        description: 'Get a list of Spark\'s data frames',
+        icon: 'table'
+      };
     };
-    Flow.Async = {
-      createBuffer, // XXX rename
-      noop: _noop,
-      applicate: _applicate,
-      isFuture: _isFuture,
+    Flow.Dataflow.link(_.initialized, () => {
+      if (_.onSparklingWater) {
+        return initAssistanceSparklingWater();
+      }
+    });
+    const routines = {
+      //
+      // fork/join
+      //
       fork: _fork,
       join: _join,
-      pipe,
-      iterate,
-      async: _async,
-      find: _find,
-      get: _get
+      call: _call,
+      apply: _apply$1,
+      isFuture: _isFuture,
+      //
+      // Dataflow
+      //
+      signal: Flow.Dataflow.signal,
+      signals: Flow.Dataflow.signals,
+      isSignal: Flow.Dataflow.isSignal,
+      act: Flow.Dataflow.act,
+      react: Flow.Dataflow.react,
+      lift: Flow.Dataflow.lift,
+      merge: Flow.Dataflow.merge,
+      //
+      // Generic
+      //
+      dump,
+      inspect,
+      plot,
+      grid,
+      get: _get,
+      //
+      // Meta
+      //
+      assist,
+      //
+      // GUI
+      //
+      gui,
+      //
+      // Util
+      //
+      loadScript,
+      //
+      // H2O
+      //
+      getJobs,
+      getJob,
+      cancelJob,
+      importFiles,
+      setupParse,
+      parseFiles,
+      createFrame,
+      splitFrame,
+      mergeFrames,
+      buildPartialDependence,
+      getPartialDependence,
+      getFrames,
+      getFrame,
+      bindFrames,
+      getFrameSummary,
+      getFrameData,
+      deleteFrames,
+      deleteFrame,
+      exportFrame,
+      getColumnSummary,
+      changeColumnType,
+      imputeColumn,
+      buildModel,
+      buildAutoModel,
+      getGrids,
+      getModels,
+      getModel,
+      getGrid,
+      deleteModels,
+      deleteModel,
+      importModel,
+      exportModel,
+      predict,
+      getPrediction,
+      getPredictions,
+      getCloud,
+      getTimeline,
+      getProfile,
+      getStackTrace,
+      getLogFile,
+      testNetwork,
+      deleteAll
     };
-  }
-
-  const flowPrelude$55 = flowPreludeFunction();
-
-  function objectBrowser() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const isExpandable = type => {
-      switch (type) {
-        case 'null':
-        case 'undefined':
-        case 'Boolean':
-        case 'String':
-        case 'Number':
-        case 'Date':
-        case 'RegExp':
-        case 'Arguments':
-        case 'Function':
-          return false;
-        default:
-          return true;
-      }
-    };
-    const previewArray = array => {
-      let element;
-      const ellipsis = array.length > 5 ? ', ...' : '';
-      const previews = (() => {
-        let _i;
-        let _len;
-        const _ref = lodash.head(array, 5);
-        const _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          element = _ref[_i];
-          _results.push(preview(element));
-        }
-        return _results;
-      })();
-      return `[${ previews.join(', ') }${ ellipsis }]`;
-    };
-    const previewObject = object => {
-      let count;
-      let key;
-      let value;
-      count = 0;
-      const previews = [];
-      let ellipsis = '';
-      for (key in object) {
-        if ({}.hasOwnProperty.call(object, key)) {
-          value = object[key];
-          if (!(key !== '_flow_')) {
-            continue;
-          }
-          previews.push(`${ key }: ${ preview(value) }`);
-          if (++count === 5) {
-            ellipsis = ', ...';
-            break;
-          }
-        }
-      }
-      return `{${ previews.join(', ') }${ ellipsis }}`;
-    };
-    const preview = (element, recurse) => {
-      if (recurse == null) {
-        recurse = false;
-      }
-      const type = flowPrelude$55.typeOf(element);
-      switch (type) {
-        case 'Boolean':
-        case 'String':
-        case 'Number':
-        case 'Date':
-        case 'RegExp':
-          return element;
-        case 'undefined':
-        case 'null':
-        case 'Function':
-        case 'Arguments':
-          return type;
-        case 'Array':
-          if (recurse) {
-            return previewArray(element);
-          }
-          return type;
-        // break; // no-unreachable
-        default:
-          if (recurse) {
-            return previewObject(element);
-          }
-          return type;
-      }
-    };
-    // TODO slice large arrays
-    Flow.objectBrowserElement = (key, object) => {
-      const _expansions = Flow.Dataflow.signal(null);
-      const _isExpanded = Flow.Dataflow.signal(false);
-      const _type = flowPrelude$55.typeOf(object);
-      const _canExpand = isExpandable(_type);
-      const toggle = () => {
-        let expansions;
-        let value;
-        if (!_canExpand) {
-          return;
-        }
-        if (_expansions() === null) {
-          expansions = [];
-          for (key in object) {
-            if ({}.hasOwnProperty.call(object, key)) {
-              value = object[key];
-              if (key !== '_flow_') {
-                expansions.push(Flow.objectBrowserElement(key, value));
-              }
-            }
-          }
-          _expansions(expansions);
-        }
-        return _isExpanded(!_isExpanded());
+    if (_.onSparklingWater) {
+      routinesOnSw = {
+        getDataFrames,
+        getRDDs,
+        getScalaIntp,
+        runScalaCode,
+        asH2OFrameFromRDD,
+        asH2OFrameFromDF,
+        asDataFrame
       };
-      return {
-        key,
-        preview: preview(object, true),
-        toggle,
-        expansions: _expansions,
-        isExpanded: _isExpanded,
-        canExpand: _canExpand
-      };
-    };
-    Flow.objectBrowser = (_, _go, key, object) => {
-      lodash.defer(_go);
-      return {
-        object: Flow.objectBrowserElement(key, object),
-        template: 'flow-object'
-      };
-    };
-  }
-
-  function getEndpointsRequest(_, go) {
-    return doGet(_, '/3/Metadata/endpoints', go);
-  }
-
-  function getEndpointRequest(_, index, go) {
-    return doGet(_, `/3/Metadata/endpoints/${ index }`, go);
-  }
-
-  function getSchemasRequest(_, go) {
-    return doGet(_, '/3/Metadata/schemas', go);
-  }
-
-  function getSchemaRequest(_, name, go) {
-    return doGet(_, `/3/Metadata/schemas/${ encodeURIComponent(name) }`, go);
-  }
-
-  function getLines(data) {
-    const lodash = window._;
-    return lodash.filter(data.split('\n'), line => {
-      if (line.trim()) {
-        return true;
-      }
-      return false;
-    });
-  }
-
-  function requestPacks(go) {
-    return download('text', '/flow/packs/index.list', unwrap(go, getLines));
-  }
-
-  function requestPack(packName, go) {
-    return download('text', `/flow/packs/${ encodeURIComponent(packName) }/index.list`, unwrap(go, getLines));
-  }
-
-  function requestFlow(packName, flowName, go) {
-    return download('json', `/flow/packs/${ encodeURIComponent(packName) }/${ encodeURIComponent(flowName) }`, go);
-  }
-
-  function requestHelpIndex(go) {
-    return download('json', '/flow/help/catalog.json', go);
-  }
-
-  function requestHelpContent(name, go) {
-    return download('text', `/flow/help/${ name }.html`, go);
-  }
-
-  function validateFileExtension(filename, extension) {
-    return filename.indexOf(extension, filename.length - extension.length) !== -1;
-  }
-
-  function sanitizeName(name) {
-    return name.replace(/[^a-z0-9_ \(\)-]/gi, '-').trim();
-  }
-
-  function getFileBaseName(filename, extension) {
-    return sanitizeName(filename.substr(0, filename.length - extension.length));
-  }
-
-  function help() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const H2O = window.H2O;
-    const marked = window.marked;
-    const $ = window.jQuery;
-    let _catalog;
-    let _homeContent;
-    _catalog = null;
-    const _index = {};
-    _homeContent = null;
-    const _homeMarkdown = '<blockquote>\nUsing Flow for the first time?\n<br/>\n<div style=\'margin-top:10px\'>\n  <button type=\'button\' data-action=\'get-flow\' data-pack-name=\'examples\' data-flow-name=\'QuickStartVideos.flow\' class=\'flow-button\'><i class=\'fa fa-file-movie-o\'></i><span>Quickstart Videos</span>\n  </button>\n</div>\n</blockquote>\n\nOr, <a href=\'#\' data-action=\'get-pack\' data-pack-name=\'examples\'>view example Flows</a> to explore and learn H<sub>2</sub>O.\n\n###### Star H2O on Github!\n\n<iframe src="https://ghbtns.com/github-btn.html?user=h2oai&repo=h2o-3&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>\n\n###### General\n\n%HELP_TOPICS%\n\n###### Examples\n\nFlow packs are a great way to explore and learn H<sub>2</sub>O. Try out these Flows and run them in your browser.<br/><a href=\'#\' data-action=\'get-packs\'>Browse installed packs...</a>\n\n###### H<sub>2</sub>O REST API\n\n- <a href=\'#\' data-action=\'endpoints\'>Routes</a>\n- <a href=\'#\' data-action=\'schemas\'>Schemas</a>\n';
-    Flow.help = _ => {
-      let _historyIndex;
-      const _content = Flow.Dataflow.signal(null);
-      const _history = [];
-      _historyIndex = -1;
-      const _canGoBack = Flow.Dataflow.signal(false);
-      const _canGoForward = Flow.Dataflow.signal(false);
-      const goTo = index => {
-        const content = _history[_historyIndex = index];
-        $('a, button', $(content)).each(function (i) {
-          const $a = $(this);
-          const action = $a.attr('data-action');
-          if (action) {
-            return $a.click(() => performAction(action, $a));
-          }
-        });
-        _content(content);
-        _canGoForward(_historyIndex < _history.length - 1);
-        _canGoBack(_historyIndex > 0);
-      };
-      const goBack = () => {
-        if (_historyIndex > 0) {
-          return goTo(_historyIndex - 1);
-        }
-      };
-      const goForward = () => {
-        if (_historyIndex < _history.length - 1) {
-          return goTo(_historyIndex + 1);
-        }
-      };
-      const displayHtml = content => {
-        if (_historyIndex < _history.length - 1) {
-          _history.splice(_historyIndex + 1, _history.length - (_historyIndex + 1), content);
-        } else {
-          _history.push(content);
-        }
-        return goTo(_history.length - 1);
-      };
-      const fixImageSources = html => html.replace(/\s+src\s*=\s*"images\//g, ' src="help/images/');
-      function performAction(action, $el) {
-        let packName;
-        let routeIndex;
-        let schemaName;
-        let topic;
-        switch (action) {
-          case 'help':
-            topic = _index[$el.attr('data-topic')];
-            requestHelpContent(topic.name, (error, html) => {
-              const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6');
-              const div = _ref[0];
-              const mark = _ref[1];
-              const h5 = _ref[2];
-              const h6 = _ref[3];
-              const contents = [mark('Help'), h5(topic.title), fixImageSources(div(html))];
-              if (topic.children.length) {
-                contents.push(h6('Topics'));
-                contents.push(buildToc(topic.children));
-              }
-              return displayHtml(Flow.HTML.render('div', div(contents)));
-            });
-            break;
-          case 'assist':
-            _.insertAndExecuteCell('cs', 'assist');
-            break;
-          case 'get-packs':
-            requestPacks((error, packNames) => {
-              if (!error) {
-                return displayPacks(lodash.filter(packNames, packName => packName !== 'test'));
-              }
-            });
-            break;
-          case 'get-pack':
-            packName = $el.attr('data-pack-name');
-            requestPack(packName, (error, flowNames) => {
-              if (!error) {
-                return displayFlows(packName, flowNames);
-              }
-            });
-            break;
-          case 'get-flow':
-            _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
-              acceptCaption: 'Load Notebook',
-              declineCaption: 'Cancel'
-            }, accept => {
-              let flowName;
-              if (accept) {
-                packName = $el.attr('data-pack-name');
-                flowName = $el.attr('data-flow-name');
-                if (validateFileExtension(flowName, '.flow')) {
-                  return requestFlow(packName, flowName, (error, flow) => {
-                    if (!error) {
-                      return _.open(getFileBaseName(flowName, '.flow'), flow);
-                    }
-                  });
-                }
-              }
-            });
-            break;
-          case 'endpoints':
-            getEndpointsRequest(_, (error, response) => {
-              if (!error) {
-                return displayEndpoints(response.routes);
-              }
-            });
-            break;
-          case 'endpoint':
-            routeIndex = $el.attr('data-index');
-            getEndpointRequest(_, routeIndex, (error, response) => {
-              if (!error) {
-                return displayEndpoint(lodash.head(response.routes));
-              }
-            });
-            break;
-          case 'schemas':
-            getSchemasRequest(_, (error, response) => {
-              if (!error) {
-                return displaySchemas(lodash.sortBy(response.schemas, schema => schema.name));
-              }
-            });
-            break;
-          case 'schema':
-            schemaName = $el.attr('data-schema');
-            getSchemaRequest(_, schemaName, (error, response) => {
-              if (!error) {
-                return displaySchema(lodash.head(response.schemas));
-              }
-            });
-            break;
-          default:
-          // do nothing
+      for (attrname in routinesOnSw) {
+        if ({}.hasOwnProperty.call(routinesOnSw, attrname)) {
+          routines[attrname] = routinesOnSw[attrname];
         }
       }
-      function buildToc(nodes) {
-        const _ref = Flow.HTML.template('ul', 'li', 'a href=\'#\' data-action=\'help\' data-topic=\'$1\'');
-        const ul = _ref[0];
-        const li = _ref[1];
-        const a = _ref[2];
-        return ul(lodash.map(nodes, node => li(a(node.title, node.name))));
-      }
-      const buildTopics = (index, topics) => {
-        let topic;
-        let _i;
-        let _len;
-        for (_i = 0, _len = topics.length; _i < _len; _i++) {
-          topic = topics[_i];
-          index[topic.name] = topic;
-          if (topic.children.length) {
-            buildTopics(index, topic.children);
-          }
-        }
-      };
-      function displayPacks(packNames) {
-        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-folder-o', 'a href=\'#\' data-action=\'get-pack\' data-pack-name=\'$1\'');
-        const div = _ref[0];
-        const mark = _ref[1];
-        const h5 = _ref[2];
-        const p = _ref[3];
-        const i = _ref[4];
-        const a = _ref[5];
-        displayHtml(Flow.HTML.render('div', div([mark('Packs'), h5('Installed Packs'), div(lodash.map(packNames, packName => p([i(), a(packName, packName)])))])));
-      }
-      function displayFlows(packName, flowNames) {
-        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'i.fa.fa-file-text-o', `a href=\'#\' data-action=\'get-flow\' data-pack-name=\'${ packName }\' data-flow-name=\'$1\'`);
-        const div = _ref[0];
-        const mark = _ref[1];
-        const h5 = _ref[2];
-        const p = _ref[3];
-        const i = _ref[4];
-        const a = _ref[5];
-        displayHtml(Flow.HTML.render('div', div([mark('Pack'), h5(packName), div(lodash.map(flowNames, flowName => p([i(), a(flowName, flowName)])))])));
-      }
-      function displayEndpoints(routes) {
-        let route;
-        let routeIndex;
-        let _i;
-        let _len;
-        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'p', 'a href=\'#\' data-action=\'endpoint\' data-index=\'$1\'', 'code');
-        const div = _ref[0];
-        const mark = _ref[1];
-        const h5 = _ref[2];
-        const p = _ref[3];
-        const action = _ref[4];
-        const code = _ref[5];
-        const els = [mark('API'), h5('List of Routes')];
-        for (routeIndex = _i = 0, _len = routes.length; _i < _len; routeIndex = ++_i) {
-          route = routes[routeIndex];
-          els.push(p(`${ action(code(`${ route.http_method } ${ route.url_pattern }`), routeIndex) }<br/>${ route.summary }`));
-        }
-        displayHtml(Flow.HTML.render('div', div(els)));
-      }
-      const goHome = () => displayHtml(Flow.HTML.render('div', _homeContent));
-      function displayEndpoint(route) {
-        const _ref1 = route.path_params;
-        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'', 'code');
-        const div = _ref[0];
-        const mark = _ref[1];
-        const h5 = _ref[2];
-        const h6 = _ref[3];
-        const p = _ref[4];
-        const action = _ref[5];
-        const code = _ref[6];
-        return displayHtml(Flow.HTML.render('div', div([mark('Route'), h5(route.url_pattern), h6('Method'), p(code(route.http_method)), h6('Summary'), p(route.summary), h6('Parameters'), p((_ref1 != null ? _ref1.length : void 0) ? route.path_params.join(', ') : '-'), h6('Input Schema'), p(action(code(route.input_schema), route.input_schema)), h6('Output Schema'), p(action(code(route.output_schema), route.output_schema))])));
-      }
-      function displaySchemas(schemas) {
-        let schema;
-        const _ref = Flow.HTML.template('div', 'h5', 'ul', 'li', 'var', 'mark', 'code', 'a href=\'#\' data-action=\'schema\' data-schema=\'$1\'');
-        const div = _ref[0];
-        const h5 = _ref[1];
-        const ul = _ref[2];
-        const li = _ref[3];
-        const variable = _ref[4];
-        const mark = _ref[5];
-        const code = _ref[6];
-        const action = _ref[7];
-        const els = [mark('API'), h5('List of Schemas'), ul((() => {
-          let _i;
-          let _len;
-          const _results = [];
-          for (_i = 0, _len = schemas.length; _i < _len; _i++) {
-            schema = schemas[_i];
-            _results.push(li(`${ action(code(schema.name), schema.name) } ${ variable(lodash.escape(schema.type)) }`));
-          }
-          return _results;
-        })())];
-        return displayHtml(Flow.HTML.render('div', div(els)));
-      }
-      function displaySchema(schema) {
-        let field;
-        let _i;
-        let _len;
-        const _ref = Flow.HTML.template('div', 'mark', 'h5', 'h6', 'p', 'code', 'var', 'small');
-        const div = _ref[0];
-        const mark = _ref[1];
-        const h5 = _ref[2];
-        const h6 = _ref[3];
-        const p = _ref[4];
-        const code = _ref[5];
-        const variable = _ref[6];
-        const small = _ref[7];
-        const content = [mark('Schema'), h5(`${ schema.name } (${ lodash.escape(schema.type) })`), h6('Fields')];
-        const _ref1 = schema.fields;
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          field = _ref1[_i];
-          if (field.name !== '__meta') {
-            content.push(p(`${ variable(field.name) }${ field.required ? '*' : '' } ${ code(lodash.escape(field.type)) }<br/>${ small(field.help) }`));
-          }
-        }
-        return displayHtml(Flow.HTML.render('div', div(content)));
-      }
-      const initialize = catalog => {
-        _catalog = catalog;
-        buildTopics(_index, _catalog);
-        _homeContent = marked(_homeMarkdown).replace('%HELP_TOPICS%', buildToc(_catalog));
-        return goHome();
-      };
-      Flow.Dataflow.link(_.ready, () => requestHelpIndex((error, catalog) => {
-        if (!error) {
-          return initialize(catalog);
-        }
-      }));
-      return {
-        content: _content,
-        goHome,
-        goBack,
-        canGoBack: _canGoBack,
-        goForward,
-        canGoForward: _canGoForward
-      };
-    };
-  }
-
-  function getObjectExistsRequest(_, type, name, go) {
-    const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
-    return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
-  }
-
-  function getObjectRequest(_, type, name, go) {
-    const urlString = `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`;
-    return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
-  }
-
-  function deleteObjectRequest(_, type, name, go) {
-    return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
-  }
-
-  function postPutObjectRequest(_, type, name, value, go) {
-    let uri;
-    uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
-    if (name) {
-      uri += `/${ encodeURIComponent(name) }`;
     }
-    return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
-  }
-
-  function postShutdownRequest(_, go) {
-    return doPost(_, '/3/Shutdown', {}, go);
-  }
-
-  function flowHeading(_, level) {
-    const render = (input, output) => {
-      output.data({
-        text: input.trim() || '(Untitled)',
-        template: `flow-${ level }`
-      });
-      return output.end();
-    };
-    render.isCode = false;
-    return render;
+    return routines;
   }
 
   function flowCoffeescriptKernel() {
@@ -11051,7 +11049,7 @@
     };
     const rewriteJavascript = sandbox => (rootScope, program, go) => {
       let error;
-      const globalScope = createGlobalScope(rootScope, sandbox.routines);
+      const globalScope = createGlobalScope(rootScope, h2oRoutines);
       try {
         traverseJavascriptScoped([globalScope], globalScope, null, null, program, (globalScope, parent, key, node) => {
           let identifier;
@@ -11115,7 +11113,7 @@
       console.log('sandbox from flowCoffeescriptKernel executeJavascript', sandbox);
       let error;
       try {
-        return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
+        return go(null, closure(h2oRoutines, sandbox.context, sandbox.results, print));
       } catch (_error) {
         error = _error;
         return go(new Flow.Error('Error executing javascript', error));
@@ -11149,7 +11147,7 @@
     const isRoutine = f => {
       let name;
       let routine;
-      const _ref = sandbox.routines;
+      const _ref = h2oRoutines;
       for (name in _ref) {
         if ({}.hasOwnProperty.call(_ref, name)) {
           routine = _ref[name];
@@ -11688,7 +11686,7 @@
     return render;
   }
 
-  const flowPrelude$56 = flowPreludeFunction();
+  const flowPrelude$9 = flowPreludeFunction();
 
   function notebook() {
     const lodash = window._;
@@ -12111,7 +12109,7 @@
             return _.growl(_ref != null ? _ref : error);
           }
           _.growl('File uploaded successfully!');
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$56.stringify(result.result.destination_frame) }]`);
+          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$9.stringify(result.result.destination_frame) }]`);
         }
       });
       const toggleInput = () => _selectedCell.toggleInput();
@@ -12367,7 +12365,7 @@
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
       }
       const initializeMenus = builder => {
-        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$56.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
+        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$9.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
         return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
         // TODO Cluster I/O
         createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')),
@@ -12944,9 +12942,9 @@
     return _.dialog;
   }
 
-  function flowSandbox(_, routines) {
+  function flowSandbox(_) {
     return {
-      routines,
+      routines: h2oRoutines,
       context: {},
       results: {}
     };
@@ -13014,10 +13012,10 @@
     });
   }
 
-  function flowApplication(_, routines) {
+  function flowApplication(_) {
     const Flow = window.Flow;
     flowApplicationContext(_);
-    const _sandbox = flowSandbox(_, routines(_));
+    const _sandbox = flowSandbox(_, h2oRoutines(_));
     // TODO support external renderers
     const _renderers = Flow.renderers(_, _sandbox);
     console.log('_renderers from flowApplication', _renderers);
@@ -13146,7 +13144,6 @@
         }
       });
     }).call(this);
-    routines();
   }).call(undefined);
 
 }));

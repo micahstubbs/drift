@@ -1,7 +1,7 @@
 import { _fork } from './_fork';
 import { createGui } from './createGui';
 
-// not used anywhere beyond src/routines/routines?
+// not used anywhere beyond src/routines/h2oRoutines?
 // replaced by src/gui/gui?
 export function gui(_, controls) {
   const Flow = window.Flow;

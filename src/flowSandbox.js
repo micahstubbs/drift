@@ -1,6 +1,8 @@
-export function flowSandbox(_, routines) {
+import { h2oRoutines } from './routines/h2oRoutines';
+
+export function flowSandbox(_) {
   return {
-    routines,
+    routines: h2oRoutines,
     context: {},
     results: {},
   };

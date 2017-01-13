@@ -1,5 +1,6 @@
 import { flowCoffeescriptKernel } from './flowCoffeescriptKernel';
 import { routinesThatAcceptUnderbarParameter } from './routinesThatAcceptUnderbarParameter';
+import { h2oRoutines } from './routines/h2oRoutines';
 
 export function flowCoffeescript(_, guid, sandbox) {
   const lodash = window._;
@@ -14,7 +15,7 @@ export function flowCoffeescript(_, guid, sandbox) {
   const isRoutine = f => {
     let name;
     let routine;
-    const _ref = sandbox.routines;
+    const _ref = h2oRoutines;
     for (name in _ref) {
       if ({}.hasOwnProperty.call(_ref, name)) {
         routine = _ref[name];

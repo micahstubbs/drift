@@ -6,7 +6,6 @@ import { flowForm } from './flowForm';
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
-import { routines } from './routines/routines';
 import { localStorage } from './localStorage/localStorage';
 import { knockout } from './knockout/knockout';
 import { html } from './html/html';
@@ -67,5 +66,4 @@ import { flow } from './flow/flow';
       },
     });
   }.call(this));
-  routines();
 }).call(this);
