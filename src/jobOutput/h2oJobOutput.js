@@ -3,6 +3,7 @@ import { canView } from './canView';
 import { cancel } from './cancel';
 import { updateJob } from './updateJob';
 import { view } from './view';
+import { initialize } from './initialize';
 
 import { getJobRequest } from '../h2oProxy/getJobRequest';
 
@@ -92,32 +93,24 @@ export function h2oJobOutput(_, _go, _job) {
       return refresh();
     }
   });
-  const initialize = job => {
-    updateJob(
-      _,
-      _runTime,
-      _progress,
-      _remainingTime,
-      _progressMessage,
-      _status,
-      _statusColor,
-      messageIcons,
-      _messages,
-      _exception,
-      _canView,
-      canView,
-      _destinationType,
-      _canCancel,
-      job
-    );
-    if (isJobRunning(job)) {
-      return _isLive(true);
-    }
-    if (_go) {
-      return lodash.defer(_go);
-    }
-  };
-  initialize(_job);
+  initialize(
+    _,
+    _runTime,
+    _progress,
+    _remainingTime,
+    _progressMessage,
+    _status,
+    _statusColor,
+    messageIcons,
+    _messages,
+    _exception,
+    _canView,
+    _destinationType,
+    _canCancel,
+    _isLive,
+    _go,
+    _job
+  );
   return {
     key: _key,
     description: _description,
