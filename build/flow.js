@@ -195,366 +195,6 @@
     };
   }
 
-  function optsToString(opts) {
-    let str;
-    if (opts != null) {
-      str = ` with opts ${ JSON.stringify(opts) }`;
-      if (str.length > 50) {
-        return `${ str.substr(0, 50) }...`;
-      }
-      return str;
-    }
-    return '';
-  }
-
-  function trackPath(_, path) {
-    let base;
-    let e;
-    let name;
-    let other;
-    let root;
-    let version;
-    let _ref;
-    let _ref1;
-    try {
-      _ref = path.split('/');
-      root = _ref[0];
-      version = _ref[1];
-      name = _ref[2];
-      _ref1 = name.split('?');
-      base = _ref1[0];
-      other = _ref1[1];
-      if (base !== 'Typeahead' && base !== 'Jobs') {
-        _.trackEvent('api', base, version);
-      }
-    } catch (_error) {
-      e = _error;
-    }
-  }
-
-  function http(_, method, path, opts, go) {
-    const Flow = window.Flow;
-    const $ = window.jQuery;
-    if (path.substring(0, 1) === '/') {
-      path = window.Flow.ContextPath + path.substring(1);
-    }
-    _.status('server', 'request', path);
-    trackPath(_, path);
-    const req = (() => {
-      switch (method) {
-        case 'GET':
-          return $.getJSON(path);
-        case 'POST':
-          return $.post(path, opts);
-        case 'POSTJSON':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            contentType: 'application/json',
-            cache: false,
-            data: JSON.stringify(opts)
-          });
-        case 'PUT':
-          return $.ajax({
-            url: path,
-            type: method,
-            data: opts
-          });
-        case 'DELETE':
-          return $.ajax({
-            url: path,
-            type: method
-          });
-        case 'UPLOAD':
-          return $.ajax({
-            url: path,
-            type: 'POST',
-            data: opts,
-            cache: false,
-            contentType: false,
-            processData: false
-          });
-        default:
-        // do nothing
-      }
-    })();
-    req.done((data, status, xhr) => {
-      let error;
-      _.status('server', 'response', path);
-      try {
-        return go(null, data);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
-      }
-    });
-    return req.fail((xhr, status, error) => {
-      let serverError;
-      _.status('server', 'error', path);
-      const response = xhr.responseJSON;
-      const meta = response;
-      // special-case net::ERR_CONNECTION_REFUSED
-      // if status is 'error' and xhr.status is 0
-      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
-      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
-    });
-  }
-
-  function doGet(_, path, go) {
-    return http(_, 'GET', path, null, go);
-  }
-
-  function getJobRequest(_, key, go) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    return doGet(_, `/3/Jobs/${ encodeURIComponent(key) }`, (error, result) => {
-      if (error) {
-        return go(new Flow.Error(`Error fetching job \'${ key }\'`, error));
-      }
-      return go(null, lodash.head(result.jobs));
-    });
-  }
-
-  function doPost(_, path, opts, go) {
-    return http(_, 'POST', path, opts, go);
-  }
-
-  function postCancelJobRequest(_, key, go) {
-    const Flow = window.Flow;
-    return doPost(_, `/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
-      if (error) {
-        return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
-      }
-      return go(null);
-    });
-  }
-
-  function splitTime(s) {
-    const ms = s % 1000;
-    s = (s - ms) / 1000;
-    const secs = s % 60;
-    s = (s - secs) / 60;
-    const mins = s % 60;
-    const hrs = (s - mins) / 60;
-    return [hrs, mins, secs, ms];
-  }
-
-  function padTime(n) {
-    return `${ n < 10 ? '0' : '' }${ n }`;
-  }
-
-  function formatMilliseconds(s) {
-    const _ref = splitTime(s);
-    const hrs = _ref[0];
-    const mins = _ref[1];
-    const secs = _ref[2];
-    const ms = _ref[3];
-    return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
-  }
-
-  const flowPrelude$3 = flowPreludeFunction();
-
-  function jobOutput() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const H2O = window.H2O;
-    const jobOutputStatusColors = {
-      failed: '#d9534f',
-      done: '#ccc',
-      running: '#f0ad4e'
-    };
-    const getJobOutputStatusColor = status => {
-      // CREATED   Job was created
-      // RUNNING   Job is running
-      // CANCELLED Job was cancelled by user
-      // FAILED    Job crashed, error message/exception is available
-      // DONE      Job was successfully finished
-      switch (status) {
-        case 'DONE':
-          return jobOutputStatusColors.done;
-        case 'CREATED':
-        case 'RUNNING':
-          return jobOutputStatusColors.running;
-        default:
-          // 'CANCELLED', 'FAILED'
-          return jobOutputStatusColors.failed;
-      }
-    };
-    const getJobProgressPercent = progress => `${ Math.ceil(100 * progress) }%`;
-    H2O.JobOutput = (_, _go, _job) => {
-      const _isBusy = Flow.Dataflow.signal(false);
-      const _isLive = Flow.Dataflow.signal(false);
-      const _key = _job.key.name;
-      const _description = _job.description;
-      const _destinationKey = _job.dest.name;
-      const _destinationType = (() => {
-        switch (_job.dest.type) {
-          case 'Key<Frame>':
-            return 'Frame';
-          case 'Key<Model>':
-            return 'Model';
-          case 'Key<Grid>':
-            return 'Grid';
-          case 'Key<PartialDependence>':
-            return 'PartialDependence';
-          case 'Key<AutoML>':
-            return 'Auto Model';
-          case 'Key<KeyedVoid>':
-            return 'Void';
-          default:
-            return 'Unknown';
-        }
-      })();
-      const _runTime = Flow.Dataflow.signal(null);
-      const _remainingTime = Flow.Dataflow.signal(null);
-      const _progress = Flow.Dataflow.signal(null);
-      const _progressMessage = Flow.Dataflow.signal(null);
-      const _status = Flow.Dataflow.signal(null);
-      const _statusColor = Flow.Dataflow.signal(null);
-      const _exception = Flow.Dataflow.signal(null);
-      const _messages = Flow.Dataflow.signal(null);
-      const _canView = Flow.Dataflow.signal(false);
-      const _canCancel = Flow.Dataflow.signal(false);
-      const isJobRunning = job => job.status === 'CREATED' || job.status === 'RUNNING';
-      const messageIcons = {
-        ERROR: 'fa-times-circle red',
-        WARN: 'fa-warning orange',
-        INFO: 'fa-info-circle'
-      };
-      const canView = job => {
-        switch (_destinationType) {
-          case 'Model':
-          case 'Grid':
-            return job.ready_for_view;
-          default:
-            return !isJobRunning(job);
-        }
-      };
-      const updateJob = job => {
-        let cause;
-        let message;
-        let messages;
-        _runTime(formatMilliseconds(job.msec));
-        _progress(getJobProgressPercent(job.progress));
-        _remainingTime(job.progress ? formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
-        _progressMessage(job.progress_msg);
-        _status(job.status);
-        _statusColor(getJobOutputStatusColor(job.status));
-        if (job.error_count) {
-          messages = (() => {
-            let _i;
-            let _len;
-            const _ref = job.messages;
-            const _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              message = _ref[_i];
-              if (message.message_type !== 'HIDE') {
-                _results.push({
-                  icon: messageIcons[message.message_type],
-                  message: `${ message.field_name }: ${ message.message }`
-                });
-              }
-            }
-            return _results;
-          })();
-          _messages(messages);
-        } else if (job.exception) {
-          cause = new Error(job.exception);
-          if (job.stacktrace) {
-            cause.stack = job.stacktrace;
-          }
-          _exception(Flow.failure(_, new Flow.Error('Job failure.', cause)));
-        }
-        _canView(canView(job));
-        return _canCancel(isJobRunning(job));
-      };
-      const refresh = () => {
-        _isBusy(true);
-        return getJobRequest(_, _key, (error, job) => {
-          _isBusy(false);
-          if (error) {
-            _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
-            return _isLive(false);
-          }
-          updateJob(job);
-          if (isJobRunning(job)) {
-            if (_isLive()) {
-              return lodash.delay(refresh, 1000);
-            }
-          } else {
-            _isLive(false);
-            if (_go) {
-              return lodash.defer(_go);
-            }
-          }
-        });
-      };
-      Flow.Dataflow.act(_isLive, isLive => {
-        if (isLive) {
-          return refresh();
-        }
-      });
-      const view = () => {
-        if (!_canView()) {
-          return;
-        }
-        switch (_destinationType) {
-          case 'Frame':
-            return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$3.stringify(_destinationKey) }`);
-          case 'Model':
-            return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$3.stringify(_destinationKey) }`);
-          case 'Grid':
-            return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$3.stringify(_destinationKey) }`);
-          case 'PartialDependence':
-            return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$3.stringify(_destinationKey) }`);
-          case 'Auto Model':
-            // FIXME getGrid() for AutoML is hosed; resort to getGrids() for now.
-            return _.insertAndExecuteCell('cs', 'getGrids');
-          case 'Void':
-            return alert(`This frame was exported to\n${ _job.dest.name }`);
-          default:
-          // do nothing
-        }
-      };
-      const cancel = () => postCancelJobRequest(_, _key, (error, result) => {
-        if (error) {
-          return console.debug(error);
-        }
-        return updateJob(_job);
-      });
-      const initialize = job => {
-        updateJob(job);
-        if (isJobRunning(job)) {
-          return _isLive(true);
-        }
-        if (_go) {
-          return lodash.defer(_go);
-        }
-      };
-      initialize(_job);
-      return {
-        key: _key,
-        description: _description,
-        destinationKey: _destinationKey,
-        destinationType: _destinationType,
-        runTime: _runTime,
-        remainingTime: _remainingTime,
-        progress: _progress,
-        progressMessage: _progressMessage,
-        status: _status,
-        statusColor: _statusColor,
-        messages: _messages,
-        exception: _exception,
-        isLive: _isLive,
-        canView: _canView,
-        canCancel: _canCancel,
-        cancel,
-        view,
-        template: 'flow-job-output'
-      };
-    };
-  }
-
   function getTwoDimData(table, columnName) {
     const lodash = window._;
     const columnIndex = lodash.findIndex(table.columns, column => column.name === columnName);
@@ -598,7 +238,7 @@
     return target;
   }
 
-  const flowPrelude$5 = flowPreludeFunction();
+  const flowPrelude$4 = flowPreludeFunction();
 
   function parseAndFormatObjectArray(source) {
     const lodash = window._;
@@ -613,7 +253,7 @@
       element = source[i];
       _ref = element.__meta;
       _ref1 = element.__meta;
-      target[i] = element != null ? (_ref != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$5.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : (_ref1 != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : element : void 0;
+      target[i] = element != null ? (_ref != null ? _ref.schema_type : void 0) === 'Key<Model>' ? `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$4.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : (_ref1 != null ? _ref1.schema_type : void 0) === 'Key<Frame>' ? `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$4.stringify(element.name) }>${ lodash.escape(element.name) }</a>` : element : void 0;
     }
     return target;
   }
@@ -1003,7 +643,7 @@
     return transforms;
   }
 
-  const flowPrelude$7 = flowPreludeFunction();
+  const flowPrelude$6 = flowPreludeFunction();
 
   function blacklistedAttributesBySchema() {
     let attrs;
@@ -1019,7 +659,7 @@
         attrs = _schemaHacks[schema];
         dicts[schema] = dict = { __meta: true };
         if (attrs.fields) {
-          _ref1 = flowPrelude$7.words(attrs.fields);
+          _ref1 = flowPrelude$6.words(attrs.fields);
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             field = _ref1[_i];
             dict[field] = true;
@@ -1030,7 +670,7 @@
     return dicts;
   }
 
-  const flowPrelude$6 = flowPreludeFunction();
+  const flowPrelude$5 = flowPreludeFunction();
 
   function inspectObject(inspections, name, origin, obj) {
     const lodash = window._;
@@ -1074,11 +714,11 @@
                 meta = v.__meta;
                 if (meta) {
                   if (meta.schema_type === 'Key<Frame>') {
-                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$6.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
                   } else if (meta.schema_type === 'Key<Model>') {
-                    record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$6.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$5.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
                   } else if (meta.schema_type === 'Frame') {
-                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$6.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
+                    record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$5.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
                   } else {
                     inspectObject(inspections, `${ name } - ${ k }`, origin, v);
                   }
@@ -1170,9 +810,385 @@
     }
   };
 
-  function extendJob(_, job) {
+  function isJobRunning(job) {
+    return job.status === 'CREATED' || job.status === 'RUNNING';
+  }
+
+  function canView(_destinationType, job) {
+    switch (_destinationType) {
+      case 'Model':
+      case 'Grid':
+        return job.ready_for_view;
+      default:
+        return !isJobRunning(job);
+    }
+  }
+
+  function getJobProgressPercent(progress) {
+    return `${ Math.ceil(100 * progress) }%`;
+  }
+
+  const jobOutputStatusColors = {
+    failed: '#d9534f',
+    done: '#ccc',
+    running: '#f0ad4e'
+  };
+
+  function getJobOutputStatusColor(status) {
+    // CREATED   Job was created
+    // RUNNING   Job is running
+    // CANCELLED Job was cancelled by user
+    // FAILED    Job crashed, error message/exception is available
+    // DONE      Job was successfully finished
+    switch (status) {
+      case 'DONE':
+        return jobOutputStatusColors.done;
+      case 'CREATED':
+      case 'RUNNING':
+        return jobOutputStatusColors.running;
+      default:
+        // 'CANCELLED', 'FAILED'
+        return jobOutputStatusColors.failed;
+    }
+  }
+
+  function splitTime(s) {
+    const ms = s % 1000;
+    s = (s - ms) / 1000;
+    const secs = s % 60;
+    s = (s - secs) / 60;
+    const mins = s % 60;
+    const hrs = (s - mins) / 60;
+    return [hrs, mins, secs, ms];
+  }
+
+  function padTime(n) {
+    return `${ n < 10 ? '0' : '' }${ n }`;
+  }
+
+  function formatMilliseconds(s) {
+    const _ref = splitTime(s);
+    const hrs = _ref[0];
+    const mins = _ref[1];
+    const secs = _ref[2];
+    const ms = _ref[3];
+    return `${ padTime(hrs) }:${ padTime(mins) }:${ padTime(secs) }.${ ms }`;
+  }
+
+  function updateJob(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, canView, _destinationType, _canCancel, job) {
+    const Flow = window.Flow;
+    let cause;
+    let message;
+    let messages;
+    _runTime(formatMilliseconds(job.msec));
+    _progress(getJobProgressPercent(job.progress));
+    _remainingTime(job.progress ? formatMilliseconds(Math.round((1 - job.progress) * job.msec / job.progress)) : 'Estimating...');
+    _progressMessage(job.progress_msg);
+    _status(job.status);
+    _statusColor(getJobOutputStatusColor(job.status));
+    if (job.error_count) {
+      messages = (() => {
+        let _i;
+        let _len;
+        const _ref = job.messages;
+        const _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          message = _ref[_i];
+          if (message.message_type !== 'HIDE') {
+            _results.push({
+              icon: messageIcons[message.message_type],
+              message: `${ message.field_name }: ${ message.message }`
+            });
+          }
+        }
+        return _results;
+      })();
+      _messages(messages);
+    } else if (job.exception) {
+      cause = new Error(job.exception);
+      if (job.stacktrace) {
+        cause.stack = job.stacktrace;
+      }
+      _exception(Flow.failure(_, new Flow.Error('Job failure.', cause)));
+    }
+    _canView(canView(_destinationType, job));
+    return _canCancel(isJobRunning(job));
+  }
+
+  function optsToString(opts) {
+    let str;
+    if (opts != null) {
+      str = ` with opts ${ JSON.stringify(opts) }`;
+      if (str.length > 50) {
+        return `${ str.substr(0, 50) }...`;
+      }
+      return str;
+    }
+    return '';
+  }
+
+  function trackPath(_, path) {
+    let base;
+    let e;
+    let name;
+    let other;
+    let root;
+    let version;
+    let _ref;
+    let _ref1;
+    try {
+      _ref = path.split('/');
+      root = _ref[0];
+      version = _ref[1];
+      name = _ref[2];
+      _ref1 = name.split('?');
+      base = _ref1[0];
+      other = _ref1[1];
+      if (base !== 'Typeahead' && base !== 'Jobs') {
+        _.trackEvent('api', base, version);
+      }
+    } catch (_error) {
+      e = _error;
+    }
+  }
+
+  function http(_, method, path, opts, go) {
+    const Flow = window.Flow;
+    const $ = window.jQuery;
+    if (path.substring(0, 1) === '/') {
+      path = window.Flow.ContextPath + path.substring(1);
+    }
+    _.status('server', 'request', path);
+    trackPath(_, path);
+    const req = (() => {
+      switch (method) {
+        case 'GET':
+          return $.getJSON(path);
+        case 'POST':
+          return $.post(path, opts);
+        case 'POSTJSON':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify(opts)
+          });
+        case 'PUT':
+          return $.ajax({
+            url: path,
+            type: method,
+            data: opts
+          });
+        case 'DELETE':
+          return $.ajax({
+            url: path,
+            type: method
+          });
+        case 'UPLOAD':
+          return $.ajax({
+            url: path,
+            type: 'POST',
+            data: opts,
+            cache: false,
+            contentType: false,
+            processData: false
+          });
+        default:
+        // do nothing
+      }
+    })();
+    req.done((data, status, xhr) => {
+      let error;
+      _.status('server', 'response', path);
+      try {
+        return go(null, data);
+      } catch (_error) {
+        error = _error;
+        return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
+      }
+    });
+    return req.fail((xhr, status, error) => {
+      let serverError;
+      _.status('server', 'error', path);
+      const response = xhr.responseJSON;
+      const meta = response;
+      // special-case net::ERR_CONNECTION_REFUSED
+      // if status is 'error' and xhr.status is 0
+      const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
+    });
+  }
+
+  function doPost(_, path, opts, go) {
+    return http(_, 'POST', path, opts, go);
+  }
+
+  function postCancelJobRequest(_, key, go) {
+    const Flow = window.Flow;
+    return doPost(_, `/3/Jobs/${ encodeURIComponent(key) }/cancel`, {}, (error, result) => {
+      if (error) {
+        return go(new Flow.Error(`Error canceling job \'${ key }\'`, error));
+      }
+      return go(null);
+    });
+  }
+
+  function cancel(_, _key, _job) {
+    return postCancelJobRequest(_, _key, (error, result) => {
+      if (error) {
+        return console.debug(error);
+      }
+      return updateJob(_job);
+    });
+  }
+
+  const flowPrelude$7 = flowPreludeFunction();
+
+  function view(_, _canView, _destinationType, _job, _destinationKey) {
+    if (!_canView()) {
+      return;
+    }
+    switch (_destinationType) {
+      case 'Frame':
+        return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$7.stringify(_destinationKey) }`);
+      case 'Model':
+        return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$7.stringify(_destinationKey) }`);
+      case 'Grid':
+        return _.insertAndExecuteCell('cs', `getGrid ${ flowPrelude$7.stringify(_destinationKey) }`);
+      case 'PartialDependence':
+        return _.insertAndExecuteCell('cs', `getPartialDependence ${ flowPrelude$7.stringify(_destinationKey) }`);
+      case 'Auto Model':
+        // FIXME getGrid() for AutoML is hosed; resort to getGrids() for now.
+        return _.insertAndExecuteCell('cs', 'getGrids');
+      case 'Void':
+        return alert(`This frame was exported to\n${ _job.dest.name }`);
+      default:
+      // do nothing
+    }
+  }
+
+  function initialize(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, _destinationType, _canCancel, _isLive, _go, job) {
+    const lodash = window._;
+    updateJob(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, canView, _destinationType, _canCancel, job);
+    if (isJobRunning(job)) {
+      return _isLive(true);
+    }
+    if (_go) {
+      return lodash.defer(_go);
+    }
+  }
+
+  function doGet(_, path, go) {
+    return http(_, 'GET', path, null, go);
+  }
+
+  function getJobRequest(_, key, go) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    return doGet(_, `/3/Jobs/${ encodeURIComponent(key) }`, (error, result) => {
+      if (error) {
+        return go(new Flow.Error(`Error fetching job \'${ key }\'`, error));
+      }
+      return go(null, lodash.head(result.jobs));
+    });
+  }
+
+  function h2oJobOutput(_, _go, _job) {
+    const lodash = window._;
+    const Flow = window.Flow;
     const H2O = window.H2O;
-    return render_(_, job, H2O.JobOutput, job);
+    const _isBusy = Flow.Dataflow.signal(false);
+    const _isLive = Flow.Dataflow.signal(false);
+    const _key = _job.key.name;
+    const _description = _job.description;
+    const _destinationKey = _job.dest.name;
+    const _destinationType = (() => {
+      switch (_job.dest.type) {
+        case 'Key<Frame>':
+          return 'Frame';
+        case 'Key<Model>':
+          return 'Model';
+        case 'Key<Grid>':
+          return 'Grid';
+        case 'Key<PartialDependence>':
+          return 'PartialDependence';
+        case 'Key<AutoML>':
+          return 'Auto Model';
+        case 'Key<KeyedVoid>':
+          return 'Void';
+        default:
+          return 'Unknown';
+      }
+    })();
+    const _runTime = Flow.Dataflow.signal(null);
+    const _remainingTime = Flow.Dataflow.signal(null);
+    const _progress = Flow.Dataflow.signal(null);
+    const _progressMessage = Flow.Dataflow.signal(null);
+    const _status = Flow.Dataflow.signal(null);
+    const _statusColor = Flow.Dataflow.signal(null);
+    const _exception = Flow.Dataflow.signal(null);
+    const _messages = Flow.Dataflow.signal(null);
+    const _canView = Flow.Dataflow.signal(false);
+    const _canCancel = Flow.Dataflow.signal(false);
+    const messageIcons = {
+      ERROR: 'fa-times-circle red',
+      WARN: 'fa-warning orange',
+      INFO: 'fa-info-circle'
+    };
+    // abstracting this out produces an error
+    // defer for now
+    const refresh = () => {
+      _isBusy(true);
+      return getJobRequest(_, _key, (error, job) => {
+        _isBusy(false);
+        if (error) {
+          _exception(Flow.failure(_, new Flow.Error('Error fetching jobs', error)));
+          return _isLive(false);
+        }
+        updateJob(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, canView, _destinationType, _canCancel, job);
+        if (isJobRunning(job)) {
+          if (_isLive()) {
+            return lodash.delay(refresh, 1000);
+          }
+        } else {
+          _isLive(false);
+          if (_go) {
+            return lodash.defer(_go);
+          }
+        }
+      });
+    };
+    Flow.Dataflow.act(_isLive, isLive => {
+      if (isLive) {
+        return refresh();
+      }
+    });
+    initialize(_, _runTime, _progress, _remainingTime, _progressMessage, _status, _statusColor, messageIcons, _messages, _exception, _canView, _destinationType, _canCancel, _isLive, _go, _job);
+    return {
+      key: _key,
+      description: _description,
+      destinationKey: _destinationKey,
+      destinationType: _destinationType,
+      runTime: _runTime,
+      remainingTime: _remainingTime,
+      progress: _progress,
+      progressMessage: _progressMessage,
+      status: _status,
+      statusColor: _statusColor,
+      messages: _messages,
+      exception: _exception,
+      isLive: _isLive,
+      canView: _canView.bind(this, _destinationType),
+      canCancel: _canCancel,
+      cancel: cancel.bind(this, _, _key, _job),
+      view: view.bind(this, _, _canView, _destinationType, _job, _destinationKey),
+      template: 'flow-job-output'
+    };
+  }
+
+  function extendJob(_, job) {
+    return render_(_, job, h2oJobOutput, job);
   }
 
   function getJobsRequest(_, go) {
@@ -2127,6 +2143,7 @@
   }
 
   function requestCreateFrame(_, opts, go) {
+    console.log('arguments from requestCreateFrame', arguments);
     return postCreateFrameRequest(_, opts, (error, result) => {
       if (error) {
         return go(error);
@@ -3117,8 +3134,7 @@
   }
 
   function extendParseResult(_, parseResult) {
-    const H2O = window.H2O;
-    return render_(_, parseResult, H2O.JobOutput, parseResult.job);
+    return render_(_, parseResult, h2oJobOutput, parseResult.job);
   }
 
   function postParseFilesRequest(_, sourceKeys, destinationKey, parseType, separator, columnCount, useSingleQuotes, columnNames, columnTypes, deleteOnDone, checkHeader, chunkSize, go) {
@@ -7897,7 +7913,7 @@
     return doPost(_, `/3/h2oframes/${ hfId }/dataframe`, { dataframe_id: name }, go);
   }
 
-  const flowPrelude$4 = flowPreludeFunction();
+  const flowPrelude$3 = flowPreludeFunction();
 
   function routines() {
     const lodash = window._;
@@ -7944,7 +7960,7 @@
           let _ref1;
           const inspections = {};
           inspections.parameters = inspectModelParameters(model);
-          const origin = `getModel ${ flowPrelude$4.stringify(model.model_id.name) }`;
+          const origin = `getModel ${ flowPrelude$3.stringify(model.model_id.name) }`;
           inspectObject(inspections, 'output', origin, model.output);
 
           // Obviously, an array of 2d tables calls for a megahack.
@@ -8059,9 +8075,9 @@
       // depends on `grid`
       const extendGrid = (grid, opts) => {
         let origin;
-        origin = `getGrid ${ flowPrelude$4.stringify(grid.grid_id.name) }`;
+        origin = `getGrid ${ flowPrelude$3.stringify(grid.grid_id.name) }`;
         if (opts) {
-          origin += `, ${ flowPrelude$4.stringify(opts) }`;
+          origin += `, ${ flowPrelude$3.stringify(opts) }`;
         }
         const inspections = {
           summary: inspectTwoDimTable_(origin, 'summary', grid.summary_table),
@@ -8123,7 +8139,7 @@
       };
       // depends on `assist`
       const getFrame = frameKey => {
-        switch (flowPrelude$4.typeOf(frameKey)) {
+        switch (flowPrelude$3.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrame, _, frameKey);
           default:
@@ -8135,7 +8151,7 @@
       const bindFrames = (key, sourceKeys) => _fork(requestBindFrames, _, key, sourceKeys);
       // depends on `assist`
       const getFrameSummary = frameKey => {
-        switch (flowPrelude$4.typeOf(frameKey)) {
+        switch (flowPrelude$3.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrameSummary, _, frameKey);
           default:
@@ -8144,7 +8160,7 @@
       };
       // depends on `assist`
       const getFrameData = frameKey => {
-        switch (flowPrelude$4.typeOf(frameKey)) {
+        switch (flowPrelude$3.typeOf(frameKey)) {
           case 'String':
             return _fork(requestFrameData, _, frameKey, void 0, 0, 20);
           default:
@@ -8194,7 +8210,7 @@
       };
       // depends on `assist`
       const getModel = modelKey => {
-        switch (flowPrelude$4.typeOf(modelKey)) {
+        switch (flowPrelude$3.typeOf(modelKey)) {
           case 'String':
             return _fork(requestModel, _, modelKey);
           default:
@@ -8210,7 +8226,7 @@
       });
       // depends on `assist`
       const getGrid = (gridKey, opts) => {
-        switch (flowPrelude$4.typeOf(gridKey)) {
+        switch (flowPrelude$3.typeOf(gridKey)) {
           case 'String':
             return _fork(requestGrid, gridKey, opts);
           default:
@@ -8267,7 +8283,7 @@
       };
       // depends on `assist`
       const getJob = arg => {
-        switch (flowPrelude$4.typeOf(arg)) {
+        switch (flowPrelude$3.typeOf(arg)) {
           case 'String':
             return _fork(requestJob, _, arg);
           case 'Object':
@@ -8282,7 +8298,7 @@
       };
       // depends on `assist`
       const cancelJob = arg => {
-        switch (flowPrelude$4.typeOf(arg)) {
+        switch (flowPrelude$3.typeOf(arg)) {
           case 'String':
             return _fork(requestCancelJob, _, arg);
           default:
@@ -8299,7 +8315,7 @@
       });
       // depends on `assist`
       const importFiles = paths => {
-        switch (flowPrelude$4.typeOf(paths)) {
+        switch (flowPrelude$3.typeOf(paths)) {
           case 'Array':
             return _fork(requestImportFiles, paths);
           default:
@@ -13128,7 +13144,6 @@
       });
     }).call(this);
     routines();
-    jobOutput();
   }).call(undefined);
 
 }));

@@ -1,6 +1,6 @@
 import { render_ } from './render_';
+import { h2oJobOutput } from '../jobOutput/h2oJobOutput';
 
 export function extendJob(_, job) {
-  const H2O = window.H2O;
-  return render_(_, job, H2O.JobOutput, job);
+  return render_(_, job, h2oJobOutput, job);
 }

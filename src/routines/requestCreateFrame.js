@@ -3,6 +3,7 @@ import { postCreateFrameRequest } from '../h2oProxy/postCreateFrameRequest';
 import { getJobRequest } from '../h2oProxy/getJobRequest';
 
 export function requestCreateFrame(_, opts, go) {
+  console.log('arguments from requestCreateFrame', arguments);
   return postCreateFrameRequest(_, opts, (error, result) => {
     if (error) {
       return go(error);
