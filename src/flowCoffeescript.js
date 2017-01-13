@@ -1,4 +1,4 @@
-import { flowCoffeescriptKernel } from './flowCoffeescriptKernel';
+import { flowCoffeescriptKernel } from './flowCoffeescriptKernel/flowCoffeescriptKernel';
 import { routinesThatAcceptUnderbarParameter } from './routinesThatAcceptUnderbarParameter';
 
 export function flowCoffeescript(_, guid, sandbox) {
