@@ -15,6 +15,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
   const _destinationKey = _result.destination_key;
   const _modelId = _result.model_id.name;
   const _frameId = _result.frame_id.name;
+  const _isFrameShown = Flow.Dataflow.signal(false);
   const renderPlot = (target, render) => render((error, vis) => {
     if (error) {
       return console.debug(error);
@@ -36,9 +37,11 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
         title: `${x} vs ${y}`,
         plot: Flow.Dataflow.signal(null),
         frame: Flow.Dataflow.signal(null),
+        isFrameShown: Flow.Dataflow.signal(false),
       });
       renderPlot(section.plot, _.plot(g => g(g.path(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.point(g.position(x, y), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
       renderPlot(section.frame, _.plot(g => g(g.select(), g.from(table))));
+      section.isFrameShown = Flow.Dataflow.lift(_isFrameShown, value => value);
     }
   }
   const _viewFrame = () => _.insertAndExecuteCell('cs', `requestPartialDependenceData ${flowPrelude.stringify(_destinationKey)}`);
@@ -48,6 +51,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
     modelId: _modelId,
     frameId: _frameId,
     plots: _plots,
+    isFrameShown: _isFrameShown,
     viewFrame: _viewFrame,
     template: 'flow-partial-dependence-output',
   };
