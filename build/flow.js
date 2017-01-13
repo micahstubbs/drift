@@ -10987,42 +10987,6 @@
     }
   }
 
-  function traverseJavascript(parent, key, node, f) {
-    const lodash = window._;
-    let child;
-    let i;
-    if (lodash.isArray(node)) {
-      i = node.length;
-      // walk backwards to allow callers to delete nodes
-      while (i--) {
-        child = node[i];
-        if (lodash.isObject(child)) {
-          traverseJavascript(node, i, child, f);
-          f(node, i, child);
-        }
-      }
-    } else {
-      for (i in node) {
-        if ({}.hasOwnProperty.call(node, i)) {
-          child = node[i];
-          if (lodash.isObject(child)) {
-            traverseJavascript(node, i, child, f);
-            f(node, i, child);
-          }
-        }
-      }
-    }
-  }
-
-  function deleteAstNode(parent, i) {
-    const lodash = window._;
-    if (lodash.isArray(parent)) {
-      return parent.splice(i, 1);
-    } else if (lodash.isObject(parent)) {
-      return delete parent[i];
-    }
-  }
-
   function identifyDeclarations(node) {
     let declaration;
     if (!node) {
@@ -11194,40 +11158,77 @@
     };
   }
 
+  function traverseJavascript(parent, key, node, f) {
+    const lodash = window._;
+    let child;
+    let i;
+    if (lodash.isArray(node)) {
+      i = node.length;
+      // walk backwards to allow callers to delete nodes
+      while (i--) {
+        child = node[i];
+        if (lodash.isObject(child)) {
+          traverseJavascript(node, i, child, f);
+          f(node, i, child);
+        }
+      }
+    } else {
+      for (i in node) {
+        if ({}.hasOwnProperty.call(node, i)) {
+          child = node[i];
+          if (lodash.isObject(child)) {
+            traverseJavascript(node, i, child, f);
+            f(node, i, child);
+          }
+        }
+      }
+    }
+  }
+
+  function deleteAstNode(parent, i) {
+    const lodash = window._;
+    if (lodash.isArray(parent)) {
+      return parent.splice(i, 1);
+    } else if (lodash.isObject(parent)) {
+      return delete parent[i];
+    }
+  }
+
+  // TODO DO NOT call this for raw javascript:
+  // Require alternate strategy:
+  //  Declarations with 'var' need to be local to the cell.
+  //  Undeclared identifiers are assumed to be global.
+  //  'use strict' should be unsupported.
+  function removeHoistedDeclarations(rootScope, program, go) {
+    const Flow = window.Flow;
+    let error;
+    try {
+      traverseJavascript(null, null, program, (parent, key, node) => {
+        let declarations;
+        if (node.type === 'VariableDeclaration') {
+          declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
+          if (declarations.length === 0) {
+            // purge this node so that escodegen doesn't fail
+            return deleteAstNode(parent, key);
+          }
+          // replace with cleaned-up declarations
+          node.declarations = declarations;
+          return node.declarations;
+        }
+      });
+      return go(null, rootScope, program);
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error rewriting javascript', error));
+    }
+  }
+
   function flowCoffeescriptKernel() {
     const lodash = window._;
     const Flow = window.Flow;
     const escodegen = window.escodegen;
     const esprima = window.esprima;
     const CoffeeScript = window.CoffeeScript;
-
-    // TODO DO NOT call this for raw javascript:
-    // Require alternate strategy:
-    //  Declarations with 'var' need to be local to the cell.
-    //  Undeclared identifiers are assumed to be global.
-    //  'use strict' should be unsupported.
-    const removeHoistedDeclarations = (rootScope, program, go) => {
-      let error;
-      try {
-        traverseJavascript(null, null, program, (parent, key, node) => {
-          let declarations;
-          if (node.type === 'VariableDeclaration') {
-            declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
-            if (declarations.length === 0) {
-              // purge this node so that escodegen doesn't fail
-              return deleteAstNode(parent, key);
-            }
-            // replace with cleaned-up declarations
-            node.declarations = declarations;
-            return node.declarations;
-          }
-        });
-        return go(null, rootScope, program);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error rewriting javascript', error));
-      }
-    };
     const createGlobalScope = (rootScope, routines) => {
       let identifier;
       let name;

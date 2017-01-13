@@ -1,10 +1,9 @@
 import { safetyWrapCoffeescript } from './safetyWrapCoffeescript';
 import { compileCoffeescript } from './compileCoffeescript';
 import { parseJavascript } from './parseJavascript';
-import { traverseJavascript } from './traverseJavascript';
-import { deleteAstNode } from './deleteAstNode';
 import { traverseJavascriptScoped } from './traverseJavascriptScoped';
 import { createRootScope } from './createRootScope';
+import { removeHoistedDeclarations } from './removeHoistedDeclarations';
 
 export function flowCoffeescriptKernel() {
   const lodash = window._;
@@ -12,34 +11,6 @@ export function flowCoffeescriptKernel() {
   const escodegen = window.escodegen;
   const esprima = window.esprima;
   const CoffeeScript = window.CoffeeScript;
-
-  // TODO DO NOT call this for raw javascript:
-  // Require alternate strategy:
-  //  Declarations with 'var' need to be local to the cell.
-  //  Undeclared identifiers are assumed to be global.
-  //  'use strict' should be unsupported.
-  const removeHoistedDeclarations = (rootScope, program, go) => {
-    let error;
-    try {
-      traverseJavascript(null, null, program, (parent, key, node) => {
-        let declarations;
-        if (node.type === 'VariableDeclaration') {
-          declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
-          if (declarations.length === 0) {
-            // purge this node so that escodegen doesn't fail
-            return deleteAstNode(parent, key);
-          }
-          // replace with cleaned-up declarations
-          node.declarations = declarations;
-          return node.declarations;
-        }
-      });
-      return go(null, rootScope, program);
-    } catch (_error) {
-      error = _error;
-      return go(new Flow.Error('Error rewriting javascript', error));
-    }
-  };
   const createGlobalScope = (rootScope, routines) => {
     let identifier;
     let name;
