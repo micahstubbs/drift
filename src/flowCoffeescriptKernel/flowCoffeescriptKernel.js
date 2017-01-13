@@ -1,10 +1,10 @@
 import { safetyWrapCoffeescript } from './safetyWrapCoffeescript';
 import { compileCoffeescript } from './compileCoffeescript';
 import { parseJavascript } from './parseJavascript';
-import { parseDeclarations } from './parseDeclarations';
 import { traverseJavascript } from './traverseJavascript';
 import { deleteAstNode } from './deleteAstNode';
 import { traverseJavascriptScoped } from './traverseJavascriptScoped';
+import { createRootScope } from './createRootScope';
 
 export function flowCoffeescriptKernel() {
   const lodash = window._;
@@ -12,26 +12,6 @@ export function flowCoffeescriptKernel() {
   const escodegen = window.escodegen;
   const esprima = window.esprima;
   const CoffeeScript = window.CoffeeScript;
-  const createRootScope = sandbox => function (program, go) {
-    let error;
-    let name;
-    let rootScope;
-    try {
-      rootScope = parseDeclarations(program.body[0].expression.arguments[0].callee.body);
-      for (name in sandbox.context) {
-        if ({}.hasOwnProperty.call(sandbox.context, name)) {
-          rootScope[name] = {
-            name,
-            object: '_h2o_context_',
-          };
-        }
-      }
-      return go(null, rootScope, program);
-    } catch (_error) {
-      error = _error;
-      return go(new Flow.Error('Error parsing root scope', error));
-    }
-  };
 
   // TODO DO NOT call this for raw javascript:
   // Require alternate strategy:

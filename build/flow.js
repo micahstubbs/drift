@@ -10987,6 +10987,42 @@
     }
   }
 
+  function traverseJavascript(parent, key, node, f) {
+    const lodash = window._;
+    let child;
+    let i;
+    if (lodash.isArray(node)) {
+      i = node.length;
+      // walk backwards to allow callers to delete nodes
+      while (i--) {
+        child = node[i];
+        if (lodash.isObject(child)) {
+          traverseJavascript(node, i, child, f);
+          f(node, i, child);
+        }
+      }
+    } else {
+      for (i in node) {
+        if ({}.hasOwnProperty.call(node, i)) {
+          child = node[i];
+          if (lodash.isObject(child)) {
+            traverseJavascript(node, i, child, f);
+            f(node, i, child);
+          }
+        }
+      }
+    }
+  }
+
+  function deleteAstNode(parent, i) {
+    const lodash = window._;
+    if (lodash.isArray(parent)) {
+      return parent.splice(i, 1);
+    } else if (lodash.isObject(parent)) {
+      return delete parent[i];
+    }
+  }
+
   function identifyDeclarations(node) {
     let declaration;
     if (!node) {
@@ -11054,42 +11090,6 @@
       }
     }
     return lodash.indexBy(identifiers, identifier => identifier.name);
-  }
-
-  function traverseJavascript(parent, key, node, f) {
-    const lodash = window._;
-    let child;
-    let i;
-    if (lodash.isArray(node)) {
-      i = node.length;
-      // walk backwards to allow callers to delete nodes
-      while (i--) {
-        child = node[i];
-        if (lodash.isObject(child)) {
-          traverseJavascript(node, i, child, f);
-          f(node, i, child);
-        }
-      }
-    } else {
-      for (i in node) {
-        if ({}.hasOwnProperty.call(node, i)) {
-          child = node[i];
-          if (lodash.isObject(child)) {
-            traverseJavascript(node, i, child, f);
-            f(node, i, child);
-          }
-        }
-      }
-    }
-  }
-
-  function deleteAstNode(parent, i) {
-    const lodash = window._;
-    if (lodash.isArray(parent)) {
-      return parent.splice(i, 1);
-    } else if (lodash.isObject(parent)) {
-      return delete parent[i];
-    }
   }
 
   function createLocalScope(node) {
@@ -11170,13 +11170,9 @@
     }
   }
 
-  function flowCoffeescriptKernel() {
-    const lodash = window._;
+  function createRootScope(sandbox) {
     const Flow = window.Flow;
-    const escodegen = window.escodegen;
-    const esprima = window.esprima;
-    const CoffeeScript = window.CoffeeScript;
-    const createRootScope = sandbox => function (program, go) {
+    return function (program, go) {
       let error;
       let name;
       let rootScope;
@@ -11196,6 +11192,14 @@
         return go(new Flow.Error('Error parsing root scope', error));
       }
     };
+  }
+
+  function flowCoffeescriptKernel() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const escodegen = window.escodegen;
+    const esprima = window.esprima;
+    const CoffeeScript = window.CoffeeScript;
 
     // TODO DO NOT call this for raw javascript:
     // Require alternate strategy:
