@@ -5,6 +5,7 @@ import { parseDeclarations } from './parseDeclarations';
 import { traverseJavascript } from './traverseJavascript';
 import { deleteAstNode } from './deleteAstNode';
 import { createLocalScope } from './createLocalScope';
+import { coalesceScopes } from './coalesceScopes';
 
 export function flowCoffeescriptKernel() {
   const lodash = window._;
@@ -12,35 +13,6 @@ export function flowCoffeescriptKernel() {
   const escodegen = window.escodegen;
   const esprima = window.esprima;
   const CoffeeScript = window.CoffeeScript;
-  // redefine scope by coalescing down to non-local identifiers
-  const coalesceScopes = scopes => {
-    let i;
-    let identifier;
-    let name;
-    let scope;
-    let _i;
-    let _len;
-    const currentScope = {};
-    for (i = _i = 0, _len = scopes.length; _i < _len; i = ++_i) {
-      scope = scopes[i];
-      if (i === 0) {
-        for (name in scope) {
-          if ({}.hasOwnProperty.call(scope, name)) {
-            identifier = scope[name];
-            currentScope[name] = identifier;
-          }
-        }
-      } else {
-        for (name in scope) {
-          if ({}.hasOwnProperty.call(scope, name)) {
-            identifier = scope[name];
-            currentScope[name] = null;
-          }
-        }
-      }
-    }
-    return currentScope;
-  };
   const traverseJavascriptScoped = (scopes, parentScope, parent, key, node, f) => {
     let child;
     let currentScope;
