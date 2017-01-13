@@ -4,6 +4,7 @@ import { parseJavascript } from './parseJavascript';
 import { traverseJavascriptScoped } from './traverseJavascriptScoped';
 import { createRootScope } from './createRootScope';
 import { removeHoistedDeclarations } from './removeHoistedDeclarations';
+import { createGlobalScope } from './createGlobalScope';
 
 export function flowCoffeescriptKernel() {
   const lodash = window._;
@@ -11,26 +12,6 @@ export function flowCoffeescriptKernel() {
   const escodegen = window.escodegen;
   const esprima = window.esprima;
   const CoffeeScript = window.CoffeeScript;
-  const createGlobalScope = (rootScope, routines) => {
-    let identifier;
-    let name;
-    const globalScope = {};
-    for (name in rootScope) {
-      if ({}.hasOwnProperty.call(rootScope, name)) {
-        identifier = rootScope[name];
-        globalScope[name] = identifier;
-      }
-    }
-    for (name in routines) {
-      if ({}.hasOwnProperty.call(routines, name)) {
-        globalScope[name] = {
-          name,
-          object: 'h2o',
-        };
-      }
-    }
-    return globalScope;
-  };
   const rewriteJavascript = sandbox => (rootScope, program, go) => {
     let error;
     const globalScope = createGlobalScope(rootScope, sandbox.routines);

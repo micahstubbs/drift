@@ -11223,32 +11223,33 @@
     }
   }
 
+  function createGlobalScope(rootScope, routines) {
+    let identifier;
+    let name;
+    const globalScope = {};
+    for (name in rootScope) {
+      if ({}.hasOwnProperty.call(rootScope, name)) {
+        identifier = rootScope[name];
+        globalScope[name] = identifier;
+      }
+    }
+    for (name in routines) {
+      if ({}.hasOwnProperty.call(routines, name)) {
+        globalScope[name] = {
+          name,
+          object: 'h2o'
+        };
+      }
+    }
+    return globalScope;
+  }
+
   function flowCoffeescriptKernel() {
     const lodash = window._;
     const Flow = window.Flow;
     const escodegen = window.escodegen;
     const esprima = window.esprima;
     const CoffeeScript = window.CoffeeScript;
-    const createGlobalScope = (rootScope, routines) => {
-      let identifier;
-      let name;
-      const globalScope = {};
-      for (name in rootScope) {
-        if ({}.hasOwnProperty.call(rootScope, name)) {
-          identifier = rootScope[name];
-          globalScope[name] = identifier;
-        }
-      }
-      for (name in routines) {
-        if ({}.hasOwnProperty.call(routines, name)) {
-          globalScope[name] = {
-            name,
-            object: 'h2o'
-          };
-        }
-      }
-      return globalScope;
-    };
     const rewriteJavascript = sandbox => (rootScope, program, go) => {
       let error;
       const globalScope = createGlobalScope(rootScope, sandbox.routines);
