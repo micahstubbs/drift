@@ -2215,7 +2215,10 @@
   }
 
   function uuid() {
-    return (typeof window !== 'undefined' && window !== null ? window.uuid : void 0) ? window.uuid : null;
+    if (typeof window !== 'undefined ' && window !== null) {
+      return window.uuid();
+    }
+    return null;
   }
 
   function createTempKey() {
