@@ -5,6 +5,7 @@ import { createCell } from './createCell';
 import { checkConsistency } from './checkConsistency';
 import { cloneCell } from './cloneCell';
 import { selectCell } from './selectCell';
+import { switchToCommandMode } from './switchToCommandMode';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -57,7 +58,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const switchToCommandMode = () => _.selectedCell.isActive(false);
     const switchToEditMode = () => {
       _.selectedCell.isActive(true);
       return false;
@@ -1040,7 +1040,7 @@ export function notebook() {
         _ref1 = editModeKeyboardShortcuts[_j];
         shortcut = _ref1[0];
         caption = _ref1[1];
-        f = _ref1[2];
+        f = _ref1[2].bind(this, _);
         Mousetrap.bindGlobal(shortcut, f);
       }
     };
