@@ -1,10 +1,17 @@
-import { flowCoffeescriptKernel } from './flowCoffeescriptKernel';
+import { safetyWrapCoffeescript } from './flowCoffeescriptKernel/safetyWrapCoffeescript';
+import { compileCoffeescript } from './flowCoffeescriptKernel/compileCoffeescript';
+import { parseJavascript } from './flowCoffeescriptKernel/parseJavascript';
+import { createRootScope } from './flowCoffeescriptKernel/createRootScope';
+import { removeHoistedDeclarations } from './flowCoffeescriptKernel/removeHoistedDeclarations';
+import { rewriteJavascript } from './flowCoffeescriptKernel/rewriteJavascript';
+import { generateJavascript } from './flowCoffeescriptKernel/generateJavascript';
+import { compileJavascript } from './flowCoffeescriptKernel/compileJavascript';
+import { executeJavascript } from './flowCoffeescriptKernel/executeJavascript';
 import { routinesThatAcceptUnderbarParameter } from './routinesThatAcceptUnderbarParameter';
 
 export function flowCoffeescript(_, guid, sandbox) {
   const lodash = window._;
   const Flow = window.Flow;
-  const _kernel = flowCoffeescriptKernel();
   const print = arg => {
     if (arg !== print) {
       sandbox.results[guid].outputs(arg);
@@ -56,23 +63,23 @@ export function flowCoffeescript(_, guid, sandbox) {
     };
     outputBuffer.subscribe(evaluate);
     const tasks = [
-      _kernel.safetyWrapCoffeescript(guid),
-      _kernel.compileCoffeescript,
-      _kernel.parseJavascript,
-      _kernel.createRootScope(sandbox),
-      _kernel.removeHoistedDeclarations,
-      _kernel.rewriteJavascript(sandbox),
-      _kernel.generateJavascript,
-      _kernel.compileJavascript,
-      _kernel.executeJavascript(sandbox, print),
+      safetyWrapCoffeescript(guid),
+      compileCoffeescript,
+      parseJavascript,
+      createRootScope(sandbox),
+      removeHoistedDeclarations,
+      rewriteJavascript(sandbox),
+      generateJavascript,
+      compileJavascript,
+      executeJavascript(sandbox, print),
     ];
     return Flow.Async.pipe(tasks)(input, error => {
       if (error) {
         output.error(error);
       }
       const result = cellResult.result();
-      // console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
-      // console.log('result from tasks pipe in flowCoffeescriptKernel', result);
+      // console.log('result.name from tasks pipe', result.name);
+      // console.log('result from tasks pipe', result);
       if (lodash.isFunction(result)) {
         if (isRoutine(result)) {
           // a hack to gradually migrate routines to accept _ as a parameter

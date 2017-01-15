@@ -10946,13 +10946,9 @@
     return render;
   }
 
-  function flowCoffeescriptKernel() {
+  function safetyWrapCoffeescript(guid) {
     const lodash = window._;
-    const Flow = window.Flow;
-    const escodegen = window.escodegen;
-    const esprima = window.esprima;
-    const CoffeeScript = window.CoffeeScript;
-    const safetyWrapCoffeescript = guid => (cs, go) => {
+    return (cs, go) => {
       const lines = cs.replace(/[\n\r]/g, '\n') // normalize CR/LF
       .split('\n'); // split into lines
 
@@ -10965,198 +10961,104 @@
       // join and proceed
       return go(null, block.join('\n'));
     };
-    const compileCoffeescript = (cs, go) => {
-      let error;
-      try {
-        return go(null, CoffeeScript.compile(cs, { bare: true }));
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error compiling coffee-script', error));
-      }
-    };
-    const parseJavascript = (js, go) => {
-      let error;
-      try {
-        return go(null, esprima.parse(js));
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error parsing javascript expression', error));
-      }
-    };
-    const identifyDeclarations = node => {
-      let declaration;
-      if (!node) {
-        return null;
-      }
-      switch (node.type) {
-        case 'VariableDeclaration':
-          return (() => {
-            let _i;
-            let _len;
-            const _ref = node.declarations;
-            const _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              declaration = _ref[_i];
-              if (declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier') {
-                _results.push({
-                  name: declaration.id.name,
-                  object: '_h2o_context_'
-                });
-              }
-            }
-            return _results;
-          })();
-        case 'FunctionDeclaration':
-          //
-          // XXX Not sure about the semantics here.
-          //
-          if (node.id.type === 'Identifier') {
-            return [{
-              name: node.id.name,
-              object: '_h2o_context_'
-            }];
-          }
-          break;
-        case 'ForStatement':
-          return identifyDeclarations(node.init);
-        case 'ForInStatement':
-        case 'ForOfStatement':
-          return identifyDeclarations(node.left);
-        default:
-        // do nothing
-      }
+  }
+
+  function compileCoffeescript(cs, go) {
+    const Flow = window.Flow;
+    const CoffeeScript = window.CoffeeScript;
+    let error;
+    try {
+      return go(null, CoffeeScript.compile(cs, { bare: true }));
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error compiling coffee-script', error));
+    }
+  }
+
+  function parseJavascript(js, go) {
+    const Flow = window.Flow;
+    const esprima = window.esprima;
+    let error;
+    try {
+      return go(null, esprima.parse(js));
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error parsing javascript expression', error));
+    }
+  }
+
+  function identifyDeclarations(node) {
+    let declaration;
+    if (!node) {
       return null;
-    };
-    const parseDeclarations = block => {
-      let declaration;
-      let declarations;
-      let node;
-      let _i;
-      let _j;
-      let _len;
-      let _len1;
-      const identifiers = [];
-      const _ref = block.body;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
-        declarations = identifyDeclarations(node);
-        if (declarations) {
-          for (_j = 0, _len1 = declarations.length; _j < _len1; _j++) {
-            declaration = declarations[_j];
-            identifiers.push(declaration);
-          }
-        }
-      }
-      return lodash.indexBy(identifiers, identifier => identifier.name);
-    };
-    const traverseJavascript = (parent, key, node, f) => {
-      let child;
-      let i;
-      if (lodash.isArray(node)) {
-        i = node.length;
-        // walk backwards to allow callers to delete nodes
-        while (i--) {
-          child = node[i];
-          if (lodash.isObject(child)) {
-            traverseJavascript(node, i, child, f);
-            f(node, i, child);
-          }
-        }
-      } else {
-        for (i in node) {
-          if ({}.hasOwnProperty.call(node, i)) {
-            child = node[i];
-            if (lodash.isObject(child)) {
-              traverseJavascript(node, i, child, f);
-              f(node, i, child);
+    }
+    switch (node.type) {
+      case 'VariableDeclaration':
+        return (() => {
+          let _i;
+          let _len;
+          const _ref = node.declarations;
+          const _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            declaration = _ref[_i];
+            if (declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier') {
+              _results.push({
+                name: declaration.id.name,
+                object: '_h2o_context_'
+              });
             }
           }
+          return _results;
+        })();
+      case 'FunctionDeclaration':
+        //
+        // XXX Not sure about the semantics here.
+        //
+        if (node.id.type === 'Identifier') {
+          return [{
+            name: node.id.name,
+            object: '_h2o_context_'
+          }];
         }
-      }
-    };
-    const deleteAstNode = (parent, i) => {
-      if (lodash.isArray(parent)) {
-        return parent.splice(i, 1);
-      } else if (lodash.isObject(parent)) {
-        return delete parent[i];
-      }
-    };
-    const createLocalScope = node => {
-      let param;
-      let _i;
-      let _len;
-      // parse all declarations in this scope
-      const localScope = parseDeclarations(node.body);
+        break;
+      case 'ForStatement':
+        return identifyDeclarations(node.init);
+      case 'ForInStatement':
+      case 'ForOfStatement':
+        return identifyDeclarations(node.left);
+      default:
+      // do nothing
+    }
+    return null;
+  }
 
-      // include formal parameters
-      const _ref = node.params;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        param = _ref[_i];
-        if (param.type === 'Identifier') {
-          localScope[param.name] = {
-            name: param.name,
-            object: 'local'
-          };
+  function parseDeclarations(block) {
+    const lodash = window._;
+    let declaration;
+    let declarations;
+    let node;
+    let _i;
+    let _j;
+    let _len;
+    let _len1;
+    const identifiers = [];
+    const _ref = block.body;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      node = _ref[_i];
+      declarations = identifyDeclarations(node);
+      if (declarations) {
+        for (_j = 0, _len1 = declarations.length; _j < _len1; _j++) {
+          declaration = declarations[_j];
+          identifiers.push(declaration);
         }
       }
-      return localScope;
-    };
+    }
+    return lodash.indexBy(identifiers, identifier => identifier.name);
+  }
 
-    // redefine scope by coalescing down to non-local identifiers
-    const coalesceScopes = scopes => {
-      let i;
-      let identifier;
-      let name;
-      let scope;
-      let _i;
-      let _len;
-      const currentScope = {};
-      for (i = _i = 0, _len = scopes.length; _i < _len; i = ++_i) {
-        scope = scopes[i];
-        if (i === 0) {
-          for (name in scope) {
-            if ({}.hasOwnProperty.call(scope, name)) {
-              identifier = scope[name];
-              currentScope[name] = identifier;
-            }
-          }
-        } else {
-          for (name in scope) {
-            if ({}.hasOwnProperty.call(scope, name)) {
-              identifier = scope[name];
-              currentScope[name] = null;
-            }
-          }
-        }
-      }
-      return currentScope;
-    };
-    const traverseJavascriptScoped = (scopes, parentScope, parent, key, node, f) => {
-      let child;
-      let currentScope;
-      const isNewScope = node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
-      if (isNewScope) {
-        // create and push a new local scope onto scope stack
-        scopes.push(createLocalScope(node));
-        currentScope = coalesceScopes(scopes);
-      } else {
-        currentScope = parentScope;
-      }
-      for (key in node) {
-        if ({}.hasOwnProperty.call(node, key)) {
-          child = node[key];
-          if (lodash.isObject(child)) {
-            traverseJavascriptScoped(scopes, currentScope, node, key, child, f);
-            f(currentScope, node, key, child);
-          }
-        }
-      }
-      if (isNewScope) {
-        // discard local scope
-        scopes.pop();
-      }
-    };
-    const createRootScope = sandbox => function (program, go) {
+  function createRootScope(sandbox) {
+    const Flow = window.Flow;
+    return function (program, go) {
       let error;
       let name;
       let rootScope;
@@ -11176,55 +11078,175 @@
         return go(new Flow.Error('Error parsing root scope', error));
       }
     };
+  }
 
-    // TODO DO NOT call this for raw javascript:
-    // Require alternate strategy:
-    //  Declarations with 'var' need to be local to the cell.
-    //  Undeclared identifiers are assumed to be global.
-    //  'use strict' should be unsupported.
-    const removeHoistedDeclarations = (rootScope, program, go) => {
-      let error;
-      try {
-        traverseJavascript(null, null, program, (parent, key, node) => {
-          let declarations;
-          if (node.type === 'VariableDeclaration') {
-            declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
-            if (declarations.length === 0) {
-              // purge this node so that escodegen doesn't fail
-              return deleteAstNode(parent, key);
-            }
-            // replace with cleaned-up declarations
-            node.declarations = declarations;
-            return node.declarations;
+  function traverseJavascript(parent, key, node, f) {
+    const lodash = window._;
+    let child;
+    let i;
+    if (lodash.isArray(node)) {
+      i = node.length;
+      // walk backwards to allow callers to delete nodes
+      while (i--) {
+        child = node[i];
+        if (lodash.isObject(child)) {
+          traverseJavascript(node, i, child, f);
+          f(node, i, child);
+        }
+      }
+    } else {
+      for (i in node) {
+        if ({}.hasOwnProperty.call(node, i)) {
+          child = node[i];
+          if (lodash.isObject(child)) {
+            traverseJavascript(node, i, child, f);
+            f(node, i, child);
           }
-        });
-        return go(null, rootScope, program);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error rewriting javascript', error));
-      }
-    };
-    const createGlobalScope = (rootScope, routines) => {
-      let identifier;
-      let name;
-      const globalScope = {};
-      for (name in rootScope) {
-        if ({}.hasOwnProperty.call(rootScope, name)) {
-          identifier = rootScope[name];
-          globalScope[name] = identifier;
         }
       }
-      for (name in routines) {
-        if ({}.hasOwnProperty.call(routines, name)) {
-          globalScope[name] = {
-            name,
-            object: 'h2o'
-          };
+    }
+  }
+
+  function deleteAstNode(parent, i) {
+    const lodash = window._;
+    if (lodash.isArray(parent)) {
+      return parent.splice(i, 1);
+    } else if (lodash.isObject(parent)) {
+      return delete parent[i];
+    }
+  }
+
+  // TODO DO NOT call this for raw javascript:
+  // Require alternate strategy:
+  //  Declarations with 'var' need to be local to the cell.
+  //  Undeclared identifiers are assumed to be global.
+  //  'use strict' should be unsupported.
+  function removeHoistedDeclarations(rootScope, program, go) {
+    const Flow = window.Flow;
+    let error;
+    try {
+      traverseJavascript(null, null, program, (parent, key, node) => {
+        let declarations;
+        if (node.type === 'VariableDeclaration') {
+          declarations = node.declarations.filter(declaration => declaration.type === 'VariableDeclarator' && declaration.id.type === 'Identifier' && !rootScope[declaration.id.name]);
+          if (declarations.length === 0) {
+            // purge this node so that escodegen doesn't fail
+            return deleteAstNode(parent, key);
+          }
+          // replace with cleaned-up declarations
+          node.declarations = declarations;
+          return node.declarations;
+        }
+      });
+      return go(null, rootScope, program);
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error rewriting javascript', error));
+    }
+  }
+
+  function createGlobalScope(rootScope, routines) {
+    let identifier;
+    let name;
+    const globalScope = {};
+    for (name in rootScope) {
+      if ({}.hasOwnProperty.call(rootScope, name)) {
+        identifier = rootScope[name];
+        globalScope[name] = identifier;
+      }
+    }
+    for (name in routines) {
+      if ({}.hasOwnProperty.call(routines, name)) {
+        globalScope[name] = {
+          name,
+          object: 'h2o'
+        };
+      }
+    }
+    return globalScope;
+  }
+
+  function createLocalScope(node) {
+    let param;
+    let _i;
+    let _len;
+    // parse all declarations in this scope
+    const localScope = parseDeclarations(node.body);
+
+    // include formal parameters
+    const _ref = node.params;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      param = _ref[_i];
+      if (param.type === 'Identifier') {
+        localScope[param.name] = {
+          name: param.name,
+          object: 'local'
+        };
+      }
+    }
+    return localScope;
+  }
+
+  // redefine scope by coalescing down to non-local identifiers
+  function coalesceScopes(scopes) {
+    let i;
+    let identifier;
+    let name;
+    let scope;
+    let _i;
+    let _len;
+    const currentScope = {};
+    for (i = _i = 0, _len = scopes.length; _i < _len; i = ++_i) {
+      scope = scopes[i];
+      if (i === 0) {
+        for (name in scope) {
+          if ({}.hasOwnProperty.call(scope, name)) {
+            identifier = scope[name];
+            currentScope[name] = identifier;
+          }
+        }
+      } else {
+        for (name in scope) {
+          if ({}.hasOwnProperty.call(scope, name)) {
+            identifier = scope[name];
+            currentScope[name] = null;
+          }
         }
       }
-      return globalScope;
-    };
-    const rewriteJavascript = sandbox => (rootScope, program, go) => {
+    }
+    return currentScope;
+  }
+
+  function traverseJavascriptScoped(scopes, parentScope, parent, key, node, f) {
+    const lodash = window._;
+    let child;
+    let currentScope;
+    const isNewScope = node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
+    if (isNewScope) {
+      // create and push a new local scope onto scope stack
+      scopes.push(createLocalScope(node));
+      currentScope = coalesceScopes(scopes);
+    } else {
+      currentScope = parentScope;
+    }
+    for (key in node) {
+      if ({}.hasOwnProperty.call(node, key)) {
+        child = node[key];
+        if (lodash.isObject(child)) {
+          traverseJavascriptScoped(scopes, currentScope, node, key, child, f);
+          f(currentScope, node, key, child);
+        }
+      }
+    }
+    if (isNewScope) {
+      // discard local scope
+      scopes.pop();
+    }
+  }
+
+  function rewriteJavascript(sandbox) {
+    const Flow = window.Flow;
+    return (rootScope, program, go) => {
       let error;
       const globalScope = createGlobalScope(rootScope, sandbox.routines);
       try {
@@ -11266,28 +11288,37 @@
         return go(new Flow.Error('Error rewriting javascript', error));
       }
     };
-    const generateJavascript = (program, go) => {
-      let error;
-      try {
-        return go(null, escodegen.generate(program));
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error generating javascript', error));
-      }
-    };
-    const compileJavascript = (js, go) => {
-      let closure;
-      let error;
-      try {
-        closure = new Function('h2o', '_h2o_context_', '_h2o_results_', 'print', js); // eslint-disable-line
-        return go(null, closure);
-      } catch (_error) {
-        error = _error;
-        return go(new Flow.Error('Error compiling javascript', error));
-      }
-    };
-    const executeJavascript = (sandbox, print) => (closure, go) => {
-      console.log('sandbox from flowCoffeescriptKernel executeJavascript', sandbox);
+  }
+
+  function generateJavascript(program, go) {
+    const Flow = window.Flow;
+    const escodegen = window.escodegen;
+    let error;
+    try {
+      return go(null, escodegen.generate(program));
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error generating javascript', error));
+    }
+  }
+
+  function compileJavascript(js, go) {
+    const Flow = window.Flow;
+    let closure;
+    let error;
+    try {
+      closure = new Function('h2o', '_h2o_context_', '_h2o_results_', 'print', js); // eslint-disable-line
+      return go(null, closure);
+    } catch (_error) {
+      error = _error;
+      return go(new Flow.Error('Error compiling javascript', error));
+    }
+  }
+
+  function executeJavascript(sandbox, print) {
+    const Flow = window.Flow;
+    return (closure, go) => {
+      console.log('sandbox from executeJavascript', sandbox);
       let error;
       try {
         return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
@@ -11296,17 +11327,6 @@
         return go(new Flow.Error('Error executing javascript', error));
       }
     };
-    return {
-      safetyWrapCoffeescript,
-      compileCoffeescript,
-      parseJavascript,
-      createRootScope,
-      removeHoistedDeclarations,
-      rewriteJavascript,
-      generateJavascript,
-      compileJavascript,
-      executeJavascript
-    };
   }
 
   const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll', 'getJobs'];
@@ -11314,7 +11334,6 @@
   function flowCoffeescript(_, guid, sandbox) {
     const lodash = window._;
     const Flow = window.Flow;
-    const _kernel = flowCoffeescriptKernel();
     const print = arg => {
       if (arg !== print) {
         sandbox.results[guid].outputs(arg);
@@ -11365,14 +11384,14 @@
         return output.data(Flow.objectBrowser(_, () => output.end(), 'output', ft));
       };
       outputBuffer.subscribe(evaluate);
-      const tasks = [_kernel.safetyWrapCoffeescript(guid), _kernel.compileCoffeescript, _kernel.parseJavascript, _kernel.createRootScope(sandbox), _kernel.removeHoistedDeclarations, _kernel.rewriteJavascript(sandbox), _kernel.generateJavascript, _kernel.compileJavascript, _kernel.executeJavascript(sandbox, print)];
+      const tasks = [safetyWrapCoffeescript(guid), compileCoffeescript, parseJavascript, createRootScope(sandbox), removeHoistedDeclarations, rewriteJavascript(sandbox), generateJavascript, compileJavascript, executeJavascript(sandbox, print)];
       return Flow.Async.pipe(tasks)(input, error => {
         if (error) {
           output.error(error);
         }
         const result = cellResult.result();
-        // console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
-        // console.log('result from tasks pipe in flowCoffeescriptKernel', result);
+        // console.log('result.name from tasks pipe', result.name);
+        // console.log('result from tasks pipe', result);
         if (lodash.isFunction(result)) {
           if (isRoutine(result)) {
             // a hack to gradually migrate routines to accept _ as a parameter
