@@ -8,15 +8,11 @@ import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
 
 import { sanitizeName } from '../utils/sanitizeName';
 
-import { flowHeading } from '../flowHeading';
-import { flowCoffeescript } from '../flowCoffeescript/flowCoffeescript';
-import { flowRaw } from '../flowRaw';
 import { flowStatus } from '../flowStatus';
 import { flowSidebar } from '../flowSidebar';
 import { flowCell } from '../flowCell';
 import { flowFileOpenDialog } from '../flowFileOpenDialog';
 import { flowFileUploadDialog } from '../flowFileUploadDialog';
-import { flowMarkdown } from '../flowMarkdown';
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -26,47 +22,6 @@ export function notebook() {
   const Mousetrap = window.Mousetrap;
   const $ = window.jQuery;
   const __slice = [].slice;
-  Flow.renderers = (_, _sandbox) => ({
-    h1() {
-      return flowHeading(_, 'h1');
-    },
-
-    h2() {
-      return flowHeading(_, 'h2');
-    },
-
-    h3() {
-      return flowHeading(_, 'h3');
-    },
-
-    h4() {
-      return flowHeading(_, 'h4');
-    },
-
-    h5() {
-      return flowHeading(_, 'h5');
-    },
-
-    h6() {
-      return flowHeading(_, 'h6');
-    },
-
-    md() {
-      return flowMarkdown(_);
-    },
-
-    cs(guid) {
-      return flowCoffeescript(_, guid, _sandbox);
-    },
-
-    sca(guid) {
-      return flowCoffeescript(_, guid, _sandbox);
-    },
-
-    raw() {
-      return flowRaw(_);
-    },
-  });
   Flow.notebook = (_, _renderers) => {
     let menuCell;
     let _clipboardCell;
