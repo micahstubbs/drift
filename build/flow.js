@@ -10907,6 +10907,19 @@
     };
   }
 
+  // initialize the interpreter when the notebook is created
+  // one interpreter is shared by all scala cells
+  function _initializeInterpreter(_) {
+    return postScalaIntpRequest(_, (error, response) => {
+      if (error) {
+        // Handle the error
+        return _.scalaIntpId(-1);
+      }
+      console.log('response from notebook _initializeInterpreter', response);
+      return _.scalaIntpId(response.session_id);
+    });
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11414,16 +11427,6 @@
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
 
-      // initialize the interpreter when the notebook is created
-      // one interpreter is shared by all scala cells
-      const _initializeInterpreter = () => postScalaIntpRequest(_, (error, response) => {
-        if (error) {
-          // Handle the error
-          return _.scalaIntpId(-1);
-        }
-        console.log('response from notebook _initializeInterpreter', response);
-        return _.scalaIntpId(response.session_id);
-      });
       const serialize = () => {
         let cell;
         const cells = (() => {
@@ -12133,7 +12136,7 @@
         // TODO setPristine() when autosave is implemented.
         _.setDirty();
         if (_.onSparklingWater) {
-          return _initializeInterpreter();
+          return _initializeInterpreter(_);
         }
       };
       Flow.Dataflow.link(_.ready, initialize);

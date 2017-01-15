@@ -1,10 +1,11 @@
+import { _initializeInterpreter } from './_initializeInterpreter';
+
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 import { getObjectRequest } from '../h2oProxy/getObjectRequest';
 import { deleteObjectRequest } from '../h2oProxy/deleteObjectRequest';
 import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
 import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
-import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
 
 import { sanitizeName } from '../utils/sanitizeName';
 
@@ -54,16 +55,6 @@ export function notebook() {
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
 
-    // initialize the interpreter when the notebook is created
-    // one interpreter is shared by all scala cells
-    const _initializeInterpreter = () => postScalaIntpRequest(_, (error, response) => {
-      if (error) {
-        // Handle the error
-        return _.scalaIntpId(-1);
-      }
-      console.log('response from notebook _initializeInterpreter', response);
-      return _.scalaIntpId(response.session_id);
-    });
     const serialize = () => {
       let cell;
       const cells = (() => {
@@ -1097,7 +1088,7 @@ export function notebook() {
       // TODO setPristine() when autosave is implemented.
       _.setDirty();
       if (_.onSparklingWater) {
-        return _initializeInterpreter();
+        return _initializeInterpreter(_);
       }
     };
     Flow.Dataflow.link(_.ready, initialize);
