@@ -9,7 +9,7 @@ import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
 import { sanitizeName } from '../utils/sanitizeName';
 
 import { flowHeading } from '../flowHeading';
-import { flowCoffeescript } from '../flowCoffeescript';
+import { flowCoffeescript } from '../flowCoffeescript/flowCoffeescript';
 import { flowRaw } from '../flowRaw';
 import { flowStatus } from '../flowStatus';
 import { flowSidebar } from '../flowSidebar';

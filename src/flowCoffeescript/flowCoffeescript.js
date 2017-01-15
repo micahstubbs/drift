@@ -1,13 +1,13 @@
-import { safetyWrapCoffeescript } from './flowCoffeescriptKernel/safetyWrapCoffeescript';
-import { compileCoffeescript } from './flowCoffeescriptKernel/compileCoffeescript';
-import { parseJavascript } from './flowCoffeescriptKernel/parseJavascript';
-import { createRootScope } from './flowCoffeescriptKernel/createRootScope';
-import { removeHoistedDeclarations } from './flowCoffeescriptKernel/removeHoistedDeclarations';
-import { rewriteJavascript } from './flowCoffeescriptKernel/rewriteJavascript';
-import { generateJavascript } from './flowCoffeescriptKernel/generateJavascript';
-import { compileJavascript } from './flowCoffeescriptKernel/compileJavascript';
-import { executeJavascript } from './flowCoffeescriptKernel/executeJavascript';
-import { routinesThatAcceptUnderbarParameter } from './routinesThatAcceptUnderbarParameter';
+import { safetyWrapCoffeescript } from './safetyWrapCoffeescript';
+import { compileCoffeescript } from './compileCoffeescript';
+import { parseJavascript } from './parseJavascript';
+import { createRootScope } from './createRootScope';
+import { removeHoistedDeclarations } from './removeHoistedDeclarations';
+import { rewriteJavascript } from './rewriteJavascript';
+import { generateJavascript } from './generateJavascript';
+import { compileJavascript } from './compileJavascript';
+import { executeJavascript } from './executeJavascript';
+import { routinesThatAcceptUnderbarParameter } from '../routinesThatAcceptUnderbarParameter';
 
 export function flowCoffeescript(_, guid, sandbox) {
   const lodash = window._;
