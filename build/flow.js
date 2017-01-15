@@ -11255,6 +11255,13 @@
     return _.selectedCell.type('cs');
   }
 
+  function convertCellToHeading(_, level) {
+    return () => {
+      _.selectedCell.type(`h${ level }`);
+      return _.selectedCell.execute();
+    };
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11551,10 +11558,6 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const convertCellToHeading = level => () => {
-        _.selectedCell.type(`h${ level }`);
-        return _.selectedCell.execute();
-      };
       const convertCellToMarkdown = () => {
         _.selectedCell.type('md');
         return _.selectedCell.execute();
@@ -12086,7 +12089,7 @@
       // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
       // [ 'ctrl+enter', 'run cell', runCell ]
       // [ 'alt+enter', 'run cell, insert below', runCellAndInsertBelow ]
-      ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(1)], ['2', 'to heading 2', convertCellToHeading(2)], ['3', 'to heading 3', convertCellToHeading(3)], ['4', 'to heading 4', convertCellToHeading(4)], ['5', 'to heading 5', convertCellToHeading(5)], ['6', 'to heading 6', convertCellToHeading(6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
+      ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(_, 1)], ['2', 'to heading 2', convertCellToHeading(_, 2)], ['3', 'to heading 3', convertCellToHeading(_, 3)], ['4', 'to heading 4', convertCellToHeading(_, 4)], ['5', 'to heading 5', convertCellToHeading(_, 5)], ['6', 'to heading 6', convertCellToHeading(_, 6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
       // [ 'mod+s', 'save notebook', saveNotebook ]
       // [ 'l', 'toggle line numbers' ]
       ['o', 'toggle output', toggleOutput],

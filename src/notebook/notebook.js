@@ -8,6 +8,7 @@ import { selectCell } from './selectCell';
 import { switchToCommandMode } from './switchToCommandMode';
 import { switchToEditMode } from './switchToEditMode';
 import { convertCellToCode } from './convertCellToCode';
+import { convertCellToHeading } from './convertCellToHeading';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -60,10 +61,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const convertCellToHeading = level => () => {
-      _.selectedCell.type(`h${level}`);
-      return _.selectedCell.execute();
-    };
     const convertCellToMarkdown = () => {
       _.selectedCell.type('md');
       return _.selectedCell.execute();
@@ -819,32 +816,32 @@ export function notebook() {
       [
         '1',
         'to heading 1',
-        convertCellToHeading(1),
+        convertCellToHeading(_, 1),
       ],
       [
         '2',
         'to heading 2',
-        convertCellToHeading(2),
+        convertCellToHeading(_, 2),
       ],
       [
         '3',
         'to heading 3',
-        convertCellToHeading(3),
+        convertCellToHeading(_, 3),
       ],
       [
         '4',
         'to heading 4',
-        convertCellToHeading(4),
+        convertCellToHeading(_, 4),
       ],
       [
         '5',
         'to heading 5',
-        convertCellToHeading(5),
+        convertCellToHeading(_, 5),
       ],
       [
         '6',
         'to heading 6',
-        convertCellToHeading(6),
+        convertCellToHeading(_, 6),
       ],
       [
         'up',
