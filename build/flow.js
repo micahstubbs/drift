@@ -11160,37 +11160,6 @@
     return flowCell(_, _renderers, type, input);
   }
 
-  function deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, localName, remoteName, doc) {
-    const lodash = window._;
-    let cell;
-    let _i;
-    let _len;
-    _localName(localName);
-    _remoteName(remoteName);
-    const cells = (() => {
-      let _i;
-      let _len;
-      const _ref = doc.cells;
-      const _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cell = _ref[_i];
-        _results.push(createCell(_, _renderers, cell.type, cell.input));
-      }
-      return _results;
-    })();
-    _cells(cells);
-    selectCell(lodash.head(cells));
-
-    // Execute all non-code cells (headings, markdown, etc.)
-    const _ref = _cells();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      cell = _ref[_i];
-      if (!cell.isCode()) {
-        cell.execute();
-      }
-    }
-  }
-
   function checkConsistency(_cells) {
     let cell;
     let i;
@@ -11211,6 +11180,61 @@
     }
     if (selectionCount !== 1) {
       console.error(`selected cell count = ${ selectionCount }`);
+    }
+  }
+
+  function selectCell(_, _cells, target, scrollIntoView, scrollImmediately) {
+    const lodash = window._;
+    if (scrollIntoView == null) {
+      scrollIntoView = true;
+    }
+    if (scrollImmediately == null) {
+      scrollImmediately = false;
+    }
+    if (_.selectedCell === target) {
+      return;
+    }
+    if (_.selectedCell) {
+      _.selectedCell.isSelected(false);
+    }
+    _.selectedCell = target;
+    // TODO also set focus so that tabs don't jump to the first cell
+    _.selectedCell.isSelected(true);
+    _.selectedCellIndex = _cells.indexOf(_.selectedCell);
+    checkConsistency(_cells);
+    if (scrollIntoView) {
+      lodash.defer(() => _.selectedCell.scrollIntoView(scrollImmediately));
+    }
+  }
+
+  function deserialize(_, _renderers, _localName, _remoteName, _cells, localName, remoteName, doc) {
+    const lodash = window._;
+    let cell;
+    let _i;
+    let _len;
+    _localName(localName);
+    _remoteName(remoteName);
+    const cells = (() => {
+      let _i;
+      let _len;
+      const _ref = doc.cells;
+      const _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        cell = _ref[_i];
+        _results.push(createCell(_, _renderers, cell.type, cell.input));
+      }
+      return _results;
+    })();
+    _cells(cells);
+    selectCell(_, _cells, lodash.head(cells));
+
+    // Execute all non-code cells (headings, markdown, etc.)
+    const _ref = _cells();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      cell = _ref[_i];
+      if (!cell.isCode()) {
+        cell.execute();
+      }
     }
   }
 
@@ -11489,7 +11513,6 @@
       let menuCell;
       let _clipboardCell;
       let _lastDeletedCell;
-      let _selectedCellIndex;
       const _localName = Flow.Dataflow.signal('Untitled Flow');
       Flow.Dataflow.react(_localName, name => {
         document.title = `H2O${ name && name.trim() ? `- ${ name }` : '' }`;
@@ -11501,7 +11524,7 @@
       const saveName = () => _isEditingName(false);
       const _cells = Flow.Dataflow.signals([]);
       _.selectedCell = null;
-      _selectedCellIndex = -1;
+      _.selectedCellIndex = -1;
       _clipboardCell = null;
       _lastDeletedCell = null;
       const _areInputsHidden = Flow.Dataflow.signal(false);
@@ -11515,32 +11538,6 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      // abstracting out `selectCell` causes the run cell behavior
-      // from the `play bar` button to fail
-      // defer for now
-      function selectCell(target, scrollIntoView, scrollImmediately) {
-        if (scrollIntoView == null) {
-          scrollIntoView = true;
-        }
-        if (scrollImmediately == null) {
-          scrollImmediately = false;
-        }
-        if (_.selectedCell === target) {
-          return;
-        }
-        if (_.selectedCell) {
-          _.selectedCell.isSelected(false);
-        }
-        _.selectedCell = target;
-        // TODO also set focus so that tabs don't jump to the first cell
-        _.selectedCell.isSelected(true);
-        _selectedCellIndex = _cells.indexOf(_.selectedCell);
-        checkConsistency(_cells);
-        if (scrollIntoView) {
-          lodash.defer(() => _.selectedCell.scrollIntoView(scrollImmediately));
-        }
-        return _.selectedCell;
-      }
       const switchToCommandMode = () => _.selectedCell.isActive(false);
       const switchToEditMode = () => {
         _.selectedCell.isActive(true);
@@ -11576,14 +11573,14 @@
         let removedCell;
         const cells = _cells();
         if (cells.length > 1) {
-          if (_selectedCellIndex === cells.length - 1) {
+          if (_.selectedCellIndex === cells.length - 1) {
             // TODO call dispose() on this cell
-            removedCell = lodash.head(_cells.splice(_selectedCellIndex, 1));
-            selectCell(cells[_selectedCellIndex - 1]);
+            removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
+            selectCell(_, _cells, cells[_.selectedCellIndex - 1]);
           } else {
             // TODO call dispose() on this cell
-            removedCell = lodash.head(_cells.splice(_selectedCellIndex, 1));
-            selectCell(cells[_selectedCellIndex]);
+            removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
+            selectCell(_, _cells, cells[_.selectedCellIndex]);
           }
           if (removedCell) {
             _.saveClip('trash', removedCell.type(), removedCell.input());
@@ -11592,11 +11589,11 @@
       }
       const insertCell = (index, cell) => {
         _cells.splice(index, 0, cell);
-        selectCell(cell);
+        selectCell(_, _cells, cell);
         return cell;
       };
-      const insertAbove = cell => insertCell(_selectedCellIndex, cell);
-      const insertBelow = cell => insertCell(_selectedCellIndex + 1, cell);
+      const insertAbove = cell => insertCell(_.selectedCellIndex, cell);
+      const insertBelow = cell => insertCell(_.selectedCellIndex + 1, cell);
       const appendCell = cell => insertCell(_cells().length, cell);
       const insertCellAbove = (type, input) => insertAbove(createCell(_, _renderers, type, input));
       const insertCellBelow = (type, input) => insertBelow(createCell(_, _renderers, type, input));
@@ -11622,26 +11619,26 @@
       };
       const moveCellDown = () => {
         const cells = _cells();
-        if (_selectedCellIndex !== cells.length - 1) {
-          _cells.splice(_selectedCellIndex, 1);
-          _selectedCellIndex++;
-          _cells.splice(_selectedCellIndex, 0, _.selectedCell);
+        if (_.selectedCellIndex !== cells.length - 1) {
+          _cells.splice(_.selectedCellIndex, 1);
+          _.selectedCellIndex++;
+          _cells.splice(_.selectedCellIndex, 0, _.selectedCell);
         }
       };
       const moveCellUp = () => {
         let cells;
-        if (_selectedCellIndex !== 0) {
+        if (_.selectedCellIndex !== 0) {
           cells = _cells();
-          _cells.splice(_selectedCellIndex, 1);
-          _selectedCellIndex--;
-          _cells.splice(_selectedCellIndex, 0, _.selectedCell);
+          _cells.splice(_.selectedCellIndex, 1);
+          _.selectedCellIndex--;
+          _cells.splice(_.selectedCellIndex, 0, _.selectedCell);
         }
       };
       const mergeCellBelow = () => {
         let nextCell;
         const cells = _cells();
-        if (_selectedCellIndex !== cells.length - 1) {
-          nextCell = cells[_selectedCellIndex + 1];
+        if (_.selectedCellIndex !== cells.length - 1) {
+          nextCell = cells[_.selectedCellIndex + 1];
           if (_.selectedCell.type() === nextCell.type()) {
             nextCell.input(`${ _.selectedCell.input() }\n${ nextCell.input() }`);
             removeCell();
@@ -11661,7 +11658,7 @@
               left = input.substr(0, cursorPosition);
               right = input.substr(cursorPosition);
               _.selectedCell.input(left);
-              insertCell(_selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
+              insertCell(_.selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
               _.selectedCell.isActive(true);
             }
           }
@@ -11669,17 +11666,17 @@
       };
       const pasteCellAbove = () => {
         if (_clipboardCell) {
-          return insertCell(_selectedCellIndex, cloneCell(_, _renderers, _clipboardCell));
+          return insertCell(_.selectedCellIndex, cloneCell(_, _renderers, _clipboardCell));
         }
       };
       const pasteCellBelow = () => {
         if (_clipboardCell) {
-          return insertCell(_selectedCellIndex + 1, cloneCell(_, _renderers, _clipboardCell));
+          return insertCell(_.selectedCellIndex + 1, cloneCell(_, _renderers, _clipboardCell));
         }
       };
       const undoLastDelete = () => {
         if (_lastDeletedCell) {
-          insertCell(_selectedCellIndex + 1, _lastDeletedCell);
+          insertCell(_.selectedCellIndex + 1, _lastDeletedCell);
         }
         _lastDeletedCell = null;
         return _lastDeletedCell;
@@ -11809,17 +11806,17 @@
       };
       function selectNextCell() {
         const cells = _cells();
-        if (_selectedCellIndex !== cells.length - 1) {
-          selectCell(cells[_selectedCellIndex + 1]);
+        if (_.selectedCellIndex !== cells.length - 1) {
+          selectCell(_, _cells, cells[_.selectedCellIndex + 1]);
         }
         // prevent arrow keys from scrolling the page
         return false;
       }
       const selectPreviousCell = () => {
         let cells;
-        if (_selectedCellIndex !== 0) {
+        if (_.selectedCellIndex !== 0) {
           cells = _cells();
-          selectCell(cells[_selectedCellIndex - 1]);
+          selectCell(_, _cells, cells[_.selectedCellIndex - 1]);
         }
         // prevent arrow keys from scrolling the page
         return false;
@@ -11891,20 +11888,20 @@
             }]
           };
 
-          return deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, acceptLocalName, acceptRemoteName, acceptDoc);
+          return deserialize(_, _renderers, _localName, _remoteName, _cells, acceptLocalName, acceptRemoteName, acceptDoc);
         }
       });
       const duplicateNotebook = () => {
         const duplicateNotebookLocalName = `Copy of ${ _localName() }`;
         const duplicateNotebookRemoteName = null;
         const duplicateNotebookDoc = serialize(_cells);
-        return deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
+        return deserialize(_, _renderers, _localName, _remoteName, _cells, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
       };
       const openNotebook = (name, doc) => {
         const openNotebookLocalName = name;
         const openNotebookRemoteName = null;
         const openNotebookDoc = doc;
-        return deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
+        return deserialize(_, _renderers, _localName, _remoteName, _cells, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
       };
       function loadNotebook(name) {
         return getObjectRequest(_, 'notebook', name, (error, doc) => {
@@ -11916,7 +11913,7 @@
           const loadNotebookLocalName = name;
           const loadNotebookRemoteName = name;
           const loadNotebookDoc = doc;
-          return deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
+          return deserialize(_, _renderers, _localName, _remoteName, _cells, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
         });
       }
 
@@ -11937,8 +11934,8 @@
         const cellCount = cells.length;
         cellIndex = 0;
         if (!fromBeginning) {
-          cells = cells.slice(_selectedCellIndex);
-          cellIndex = _selectedCellIndex;
+          cells = cells.slice(_.selectedCellIndex);
+          cellIndex = _.selectedCellIndex;
         }
         const executeNextCell = () => {
           let cell;
@@ -12153,7 +12150,7 @@
         setupMenus();
         Flow.Dataflow.link(_.load, loadNotebook);
         Flow.Dataflow.link(_.open, openNotebook);
-        Flow.Dataflow.link(_.selectCell, selectCell);
+        Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _, _cells));
         Flow.Dataflow.link(_.executeAllCells, executeAllCells);
         Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, type, input));
         Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, type, input));

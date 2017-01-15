@@ -2,7 +2,6 @@ import { checkConsistency } from './checkConsistency';
 
 export function selectCell(
   _,
-  _selectedCellIndex,
   _cells,
   target,
   scrollIntoView,
@@ -24,7 +23,7 @@ export function selectCell(
   _.selectedCell = target;
       // TODO also set focus so that tabs don't jump to the first cell
   _.selectedCell.isSelected(true);
-  _selectedCellIndex = _cells.indexOf(_.selectedCell);
+  _.selectedCellIndex = _cells.indexOf(_.selectedCell);
   checkConsistency(_cells);
   if (scrollIntoView) {
     lodash.defer(() => _.selectedCell.scrollIntoView(scrollImmediately));

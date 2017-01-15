@@ -1,4 +1,5 @@
 import { createCell } from './createCell';
+import { selectCell } from './selectCell';
 
 export function deserialize(
   _,
@@ -6,7 +7,6 @@ export function deserialize(
   _localName,
   _remoteName,
   _cells,
-  selectCell,
   localName,
   remoteName,
   doc
@@ -29,7 +29,11 @@ export function deserialize(
     return _results;
   })();
   _cells(cells);
-  selectCell(lodash.head(cells));
+  selectCell(
+    _,
+    _cells,
+    lodash.head(cells)
+  );
 
       // Execute all non-code cells (headings, markdown, etc.)
   const _ref = _cells();
