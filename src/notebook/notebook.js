@@ -1,4 +1,6 @@
 import { _initializeInterpreter } from './_initializeInterpreter';
+import { serialize } from './serialize';
+import { deserialize } from './deserialize';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -54,57 +56,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-
-    const serialize = () => {
-      let cell;
-      const cells = (() => {
-        let _i;
-        let _len;
-        const _ref = _cells();
-        const _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          cell = _ref[_i];
-          _results.push({
-            type: cell.type(),
-            input: cell.input(),
-          });
-        }
-        return _results;
-      })();
-      return {
-        version: '1.0.0',
-        cells,
-      };
-    };
-    const deserialize = (localName, remoteName, doc) => {
-      let cell;
-      let _i;
-      let _len;
-      _localName(localName);
-      _remoteName(remoteName);
-      const cells = (() => {
-        let _i;
-        let _len;
-        const _ref = doc.cells;
-        const _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          cell = _ref[_i];
-          _results.push(createCell(cell.type, cell.input));
-        }
-        return _results;
-      })();
-      _cells(cells);
-      selectCell(lodash.head(cells));
-
-      // Execute all non-code cells (headings, markdown, etc.)
-      const _ref = _cells();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cell = _ref[_i];
-        if (!cell.isCode()) {
-          cell.execute();
-        }
-      }
-    };
     function createCell(type, input) {
       if (type == null) {
         type = 'cs';
@@ -321,7 +272,7 @@ export function notebook() {
       return false;
     };
     const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-    const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(), error => {
+    const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_cells), error => {
       if (error) {
         return _.alert(`Error saving notebook: ${error.message}`);
       }
@@ -508,16 +459,58 @@ export function notebook() {
       let currentTime;
       if (accept) {
         currentTime = new Date().getTime();
-        return deserialize('Untitled Flow', null, {
+
+        const acceptLocalName = 'Untitled Flow';
+        const acceptRemoteName = null;
+        const acceptDoc = {
           cells: [{
             type: 'cs',
             input: '',
           }],
-        });
+        };
+
+        return deserialize(
+          _localName,
+          _remoteName,
+          createCell,
+          _cells,
+          selectCell,
+          acceptLocalName,
+          acceptRemoteName,
+          acceptDoc
+        );
       }
     });
-    const duplicateNotebook = () => deserialize(`Copy of ${_localName()}`, null, serialize());
-    const openNotebook = (name, doc) => deserialize(name, null, doc);
+    const duplicateNotebook = () => {
+      const duplicateNotebookLocalName = `Copy of ${_localName()}`;
+      const duplicateNotebookRemoteName = null;
+      const duplicateNotebookDoc = serialize(_cells);
+      return deserialize(
+        _localName,
+        _remoteName,
+        createCell,
+        _cells,
+        selectCell,
+        duplicateNotebookLocalName,
+        duplicateNotebookRemoteName,
+        duplicateNotebookDoc
+      );
+    };
+    const openNotebook = (name, doc) => {
+      const openNotebookLocalName = name;
+      const openNotebookRemoteName = null;
+      const openNotebookDoc = doc;
+      return deserialize(
+        _localName,
+        _remoteName,
+        createCell,
+        _cells,
+        selectCell,
+        openNotebookLocalName,
+        openNotebookRemoteName,
+        openNotebookDoc
+      );
+    };
     function loadNotebook(name) {
       return getObjectRequest(_, 'notebook', name, (error, doc) => {
         let _ref;
@@ -525,7 +518,19 @@ export function notebook() {
           _ref = error.message;
           return _.alert((_ref) != null ? _ref : error);
         }
-        return deserialize(name, name, doc);
+        const loadNotebookLocalName = name;
+        const loadNotebookRemoteName = name;
+        const loadNotebookDoc = doc;
+        return deserialize(
+          _localName,
+          _remoteName,
+          createCell,
+          _cells,
+          selectCell,
+          loadNotebookLocalName,
+          loadNotebookRemoteName,
+          loadNotebookDoc
+        );
       });
     }
 
