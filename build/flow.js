@@ -11318,7 +11318,7 @@
   function executeJavascript(sandbox, print) {
     const Flow = window.Flow;
     return (closure, go) => {
-      console.log('sandbox from flowCoffeescriptKernel executeJavascript', sandbox);
+      console.log('sandbox from executeJavascript', sandbox);
       let error;
       try {
         return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
@@ -11330,11 +11330,6 @@
   }
 
   function flowCoffeescriptKernel() {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const escodegen = window.escodegen;
-    const esprima = window.esprima;
-    const CoffeeScript = window.CoffeeScript;
     return {
       safetyWrapCoffeescript,
       compileCoffeescript,

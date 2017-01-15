@@ -1,7 +1,7 @@
 export function executeJavascript(sandbox, print) {
   const Flow = window.Flow;
   return (closure, go) => {
-    console.log('sandbox from flowCoffeescriptKernel executeJavascript', sandbox);
+    console.log('sandbox from executeJavascript', sandbox);
     let error;
     try {
       return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
