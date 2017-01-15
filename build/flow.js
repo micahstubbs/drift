@@ -11246,6 +11246,11 @@
     return _.selectedCell.isActive(false);
   }
 
+  function switchToEditMode(_) {
+    _.selectedCell.isActive(true);
+    return false;
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11542,10 +11547,6 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const switchToEditMode = () => {
-        _.selectedCell.isActive(true);
-        return false;
-      };
       const convertCellToCode = () => _.selectedCell.type('cs');
       const convertCellToHeading = level => () => {
         _.selectedCell.type(`h${ level }`);
@@ -12137,7 +12138,7 @@
           _ref = normalModeKeyboardShortcuts[_i];
           shortcut = _ref[0];
           caption = _ref[1];
-          f = _ref[2];
+          f = _ref[2].bind(this, _);
           Mousetrap.bind(shortcut, f);
         }
         for (_j = 0, _len1 = editModeKeyboardShortcuts.length; _j < _len1; _j++) {
