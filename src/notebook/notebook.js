@@ -3,6 +3,7 @@ import { serialize } from './serialize';
 import { deserialize } from './deserialize';
 import { createCell } from './createCell';
 import { checkConsistency } from './checkConsistency';
+import { cloneCell } from './cloneCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -57,7 +58,7 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    // abstracting out `selectCell` causes the run cell behavior 
+    // abstracting out `selectCell` causes the run cell behavior
     // from the `play bar` button to fail
     // defer for now
     function selectCell(target, scrollIntoView, scrollImmediately) {
@@ -83,7 +84,6 @@ export function notebook() {
       }
       return _selectedCell;
     }
-    const cloneCell = cell => createCell(_, _renderers, cell.type(), cell.input());
     const switchToCommandMode = () => _selectedCell.isActive(false);
     const switchToEditMode = () => {
       _selectedCell.isActive(true);
@@ -215,12 +215,12 @@ export function notebook() {
     };
     const pasteCellAbove = () => {
       if (_clipboardCell) {
-        return insertCell(_selectedCellIndex, cloneCell(_clipboardCell));
+        return insertCell(_selectedCellIndex, cloneCell(_, _renderers, _clipboardCell));
       }
     };
     const pasteCellBelow = () => {
       if (_clipboardCell) {
-        return insertCell(_selectedCellIndex + 1, cloneCell(_clipboardCell));
+        return insertCell(_selectedCellIndex + 1, cloneCell(_, _renderers, _clipboardCell));
       }
     };
     const undoLastDelete = () => {
