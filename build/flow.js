@@ -11251,6 +11251,10 @@
     return false;
   }
 
+  function convertCellToCode(_) {
+    return _.selectedCell.type('cs');
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11547,7 +11551,6 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const convertCellToCode = () => _.selectedCell.type('cs');
       const convertCellToHeading = level => () => {
         _.selectedCell.type(`h${ level }`);
         return _.selectedCell.execute();

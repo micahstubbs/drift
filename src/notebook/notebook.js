@@ -7,6 +7,7 @@ import { cloneCell } from './cloneCell';
 import { selectCell } from './selectCell';
 import { switchToCommandMode } from './switchToCommandMode';
 import { switchToEditMode } from './switchToEditMode';
+import { convertCellToCode } from './convertCellToCode';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -59,7 +60,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const convertCellToCode = () => _.selectedCell.type('cs');
     const convertCellToHeading = level => () => {
       _.selectedCell.type(`h${level}`);
       return _.selectedCell.execute();
