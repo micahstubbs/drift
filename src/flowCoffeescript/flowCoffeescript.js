@@ -1,3 +1,5 @@
+import { print } from './print';
+
 import { safetyWrapCoffeescript } from './safetyWrapCoffeescript';
 import { compileCoffeescript } from './compileCoffeescript';
 import { parseJavascript } from './parseJavascript';
@@ -7,17 +9,12 @@ import { rewriteJavascript } from './rewriteJavascript';
 import { generateJavascript } from './generateJavascript';
 import { compileJavascript } from './compileJavascript';
 import { executeJavascript } from './executeJavascript';
+
 import { routinesThatAcceptUnderbarParameter } from '../routinesThatAcceptUnderbarParameter';
 
 export function flowCoffeescript(_, guid, sandbox) {
   const lodash = window._;
   const Flow = window.Flow;
-  const print = arg => {
-    if (arg !== print) {
-      sandbox.results[guid].outputs(arg);
-    }
-    return print;
-  };
   const isRoutine = f => {
     let name;
     let routine;
@@ -85,9 +82,9 @@ export function flowCoffeescript(_, guid, sandbox) {
           // a hack to gradually migrate routines to accept _ as a parameter
           // rather than expect _ to be a global variable
           if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {
-            return print(result(_));
+            return print(result(_), guid, sandbox);
           }
-          return print(result());
+          return print(result(), guid, sandbox);
         }
         return evaluate(result);
       }
