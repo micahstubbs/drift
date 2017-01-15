@@ -1,6 +1,7 @@
 import { _initializeInterpreter } from './_initializeInterpreter';
 import { serialize } from './serialize';
 import { deserialize } from './deserialize';
+import { createCell } from './createCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -13,7 +14,6 @@ import { sanitizeName } from '../utils/sanitizeName';
 
 import { flowStatus } from '../flowStatus';
 import { flowSidebar } from '../flowSidebar';
-import { flowCell } from '../flowCell';
 import { flowFileOpenDialog } from '../flowFileOpenDialog';
 import { flowFileUploadDialog } from '../flowFileUploadDialog';
 import { flowPreludeFunction } from '../flowPreludeFunction';
@@ -56,15 +56,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    function createCell(type, input) {
-      if (type == null) {
-        type = 'cs';
-      }
-      if (input == null) {
-        input = '';
-      }
-      return flowCell(_, _renderers, type, input);
-    }
     const checkConsistency = () => {
       let cell;
       let i;
@@ -110,7 +101,7 @@ export function notebook() {
       }
       return _selectedCell;
     }
-    const cloneCell = cell => createCell(cell.type(), cell.input());
+    const cloneCell = cell => createCell(_, _renderers, cell.type(), cell.input());
     const switchToCommandMode = () => _selectedCell.isActive(false);
     const switchToEditMode = () => {
       _selectedCell.isActive(true);
@@ -168,24 +159,24 @@ export function notebook() {
     const insertAbove = cell => insertCell(_selectedCellIndex, cell);
     const insertBelow = cell => insertCell(_selectedCellIndex + 1, cell);
     const appendCell = cell => insertCell(_cells().length, cell);
-    const insertCellAbove = (type, input) => insertAbove(createCell(type, input));
-    const insertCellBelow = (type, input) => insertBelow(createCell(type, input));
-    const insertNewCellAbove = () => insertAbove(createCell('cs'));
-    const insertNewCellBelow = () => insertBelow(createCell('cs'));
-    const insertNewScalaCellAbove = () => insertAbove(createCell('sca'));
-    const insertNewScalaCellBelow = () => insertBelow(createCell('sca'));
+    const insertCellAbove = (type, input) => insertAbove(createCell(_, _renderers, type, input));
+    const insertCellBelow = (type, input) => insertBelow(createCell(_, _renderers, type, input));
+    const insertNewCellAbove = () => insertAbove(createCell(_, _renderers, 'cs'));
+    const insertNewCellBelow = () => insertBelow(createCell(_, _renderers, 'cs'));
+    const insertNewScalaCellAbove = () => insertAbove(createCell(_, _renderers, 'sca'));
+    const insertNewScalaCellBelow = () => insertBelow(createCell(_, _renderers, 'sca'));
     const insertCellAboveAndRun = (type, input) => {
-      const cell = insertAbove(createCell(type, input));
+      const cell = insertAbove(createCell(_, _renderers, type, input));
       cell.execute();
       return cell;
     };
     const insertCellBelowAndRun = (type, input) => {
-      const cell = insertBelow(createCell(type, input));
+      const cell = insertBelow(createCell(_, _renderers, type, input));
       cell.execute();
       return cell;
     };
     const appendCellAndRun = (type, input) => {
-      const cell = appendCell(createCell(type, input));
+      const cell = appendCell(createCell(_, _renderers, type, input));
       console.log('cell from appendCellAndRun', cell);
       cell.execute();
       return cell;
@@ -234,7 +225,7 @@ export function notebook() {
             left = input.substr(0, cursorPosition);
             right = input.substr(cursorPosition);
             _selectedCell.input(left);
-            insertCell(_selectedCellIndex + 1, createCell('cs', right));
+            insertCell(_selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
             _selectedCell.isActive(true);
           }
         }
@@ -470,9 +461,10 @@ export function notebook() {
         };
 
         return deserialize(
+          _,
+          _renderers,
           _localName,
           _remoteName,
-          createCell,
           _cells,
           selectCell,
           acceptLocalName,
@@ -486,9 +478,10 @@ export function notebook() {
       const duplicateNotebookRemoteName = null;
       const duplicateNotebookDoc = serialize(_cells);
       return deserialize(
+        _,
+        _renderers,
         _localName,
         _remoteName,
-        createCell,
         _cells,
         selectCell,
         duplicateNotebookLocalName,
@@ -501,9 +494,10 @@ export function notebook() {
       const openNotebookRemoteName = null;
       const openNotebookDoc = doc;
       return deserialize(
+        _,
+        _renderers,
         _localName,
         _remoteName,
-        createCell,
         _cells,
         selectCell,
         openNotebookLocalName,
@@ -522,9 +516,10 @@ export function notebook() {
         const loadNotebookRemoteName = name;
         const loadNotebookDoc = doc;
         return deserialize(
+          _,
+          _renderers,
           _localName,
           _remoteName,
-          createCell,
           _cells,
           selectCell,
           loadNotebookLocalName,

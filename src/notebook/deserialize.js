@@ -1,7 +1,10 @@
+import { createCell } from './createCell';
+
 export function deserialize(
+  _,
+  _renderers,
   _localName,
   _remoteName,
-  createCell,
   _cells,
   selectCell,
   localName,
@@ -21,7 +24,7 @@ export function deserialize(
     const _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       cell = _ref[_i];
-      _results.push(createCell(cell.type, cell.input));
+      _results.push(createCell(_, _renderers, cell.type, cell.input));
     }
     return _results;
   })();

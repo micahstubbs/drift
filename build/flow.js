@@ -10942,210 +10942,6 @@
     };
   }
 
-  function deserialize(_localName, _remoteName, createCell, _cells, selectCell, localName, remoteName, doc) {
-    const lodash = window._;
-    let cell;
-    let _i;
-    let _len;
-    _localName(localName);
-    _remoteName(remoteName);
-    const cells = (() => {
-      let _i;
-      let _len;
-      const _ref = doc.cells;
-      const _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cell = _ref[_i];
-        _results.push(createCell(cell.type, cell.input));
-      }
-      return _results;
-    })();
-    _cells(cells);
-    selectCell(lodash.head(cells));
-
-    // Execute all non-code cells (headings, markdown, etc.)
-    const _ref = _cells();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      cell = _ref[_i];
-      if (!cell.isCode()) {
-        cell.execute();
-      }
-    }
-  }
-
-  function getObjectExistsRequest(_, type, name, go) {
-    const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
-    return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
-  }
-
-  function getObjectRequest(_, type, name, go) {
-    const urlString = `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`;
-    return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
-  }
-
-  function deleteObjectRequest(_, type, name, go) {
-    return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
-  }
-
-  function postPutObjectRequest(_, type, name, value, go) {
-    let uri;
-    uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
-    if (name) {
-      uri += `/${ encodeURIComponent(name) }`;
-    }
-    return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
-  }
-
-  function postShutdownRequest(_, go) {
-    return doPost(_, '/3/Shutdown', {}, go);
-  }
-
-  function flowStatus(_) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const defaultMessage = 'Ready';
-    const _message = Flow.Dataflow.signal(defaultMessage);
-    const _connections = Flow.Dataflow.signal(0);
-    const _isBusy = Flow.Dataflow.lift(_connections, connections => connections > 0);
-    const onStatus = (category, type, data) => {
-      let connections;
-      console.debug('Status:', category, type, data);
-      switch (category) {
-        case 'server':
-          switch (type) {
-            case 'request':
-              _connections(_connections() + 1);
-              return lodash.defer(_message, `Requesting ${ data }`);
-            case 'response':
-            case 'error':
-              _connections(connections = _connections() - 1);
-              if (connections) {
-                return lodash.defer(_message, `Waiting for ${ connections } responses...`);
-              }
-              return lodash.defer(_message, defaultMessage);
-            default:
-            // do nothing
-          }
-          break;
-        default:
-        // do nothing
-      }
-    };
-    Flow.Dataflow.link(_.ready, () => Flow.Dataflow.link(_.status, onStatus));
-    return {
-      message: _message,
-      connections: _connections,
-      isBusy: _isBusy
-    };
-  }
-
-  function flowOutline(_, _cells) {
-    return { cells: _cells };
-  }
-
-  function getObjectsRequest(_, type, go) {
-    doGet(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }`, unwrap(go, result => result.entries));
-  }
-
-  function flowBrowser(_) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    const _docs = Flow.Dataflow.signals([]);
-    const _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
-    const _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
-    const createNotebookView = notebook => {
-      const _name = notebook.name;
-      const _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
-      const _fromNow = Flow.Dataflow.lift(_date, fromNow);
-      const load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
-        acceptCaption: 'Load Notebook',
-        declineCaption: 'Cancel'
-      }, accept => {
-        if (accept) {
-          return _.load(_name);
-        }
-      });
-      const purge = () => _.confirm(`Are you sure you want to delete this notebook?\n"${ _name }"`, {
-        acceptCaption: 'Delete',
-        declineCaption: 'Keep'
-      }, accept => {
-        if (accept) {
-          return deleteObjectRequest(_, 'notebook', _name, error => {
-            let _ref;
-            if (error) {
-              _ref = error.message;
-              return _.alert(_ref != null ? _ref : error);
-            }
-            _docs.remove(self);
-            return _.growl('Notebook deleted.');
-          });
-        }
-      });
-      const self = {
-        name: _name,
-        date: _date,
-        fromNow: _fromNow,
-        load,
-        purge
-      };
-      return self;
-    };
-    const loadNotebooks = () => getObjectsRequest(_, 'notebook', (error, notebooks) => {
-      if (error) {
-        return console.debug(error);
-      }
-      // XXX sort
-      return _docs(lodash.map(notebooks, notebook => createNotebookView(notebook)));
-    });
-    Flow.Dataflow.link(_.ready, () => {
-      loadNotebooks();
-      Flow.Dataflow.link(_.saved, () => loadNotebooks());
-      return Flow.Dataflow.link(_.loaded, () => loadNotebooks());
-    });
-    return {
-      docs: _sortedDocs,
-      hasDocs: _hasDocs,
-      loadNotebooks
-    };
-  }
-
-  function flowSidebar(_, cells) {
-    const Flow = window.Flow;
-    const _mode = Flow.Dataflow.signal('help');
-    const _outline = flowOutline(_, cells);
-    const _isOutlineMode = Flow.Dataflow.lift(_mode, mode => mode === 'outline');
-    const switchToOutline = () => _mode('outline');
-    const _browser = flowBrowser(_);
-    const _isBrowserMode = Flow.Dataflow.lift(_mode, mode => mode === 'browser');
-    const switchToBrowser = () => _mode('browser');
-    const _clipboard = Flow.clipboard(_);
-    const _isClipboardMode = Flow.Dataflow.lift(_mode, mode => mode === 'clipboard');
-    const switchToClipboard = () => _mode('clipboard');
-    const _help = Flow.help(_);
-    const _isHelpMode = Flow.Dataflow.lift(_mode, mode => mode === 'help');
-    const switchToHelp = () => _mode('help');
-    Flow.Dataflow.link(_.ready, () => {
-      Flow.Dataflow.link(_.showHelp, () => switchToHelp());
-      Flow.Dataflow.link(_.showClipboard, () => switchToClipboard());
-      Flow.Dataflow.link(_.showBrowser, () => switchToBrowser());
-      return Flow.Dataflow.link(_.showOutline, () => switchToOutline());
-    });
-    return {
-      outline: _outline,
-      isOutlineMode: _isOutlineMode,
-      switchToOutline,
-      browser: _browser,
-      isBrowserMode: _isBrowserMode,
-      switchToBrowser,
-      clipboard: _clipboard,
-      isClipboardMode: _isClipboardMode,
-      switchToClipboard,
-      help: _help,
-      isHelpMode: _isHelpMode,
-      switchToHelp
-    };
-  }
-
   function format1d0(n) {
     return Math.round(n * 10) / 10;
   }
@@ -11354,6 +11150,220 @@
     return self;
   }
 
+  function createCell(_, _renderers, type, input) {
+    if (type == null) {
+      type = 'cs';
+    }
+    if (input == null) {
+      input = '';
+    }
+    return flowCell(_, _renderers, type, input);
+  }
+
+  function deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, localName, remoteName, doc) {
+    const lodash = window._;
+    let cell;
+    let _i;
+    let _len;
+    _localName(localName);
+    _remoteName(remoteName);
+    const cells = (() => {
+      let _i;
+      let _len;
+      const _ref = doc.cells;
+      const _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        cell = _ref[_i];
+        _results.push(createCell(_, _renderers, cell.type, cell.input));
+      }
+      return _results;
+    })();
+    _cells(cells);
+    selectCell(lodash.head(cells));
+
+    // Execute all non-code cells (headings, markdown, etc.)
+    const _ref = _cells();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      cell = _ref[_i];
+      if (!cell.isCode()) {
+        cell.execute();
+      }
+    }
+  }
+
+  function getObjectExistsRequest(_, type, name, go) {
+    const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
+    return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
+  }
+
+  function getObjectRequest(_, type, name, go) {
+    const urlString = `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`;
+    return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
+  }
+
+  function deleteObjectRequest(_, type, name, go) {
+    return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
+  }
+
+  function postPutObjectRequest(_, type, name, value, go) {
+    let uri;
+    uri = `/3/NodePersistentStorage/${ encodeURIComponent(type) }`;
+    if (name) {
+      uri += `/${ encodeURIComponent(name) }`;
+    }
+    return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
+  }
+
+  function postShutdownRequest(_, go) {
+    return doPost(_, '/3/Shutdown', {}, go);
+  }
+
+  function flowStatus(_) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const defaultMessage = 'Ready';
+    const _message = Flow.Dataflow.signal(defaultMessage);
+    const _connections = Flow.Dataflow.signal(0);
+    const _isBusy = Flow.Dataflow.lift(_connections, connections => connections > 0);
+    const onStatus = (category, type, data) => {
+      let connections;
+      console.debug('Status:', category, type, data);
+      switch (category) {
+        case 'server':
+          switch (type) {
+            case 'request':
+              _connections(_connections() + 1);
+              return lodash.defer(_message, `Requesting ${ data }`);
+            case 'response':
+            case 'error':
+              _connections(connections = _connections() - 1);
+              if (connections) {
+                return lodash.defer(_message, `Waiting for ${ connections } responses...`);
+              }
+              return lodash.defer(_message, defaultMessage);
+            default:
+            // do nothing
+          }
+          break;
+        default:
+        // do nothing
+      }
+    };
+    Flow.Dataflow.link(_.ready, () => Flow.Dataflow.link(_.status, onStatus));
+    return {
+      message: _message,
+      connections: _connections,
+      isBusy: _isBusy
+    };
+  }
+
+  function flowOutline(_, _cells) {
+    return { cells: _cells };
+  }
+
+  function getObjectsRequest(_, type, go) {
+    doGet(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }`, unwrap(go, result => result.entries));
+  }
+
+  function flowBrowser(_) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const _docs = Flow.Dataflow.signals([]);
+    const _sortedDocs = Flow.Dataflow.lift(_docs, docs => lodash.sortBy(docs, doc => -doc.date().getTime()));
+    const _hasDocs = Flow.Dataflow.lift(_docs, docs => docs.length > 0);
+    const createNotebookView = notebook => {
+      const _name = notebook.name;
+      const _date = Flow.Dataflow.signal(new Date(notebook.timestamp_millis));
+      const _fromNow = Flow.Dataflow.lift(_date, fromNow);
+      const load = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
+        acceptCaption: 'Load Notebook',
+        declineCaption: 'Cancel'
+      }, accept => {
+        if (accept) {
+          return _.load(_name);
+        }
+      });
+      const purge = () => _.confirm(`Are you sure you want to delete this notebook?\n"${ _name }"`, {
+        acceptCaption: 'Delete',
+        declineCaption: 'Keep'
+      }, accept => {
+        if (accept) {
+          return deleteObjectRequest(_, 'notebook', _name, error => {
+            let _ref;
+            if (error) {
+              _ref = error.message;
+              return _.alert(_ref != null ? _ref : error);
+            }
+            _docs.remove(self);
+            return _.growl('Notebook deleted.');
+          });
+        }
+      });
+      const self = {
+        name: _name,
+        date: _date,
+        fromNow: _fromNow,
+        load,
+        purge
+      };
+      return self;
+    };
+    const loadNotebooks = () => getObjectsRequest(_, 'notebook', (error, notebooks) => {
+      if (error) {
+        return console.debug(error);
+      }
+      // XXX sort
+      return _docs(lodash.map(notebooks, notebook => createNotebookView(notebook)));
+    });
+    Flow.Dataflow.link(_.ready, () => {
+      loadNotebooks();
+      Flow.Dataflow.link(_.saved, () => loadNotebooks());
+      return Flow.Dataflow.link(_.loaded, () => loadNotebooks());
+    });
+    return {
+      docs: _sortedDocs,
+      hasDocs: _hasDocs,
+      loadNotebooks
+    };
+  }
+
+  function flowSidebar(_, cells) {
+    const Flow = window.Flow;
+    const _mode = Flow.Dataflow.signal('help');
+    const _outline = flowOutline(_, cells);
+    const _isOutlineMode = Flow.Dataflow.lift(_mode, mode => mode === 'outline');
+    const switchToOutline = () => _mode('outline');
+    const _browser = flowBrowser(_);
+    const _isBrowserMode = Flow.Dataflow.lift(_mode, mode => mode === 'browser');
+    const switchToBrowser = () => _mode('browser');
+    const _clipboard = Flow.clipboard(_);
+    const _isClipboardMode = Flow.Dataflow.lift(_mode, mode => mode === 'clipboard');
+    const switchToClipboard = () => _mode('clipboard');
+    const _help = Flow.help(_);
+    const _isHelpMode = Flow.Dataflow.lift(_mode, mode => mode === 'help');
+    const switchToHelp = () => _mode('help');
+    Flow.Dataflow.link(_.ready, () => {
+      Flow.Dataflow.link(_.showHelp, () => switchToHelp());
+      Flow.Dataflow.link(_.showClipboard, () => switchToClipboard());
+      Flow.Dataflow.link(_.showBrowser, () => switchToBrowser());
+      return Flow.Dataflow.link(_.showOutline, () => switchToOutline());
+    });
+    return {
+      outline: _outline,
+      isOutlineMode: _isOutlineMode,
+      switchToOutline,
+      browser: _browser,
+      isBrowserMode: _isBrowserMode,
+      switchToBrowser,
+      clipboard: _clipboard,
+      isClipboardMode: _isClipboardMode,
+      switchToClipboard,
+      help: _help,
+      isHelpMode: _isHelpMode,
+      switchToHelp
+    };
+  }
+
   function doUpload(_, path, formData, go) {
     return http(_, 'UPLOAD', path, formData, go);
   }
@@ -11479,15 +11489,6 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      function createCell(type, input) {
-        if (type == null) {
-          type = 'cs';
-        }
-        if (input == null) {
-          input = '';
-        }
-        return flowCell(_, _renderers, type, input);
-      }
       const checkConsistency = () => {
         let cell;
         let i;
@@ -11533,7 +11534,7 @@
         }
         return _selectedCell;
       }
-      const cloneCell = cell => createCell(cell.type(), cell.input());
+      const cloneCell = cell => createCell(_, _renderers, cell.type(), cell.input());
       const switchToCommandMode = () => _selectedCell.isActive(false);
       const switchToEditMode = () => {
         _selectedCell.isActive(true);
@@ -11591,24 +11592,24 @@
       const insertAbove = cell => insertCell(_selectedCellIndex, cell);
       const insertBelow = cell => insertCell(_selectedCellIndex + 1, cell);
       const appendCell = cell => insertCell(_cells().length, cell);
-      const insertCellAbove = (type, input) => insertAbove(createCell(type, input));
-      const insertCellBelow = (type, input) => insertBelow(createCell(type, input));
-      const insertNewCellAbove = () => insertAbove(createCell('cs'));
-      const insertNewCellBelow = () => insertBelow(createCell('cs'));
-      const insertNewScalaCellAbove = () => insertAbove(createCell('sca'));
-      const insertNewScalaCellBelow = () => insertBelow(createCell('sca'));
+      const insertCellAbove = (type, input) => insertAbove(createCell(_, _renderers, type, input));
+      const insertCellBelow = (type, input) => insertBelow(createCell(_, _renderers, type, input));
+      const insertNewCellAbove = () => insertAbove(createCell(_, _renderers, 'cs'));
+      const insertNewCellBelow = () => insertBelow(createCell(_, _renderers, 'cs'));
+      const insertNewScalaCellAbove = () => insertAbove(createCell(_, _renderers, 'sca'));
+      const insertNewScalaCellBelow = () => insertBelow(createCell(_, _renderers, 'sca'));
       const insertCellAboveAndRun = (type, input) => {
-        const cell = insertAbove(createCell(type, input));
+        const cell = insertAbove(createCell(_, _renderers, type, input));
         cell.execute();
         return cell;
       };
       const insertCellBelowAndRun = (type, input) => {
-        const cell = insertBelow(createCell(type, input));
+        const cell = insertBelow(createCell(_, _renderers, type, input));
         cell.execute();
         return cell;
       };
       const appendCellAndRun = (type, input) => {
-        const cell = appendCell(createCell(type, input));
+        const cell = appendCell(createCell(_, _renderers, type, input));
         console.log('cell from appendCellAndRun', cell);
         cell.execute();
         return cell;
@@ -11654,7 +11655,7 @@
               left = input.substr(0, cursorPosition);
               right = input.substr(cursorPosition);
               _selectedCell.input(left);
-              insertCell(_selectedCellIndex + 1, createCell('cs', right));
+              insertCell(_selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
               _selectedCell.isActive(true);
             }
           }
@@ -11884,20 +11885,20 @@
             }]
           };
 
-          return deserialize(_localName, _remoteName, createCell, _cells, selectCell, acceptLocalName, acceptRemoteName, acceptDoc);
+          return deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, acceptLocalName, acceptRemoteName, acceptDoc);
         }
       });
       const duplicateNotebook = () => {
         const duplicateNotebookLocalName = `Copy of ${ _localName() }`;
         const duplicateNotebookRemoteName = null;
         const duplicateNotebookDoc = serialize(_cells);
-        return deserialize(_localName, _remoteName, createCell, _cells, selectCell, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
+        return deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
       };
       const openNotebook = (name, doc) => {
         const openNotebookLocalName = name;
         const openNotebookRemoteName = null;
         const openNotebookDoc = doc;
-        return deserialize(_localName, _remoteName, createCell, _cells, selectCell, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
+        return deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
       };
       function loadNotebook(name) {
         return getObjectRequest(_, 'notebook', name, (error, doc) => {
@@ -11909,7 +11910,7 @@
           const loadNotebookLocalName = name;
           const loadNotebookRemoteName = name;
           const loadNotebookDoc = doc;
-          return deserialize(_localName, _remoteName, createCell, _cells, selectCell, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
+          return deserialize(_, _renderers, _localName, _remoteName, _cells, selectCell, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
         });
       }
 
