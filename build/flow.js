@@ -11489,7 +11489,6 @@
       let menuCell;
       let _clipboardCell;
       let _lastDeletedCell;
-      let _selectedCell;
       let _selectedCellIndex;
       const _localName = Flow.Dataflow.signal('Untitled Flow');
       Flow.Dataflow.react(_localName, name => {
@@ -11501,7 +11500,7 @@
       const editName = () => _isEditingName(true);
       const saveName = () => _isEditingName(false);
       const _cells = Flow.Dataflow.signals([]);
-      _selectedCell = null;
+      _.selectedCell = null;
       _selectedCellIndex = -1;
       _clipboardCell = null;
       _lastDeletedCell = null;
@@ -11526,43 +11525,43 @@
         if (scrollImmediately == null) {
           scrollImmediately = false;
         }
-        if (_selectedCell === target) {
+        if (_.selectedCell === target) {
           return;
         }
-        if (_selectedCell) {
-          _selectedCell.isSelected(false);
+        if (_.selectedCell) {
+          _.selectedCell.isSelected(false);
         }
-        _selectedCell = target;
+        _.selectedCell = target;
         // TODO also set focus so that tabs don't jump to the first cell
-        _selectedCell.isSelected(true);
-        _selectedCellIndex = _cells.indexOf(_selectedCell);
+        _.selectedCell.isSelected(true);
+        _selectedCellIndex = _cells.indexOf(_.selectedCell);
         checkConsistency(_cells);
         if (scrollIntoView) {
-          lodash.defer(() => _selectedCell.scrollIntoView(scrollImmediately));
+          lodash.defer(() => _.selectedCell.scrollIntoView(scrollImmediately));
         }
-        return _selectedCell;
+        return _.selectedCell;
       }
-      const switchToCommandMode = () => _selectedCell.isActive(false);
+      const switchToCommandMode = () => _.selectedCell.isActive(false);
       const switchToEditMode = () => {
-        _selectedCell.isActive(true);
+        _.selectedCell.isActive(true);
         return false;
       };
-      const convertCellToCode = () => _selectedCell.type('cs');
+      const convertCellToCode = () => _.selectedCell.type('cs');
       const convertCellToHeading = level => () => {
-        _selectedCell.type(`h${ level }`);
-        return _selectedCell.execute();
+        _.selectedCell.type(`h${ level }`);
+        return _.selectedCell.execute();
       };
       const convertCellToMarkdown = () => {
-        _selectedCell.type('md');
-        return _selectedCell.execute();
+        _.selectedCell.type('md');
+        return _.selectedCell.execute();
       };
       const convertCellToRaw = () => {
-        _selectedCell.type('raw');
-        return _selectedCell.execute();
+        _.selectedCell.type('raw');
+        return _.selectedCell.execute();
       };
-      const convertCellToScala = () => _selectedCell.type('sca');
+      const convertCellToScala = () => _.selectedCell.type('sca');
       const copyCell = () => {
-        _clipboardCell = _selectedCell;
+        _clipboardCell = _.selectedCell;
         return _clipboardCell;
       };
       const cutCell = () => {
@@ -11570,7 +11569,7 @@
         return removeCell();
       };
       const deleteCell = () => {
-        _lastDeletedCell = _selectedCell;
+        _lastDeletedCell = _.selectedCell;
         return removeCell();
       };
       function removeCell() {
@@ -11626,7 +11625,7 @@
         if (_selectedCellIndex !== cells.length - 1) {
           _cells.splice(_selectedCellIndex, 1);
           _selectedCellIndex++;
-          _cells.splice(_selectedCellIndex, 0, _selectedCell);
+          _cells.splice(_selectedCellIndex, 0, _.selectedCell);
         }
       };
       const moveCellUp = () => {
@@ -11635,7 +11634,7 @@
           cells = _cells();
           _cells.splice(_selectedCellIndex, 1);
           _selectedCellIndex--;
-          _cells.splice(_selectedCellIndex, 0, _selectedCell);
+          _cells.splice(_selectedCellIndex, 0, _.selectedCell);
         }
       };
       const mergeCellBelow = () => {
@@ -11643,8 +11642,8 @@
         const cells = _cells();
         if (_selectedCellIndex !== cells.length - 1) {
           nextCell = cells[_selectedCellIndex + 1];
-          if (_selectedCell.type() === nextCell.type()) {
-            nextCell.input(`${ _selectedCell.input() }\n${ nextCell.input() }`);
+          if (_.selectedCell.type() === nextCell.type()) {
+            nextCell.input(`${ _.selectedCell.input() }\n${ nextCell.input() }`);
             removeCell();
           }
         }
@@ -11654,16 +11653,16 @@
         let input;
         let left;
         let right;
-        if (_selectedCell.isActive()) {
-          input = _selectedCell.input();
+        if (_.selectedCell.isActive()) {
+          input = _.selectedCell.input();
           if (input.length > 1) {
-            cursorPosition = _selectedCell.getCursorPosition();
+            cursorPosition = _.selectedCell.getCursorPosition();
             if (cursorPosition > 0 && cursorPosition < input.length - 1) {
               left = input.substr(0, cursorPosition);
               right = input.substr(cursorPosition);
-              _selectedCell.input(left);
+              _.selectedCell.input(left);
               insertCell(_selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
-              _selectedCell.isActive(true);
+              _.selectedCell.isActive(true);
             }
           }
         }
@@ -11686,17 +11685,17 @@
         return _lastDeletedCell;
       };
       const runCell = () => {
-        _selectedCell.execute();
+        _.selectedCell.execute();
         return false;
       };
       const runCellAndInsertBelow = () => {
-        _selectedCell.execute(() => insertNewCellBelow());
+        _.selectedCell.execute(() => insertNewCellBelow());
         return false;
       };
       // ipython has inconsistent behavior here.
       // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
       const runCellAndSelectBelow = () => {
-        _selectedCell.execute(() => selectNextCell());
+        _.selectedCell.execute(() => selectNextCell());
         return false;
       };
       const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
@@ -11772,8 +11771,8 @@
           return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$56.stringify(result.result.destination_frame) }]`);
         }
       });
-      const toggleInput = () => _selectedCell.toggleInput();
-      const toggleOutput = () => _selectedCell.toggleOutput();
+      const toggleInput = () => _.selectedCell.toggleInput();
+      const toggleOutput = () => _.selectedCell.toggleOutput();
       const toggleAllInputs = () => {
         let cell;
         let _i;
@@ -11987,8 +11986,8 @@
       const continueRunningAllCells = () => runAllCells(false);
       const stopRunningAll = () => _isRunningAll(false);
       const clearCell = () => {
-        _selectedCell.clear();
-        return _selectedCell.autoResize();
+        _.selectedCell.clear();
+        return _.selectedCell.autoResize();
       };
       const clearAllCells = () => {
         let cell;
