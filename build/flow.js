@@ -11056,84 +11056,6 @@
     return lodash.indexBy(identifiers, identifier => identifier.name);
   }
 
-  function createLocalScope(node) {
-    let param;
-    let _i;
-    let _len;
-    // parse all declarations in this scope
-    const localScope = parseDeclarations(node.body);
-
-    // include formal parameters
-    const _ref = node.params;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      param = _ref[_i];
-      if (param.type === 'Identifier') {
-        localScope[param.name] = {
-          name: param.name,
-          object: 'local'
-        };
-      }
-    }
-    return localScope;
-  }
-
-  // redefine scope by coalescing down to non-local identifiers
-  function coalesceScopes(scopes) {
-    let i;
-    let identifier;
-    let name;
-    let scope;
-    let _i;
-    let _len;
-    const currentScope = {};
-    for (i = _i = 0, _len = scopes.length; _i < _len; i = ++_i) {
-      scope = scopes[i];
-      if (i === 0) {
-        for (name in scope) {
-          if ({}.hasOwnProperty.call(scope, name)) {
-            identifier = scope[name];
-            currentScope[name] = identifier;
-          }
-        }
-      } else {
-        for (name in scope) {
-          if ({}.hasOwnProperty.call(scope, name)) {
-            identifier = scope[name];
-            currentScope[name] = null;
-          }
-        }
-      }
-    }
-    return currentScope;
-  }
-
-  function traverseJavascriptScoped(scopes, parentScope, parent, key, node, f) {
-    const lodash = window._;
-    let child;
-    let currentScope;
-    const isNewScope = node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
-    if (isNewScope) {
-      // create and push a new local scope onto scope stack
-      scopes.push(createLocalScope(node));
-      currentScope = coalesceScopes(scopes);
-    } else {
-      currentScope = parentScope;
-    }
-    for (key in node) {
-      if ({}.hasOwnProperty.call(node, key)) {
-        child = node[key];
-        if (lodash.isObject(child)) {
-          traverseJavascriptScoped(scopes, currentScope, node, key, child, f);
-          f(currentScope, node, key, child);
-        }
-      }
-    }
-    if (isNewScope) {
-      // discard local scope
-      scopes.pop();
-    }
-  }
-
   function createRootScope(sandbox) {
     const Flow = window.Flow;
     return function (program, go) {
@@ -11244,13 +11166,87 @@
     return globalScope;
   }
 
-  function flowCoffeescriptKernel() {
+  function createLocalScope(node) {
+    let param;
+    let _i;
+    let _len;
+    // parse all declarations in this scope
+    const localScope = parseDeclarations(node.body);
+
+    // include formal parameters
+    const _ref = node.params;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      param = _ref[_i];
+      if (param.type === 'Identifier') {
+        localScope[param.name] = {
+          name: param.name,
+          object: 'local'
+        };
+      }
+    }
+    return localScope;
+  }
+
+  // redefine scope by coalescing down to non-local identifiers
+  function coalesceScopes(scopes) {
+    let i;
+    let identifier;
+    let name;
+    let scope;
+    let _i;
+    let _len;
+    const currentScope = {};
+    for (i = _i = 0, _len = scopes.length; _i < _len; i = ++_i) {
+      scope = scopes[i];
+      if (i === 0) {
+        for (name in scope) {
+          if ({}.hasOwnProperty.call(scope, name)) {
+            identifier = scope[name];
+            currentScope[name] = identifier;
+          }
+        }
+      } else {
+        for (name in scope) {
+          if ({}.hasOwnProperty.call(scope, name)) {
+            identifier = scope[name];
+            currentScope[name] = null;
+          }
+        }
+      }
+    }
+    return currentScope;
+  }
+
+  function traverseJavascriptScoped(scopes, parentScope, parent, key, node, f) {
     const lodash = window._;
+    let child;
+    let currentScope;
+    const isNewScope = node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
+    if (isNewScope) {
+      // create and push a new local scope onto scope stack
+      scopes.push(createLocalScope(node));
+      currentScope = coalesceScopes(scopes);
+    } else {
+      currentScope = parentScope;
+    }
+    for (key in node) {
+      if ({}.hasOwnProperty.call(node, key)) {
+        child = node[key];
+        if (lodash.isObject(child)) {
+          traverseJavascriptScoped(scopes, currentScope, node, key, child, f);
+          f(currentScope, node, key, child);
+        }
+      }
+    }
+    if (isNewScope) {
+      // discard local scope
+      scopes.pop();
+    }
+  }
+
+  function rewriteJavascript(sandbox) {
     const Flow = window.Flow;
-    const escodegen = window.escodegen;
-    const esprima = window.esprima;
-    const CoffeeScript = window.CoffeeScript;
-    const rewriteJavascript = sandbox => (rootScope, program, go) => {
+    return (rootScope, program, go) => {
       let error;
       const globalScope = createGlobalScope(rootScope, sandbox.routines);
       try {
@@ -11292,6 +11288,14 @@
         return go(new Flow.Error('Error rewriting javascript', error));
       }
     };
+  }
+
+  function flowCoffeescriptKernel() {
+    const lodash = window._;
+    const Flow = window.Flow;
+    const escodegen = window.escodegen;
+    const esprima = window.esprima;
+    const CoffeeScript = window.CoffeeScript;
     const generateJavascript = (program, go) => {
       let error;
       try {
