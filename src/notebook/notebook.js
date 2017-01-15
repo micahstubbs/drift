@@ -2,6 +2,7 @@ import { _initializeInterpreter } from './_initializeInterpreter';
 import { serialize } from './serialize';
 import { deserialize } from './deserialize';
 import { createCell } from './createCell';
+import { checkConsistency } from './checkConsistency';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -56,28 +57,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const checkConsistency = () => {
-      let cell;
-      let i;
-      let selectionCount;
-      let _i;
-      let _len;
-      selectionCount = 0;
-      const _ref = _cells();
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        cell = _ref[i];
-        if (!cell) {
-          console.error(`index ${i} is empty`);
-        } else {
-          if (cell.isSelected()) {
-            selectionCount++;
-          }
-        }
-      }
-      if (selectionCount !== 1) {
-        console.error(`selected cell count = ${selectionCount}`);
-      }
-    };
     function selectCell(target, scrollIntoView, scrollImmediately) {
       if (scrollIntoView == null) {
         scrollIntoView = true;
@@ -95,7 +74,7 @@ export function notebook() {
       // TODO also set focus so that tabs don't jump to the first cell
       _selectedCell.isSelected(true);
       _selectedCellIndex = _cells.indexOf(_selectedCell);
-      checkConsistency();
+      checkConsistency(_cells);
       if (scrollIntoView) {
         lodash.defer(() => _selectedCell.scrollIntoView(scrollImmediately));
       }
