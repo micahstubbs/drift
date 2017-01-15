@@ -17,6 +17,10 @@ export function flowCoffeescript(_, guid, sandbox) {
   console.log('arguments passed to flowCoffeescript', arguments);
   const lodash = window._;
   const Flow = window.Flow;
+  // abstracting out `render` results in the output code cells 
+  // not being rendered
+  // TODO refactor notebook and then revisit this
+  //
   // XXX special-case functions so that bodies are not printed with the raw renderer.
   const render = (input, output) => {
     console.log('arguments passed to render inside of flowCoffeescript', arguments);
