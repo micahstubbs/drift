@@ -9,6 +9,7 @@ import { switchToCommandMode } from './switchToCommandMode';
 import { switchToEditMode } from './switchToEditMode';
 import { convertCellToCode } from './convertCellToCode';
 import { convertCellToHeading } from './convertCellToHeading';
+import { convertCellToMarkdown } from './convertCellToMarkdown';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -61,10 +62,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const convertCellToMarkdown = () => {
-      _.selectedCell.type('md');
-      return _.selectedCell.execute();
-    };
     const convertCellToRaw = () => {
       _.selectedCell.type('raw');
       return _.selectedCell.execute();
