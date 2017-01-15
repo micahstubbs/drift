@@ -1,4 +1,5 @@
 import { print } from './print';
+import { isRoutine } from './isRoutine';
 
 import { safetyWrapCoffeescript } from './safetyWrapCoffeescript';
 import { compileCoffeescript } from './compileCoffeescript';
@@ -15,21 +16,6 @@ import { routinesThatAcceptUnderbarParameter } from '../routinesThatAcceptUnderb
 export function flowCoffeescript(_, guid, sandbox) {
   const lodash = window._;
   const Flow = window.Flow;
-  const isRoutine = f => {
-    let name;
-    let routine;
-    const _ref = sandbox.routines;
-    for (name in _ref) {
-      if ({}.hasOwnProperty.call(_ref, name)) {
-        routine = _ref[name];
-        if (f === routine) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
   // XXX special-case functions so that bodies are not printed with the raw renderer.
   const render = (input, output) => {
     console.log('input from flowCoffeescript render', input);
@@ -78,7 +64,7 @@ export function flowCoffeescript(_, guid, sandbox) {
       // console.log('result.name from tasks pipe', result.name);
       // console.log('result from tasks pipe', result);
       if (lodash.isFunction(result)) {
-        if (isRoutine(result)) {
+        if (isRoutine(result, sandbox)) {
           // a hack to gradually migrate routines to accept _ as a parameter
           // rather than expect _ to be a global variable
           if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {
