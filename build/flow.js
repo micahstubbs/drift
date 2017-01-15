@@ -11268,6 +11268,11 @@
     return _.selectedCell.execute();
   }
 
+  function convertCellToRaw(_) {
+    _.selectedCell.type('raw');
+    return _.selectedCell.execute();
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11564,10 +11569,6 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const convertCellToRaw = () => {
-        _.selectedCell.type('raw');
-        return _.selectedCell.execute();
-      };
       const convertCellToScala = () => _.selectedCell.type('sca');
       const copyCell = () => {
         _clipboardCell = _.selectedCell;
