@@ -11329,26 +11329,11 @@
     };
   }
 
-  function flowCoffeescriptKernel() {
-    return {
-      safetyWrapCoffeescript,
-      compileCoffeescript,
-      parseJavascript,
-      createRootScope,
-      removeHoistedDeclarations,
-      rewriteJavascript,
-      generateJavascript,
-      compileJavascript,
-      executeJavascript
-    };
-  }
-
   const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll', 'getJobs'];
 
   function flowCoffeescript(_, guid, sandbox) {
     const lodash = window._;
     const Flow = window.Flow;
-    const _kernel = flowCoffeescriptKernel();
     const print = arg => {
       if (arg !== print) {
         sandbox.results[guid].outputs(arg);
@@ -11399,14 +11384,14 @@
         return output.data(Flow.objectBrowser(_, () => output.end(), 'output', ft));
       };
       outputBuffer.subscribe(evaluate);
-      const tasks = [_kernel.safetyWrapCoffeescript(guid), _kernel.compileCoffeescript, _kernel.parseJavascript, _kernel.createRootScope(sandbox), _kernel.removeHoistedDeclarations, _kernel.rewriteJavascript(sandbox), _kernel.generateJavascript, _kernel.compileJavascript, _kernel.executeJavascript(sandbox, print)];
+      const tasks = [safetyWrapCoffeescript(guid), compileCoffeescript, parseJavascript, createRootScope(sandbox), removeHoistedDeclarations, rewriteJavascript(sandbox), generateJavascript, compileJavascript, executeJavascript(sandbox, print)];
       return Flow.Async.pipe(tasks)(input, error => {
         if (error) {
           output.error(error);
         }
         const result = cellResult.result();
-        // console.log('result.name from tasks pipe in flowCoffeescriptKernel', result.name);
-        // console.log('result from tasks pipe in flowCoffeescriptKernel', result);
+        // console.log('result.name from tasks pipe', result.name);
+        // console.log('result from tasks pipe', result);
         if (lodash.isFunction(result)) {
           if (isRoutine(result)) {
             // a hack to gradually migrate routines to accept _ as a parameter
