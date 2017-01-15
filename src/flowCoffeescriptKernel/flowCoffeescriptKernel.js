@@ -6,6 +6,7 @@ import { removeHoistedDeclarations } from './removeHoistedDeclarations';
 import { rewriteJavascript } from './rewriteJavascript';
 import { generateJavascript } from './generateJavascript';
 import { compileJavascript } from './compileJavascript';
+import { executeJavascript } from './executeJavascript';
 
 export function flowCoffeescriptKernel() {
   const lodash = window._;
@@ -13,16 +14,6 @@ export function flowCoffeescriptKernel() {
   const escodegen = window.escodegen;
   const esprima = window.esprima;
   const CoffeeScript = window.CoffeeScript;
-  const executeJavascript = (sandbox, print) => (closure, go) => {
-    console.log('sandbox from flowCoffeescriptKernel executeJavascript', sandbox);
-    let error;
-    try {
-      return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
-    } catch (_error) {
-      error = _error;
-      return go(new Flow.Error('Error executing javascript', error));
-    }
-  };
   return {
     safetyWrapCoffeescript,
     compileCoffeescript,
