@@ -57,6 +57,9 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
+    // abstracting out `selectCell` causes the run cell behavior 
+    // from the `play bar` button to fail
+    // defer for now
     function selectCell(target, scrollIntoView, scrollImmediately) {
       if (scrollIntoView == null) {
         scrollIntoView = true;
