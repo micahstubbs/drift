@@ -11273,6 +11273,10 @@
     return _.selectedCell.execute();
   }
 
+  function convertCellToScala(_) {
+    return _.selectedCell.type('sca');
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11569,7 +11573,6 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const convertCellToScala = () => _.selectedCell.type('sca');
       const copyCell = () => {
         _clipboardCell = _.selectedCell;
         return _clipboardCell;

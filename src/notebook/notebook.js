@@ -11,6 +11,7 @@ import { convertCellToCode } from './convertCellToCode';
 import { convertCellToHeading } from './convertCellToHeading';
 import { convertCellToMarkdown } from './convertCellToMarkdown';
 import { convertCellToRaw } from './convertCellToRaw';
+import { convertCellToScala } from './convertCellToScala';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -63,7 +64,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const convertCellToScala = () => _.selectedCell.type('sca');
     const copyCell = () => {
       _clipboardCell = _.selectedCell;
       return _clipboardCell;
