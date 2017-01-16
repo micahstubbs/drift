@@ -13,6 +13,8 @@ import { convertCellToMarkdown } from './convertCellToMarkdown';
 import { convertCellToRaw } from './convertCellToRaw';
 import { convertCellToScala } from './convertCellToScala';
 import { copyCell } from './copyCell';
+import { cutCell } from './cutCell';
+import { removeCell } from './removeCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -64,40 +66,10 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const cutCell = () => {
-      copyCell(_);
-      return removeCell();
-    };
     const deleteCell = () => {
       _lastDeletedCell = _.selectedCell;
-      return removeCell();
+      return removeCell(_, _cells);
     };
-    function removeCell() {
-      let removedCell;
-      const cells = _cells();
-      if (cells.length > 1) {
-        if (_.selectedCellIndex === cells.length - 1) {
-          // TODO call dispose() on this cell
-          removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
-          selectCell(
-            _,
-            _cells,
-            cells[_.selectedCellIndex - 1]
-          );
-        } else {
-          // TODO call dispose() on this cell
-          removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
-          selectCell(
-            _,
-            _cells,
-            cells[_.selectedCellIndex]
-          );
-        }
-        if (removedCell) {
-          _.saveClip('trash', removedCell.type(), removedCell.input());
-        }
-      }
-    }
     const insertCell = (index, cell) => {
       _cells.splice(index, 0, cell);
       selectCell(
@@ -156,7 +128,7 @@ export function notebook() {
         nextCell = cells[_.selectedCellIndex + 1];
         if (_.selectedCell.type() === nextCell.type()) {
           nextCell.input(`${_.selectedCell.input()}\n${nextCell.input()}`);
-          removeCell();
+          removeCell(_, _cells);
         }
       }
     };

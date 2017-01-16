@@ -11282,6 +11282,31 @@
     return _.clipboardCell;
   }
 
+  function removeCell(_, _cells) {
+    const lodash = window._;
+    let removedCell;
+    const cells = _cells();
+    if (cells.length > 1) {
+      if (_.selectedCellIndex === cells.length - 1) {
+        // TODO call dispose() on this cell
+        removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
+        selectCell(_, _cells, cells[_.selectedCellIndex - 1]);
+      } else {
+        // TODO call dispose() on this cell
+        removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
+        selectCell(_, _cells, cells[_.selectedCellIndex]);
+      }
+      if (removedCell) {
+        _.saveClip('trash', removedCell.type(), removedCell.input());
+      }
+    }
+  }
+
+  function cutCell(_) {
+    copyCell(_);
+    return removeCell();
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11577,32 +11602,10 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const cutCell = () => {
-        copyCell(_);
-        return removeCell();
-      };
       const deleteCell = () => {
         _lastDeletedCell = _.selectedCell;
-        return removeCell();
+        return removeCell(_, _cells);
       };
-      function removeCell() {
-        let removedCell;
-        const cells = _cells();
-        if (cells.length > 1) {
-          if (_.selectedCellIndex === cells.length - 1) {
-            // TODO call dispose() on this cell
-            removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
-            selectCell(_, _cells, cells[_.selectedCellIndex - 1]);
-          } else {
-            // TODO call dispose() on this cell
-            removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
-            selectCell(_, _cells, cells[_.selectedCellIndex]);
-          }
-          if (removedCell) {
-            _.saveClip('trash', removedCell.type(), removedCell.input());
-          }
-        }
-      }
       const insertCell = (index, cell) => {
         _cells.splice(index, 0, cell);
         selectCell(_, _cells, cell);
@@ -11657,7 +11660,7 @@
           nextCell = cells[_.selectedCellIndex + 1];
           if (_.selectedCell.type() === nextCell.type()) {
             nextCell.input(`${ _.selectedCell.input() }\n${ nextCell.input() }`);
-            removeCell();
+            removeCell(_, _cells);
           }
         }
       };
