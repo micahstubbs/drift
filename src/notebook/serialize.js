@@ -1,9 +1,9 @@
-export function serialize(_cells) {
+export function serialize(_) {
   let cell;
   const cells = (() => {
     let _i;
     let _len;
-    const _ref = _cells();
+    const _ref = _.cells();
     const _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       cell = _ref[_i];

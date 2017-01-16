@@ -6,7 +6,6 @@ export function deserialize(
   _renderers,
   _localName,
   _remoteName,
-  _cells,
   localName,
   remoteName,
   doc
@@ -28,15 +27,15 @@ export function deserialize(
     }
     return _results;
   })();
-  _cells(cells);
+  _.cells(cells);
   selectCell(
     _,
-    _cells,
+    _.cells,
     lodash.head(cells)
   );
 
       // Execute all non-code cells (headings, markdown, etc.)
-  const _ref = _cells();
+  const _ref = _.cells();
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     cell = _ref[_i];
     if (!cell.isCode()) {

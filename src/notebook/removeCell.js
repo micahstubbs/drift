@@ -1,24 +1,22 @@
 import { selectCell } from './selectCell';
 
-export function removeCell(_, _cells) {
+export function removeCell(_) {
   const lodash = window._;
   let removedCell;
-  const cells = _cells();
+  const cells = _.cells();
   if (cells.length > 1) {
     if (_.selectedCellIndex === cells.length - 1) {
           // TODO call dispose() on this cell
-      removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
+      removedCell = lodash.head(_.cells.splice(_.selectedCellIndex, 1));
       selectCell(
             _,
-            _cells,
             cells[_.selectedCellIndex - 1]
           );
     } else {
           // TODO call dispose() on this cell
-      removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
+      removedCell = lodash.head(_.cells.splice(_.selectedCellIndex, 1));
       selectCell(
             _,
-            _cells,
             cells[_.selectedCellIndex]
           );
     }

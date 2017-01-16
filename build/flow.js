@@ -10920,12 +10920,12 @@
     });
   }
 
-  function serialize(_cells) {
+  function serialize(_) {
     let cell;
     const cells = (() => {
       let _i;
       let _len;
-      const _ref = _cells();
+      const _ref = _.cells();
       const _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cell = _ref[_i];
@@ -11183,7 +11183,7 @@
     }
   }
 
-  function selectCell(_, _cells, target, scrollIntoView, scrollImmediately) {
+  function selectCell(_, target, scrollIntoView, scrollImmediately) {
     const lodash = window._;
     if (scrollIntoView == null) {
       scrollIntoView = true;
@@ -11200,14 +11200,14 @@
     _.selectedCell = target;
     // TODO also set focus so that tabs don't jump to the first cell
     _.selectedCell.isSelected(true);
-    _.selectedCellIndex = _cells.indexOf(_.selectedCell);
-    checkConsistency(_cells);
+    _.selectedCellIndex = _.cells.indexOf(_.selectedCell);
+    checkConsistency(_.cells);
     if (scrollIntoView) {
       lodash.defer(() => _.selectedCell.scrollIntoView(scrollImmediately));
     }
   }
 
-  function deserialize(_, _renderers, _localName, _remoteName, _cells, localName, remoteName, doc) {
+  function deserialize(_, _renderers, _localName, _remoteName, localName, remoteName, doc) {
     const lodash = window._;
     let cell;
     let _i;
@@ -11225,11 +11225,11 @@
       }
       return _results;
     })();
-    _cells(cells);
-    selectCell(_, _cells, lodash.head(cells));
+    _.cells(cells);
+    selectCell(_, _.cells, lodash.head(cells));
 
     // Execute all non-code cells (headings, markdown, etc.)
-    const _ref = _cells();
+    const _ref = _.cells();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       cell = _ref[_i];
       if (!cell.isCode()) {
@@ -11282,19 +11282,19 @@
     return _.clipboardCell;
   }
 
-  function removeCell(_, _cells) {
+  function removeCell(_) {
     const lodash = window._;
     let removedCell;
-    const cells = _cells();
+    const cells = _.cells();
     if (cells.length > 1) {
       if (_.selectedCellIndex === cells.length - 1) {
         // TODO call dispose() on this cell
-        removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
-        selectCell(_, _cells, cells[_.selectedCellIndex - 1]);
+        removedCell = lodash.head(_.cells.splice(_.selectedCellIndex, 1));
+        selectCell(_, cells[_.selectedCellIndex - 1]);
       } else {
         // TODO call dispose() on this cell
-        removedCell = lodash.head(_cells.splice(_.selectedCellIndex, 1));
-        selectCell(_, _cells, cells[_.selectedCellIndex]);
+        removedCell = lodash.head(_.cells.splice(_.selectedCellIndex, 1));
+        selectCell(_, cells[_.selectedCellIndex]);
       }
       if (removedCell) {
         _.saveClip('trash', removedCell.type(), removedCell.input());
@@ -11305,6 +11305,11 @@
   function cutCell(_) {
     copyCell(_);
     return removeCell();
+  }
+
+  function deleteCell(_) {
+    _.lastDeletedCell = _.selectedCell;
+    return removeCell(_);
   }
 
   function getObjectExistsRequest(_, type, name, go) {
@@ -11373,8 +11378,8 @@
     };
   }
 
-  function flowOutline(_, _cells) {
-    return { cells: _cells };
+  function flowOutline(_) {
+    return { cells: _.cells };
   }
 
   function getObjectsRequest(_, type, go) {
@@ -11443,10 +11448,10 @@
     };
   }
 
-  function flowSidebar(_, cells) {
+  function flowSidebar(_) {
     const Flow = window.Flow;
     const _mode = Flow.Dataflow.signal('help');
-    const _outline = flowOutline(_, cells);
+    const _outline = flowOutline(_);
     const _isOutlineMode = Flow.Dataflow.lift(_mode, mode => mode === 'outline');
     const switchToOutline = () => _mode('outline');
     const _browser = flowBrowser(_);
@@ -11576,7 +11581,6 @@
     const __slice = [].slice;
     Flow.notebook = (_, _renderers) => {
       let menuCell;
-      let _lastDeletedCell;
       const _localName = Flow.Dataflow.signal('Untitled Flow');
       Flow.Dataflow.react(_localName, name => {
         document.title = `H2O${ name && name.trim() ? `- ${ name }` : '' }`;
@@ -11586,11 +11590,11 @@
       const _isEditingName = Flow.Dataflow.signal(false);
       const editName = () => _isEditingName(true);
       const saveName = () => _isEditingName(false);
-      const _cells = Flow.Dataflow.signals([]);
+      _.cells = Flow.Dataflow.signals([]);
       _.selectedCell = null;
       _.selectedCellIndex = -1;
       _.clipboardCell = null;
-      _lastDeletedCell = null;
+      _.lastDeletedCell = null;
       const _areInputsHidden = Flow.Dataflow.signal(false);
       const _areOutputsHidden = Flow.Dataflow.signal(false);
       const _isSidebarHidden = Flow.Dataflow.signal(false);
@@ -11599,21 +11603,17 @@
       const _runningPercent = Flow.Dataflow.signal('0%');
       const _runningCellInput = Flow.Dataflow.signal('');
       const _status = flowStatus(_);
-      const _sidebar = flowSidebar(_, _cells);
+      const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const deleteCell = () => {
-        _lastDeletedCell = _.selectedCell;
-        return removeCell(_, _cells);
-      };
       const insertCell = (index, cell) => {
-        _cells.splice(index, 0, cell);
-        selectCell(_, _cells, cell);
+        _.cells.splice(index, 0, cell);
+        selectCell(_, cell);
         return cell;
       };
       const insertAbove = cell => insertCell(_.selectedCellIndex, cell);
       const insertBelow = cell => insertCell(_.selectedCellIndex + 1, cell);
-      const appendCell = cell => insertCell(_cells().length, cell);
+      const appendCell = cell => insertCell(_.cells().length, cell);
       const insertCellAbove = (type, input) => insertAbove(createCell(_, _renderers, type, input));
       const insertCellBelow = (type, input) => insertBelow(createCell(_, _renderers, type, input));
       const insertNewCellAbove = () => insertAbove(createCell(_, _renderers, 'cs'));
@@ -11637,30 +11637,30 @@
         return cell;
       };
       const moveCellDown = () => {
-        const cells = _cells();
+        const cells = _.cells();
         if (_.selectedCellIndex !== cells.length - 1) {
-          _cells.splice(_.selectedCellIndex, 1);
+          _.cells.splice(_.selectedCellIndex, 1);
           _.selectedCellIndex++;
-          _cells.splice(_.selectedCellIndex, 0, _.selectedCell);
+          _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
         }
       };
       const moveCellUp = () => {
         let cells;
         if (_.selectedCellIndex !== 0) {
-          cells = _cells();
-          _cells.splice(_.selectedCellIndex, 1);
+          cells = _.cells();
+          _.cells.splice(_.selectedCellIndex, 1);
           _.selectedCellIndex--;
-          _cells.splice(_.selectedCellIndex, 0, _.selectedCell);
+          _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
         }
       };
       const mergeCellBelow = () => {
         let nextCell;
-        const cells = _cells();
+        const cells = _.cells();
         if (_.selectedCellIndex !== cells.length - 1) {
           nextCell = cells[_.selectedCellIndex + 1];
           if (_.selectedCell.type() === nextCell.type()) {
             nextCell.input(`${ _.selectedCell.input() }\n${ nextCell.input() }`);
-            removeCell(_, _cells);
+            removeCell(_, _.cells);
           }
         }
       };
@@ -11694,11 +11694,11 @@
         }
       };
       const undoLastDelete = () => {
-        if (_lastDeletedCell) {
-          insertCell(_.selectedCellIndex + 1, _lastDeletedCell);
+        if (_.lastDeletedCell) {
+          insertCell(_.selectedCellIndex + 1, _.lastDeletedCell);
         }
-        _lastDeletedCell = null;
-        return _lastDeletedCell;
+        _.lastDeletedCell = null;
+        return _.lastDeletedCell;
       };
       const runCell = () => {
         _.selectedCell.execute();
@@ -11715,7 +11715,7 @@
         return false;
       };
       const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-      const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_cells), error => {
+      const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
         if (error) {
           return _.alert(`Error saving notebook: ${ error.message }`);
         }
@@ -11802,7 +11802,7 @@
         //   to resize themselves.
         //
         if (wereHidden) {
-          _ref = _cells();
+          _ref = _.cells();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             cell = _ref[_i];
             cell.autoResize();
@@ -11824,9 +11824,9 @@
         return _.showClipboard();
       };
       function selectNextCell() {
-        const cells = _cells();
+        const cells = _.cells();
         if (_.selectedCellIndex !== cells.length - 1) {
-          selectCell(_, _cells, cells[_.selectedCellIndex + 1]);
+          selectCell(_, cells[_.selectedCellIndex + 1]);
         }
         // prevent arrow keys from scrolling the page
         return false;
@@ -11834,8 +11834,8 @@
       const selectPreviousCell = () => {
         let cells;
         if (_.selectedCellIndex !== 0) {
-          cells = _cells();
-          selectCell(_, _cells, cells[_.selectedCellIndex - 1]);
+          cells = _.cells();
+          selectCell(_, cells[_.selectedCellIndex - 1]);
         }
         // prevent arrow keys from scrolling the page
         return false;
@@ -11907,20 +11907,20 @@
             }]
           };
 
-          return deserialize(_, _renderers, _localName, _remoteName, _cells, acceptLocalName, acceptRemoteName, acceptDoc);
+          return deserialize(_, _renderers, _localName, _remoteName, acceptLocalName, acceptRemoteName, acceptDoc);
         }
       });
       const duplicateNotebook = () => {
         const duplicateNotebookLocalName = `Copy of ${ _localName() }`;
         const duplicateNotebookRemoteName = null;
-        const duplicateNotebookDoc = serialize(_cells);
-        return deserialize(_, _renderers, _localName, _remoteName, _cells, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
+        const duplicateNotebookDoc = serialize(_);
+        return deserialize(_, _renderers, _localName, _remoteName, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
       };
       const openNotebook = (name, doc) => {
         const openNotebookLocalName = name;
         const openNotebookRemoteName = null;
         const openNotebookDoc = doc;
-        return deserialize(_, _renderers, _localName, _remoteName, _cells, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
+        return deserialize(_, _renderers, _localName, _remoteName, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
       };
       function loadNotebook(name) {
         return getObjectRequest(_, 'notebook', name, (error, doc) => {
@@ -11932,7 +11932,7 @@
           const loadNotebookLocalName = name;
           const loadNotebookRemoteName = name;
           const loadNotebookDoc = doc;
-          return deserialize(_, _renderers, _localName, _remoteName, _cells, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
+          return deserialize(_, _renderers, _localName, _remoteName, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
         });
       }
 
@@ -11949,7 +11949,7 @@
         let cellIndex;
         let cells;
         _isRunningAll(true);
-        cells = _cells().slice(0);
+        cells = _.cells().slice(0);
         const cellCount = cells.length;
         cellIndex = 0;
         if (!fromBeginning) {
@@ -12009,7 +12009,7 @@
         let cell;
         let _i;
         let _len;
-        const _ref = _cells();
+        const _ref = _.cells();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cell = _ref[_i];
           cell.clear();
@@ -12048,7 +12048,7 @@
       const _menus = Flow.Dataflow.signal(null);
       menuCell = [createMenuItem('Run Cell', runCell, ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']), createMenuItem('Paste Cell Above', pasteCellAbove, ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow, ['v']),
       // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
-      createMenuItem('Delete Cell', deleteCell, ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete, ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp, ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown, ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']),
+      createMenuItem('Delete Cell', deleteCell.bind(this, _), ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete, ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp, ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown, ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']),
       // TODO createMenuItem('Split Cell', splitCell),
       // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
       // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
@@ -12082,7 +12082,7 @@
           icon: `fa fa-${ icon }`
         };
       };
-      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown)], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell)], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
+      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown)], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
 
       // (From IPython Notebook keyboard shortcuts dialog)
       //
@@ -12169,7 +12169,7 @@
         setupMenus();
         Flow.Dataflow.link(_.load, loadNotebook);
         Flow.Dataflow.link(_.open, openNotebook);
-        Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _, _cells));
+        Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
         Flow.Dataflow.link(_.executeAllCells, executeAllCells);
         Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, type, input));
         Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, type, input));
@@ -12192,7 +12192,7 @@
         sidebar: _sidebar,
         status: _status,
         toolbar: _toolbar,
-        cells: _cells,
+        cells: _.cells,
         areInputsHidden: _areInputsHidden,
         areOutputsHidden: _areOutputsHidden,
         isSidebarHidden: _isSidebarHidden,

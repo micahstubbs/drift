@@ -15,6 +15,7 @@ import { convertCellToScala } from './convertCellToScala';
 import { copyCell } from './copyCell';
 import { cutCell } from './cutCell';
 import { removeCell } from './removeCell';
+import { deleteCell } from './deleteCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -40,7 +41,6 @@ export function notebook() {
   const __slice = [].slice;
   Flow.notebook = (_, _renderers) => {
     let menuCell;
-    let _lastDeletedCell;
     const _localName = Flow.Dataflow.signal('Untitled Flow');
     Flow.Dataflow.react(_localName, name => {
       document.title = `H2O${(name && name.trim() ? `- ${name}` : '')}`;
@@ -50,11 +50,11 @@ export function notebook() {
     const _isEditingName = Flow.Dataflow.signal(false);
     const editName = () => _isEditingName(true);
     const saveName = () => _isEditingName(false);
-    const _cells = Flow.Dataflow.signals([]);
+    _.cells = Flow.Dataflow.signals([]);
     _.selectedCell = null;
     _.selectedCellIndex = -1;
     _.clipboardCell = null;
-    _lastDeletedCell = null;
+    _.lastDeletedCell = null;
     const _areInputsHidden = Flow.Dataflow.signal(false);
     const _areOutputsHidden = Flow.Dataflow.signal(false);
     const _isSidebarHidden = Flow.Dataflow.signal(false);
@@ -63,25 +63,20 @@ export function notebook() {
     const _runningPercent = Flow.Dataflow.signal('0%');
     const _runningCellInput = Flow.Dataflow.signal('');
     const _status = flowStatus(_);
-    const _sidebar = flowSidebar(_, _cells);
+    const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const deleteCell = () => {
-      _lastDeletedCell = _.selectedCell;
-      return removeCell(_, _cells);
-    };
     const insertCell = (index, cell) => {
-      _cells.splice(index, 0, cell);
+      _.cells.splice(index, 0, cell);
       selectCell(
         _,
-        _cells,
         cell
       );
       return cell;
     };
     const insertAbove = cell => insertCell(_.selectedCellIndex, cell);
     const insertBelow = cell => insertCell(_.selectedCellIndex + 1, cell);
-    const appendCell = cell => insertCell(_cells().length, cell);
+    const appendCell = cell => insertCell(_.cells().length, cell);
     const insertCellAbove = (type, input) => insertAbove(createCell(_, _renderers, type, input));
     const insertCellBelow = (type, input) => insertBelow(createCell(_, _renderers, type, input));
     const insertNewCellAbove = () => insertAbove(createCell(_, _renderers, 'cs'));
@@ -105,30 +100,30 @@ export function notebook() {
       return cell;
     };
     const moveCellDown = () => {
-      const cells = _cells();
+      const cells = _.cells();
       if (_.selectedCellIndex !== cells.length - 1) {
-        _cells.splice(_.selectedCellIndex, 1);
+        _.cells.splice(_.selectedCellIndex, 1);
         _.selectedCellIndex++;
-        _cells.splice(_.selectedCellIndex, 0, _.selectedCell);
+        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
       }
     };
     const moveCellUp = () => {
       let cells;
       if (_.selectedCellIndex !== 0) {
-        cells = _cells();
-        _cells.splice(_.selectedCellIndex, 1);
+        cells = _.cells();
+        _.cells.splice(_.selectedCellIndex, 1);
         _.selectedCellIndex--;
-        _cells.splice(_.selectedCellIndex, 0, _.selectedCell);
+        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
       }
     };
     const mergeCellBelow = () => {
       let nextCell;
-      const cells = _cells();
+      const cells = _.cells();
       if (_.selectedCellIndex !== cells.length - 1) {
         nextCell = cells[_.selectedCellIndex + 1];
         if (_.selectedCell.type() === nextCell.type()) {
           nextCell.input(`${_.selectedCell.input()}\n${nextCell.input()}`);
-          removeCell(_, _cells);
+          removeCell(_, _.cells);
         }
       }
     };
@@ -165,11 +160,11 @@ export function notebook() {
       }
     };
     const undoLastDelete = () => {
-      if (_lastDeletedCell) {
-        insertCell(_.selectedCellIndex + 1, _lastDeletedCell);
+      if (_.lastDeletedCell) {
+        insertCell(_.selectedCellIndex + 1, _.lastDeletedCell);
       }
-      _lastDeletedCell = null;
-      return _lastDeletedCell;
+      _.lastDeletedCell = null;
+      return _.lastDeletedCell;
     };
     const runCell = () => {
       _.selectedCell.execute();
@@ -186,7 +181,7 @@ export function notebook() {
       return false;
     };
     const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-    const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_cells), error => {
+    const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
       if (error) {
         return _.alert(`Error saving notebook: ${error.message}`);
       }
@@ -273,7 +268,7 @@ export function notebook() {
       //   to resize themselves.
       //
       if (wereHidden) {
-        _ref = _cells();
+        _ref = _.cells();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cell = _ref[_i];
           cell.autoResize();
@@ -295,11 +290,10 @@ export function notebook() {
       return _.showClipboard();
     };
     function selectNextCell() {
-      const cells = _cells();
+      const cells = _.cells();
       if (_.selectedCellIndex !== cells.length - 1) {
         selectCell(
           _,
-          _cells,
           cells[_.selectedCellIndex + 1]
         );
       }
@@ -309,10 +303,9 @@ export function notebook() {
     const selectPreviousCell = () => {
       let cells;
       if (_.selectedCellIndex !== 0) {
-        cells = _cells();
+        cells = _.cells();
         selectCell(
           _,
-          _cells,
           cells[_.selectedCellIndex - 1]
         );
       }
@@ -396,7 +389,6 @@ export function notebook() {
           _renderers,
           _localName,
           _remoteName,
-          _cells,
           acceptLocalName,
           acceptRemoteName,
           acceptDoc
@@ -406,13 +398,12 @@ export function notebook() {
     const duplicateNotebook = () => {
       const duplicateNotebookLocalName = `Copy of ${_localName()}`;
       const duplicateNotebookRemoteName = null;
-      const duplicateNotebookDoc = serialize(_cells);
+      const duplicateNotebookDoc = serialize(_);
       return deserialize(
         _,
         _renderers,
         _localName,
         _remoteName,
-        _cells,
         duplicateNotebookLocalName,
         duplicateNotebookRemoteName,
         duplicateNotebookDoc
@@ -427,7 +418,6 @@ export function notebook() {
         _renderers,
         _localName,
         _remoteName,
-        _cells,
         openNotebookLocalName,
         openNotebookRemoteName,
         openNotebookDoc
@@ -448,7 +438,6 @@ export function notebook() {
           _renderers,
           _localName,
           _remoteName,
-          _cells,
           loadNotebookLocalName,
           loadNotebookRemoteName,
           loadNotebookDoc
@@ -469,7 +458,7 @@ export function notebook() {
       let cellIndex;
       let cells;
       _isRunningAll(true);
-      cells = _cells().slice(0);
+      cells = _.cells().slice(0);
       const cellCount = cells.length;
       cellIndex = 0;
       if (!fromBeginning) {
@@ -529,7 +518,7 @@ export function notebook() {
       let cell;
       let _i;
       let _len;
-      const _ref = _cells();
+      const _ref = _.cells();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cell = _ref[_i];
         cell.clear();
@@ -580,7 +569,7 @@ export function notebook() {
       ]),
       createMenuItem('Paste Cell Below', pasteCellBelow, ['v']),
       // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
-      createMenuItem('Delete Cell', deleteCell, [
+      createMenuItem('Delete Cell', deleteCell.bind(this, _), [
         'd',
         'd',
       ]),
@@ -730,7 +719,7 @@ export function notebook() {
         createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)),
         createTool('paste', 'Paste Cell Below (v)', pasteCellBelow),
         createTool('eraser', 'Clear Cell', clearCell),
-        createTool('trash-o', 'Delete Cell (d d)', deleteCell),
+        createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _)),
       ],
       [
         createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow),
@@ -1005,7 +994,7 @@ export function notebook() {
       setupMenus();
       Flow.Dataflow.link(_.load, loadNotebook);
       Flow.Dataflow.link(_.open, openNotebook);
-      Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _, _cells));
+      Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
       Flow.Dataflow.link(_.executeAllCells, executeAllCells);
       Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, type, input));
       Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, type, input));
@@ -1028,7 +1017,7 @@ export function notebook() {
       sidebar: _sidebar,
       status: _status,
       toolbar: _toolbar,
-      cells: _cells,
+      cells: _.cells,
       areInputsHidden: _areInputsHidden,
       areOutputsHidden: _areOutputsHidden,
       isSidebarHidden: _isSidebarHidden,
