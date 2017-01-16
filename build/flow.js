@@ -11277,6 +11277,11 @@
     return _.selectedCell.type('sca');
   }
 
+  function copyCell(_) {
+    _.clipboardCell = _.selectedCell;
+    return _.clipboardCell;
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11546,7 +11551,6 @@
     const __slice = [].slice;
     Flow.notebook = (_, _renderers) => {
       let menuCell;
-      let _clipboardCell;
       let _lastDeletedCell;
       const _localName = Flow.Dataflow.signal('Untitled Flow');
       Flow.Dataflow.react(_localName, name => {
@@ -11560,7 +11564,7 @@
       const _cells = Flow.Dataflow.signals([]);
       _.selectedCell = null;
       _.selectedCellIndex = -1;
-      _clipboardCell = null;
+      _.clipboardCell = null;
       _lastDeletedCell = null;
       const _areInputsHidden = Flow.Dataflow.signal(false);
       const _areOutputsHidden = Flow.Dataflow.signal(false);
@@ -11573,12 +11577,8 @@
       const _sidebar = flowSidebar(_, _cells);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const copyCell = () => {
-        _clipboardCell = _.selectedCell;
-        return _clipboardCell;
-      };
       const cutCell = () => {
-        copyCell();
+        copyCell(_);
         return removeCell();
       };
       const deleteCell = () => {
@@ -11681,13 +11681,13 @@
         }
       };
       const pasteCellAbove = () => {
-        if (_clipboardCell) {
-          return insertCell(_.selectedCellIndex, cloneCell(_, _renderers, _clipboardCell));
+        if (_.clipboardCell) {
+          return insertCell(_.selectedCellIndex, cloneCell(_, _renderers, _.clipboardCell));
         }
       };
       const pasteCellBelow = () => {
-        if (_clipboardCell) {
-          return insertCell(_.selectedCellIndex + 1, cloneCell(_, _renderers, _clipboardCell));
+        if (_.clipboardCell) {
+          return insertCell(_.selectedCellIndex + 1, cloneCell(_, _renderers, _.clipboardCell));
         }
       };
       const undoLastDelete = () => {
@@ -12043,7 +12043,7 @@
         action: null
       };
       const _menus = Flow.Dataflow.signal(null);
-      menuCell = [createMenuItem('Run Cell', runCell, ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell, ['c']), createMenuItem('Paste Cell Above', pasteCellAbove, ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow, ['v']),
+      menuCell = [createMenuItem('Run Cell', runCell, ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']), createMenuItem('Paste Cell Above', pasteCellAbove, ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow, ['v']),
       // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
       createMenuItem('Delete Cell', deleteCell, ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete, ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp, ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown, ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']),
       // TODO createMenuItem('Split Cell', splitCell),
@@ -12079,7 +12079,7 @@
           icon: `fa fa-${ icon }`
         };
       };
-      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown)], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell)], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
+      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown)], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell)], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
 
       // (From IPython Notebook keyboard shortcuts dialog)
       //

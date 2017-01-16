@@ -12,6 +12,7 @@ import { convertCellToHeading } from './convertCellToHeading';
 import { convertCellToMarkdown } from './convertCellToMarkdown';
 import { convertCellToRaw } from './convertCellToRaw';
 import { convertCellToScala } from './convertCellToScala';
+import { copyCell } from './copyCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -37,7 +38,6 @@ export function notebook() {
   const __slice = [].slice;
   Flow.notebook = (_, _renderers) => {
     let menuCell;
-    let _clipboardCell;
     let _lastDeletedCell;
     const _localName = Flow.Dataflow.signal('Untitled Flow');
     Flow.Dataflow.react(_localName, name => {
@@ -51,7 +51,7 @@ export function notebook() {
     const _cells = Flow.Dataflow.signals([]);
     _.selectedCell = null;
     _.selectedCellIndex = -1;
-    _clipboardCell = null;
+    _.clipboardCell = null;
     _lastDeletedCell = null;
     const _areInputsHidden = Flow.Dataflow.signal(false);
     const _areOutputsHidden = Flow.Dataflow.signal(false);
@@ -64,12 +64,8 @@ export function notebook() {
     const _sidebar = flowSidebar(_, _cells);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const copyCell = () => {
-      _clipboardCell = _.selectedCell;
-      return _clipboardCell;
-    };
     const cutCell = () => {
-      copyCell();
+      copyCell(_);
       return removeCell();
     };
     const deleteCell = () => {
@@ -187,13 +183,13 @@ export function notebook() {
       }
     };
     const pasteCellAbove = () => {
-      if (_clipboardCell) {
-        return insertCell(_.selectedCellIndex, cloneCell(_, _renderers, _clipboardCell));
+      if (_.clipboardCell) {
+        return insertCell(_.selectedCellIndex, cloneCell(_, _renderers, _.clipboardCell));
       }
     };
     const pasteCellBelow = () => {
-      if (_clipboardCell) {
-        return insertCell(_.selectedCellIndex + 1, cloneCell(_, _renderers, _clipboardCell));
+      if (_.clipboardCell) {
+        return insertCell(_.selectedCellIndex + 1, cloneCell(_, _renderers, _.clipboardCell));
       }
     };
     const undoLastDelete = () => {
@@ -605,7 +601,7 @@ export function notebook() {
       ]),
       menuDivider,
       createMenuItem('Cut Cell', cutCell, ['x']),
-      createMenuItem('Copy Cell', copyCell, ['c']),
+      createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']),
       createMenuItem('Paste Cell Above', pasteCellAbove, [
         'shift',
         'v',
@@ -759,7 +755,7 @@ export function notebook() {
       ],
       [
         createTool('cut', 'Cut Cell (x)', cutCell),
-        createTool('copy', 'Copy Cell (c)', copyCell),
+        createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)),
         createTool('paste', 'Paste Cell Below (v)', pasteCellBelow),
         createTool('eraser', 'Clear Cell', clearCell),
         createTool('trash-o', 'Delete Cell (d d)', deleteCell),
