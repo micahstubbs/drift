@@ -11698,6 +11698,10 @@
     return _areOutputsHidden(!_areOutputsHidden());
   }
 
+  function editName(_) {
+    return _.isEditingName(true);
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11864,9 +11868,8 @@
         return document.title;
       });
       _.remoteName = Flow.Dataflow.signal(null);
-      const _isEditingName = Flow.Dataflow.signal(false);
-      const editName = () => _isEditingName(true);
-      const saveName = () => _isEditingName(false);
+      _.isEditingName = Flow.Dataflow.signal(false);
+      const saveName = () => _.isEditingName(false);
       _.cells = Flow.Dataflow.signals([]);
       _.selectedCell = null;
       _.selectedCellIndex = -1;
@@ -12236,8 +12239,8 @@
       Flow.Dataflow.link(_.ready, initialize);
       return {
         name: _.localName,
-        isEditingName: _isEditingName,
-        editName,
+        isEditingName: _.isEditingName,
+        editName: editName.bind(this, _),
         saveName,
         menus: _menus,
         sidebar: _sidebar,
