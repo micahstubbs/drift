@@ -52,10 +52,10 @@ import displayDocumentation from './displayDocumentation';
 import displayFAQ from './displayFAQ';
 import executeCommand from './executeCommand';
 import displayAbout from './displayAbout';
+import shutdown from './shutdown';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
-import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
 
 import { flowStatus } from '../flowStatus';
 import { flowSidebar } from '../flowSidebar';
@@ -93,12 +93,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const shutdown = () => postShutdownRequest(_, (error, result) => {
-      if (error) {
-        return _.growl(`Shutdown failed: ${error.message}`, 'danger');
-      }
-      return _.growl('Shutdown complete!', 'warning');
-    });
     const showHelp = () => {
       _.isSidebarHidden(false);
       return _.showHelp();
@@ -375,7 +369,7 @@ export function notebook() {
           createMenuItem('Timeline', executeCommand(_, 'getTimeline')),
           // TODO UDP Drop Test
           // TODO Task Status
-          createMenuItem('Shut Down', shutdown),
+          createMenuItem('Shut Down', shutdown.bind(this, _)),
         ]),
         createMenu('Help', [
           // TODO createMenuItem('Tour', startTour, true),

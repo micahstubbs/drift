@@ -11782,6 +11782,15 @@
     return doPost(_, '/3/Shutdown', {}, go);
   }
 
+  function shutdown(_) {
+    return postShutdownRequest(_, (error, result) => {
+      if (error) {
+        return _.growl(`Shutdown failed: ${ error.message }`, 'danger');
+      }
+      return _.growl('Shutdown complete!', 'warning');
+    });
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -11961,12 +11970,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const shutdown = () => postShutdownRequest(_, (error, result) => {
-        if (error) {
-          return _.growl(`Shutdown failed: ${ error.message }`, 'danger');
-        }
-        return _.growl('Shutdown complete!', 'warning');
-      });
       const showHelp = () => {
         _.isSidebarHidden(false);
         return _.showHelp();
@@ -12131,7 +12134,7 @@
         createMenuItem('Profiler', executeCommand(_, 'getProfile depth: 10')), createMenuItem('Timeline', executeCommand(_, 'getTimeline')),
         // TODO UDP Drop Test
         // TODO Task Status
-        createMenuItem('Shut Down', shutdown)]), createMenu('Help', [
+        createMenuItem('Shut Down', shutdown.bind(this, _))]), createMenu('Help', [
         // TODO createMenuItem('Tour', startTour, true),
         createMenuItem('Assist Me', executeCommand(_, 'assist')), menuDivider, createMenuItem('Contents', showHelp), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider,
         // TODO Tutorial Flows
