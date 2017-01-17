@@ -41,6 +41,7 @@ import { promptForNotebook } from './promptForNotebook';
 import { uploadFile } from './uploadFile';
 import { toggleInput } from './toggleInput';
 import { toggleOutput } from './toggleOutput';
+import { toggleAllInputs } from './toggleAllInputs';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -84,26 +85,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const toggleAllInputs = () => {
-      let cell;
-      let _i;
-      let _len;
-      let _ref;
-      const wereHidden = _areInputsHidden();
-      _areInputsHidden(!wereHidden);
-      //
-      // If cells are generated while inputs are hidden, the input boxes
-      //   do not resize to fit contents. So explicitly ask all cells
-      //   to resize themselves.
-      //
-      if (wereHidden) {
-        _ref = _.cells();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          cell = _ref[_i];
-          cell.autoResize();
-        }
-      }
-    };
     const toggleAllOutputs = () => _areOutputsHidden(!_areOutputsHidden());
     const toggleSidebar = () => _isSidebarHidden(!_isSidebarHidden());
     const showBrowser = () => {
@@ -407,7 +388,7 @@ export function notebook() {
           createMenuItem('Run All Cells', runAllCells),
           createMenuItem('Run All Cells Below', continueRunningAllCells),
           menuDivider,
-          createMenuItem('Toggle All Cell Inputs', toggleAllInputs),
+          createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _, _areInputsHidden)),
           createMenuItem('Toggle All Cell Outputs', toggleAllOutputs),
           createMenuItem('Clear All Cell Outputs', clearAllCells),
           menuDivider,
