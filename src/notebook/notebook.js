@@ -87,10 +87,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const showOutline = () => {
-      _.isSidebarHidden(false);
-      return _.showOutline();
-    };
     const showClipboard = () => {
       _.isSidebarHidden(false);
       return _.showClipboard();
