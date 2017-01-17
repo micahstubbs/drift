@@ -11460,17 +11460,7 @@
   }
 
   function checkIfNameIsInUse(_, name, go) {
-    console.log('arguments from checkIfNameIsInUse', arguments);
     return getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-  }
-
-  function getObjectRequest(_, type, name, go) {
-    const urlString = `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`;
-    return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
-  }
-
-  function deleteObjectRequest(_, type, name, go) {
-    return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
   }
 
   function postPutObjectRequest(_, type, name, value, go) {
@@ -11480,6 +11470,36 @@
       uri += `/${ encodeURIComponent(name) }`;
     }
     return doPost(_, uri, { value: JSON.stringify(value, null, 2) }, unwrap(go, result => result.name));
+  }
+
+  function deleteObjectRequest(_, type, name, go) {
+    return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
+  }
+
+  function storeNotebook(_, _remoteName, _localName, localName, remoteName) {
+    return postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
+      if (error) {
+        return _.alert(`Error saving notebook: ${ error.message }`);
+      }
+      _remoteName(localName);
+      _localName(localName);
+
+      // renamed document
+      if (remoteName !== localName) {
+        return deleteObjectRequest(_, 'notebook', remoteName, error => {
+          if (error) {
+            _.alert(`Error deleting remote notebook [${ remoteName }]: ${ error.message }`);
+          }
+          return _.saved();
+        });
+      }
+      return _.saved();
+    });
+  }
+
+  function getObjectRequest(_, type, name, go) {
+    const urlString = `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`;
+    return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
   }
 
   function postShutdownRequest(_, go) {
@@ -11753,24 +11773,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
-        if (error) {
-          return _.alert(`Error saving notebook: ${ error.message }`);
-        }
-        _remoteName(localName);
-        _localName(localName);
-
-        // renamed document
-        if (remoteName !== localName) {
-          return deleteObjectRequest(_, 'notebook', remoteName, error => {
-            if (error) {
-              _.alert(`Error deleting remote notebook [${ remoteName }]: ${ error.message }`);
-            }
-            return _.saved();
-          });
-        }
-        return _.saved();
-      });
       const saveNotebook = () => {
         const localName = sanitizeName(_localName());
         if (localName === '') {
@@ -11780,7 +11782,7 @@
         // saved document
         const remoteName = _remoteName();
         if (remoteName) {
-          storeNotebook(localName, remoteName);
+          storeNotebook(_, _localName, _remoteName, localName, remoteName);
         }
         // unsaved document
         checkIfNameIsInUse(_, localName, isNameInUse => {
@@ -11790,11 +11792,11 @@
               declineCaption: 'Cancel'
             }, accept => {
               if (accept) {
-                return storeNotebook(localName, remoteName);
+                return storeNotebook(_, _localName, _remoteName, localName, remoteName);
               }
             });
           }
-          return storeNotebook(localName, remoteName);
+          return storeNotebook(_, _localName, _remoteName, localName, remoteName);
         });
       };
       const promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {

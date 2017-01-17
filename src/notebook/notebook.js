@@ -36,12 +36,11 @@ import { runCellAndInsertBelow } from './runCellAndInsertBelow';
 import { selectNextCell } from './selectNextCell';
 import { runCellAndSelectBelow } from './runCellAndSelectBelow';
 import { checkIfNameIsInUse } from './checkIfNameIsInUse';
+import { storeNotebook } from './storeNotebook';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 import { getObjectRequest } from '../h2oProxy/getObjectRequest';
-import { deleteObjectRequest } from '../h2oProxy/deleteObjectRequest';
-import { postPutObjectRequest } from '../h2oProxy/postPutObjectRequest';
 import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
 
 import { sanitizeName } from '../utils/sanitizeName';
@@ -86,24 +85,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
-      if (error) {
-        return _.alert(`Error saving notebook: ${error.message}`);
-      }
-      _remoteName(localName);
-      _localName(localName);
-
-      // renamed document
-      if (remoteName !== localName) {
-        return deleteObjectRequest(_, 'notebook', remoteName, error => {
-          if (error) {
-            _.alert(`Error deleting remote notebook [${remoteName}]: ${error.message}`);
-          }
-          return _.saved();
-        });
-      }
-      return _.saved();
-    });
     const saveNotebook = () => {
       const localName = sanitizeName(_localName());
       if (localName === '') {
@@ -113,7 +94,7 @@ export function notebook() {
       // saved document
       const remoteName = _remoteName();
       if (remoteName) {
-        storeNotebook(localName, remoteName);
+        storeNotebook(_, _localName, _remoteName, localName, remoteName);
       }
       // unsaved document
       checkIfNameIsInUse(_, localName, isNameInUse => {
@@ -123,11 +104,11 @@ export function notebook() {
             declineCaption: 'Cancel',
           }, accept => {
             if (accept) {
-              return storeNotebook(localName, remoteName);
+              return storeNotebook(_, _localName, _remoteName, localName, remoteName);
             }
           });
         }
-        return storeNotebook(localName, remoteName);
+        return storeNotebook(_, _localName, _remoteName, localName, remoteName);
       });
     };
     const promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
