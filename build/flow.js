@@ -11476,7 +11476,7 @@
     return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
   }
 
-  function storeNotebook(_, _remoteName, _localName, localName, remoteName) {
+  function storeNotebook(_, _localName, _remoteName, localName, remoteName) {
     return postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
       if (error) {
         return _.alert(`Error saving notebook: ${ error.message }`);
@@ -11494,6 +11494,33 @@
         });
       }
       return _.saved();
+    });
+  }
+
+  function saveNotebook(_) {
+    const localName = sanitizeName(_.localName());
+    if (localName === '') {
+      return _.alert('Invalid notebook name.');
+    }
+
+    // saved document
+    const remoteName = _.remoteName();
+    if (remoteName) {
+      storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
+    }
+    // unsaved document
+    checkIfNameIsInUse(_, localName, isNameInUse => {
+      if (isNameInUse) {
+        return _.confirm('A notebook with that name already exists.\nDo you want to replace it with the one you\'re saving?', {
+          acceptCaption: 'Replace',
+          declineCaption: 'Cancel'
+        }, accept => {
+          if (accept) {
+            return storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
+          }
+        });
+      }
+      return storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
     });
   }
 
@@ -11748,12 +11775,12 @@
     const __slice = [].slice;
     Flow.notebook = _ => {
       let menuCell;
-      const _localName = Flow.Dataflow.signal('Untitled Flow');
-      Flow.Dataflow.react(_localName, name => {
+      _.localName = Flow.Dataflow.signal('Untitled Flow');
+      Flow.Dataflow.react(_.localName, name => {
         document.title = `H2O${ name && name.trim() ? `- ${ name }` : '' }`;
         return document.title;
       });
-      const _remoteName = Flow.Dataflow.signal(null);
+      _.remoteName = Flow.Dataflow.signal(null);
       const _isEditingName = Flow.Dataflow.signal(false);
       const editName = () => _isEditingName(true);
       const saveName = () => _isEditingName(false);
@@ -11773,32 +11800,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const saveNotebook = () => {
-        const localName = sanitizeName(_localName());
-        if (localName === '') {
-          return _.alert('Invalid notebook name.');
-        }
-
-        // saved document
-        const remoteName = _remoteName();
-        if (remoteName) {
-          storeNotebook(_, _localName, _remoteName, localName, remoteName);
-        }
-        // unsaved document
-        checkIfNameIsInUse(_, localName, isNameInUse => {
-          if (isNameInUse) {
-            return _.confirm('A notebook with that name already exists.\nDo you want to replace it with the one you\'re saving?', {
-              acceptCaption: 'Replace',
-              declineCaption: 'Cancel'
-            }, accept => {
-              if (accept) {
-                return storeNotebook(_, _localName, _remoteName, localName, remoteName);
-              }
-            });
-          }
-          return storeNotebook(_, _localName, _remoteName, localName, remoteName);
-        });
-      };
       const promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
         let error;
         let filename;
@@ -11939,20 +11940,20 @@
             }]
           };
 
-          return deserialize(_, _localName, _remoteName, acceptLocalName, acceptRemoteName, acceptDoc);
+          return deserialize(_, _.localName, _.remoteName, acceptLocalName, acceptRemoteName, acceptDoc);
         }
       });
       const duplicateNotebook = () => {
-        const duplicateNotebookLocalName = `Copy of ${ _localName() }`;
+        const duplicateNotebookLocalName = `Copy of ${ _.localName() }`;
         const duplicateNotebookRemoteName = null;
         const duplicateNotebookDoc = serialize(_);
-        return deserialize(_, _localName, _remoteName, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
+        return deserialize(_, _.localName, _.remoteName, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
       };
       const openNotebook = (name, doc) => {
         const openNotebookLocalName = name;
         const openNotebookRemoteName = null;
         const openNotebookDoc = doc;
-        return deserialize(_, _localName, _remoteName, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
+        return deserialize(_, _.localName, _.remoteName, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
       };
       function loadNotebook(name) {
         return getObjectRequest(_, 'notebook', name, (error, doc) => {
@@ -11964,12 +11965,12 @@
           const loadNotebookLocalName = name;
           const loadNotebookRemoteName = name;
           const loadNotebookDoc = doc;
-          return deserialize(_, _localName, _remoteName, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
+          return deserialize(_, _.localName, _.remoteName, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
         });
       }
 
       const exportNotebook = () => {
-        const remoteName = _remoteName();
+        const remoteName = _.remoteName();
         if (remoteName) {
           return window.open(`/3/NodePersistentStorage.bin/notebook/${ remoteName }`, '_blank');
         }
@@ -12091,7 +12092,7 @@
       }
       const initializeMenus = builder => {
         const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$56.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
-        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook, ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
+        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
         // TODO Cluster I/O
         createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')),
         // TODO UDP Drop Test
@@ -12114,7 +12115,7 @@
           icon: `fa fa-${ icon }`
         };
       };
-      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
+      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
 
       // (From IPython Notebook keyboard shortcuts dialog)
       //
@@ -12216,7 +12217,7 @@
       };
       Flow.Dataflow.link(_.ready, initialize);
       return {
-        name: _localName,
+        name: _.localName,
         isEditingName: _isEditingName,
         editName,
         saveName,

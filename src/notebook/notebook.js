@@ -35,15 +35,12 @@ import { runCell } from './runCell';
 import { runCellAndInsertBelow } from './runCellAndInsertBelow';
 import { selectNextCell } from './selectNextCell';
 import { runCellAndSelectBelow } from './runCellAndSelectBelow';
-import { checkIfNameIsInUse } from './checkIfNameIsInUse';
-import { storeNotebook } from './storeNotebook';
+import { saveNotebook } from './saveNotebook';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 import { getObjectRequest } from '../h2oProxy/getObjectRequest';
 import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
-
-import { sanitizeName } from '../utils/sanitizeName';
 
 import { flowStatus } from '../flowStatus';
 import { flowSidebar } from '../flowSidebar';
@@ -60,12 +57,12 @@ export function notebook() {
   const __slice = [].slice;
   Flow.notebook = (_) => {
     let menuCell;
-    const _localName = Flow.Dataflow.signal('Untitled Flow');
-    Flow.Dataflow.react(_localName, name => {
+    _.localName = Flow.Dataflow.signal('Untitled Flow');
+    Flow.Dataflow.react(_.localName, name => {
       document.title = `H2O${(name && name.trim() ? `- ${name}` : '')}`;
       return document.title;
     });
-    const _remoteName = Flow.Dataflow.signal(null);
+    _.remoteName = Flow.Dataflow.signal(null);
     const _isEditingName = Flow.Dataflow.signal(false);
     const editName = () => _isEditingName(true);
     const saveName = () => _isEditingName(false);
@@ -85,32 +82,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const saveNotebook = () => {
-      const localName = sanitizeName(_localName());
-      if (localName === '') {
-        return _.alert('Invalid notebook name.');
-      }
-
-      // saved document
-      const remoteName = _remoteName();
-      if (remoteName) {
-        storeNotebook(_, _localName, _remoteName, localName, remoteName);
-      }
-      // unsaved document
-      checkIfNameIsInUse(_, localName, isNameInUse => {
-        if (isNameInUse) {
-          return _.confirm('A notebook with that name already exists.\nDo you want to replace it with the one you\'re saving?', {
-            acceptCaption: 'Replace',
-            declineCaption: 'Cancel',
-          }, accept => {
-            if (accept) {
-              return storeNotebook(_, _localName, _remoteName, localName, remoteName);
-            }
-          });
-        }
-        return storeNotebook(_, _localName, _remoteName, localName, remoteName);
-      });
-    };
     const promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
       let error;
       let filename;
@@ -261,8 +232,8 @@ export function notebook() {
 
         return deserialize(
           _,
-          _localName,
-          _remoteName,
+          _.localName,
+          _.remoteName,
           acceptLocalName,
           acceptRemoteName,
           acceptDoc
@@ -270,13 +241,13 @@ export function notebook() {
       }
     });
     const duplicateNotebook = () => {
-      const duplicateNotebookLocalName = `Copy of ${_localName()}`;
+      const duplicateNotebookLocalName = `Copy of ${_.localName()}`;
       const duplicateNotebookRemoteName = null;
       const duplicateNotebookDoc = serialize(_);
       return deserialize(
         _,
-        _localName,
-        _remoteName,
+        _.localName,
+        _.remoteName,
         duplicateNotebookLocalName,
         duplicateNotebookRemoteName,
         duplicateNotebookDoc
@@ -288,8 +259,8 @@ export function notebook() {
       const openNotebookDoc = doc;
       return deserialize(
         _,
-        _localName,
-        _remoteName,
+        _.localName,
+        _.remoteName,
         openNotebookLocalName,
         openNotebookRemoteName,
         openNotebookDoc
@@ -307,8 +278,8 @@ export function notebook() {
         const loadNotebookDoc = doc;
         return deserialize(
           _,
-          _localName,
-          _remoteName,
+          _.localName,
+          _.remoteName,
           loadNotebookLocalName,
           loadNotebookRemoteName,
           loadNotebookDoc
@@ -317,7 +288,7 @@ export function notebook() {
     }
 
     const exportNotebook = () => {
-      const remoteName = _remoteName();
+      const remoteName = _.remoteName();
       if (remoteName) {
         return window.open(`/3/NodePersistentStorage.bin/notebook/${remoteName}`, '_blank');
       }
@@ -485,7 +456,7 @@ export function notebook() {
         createMenu('Flow', [
           createMenuItem('New Flow', createNotebook),
           createMenuItem('Open Flow...', promptForNotebook),
-          createMenuItem('Save Flow', saveNotebook, ['s']),
+          createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']),
           createMenuItem('Make a Copy...', duplicateNotebook),
           menuDivider,
           createMenuItem('Run All Cells', runAllCells),
@@ -578,7 +549,7 @@ export function notebook() {
       [
         createTool('file-o', 'New', createNotebook),
         createTool('folder-open-o', 'Open', promptForNotebook),
-        createTool('save', 'Save (s)', saveNotebook),
+        createTool('save', 'Save (s)', saveNotebook.bind(this, _)),
       ],
       [
         createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow),
@@ -880,7 +851,7 @@ export function notebook() {
     };
     Flow.Dataflow.link(_.ready, initialize);
     return {
-      name: _localName,
+      name: _.localName,
       isEditingName: _isEditingName,
       editName,
       saveName,
