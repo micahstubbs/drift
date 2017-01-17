@@ -55,6 +55,7 @@ import displayAbout from './displayAbout';
 import shutdown from './shutdown';
 import showHelp from './showHelp';
 import createNotebook from './createNotebook';
+import duplicateNotebook from './duplicateNotebook';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -95,17 +96,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const duplicateNotebook = () => {
-      const duplicateNotebookLocalName = `Copy of ${_.localName()}`;
-      const duplicateNotebookRemoteName = null;
-      const duplicateNotebookDoc = serialize(_);
-      return deserialize(
-        _,
-        duplicateNotebookLocalName,
-        duplicateNotebookRemoteName,
-        duplicateNotebookDoc
-      );
-    };
     const openNotebook = (name, doc) => {
       const openNotebookLocalName = name;
       const openNotebookRemoteName = null;
@@ -287,7 +277,7 @@ export function notebook() {
           createMenuItem('New Flow', createNotebook.bind(this, _)),
           createMenuItem('Open Flow...', promptForNotebook.bind(this, _)),
           createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']),
-          createMenuItem('Make a Copy...', duplicateNotebook),
+          createMenuItem('Make a Copy...', duplicateNotebook.bind(this, _)),
           menuDivider,
           createMenuItem('Run All Cells', runAllCells),
           createMenuItem('Run All Cells Below', continueRunningAllCells),
