@@ -11330,6 +11330,10 @@
     return insertCell(_, _.cells().length, cell);
   }
 
+  function insertCellBelow(_, _renderers, type, input) {
+    return insertBelow(_, createCell(_, _renderers, type, input));
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11624,7 +11628,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const insertCellBelow = (type, input) => insertBelow(_, createCell(_, _renderers, type, input));
       const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
       const insertNewCellBelow = () => insertBelow(_, createCell(_, _renderers, 'cs'));
       const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, _renderers, 'sca'));
@@ -12181,7 +12184,7 @@
         Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
         Flow.Dataflow.link(_.executeAllCells, executeAllCells);
         Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, type, input));
-        Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, type, input));
+        Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, _, _renderers, type, input));
         Flow.Dataflow.link(_.saved, () => _.growl('Notebook saved.'));
         Flow.Dataflow.link(_.loaded, () => _.growl('Notebook loaded.'));
         executeCommand('assist')();

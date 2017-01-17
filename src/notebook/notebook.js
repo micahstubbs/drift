@@ -20,6 +20,7 @@ import { insertAbove } from './insertAbove';
 import { insertCell } from './insertCell';
 import { insertBelow } from './insertBelow';
 import { appendCell } from './appendCell';
+import { insertCellBelow } from './insertCellBelow';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -70,7 +71,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const insertCellBelow = (type, input) => insertBelow(_, createCell(_, _renderers, type, input));
     const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
     const insertNewCellBelow = () => insertBelow(_, createCell(_, _renderers, 'cs'));
     const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, _renderers, 'sca'));
@@ -989,7 +989,7 @@ export function notebook() {
       Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
       Flow.Dataflow.link(_.executeAllCells, executeAllCells);
       Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, type, input));
-      Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, type, input));
+      Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, _, _renderers, type, input));
       Flow.Dataflow.link(_.saved, () => _.growl('Notebook saved.'));
       Flow.Dataflow.link(_.loaded, () => _.growl('Notebook loaded.'));
       executeCommand('assist')();
