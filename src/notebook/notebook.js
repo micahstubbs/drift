@@ -26,7 +26,7 @@ import { insertNewScalaCellBelow } from './insertNewScalaCellBelow';
 import { appendCellAndRun } from './appendCellAndRun';
 import { moveCellDown } from './moveCellDown';
 import { moveCellUp } from './moveCellUp';
-import { mergeCellBelow } from './mergeCellBelow'
+import { mergeCellBelow } from './mergeCellBelow';
 import { splitCell } from './splitCell';
 import { pasteCellAbove } from './pasteCellAbove';
 import { pasteCellBelow } from './pasteCellBelow';
@@ -36,15 +36,15 @@ import { runCellAndInsertBelow } from './runCellAndInsertBelow';
 import { selectNextCell } from './selectNextCell';
 import { runCellAndSelectBelow } from './runCellAndSelectBelow';
 import { saveNotebook } from './saveNotebook';
+import { loadNotebook } from './loadNotebook';
+import { promptForNotebook } from './promptForNotebook';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
-import { getObjectRequest } from '../h2oProxy/getObjectRequest';
 import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
 
 import { flowStatus } from '../flowStatus';
 import { flowSidebar } from '../flowSidebar';
-import { flowFileOpenDialog } from '../flowFileOpenDialog';
 import { flowFileUploadDialog } from '../flowFileUploadDialog';
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -82,21 +82,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
-      let error;
-      let filename;
-      let _ref;
-      if (result) {
-        error = result.error;
-        filename = result.filename;
-        if (error) {
-          _ref = error.message;
-          return _.growl(_ref != null ? _ref : error);
-        }
-        loadNotebook(filename);
-        return _.loaded();
-      }
-    });
     const uploadFile = () => _.dialog(flowFileUploadDialog, result => {
       let error;
       let _ref;
@@ -260,25 +245,6 @@ export function notebook() {
         openNotebookDoc
       );
     };
-    function loadNotebook(name) {
-      return getObjectRequest(_, 'notebook', name, (error, doc) => {
-        let _ref;
-        if (error) {
-          _ref = error.message;
-          return _.alert((_ref) != null ? _ref : error);
-        }
-        const loadNotebookLocalName = name;
-        const loadNotebookRemoteName = name;
-        const loadNotebookDoc = doc;
-        return deserialize(
-          _,
-          loadNotebookLocalName,
-          loadNotebookRemoteName,
-          loadNotebookDoc
-        );
-      });
-    }
-
     const exportNotebook = () => {
       const remoteName = _.remoteName();
       if (remoteName) {
@@ -447,7 +413,7 @@ export function notebook() {
       return [
         createMenu('Flow', [
           createMenuItem('New Flow', createNotebook),
-          createMenuItem('Open Flow...', promptForNotebook),
+          createMenuItem('Open Flow...', promptForNotebook.bind(this, _)),
           createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']),
           createMenuItem('Make a Copy...', duplicateNotebook),
           menuDivider,
@@ -540,7 +506,7 @@ export function notebook() {
     const _toolbar = [
       [
         createTool('file-o', 'New', createNotebook),
-        createTool('folder-open-o', 'Open', promptForNotebook),
+        createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)),
         createTool('save', 'Save (s)', saveNotebook.bind(this, _)),
       ],
       [
@@ -826,7 +792,7 @@ export function notebook() {
     const initialize = () => {
       setupKeyboardHandling('normal');
       setupMenus();
-      Flow.Dataflow.link(_.load, loadNotebook);
+      Flow.Dataflow.link(_.load, loadNotebook.bind(this, _));
       Flow.Dataflow.link(_.open, openNotebook);
       Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
       Flow.Dataflow.link(_.executeAllCells, executeAllCells);

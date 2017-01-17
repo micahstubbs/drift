@@ -11529,6 +11529,96 @@
     return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
   }
 
+  function loadNotebook(_, name) {
+    return getObjectRequest(_, 'notebook', name, (error, doc) => {
+      let _ref;
+      if (error) {
+        _ref = error.message;
+        return _.alert(_ref != null ? _ref : error);
+      }
+      const loadNotebookLocalName = name;
+      const loadNotebookRemoteName = name;
+      const loadNotebookDoc = doc;
+      return deserialize(_, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
+    });
+  }
+
+  function doUpload(_, path, formData, go) {
+    return http(_, 'UPLOAD', path, formData, go);
+  }
+
+  function postUploadObjectRequest(_, type, name, formData, go) {
+    let uri;
+    uri = `/3/NodePersistentStorage.bin/${ encodeURIComponent(type) }`;
+    if (name) {
+      uri += `/${ encodeURIComponent(name) }`;
+    }
+    return doUpload(_, uri, formData, unwrap(go, result => result.name));
+  }
+
+  function flowFileOpenDialog(_, _go) {
+    const Flow = window.Flow;
+    const H2O = window.H2O;
+    const _overwrite = Flow.Dataflow.signal(false);
+    const _form = Flow.Dataflow.signal(null);
+    const _file = Flow.Dataflow.signal(null);
+    const _canAccept = Flow.Dataflow.lift(_file, file => {
+      if (file != null ? file.name : void 0) {
+        return validateFileExtension(file.name, '.flow');
+      }
+      return false;
+    });
+    const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
+    const uploadFile = basename => postUploadObjectRequest(_, 'notebook', basename, new FormData(_form()), (error, filename) => _go({
+      error,
+      filename
+    }));
+    const accept = () => {
+      let basename;
+      const file = _file();
+      if (file) {
+        basename = getFileBaseName(file.name, '.flow');
+        if (_overwrite()) {
+          return uploadFile(basename);
+        }
+        return checkIfNameIsInUse(basename, isNameInUse => {
+          if (isNameInUse) {
+            return _overwrite(true);
+          }
+          return uploadFile(basename);
+        });
+      }
+    };
+    const decline = () => _go(null);
+    return {
+      form: _form,
+      file: _file,
+      overwrite: _overwrite,
+      canAccept: _canAccept,
+      accept,
+      decline,
+      template: 'file-open-dialog'
+    };
+  }
+
+  function promptForNotebook(_) {
+    return _.dialog(flowFileOpenDialog, result => {
+      let error;
+      let filename;
+      let _ref;
+      if (result) {
+        error = result.error;
+        filename = result.filename;
+        if (error) {
+          _ref = error.message;
+          return _.growl(_ref != null ? _ref : error);
+        }
+        loadNotebook(_, filename);
+        return _.loaded();
+      }
+    });
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11679,64 +11769,6 @@
     };
   }
 
-  function doUpload(_, path, formData, go) {
-    return http(_, 'UPLOAD', path, formData, go);
-  }
-
-  function postUploadObjectRequest(_, type, name, formData, go) {
-    let uri;
-    uri = `/3/NodePersistentStorage.bin/${ encodeURIComponent(type) }`;
-    if (name) {
-      uri += `/${ encodeURIComponent(name) }`;
-    }
-    return doUpload(_, uri, formData, unwrap(go, result => result.name));
-  }
-
-  function flowFileOpenDialog(_, _go) {
-    const Flow = window.Flow;
-    const H2O = window.H2O;
-    const _overwrite = Flow.Dataflow.signal(false);
-    const _form = Flow.Dataflow.signal(null);
-    const _file = Flow.Dataflow.signal(null);
-    const _canAccept = Flow.Dataflow.lift(_file, file => {
-      if (file != null ? file.name : void 0) {
-        return validateFileExtension(file.name, '.flow');
-      }
-      return false;
-    });
-    const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
-    const uploadFile = basename => postUploadObjectRequest(_, 'notebook', basename, new FormData(_form()), (error, filename) => _go({
-      error,
-      filename
-    }));
-    const accept = () => {
-      let basename;
-      const file = _file();
-      if (file) {
-        basename = getFileBaseName(file.name, '.flow');
-        if (_overwrite()) {
-          return uploadFile(basename);
-        }
-        return checkIfNameIsInUse(basename, isNameInUse => {
-          if (isNameInUse) {
-            return _overwrite(true);
-          }
-          return uploadFile(basename);
-        });
-      }
-    };
-    const decline = () => _go(null);
-    return {
-      form: _form,
-      file: _file,
-      overwrite: _overwrite,
-      canAccept: _canAccept,
-      accept,
-      decline,
-      template: 'file-open-dialog'
-    };
-  }
-
   function postUploadFileRequest(_, key, formData, go) {
     return doUpload(_, `/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
   }
@@ -11800,21 +11832,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const promptForNotebook = () => _.dialog(flowFileOpenDialog, result => {
-        let error;
-        let filename;
-        let _ref;
-        if (result) {
-          error = result.error;
-          filename = result.filename;
-          if (error) {
-            _ref = error.message;
-            return _.growl(_ref != null ? _ref : error);
-          }
-          loadNotebook(filename);
-          return _.loaded();
-        }
-      });
       const uploadFile = () => _.dialog(flowFileUploadDialog, result => {
         let error;
         let _ref;
@@ -11955,20 +11972,6 @@
         const openNotebookDoc = doc;
         return deserialize(_, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
       };
-      function loadNotebook(name) {
-        return getObjectRequest(_, 'notebook', name, (error, doc) => {
-          let _ref;
-          if (error) {
-            _ref = error.message;
-            return _.alert(_ref != null ? _ref : error);
-          }
-          const loadNotebookLocalName = name;
-          const loadNotebookRemoteName = name;
-          const loadNotebookDoc = doc;
-          return deserialize(_, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
-        });
-      }
-
       const exportNotebook = () => {
         const remoteName = _.remoteName();
         if (remoteName) {
@@ -12092,7 +12095,7 @@
       }
       const initializeMenus = builder => {
         const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$56.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
-        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
+        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook.bind(this, _)), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
         // TODO Cluster I/O
         createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')),
         // TODO UDP Drop Test
@@ -12115,7 +12118,7 @@
           icon: `fa fa-${ icon }`
         };
       };
-      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
+      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
 
       // (From IPython Notebook keyboard shortcuts dialog)
       //
@@ -12200,7 +12203,7 @@
       const initialize = () => {
         setupKeyboardHandling('normal');
         setupMenus();
-        Flow.Dataflow.link(_.load, loadNotebook);
+        Flow.Dataflow.link(_.load, loadNotebook.bind(this, _));
         Flow.Dataflow.link(_.open, openNotebook);
         Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
         Flow.Dataflow.link(_.executeAllCells, executeAllCells);
