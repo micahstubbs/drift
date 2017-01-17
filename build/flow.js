@@ -11346,6 +11346,10 @@
     return insertAbove(_, createCell(_, 'sca'));
   }
 
+  function insertNewScalaCellBelow(_) {
+    return insertBelow(_, createCell(_, 'sca'));
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11640,7 +11644,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, 'sca'));
       const insertCellAboveAndRun = (type, input) => {
         const cell = insertAbove(_, createCell(_, type, input));
         cell.execute();
