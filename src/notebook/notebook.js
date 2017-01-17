@@ -40,6 +40,7 @@ import { loadNotebook } from './loadNotebook';
 import { promptForNotebook } from './promptForNotebook';
 import { uploadFile } from './uploadFile';
 import { toggleInput } from './toggleInput';
+import { toggleOutput } from './toggleOutput';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -83,7 +84,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const toggleOutput = () => _.selectedCell.toggleOutput();
     const toggleAllInputs = () => {
       let cell;
       let _i;
@@ -378,7 +378,7 @@ export function notebook() {
       // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
       menuDivider,
       createMenuItem('Toggle Cell Input', toggleInput.bind(this, _)),
-      createMenuItem('Toggle Cell Output', toggleOutput, ['o']),
+      createMenuItem('Toggle Cell Output', toggleOutput.bind(this, _), ['o']),
       createMenuItem('Clear Cell Output', clearCell),
     ];
     const menuCellSW = [
