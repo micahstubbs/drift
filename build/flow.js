@@ -11476,13 +11476,13 @@
     return doDelete(_, `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`, go);
   }
 
-  function storeNotebook(_, _localName, _remoteName, localName, remoteName) {
+  function storeNotebook(_, localName, remoteName) {
     return postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
       if (error) {
         return _.alert(`Error saving notebook: ${ error.message }`);
       }
-      _remoteName(localName);
-      _localName(localName);
+      _.remoteName(localName);
+      _.localName(localName);
 
       // renamed document
       if (remoteName !== localName) {
@@ -11506,7 +11506,7 @@
     // saved document
     const remoteName = _.remoteName();
     if (remoteName) {
-      storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
+      storeNotebook(_, localName, remoteName);
     }
     // unsaved document
     checkIfNameIsInUse(_, localName, isNameInUse => {
@@ -11516,11 +11516,11 @@
           declineCaption: 'Cancel'
         }, accept => {
           if (accept) {
-            return storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
+            return storeNotebook(_, localName, remoteName);
           }
         });
       }
-      return storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
+      return storeNotebook(_, localName, remoteName);
     });
   }
 

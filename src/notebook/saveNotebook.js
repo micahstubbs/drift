@@ -12,7 +12,7 @@ export function saveNotebook(_) {
       // saved document
   const remoteName = _.remoteName();
   if (remoteName) {
-    storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
+    storeNotebook(_, localName, remoteName);
   }
       // unsaved document
   checkIfNameIsInUse(_, localName, isNameInUse => {
@@ -22,10 +22,10 @@ export function saveNotebook(_) {
         declineCaption: 'Cancel',
       }, accept => {
         if (accept) {
-          return storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
+          return storeNotebook(_, localName, remoteName);
         }
       });
     }
-    return storeNotebook(_, _.localName, _.remoteName, localName, remoteName);
+    return storeNotebook(_, localName, remoteName);
   });
 }
