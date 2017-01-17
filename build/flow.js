@@ -11773,6 +11773,11 @@
     return () => _.insertAndExecuteCell('cs', command);
   }
 
+  function displayAbout() {
+    const $ = window.jQuery;
+    return $('#aboutDialog').modal();
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11956,7 +11961,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const displayAbout = () => $('#aboutDialog').modal();
       const shutdown = () => postShutdownRequest(_, (error, result) => {
         if (error) {
           return _.growl(`Shutdown failed: ${ error.message }`, 'danger');

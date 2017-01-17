@@ -51,6 +51,7 @@ import displayKeyboardShortcuts from './displayKeyboardShortcuts';
 import displayDocumentation from './displayDocumentation';
 import displayFAQ from './displayFAQ';
 import executeCommand from './executeCommand';
+import displayAbout from './displayAbout';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -92,7 +93,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const displayAbout = () => $('#aboutDialog').modal();
     const shutdown = () => postShutdownRequest(_, (error, result) => {
       if (error) {
         return _.growl(`Shutdown failed: ${error.message}`, 'danger');
