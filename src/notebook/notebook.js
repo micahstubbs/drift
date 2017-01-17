@@ -75,11 +75,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const insertCellAboveAndRun = (type, input) => {
-      const cell = insertAbove(_, createCell(_, type, input));
-      cell.execute();
-      return cell;
-    };
     const insertCellBelowAndRun = (type, input) => {
       const cell = insertBelow(_, createCell(_, type, input));
       cell.execute();
