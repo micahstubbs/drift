@@ -3,7 +3,6 @@ import { serialize } from './serialize';
 import { deserialize } from './deserialize';
 import { createCell } from './createCell';
 import { checkConsistency } from './checkConsistency';
-import { cloneCell } from './cloneCell';
 import { selectCell } from './selectCell';
 import { switchToCommandMode } from './switchToCommandMode';
 import { switchToEditMode } from './switchToEditMode';
@@ -30,6 +29,7 @@ import { moveCellUp } from './moveCellUp';
 import { mergeCellBelow } from './mergeCellBelow';
 import { splitCell } from './splitCell';
 import { pasteCellAbove } from './pasteCellAbove';
+import { pasteCellBelow } from './pasteCellBelow';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -80,11 +80,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const pasteCellBelow = () => {
-      if (_.clipboardCell) {
-        return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _.clipboardCell));
-      }
-    };
     const undoLastDelete = () => {
       if (_.lastDeletedCell) {
         insertCell(_, _.selectedCellIndex + 1, _.lastDeletedCell);
@@ -489,7 +484,7 @@ export function notebook() {
         'shift',
         'v',
       ]),
-      createMenuItem('Paste Cell Below', pasteCellBelow, ['v']),
+      createMenuItem('Paste Cell Below', pasteCellBelow.bind(this, _), ['v']),
       // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
       createMenuItem('Delete Cell', deleteCell.bind(this, _), [
         'd',
@@ -639,7 +634,7 @@ export function notebook() {
       [
         createTool('cut', 'Cut Cell (x)', cutCell),
         createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)),
-        createTool('paste', 'Paste Cell Below (v)', pasteCellBelow),
+        createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)),
         createTool('eraser', 'Clear Cell', clearCell),
         createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _)),
       ],
