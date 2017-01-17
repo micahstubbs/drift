@@ -23,7 +23,7 @@ export function deserialize(
     const _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       cell = _ref[_i];
-      _results.push(createCell(_, _renderers, cell.type, cell.input));
+      _results.push(createCell(_, cell.type, cell.input));
     }
     return _results;
   })();

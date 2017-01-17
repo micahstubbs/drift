@@ -11150,14 +11150,14 @@
     return self;
   }
 
-  function createCell(_, _renderers, type, input) {
+  function createCell(_, type, input) {
     if (type == null) {
       type = 'cs';
     }
     if (input == null) {
       input = '';
     }
-    return flowCell(_, _renderers, type, input);
+    return flowCell(_, _.renderers, type, input);
   }
 
   function checkConsistency(_cells) {
@@ -11221,7 +11221,7 @@
       const _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cell = _ref[_i];
-        _results.push(createCell(_, _renderers, cell.type, cell.input));
+        _results.push(createCell(_, cell.type, cell.input));
       }
       return _results;
     })();
@@ -11239,7 +11239,7 @@
   }
 
   function cloneCell(_, _renderers, cell) {
-    return createCell(_, _renderers, cell.type(), cell.input());
+    return createCell(_, cell.type(), cell.input());
   }
 
   function switchToCommandMode(_) {
@@ -11331,11 +11331,11 @@
   }
 
   function insertCellBelow(_, _renderers, type, input) {
-    return insertBelow(_, createCell(_, _renderers, type, input));
+    return insertBelow(_, createCell(_, type, input));
   }
 
   function insertNewCellAbove(_) {
-    return insertAbove(_, createCell(_, _.renderers, 'cs'));
+    return insertAbove(_, createCell(_, 'cs'));
   }
 
   function getObjectExistsRequest(_, type, name, go) {
@@ -11633,21 +11633,21 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const insertNewCellBelow = () => insertBelow(_, createCell(_, _.renderers, 'cs'));
-      const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, _.renderers, 'sca'));
-      const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, _.renderers, 'sca'));
+      const insertNewCellBelow = () => insertBelow(_, createCell(_, 'cs'));
+      const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, 'sca'));
+      const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, 'sca'));
       const insertCellAboveAndRun = (type, input) => {
-        const cell = insertAbove(_, createCell(_, _.renderers, type, input));
+        const cell = insertAbove(_, createCell(_, type, input));
         cell.execute();
         return cell;
       };
       const insertCellBelowAndRun = (type, input) => {
-        const cell = insertBelow(_, createCell(_, _.renderers, type, input));
+        const cell = insertBelow(_, createCell(_, type, input));
         cell.execute();
         return cell;
       };
       const appendCellAndRun = (type, input) => {
-        const cell = appendCell(_, createCell(_, _.renderers, type, input));
+        const cell = appendCell(_, createCell(_, type, input));
         console.log('cell from appendCellAndRun', cell);
         cell.execute();
         return cell;
@@ -11693,7 +11693,7 @@
               left = input.substr(0, cursorPosition);
               right = input.substr(cursorPosition);
               _.selectedCell.input(left);
-              insertCell(_, _.selectedCellIndex + 1, createCell(_, _.renderers, 'cs', right));
+              insertCell(_, _.selectedCellIndex + 1, createCell(_, 'cs', right));
               _.selectedCell.isActive(true);
             }
           }
