@@ -11624,7 +11624,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const insertCellAbove = (type, input) => insertAbove(_, createCell(_, _renderers, type, input));
       const insertCellBelow = (type, input) => insertBelow(_, createCell(_, _renderers, type, input));
       const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
       const insertNewCellBelow = () => insertBelow(_, createCell(_, _renderers, 'cs'));
