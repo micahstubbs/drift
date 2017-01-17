@@ -7,5 +7,5 @@ export function createCell(_, type, input) {
   if (input == null) {
     input = '';
   }
-  return flowCell(_, _.renderers, type, input);
+  return flowCell(_, type, input);
 }
