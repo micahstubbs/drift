@@ -11720,6 +11720,11 @@
     return false;
   }
 
+  function displayKeyboardShortcuts() {
+    const $ = window.jQuery;
+    return $('#keyboardHelpDialog').modal();
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11903,7 +11908,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
       const findBuildProperty = caption => {
         let entry;
         if (Flow.BuildProperties) {

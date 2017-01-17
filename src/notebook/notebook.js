@@ -47,6 +47,7 @@ import { editName } from './editName';
 import { saveName } from './saveName';
 import { toggleSidebar } from './toggleSidebar';
 import selectPreviousCell from './selectPreviousCell';
+import displayKeyboardShortcuts from './displayKeyboardShortcuts';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -88,7 +89,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
     const findBuildProperty = caption => {
       let entry;
       if (Flow.BuildProperties) {
