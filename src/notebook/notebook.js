@@ -46,6 +46,7 @@ import { toggleAllOutputs } from './toggleAllOutputs';
 import { editName } from './editName';
 import { saveName } from './saveName';
 import { toggleSidebar } from './toggleSidebar';
+import selectPreviousCell from './selectPreviousCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -87,18 +88,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const selectPreviousCell = () => {
-      let cells;
-      if (_.selectedCellIndex !== 0) {
-        cells = _.cells();
-        selectCell(
-          _,
-          cells[_.selectedCellIndex - 1]
-        );
-      }
-      // prevent arrow keys from scrolling the page
-      return false;
-    };
     const displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
     const findBuildProperty = caption => {
       let entry;

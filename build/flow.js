@@ -11710,6 +11710,16 @@
     return _.isSidebarHidden(!_.isSidebarHidden());
   }
 
+  function selectPreviousCell(_) {
+    let cells;
+    if (_.selectedCellIndex !== 0) {
+      cells = _.cells();
+      selectCell(_, cells[_.selectedCellIndex - 1]);
+    }
+    // prevent arrow keys from scrolling the page
+    return false;
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11893,15 +11903,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const selectPreviousCell = () => {
-        let cells;
-        if (_.selectedCellIndex !== 0) {
-          cells = _.cells();
-          selectCell(_, cells[_.selectedCellIndex - 1]);
-        }
-        // prevent arrow keys from scrolling the page
-        return false;
-      };
       const displayKeyboardShortcuts = () => $('#keyboardHelpDialog').modal();
       const findBuildProperty = caption => {
         let entry;
