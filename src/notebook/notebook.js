@@ -986,7 +986,7 @@ export function notebook() {
       Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
       Flow.Dataflow.link(_.executeAllCells, executeAllCells);
       Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, type, input));
-      Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, _, _.renderers, type, input));
+      Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, _, type, input));
       Flow.Dataflow.link(_.saved, () => _.growl('Notebook saved.'));
       Flow.Dataflow.link(_.loaded, () => _.growl('Notebook loaded.'));
       executeCommand('assist')();
