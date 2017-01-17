@@ -11791,6 +11791,11 @@
     });
   }
 
+  function showHelp(_) {
+    _.isSidebarHidden(false);
+    return _.showHelp();
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -11970,10 +11975,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const showHelp = () => {
-        _.isSidebarHidden(false);
-        return _.showHelp();
-      };
       const createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
         acceptCaption: 'Create New Notebook',
         declineCaption: 'Cancel'
@@ -12136,7 +12137,7 @@
         // TODO Task Status
         createMenuItem('Shut Down', shutdown.bind(this, _))]), createMenu('Help', [
         // TODO createMenuItem('Tour', startTour, true),
-        createMenuItem('Assist Me', executeCommand(_, 'assist')), menuDivider, createMenuItem('Contents', showHelp), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider,
+        createMenuItem('Assist Me', executeCommand(_, 'assist')), menuDivider, createMenuItem('Contents', showHelp.bind(this, _)), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider,
         // TODO Tutorial Flows
         createMenuItem('About', displayAbout)])];
       };

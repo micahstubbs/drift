@@ -53,6 +53,7 @@ import displayFAQ from './displayFAQ';
 import executeCommand from './executeCommand';
 import displayAbout from './displayAbout';
 import shutdown from './shutdown';
+import showHelp from './showHelp';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -93,10 +94,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const showHelp = () => {
-      _.isSidebarHidden(false);
-      return _.showHelp();
-    };
     const createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
       acceptCaption: 'Create New Notebook',
       declineCaption: 'Cancel',
@@ -375,7 +372,7 @@ export function notebook() {
           // TODO createMenuItem('Tour', startTour, true),
           createMenuItem('Assist Me', executeCommand(_, 'assist')),
           menuDivider,
-          createMenuItem('Contents', showHelp),
+          createMenuItem('Contents', showHelp.bind(this, _)),
           createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']),
           menuDivider,
           createMenuItem('Documentation', displayDocumentation),
