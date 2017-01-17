@@ -11338,6 +11338,10 @@
     return insertAbove(_, createCell(_, 'cs'));
   }
 
+  function insertNewCellBelow(_) {
+    return insertBelow(_, createCell(_, 'cs'));
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11632,7 +11636,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const insertNewCellBelow = () => insertBelow(_, createCell(_, 'cs'));
       const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, 'sca'));
       const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, 'sca'));
       const insertCellAboveAndRun = (type, input) => {
@@ -11720,7 +11723,7 @@
         return false;
       };
       const runCellAndInsertBelow = () => {
-        _.selectedCell.execute(() => insertNewCellBelow());
+        _.selectedCell.execute(() => insertNewCellBelow(_));
         return false;
       };
       // ipython has inconsistent behavior here.

@@ -22,6 +22,7 @@ import { insertBelow } from './insertBelow';
 import { appendCell } from './appendCell';
 import { insertCellBelow } from './insertCellBelow';
 import { insertNewCellAbove } from './insertNewCellAbove';
+import { insertNewCellBelow } from './insertNewCellBelow';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -72,7 +73,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const insertNewCellBelow = () => insertBelow(_, createCell(_, 'cs'));
     const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, 'sca'));
     const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, 'sca'));
     const insertCellAboveAndRun = (type, input) => {
@@ -163,7 +163,7 @@ export function notebook() {
       return false;
     };
     const runCellAndInsertBelow = () => {
-      _.selectedCell.execute(() => insertNewCellBelow());
+      _.selectedCell.execute(() => insertNewCellBelow(_));
       return false;
     };
     // ipython has inconsistent behavior here.
