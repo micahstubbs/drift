@@ -23,6 +23,7 @@ import { appendCell } from './appendCell';
 import { insertCellBelow } from './insertCellBelow';
 import { insertNewCellAbove } from './insertNewCellAbove';
 import { insertNewCellBelow } from './insertNewCellBelow';
+import { insertNewScalaCellAbove } from './insertNewScalaCellAbove';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -73,7 +74,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, 'sca'));
     const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, 'sca'));
     const insertCellAboveAndRun = (type, input) => {
       const cell = insertAbove(_, createCell(_, type, input));
