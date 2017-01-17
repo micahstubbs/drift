@@ -28,11 +28,7 @@ export function deserialize(
     return _results;
   })();
   _.cells(cells);
-  selectCell(
-    _,
-    _.cells,
-    lodash.head(cells)
-  );
+  selectCell(_, lodash.head(cells));
 
       // Execute all non-code cells (headings, markdown, etc.)
   const _ref = _.cells();

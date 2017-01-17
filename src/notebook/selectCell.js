@@ -20,7 +20,7 @@ export function selectCell(
     _.selectedCell.isSelected(false);
   }
   _.selectedCell = target;
-      // TODO also set focus so that tabs don't jump to the first cell
+  // TODO also set focus so that tabs don't jump to the first cell
   _.selectedCell.isSelected(true);
   _.selectedCellIndex = _.cells.indexOf(_.selectedCell);
   checkConsistency(_.cells);

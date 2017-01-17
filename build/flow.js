@@ -11184,6 +11184,7 @@
   }
 
   function selectCell(_, target, scrollIntoView, scrollImmediately) {
+    console.log('arguments from selectCell', arguments);
     const lodash = window._;
     if (scrollIntoView == null) {
       scrollIntoView = true;
@@ -11226,7 +11227,7 @@
       return _results;
     })();
     _.cells(cells);
-    selectCell(_, _.cells, lodash.head(cells));
+    selectCell(_, lodash.head(cells));
 
     // Execute all non-code cells (headings, markdown, etc.)
     const _ref = _.cells();
@@ -11310,6 +11311,16 @@
   function deleteCell(_) {
     _.lastDeletedCell = _.selectedCell;
     return removeCell(_);
+  }
+
+  function insertCell(_, index, cell) {
+    _.cells.splice(index, 0, cell);
+    selectCell(_, cell);
+    return cell;
+  }
+
+  function insertAbove(_, cell) {
+    return insertCell(_, _.selectedCellIndex, cell);
   }
 
   function getObjectExistsRequest(_, type, name, go) {
@@ -11606,22 +11617,16 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const insertCell = (index, cell) => {
-        _.cells.splice(index, 0, cell);
-        selectCell(_, cell);
-        return cell;
-      };
-      const insertAbove = cell => insertCell(_.selectedCellIndex, cell);
-      const insertBelow = cell => insertCell(_.selectedCellIndex + 1, cell);
-      const appendCell = cell => insertCell(_.cells().length, cell);
-      const insertCellAbove = (type, input) => insertAbove(createCell(_, _renderers, type, input));
+      const insertBelow = cell => insertCell(_, _.selectedCellIndex + 1, cell);
+      const appendCell = cell => insertCell(_, _.cells().length, cell);
+      const insertCellAbove = (type, input) => insertAbove(_, createCell(_, _renderers, type, input));
       const insertCellBelow = (type, input) => insertBelow(createCell(_, _renderers, type, input));
-      const insertNewCellAbove = () => insertAbove(createCell(_, _renderers, 'cs'));
+      const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
       const insertNewCellBelow = () => insertBelow(createCell(_, _renderers, 'cs'));
-      const insertNewScalaCellAbove = () => insertAbove(createCell(_, _renderers, 'sca'));
+      const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, _renderers, 'sca'));
       const insertNewScalaCellBelow = () => insertBelow(createCell(_, _renderers, 'sca'));
       const insertCellAboveAndRun = (type, input) => {
-        const cell = insertAbove(createCell(_, _renderers, type, input));
+        const cell = insertAbove(_, createCell(_, _renderers, type, input));
         cell.execute();
         return cell;
       };
@@ -11677,7 +11682,7 @@
               left = input.substr(0, cursorPosition);
               right = input.substr(cursorPosition);
               _.selectedCell.input(left);
-              insertCell(_.selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
+              insertCell(_, _.selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
               _.selectedCell.isActive(true);
             }
           }
@@ -11685,17 +11690,17 @@
       };
       const pasteCellAbove = () => {
         if (_.clipboardCell) {
-          return insertCell(_.selectedCellIndex, cloneCell(_, _renderers, _.clipboardCell));
+          return insertCell(_, _.selectedCellIndex, cloneCell(_, _renderers, _.clipboardCell));
         }
       };
       const pasteCellBelow = () => {
         if (_.clipboardCell) {
-          return insertCell(_.selectedCellIndex + 1, cloneCell(_, _renderers, _.clipboardCell));
+          return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _renderers, _.clipboardCell));
         }
       };
       const undoLastDelete = () => {
         if (_.lastDeletedCell) {
-          insertCell(_.selectedCellIndex + 1, _.lastDeletedCell);
+          insertCell(_, _.selectedCellIndex + 1, _.lastDeletedCell);
         }
         _.lastDeletedCell = null;
         return _.lastDeletedCell;

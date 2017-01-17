@@ -16,6 +16,8 @@ import { copyCell } from './copyCell';
 import { cutCell } from './cutCell';
 import { removeCell } from './removeCell';
 import { deleteCell } from './deleteCell';
+import { insertAbove } from './insertAbove';
+import { insertCell } from './insertCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -66,25 +68,16 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const insertCell = (index, cell) => {
-      _.cells.splice(index, 0, cell);
-      selectCell(
-        _,
-        cell
-      );
-      return cell;
-    };
-    const insertAbove = cell => insertCell(_.selectedCellIndex, cell);
-    const insertBelow = cell => insertCell(_.selectedCellIndex + 1, cell);
-    const appendCell = cell => insertCell(_.cells().length, cell);
-    const insertCellAbove = (type, input) => insertAbove(createCell(_, _renderers, type, input));
+    const insertBelow = cell => insertCell(_, _.selectedCellIndex + 1, cell);
+    const appendCell = cell => insertCell(_, _.cells().length, cell);
+    const insertCellAbove = (type, input) => insertAbove(_, createCell(_, _renderers, type, input));
     const insertCellBelow = (type, input) => insertBelow(createCell(_, _renderers, type, input));
-    const insertNewCellAbove = () => insertAbove(createCell(_, _renderers, 'cs'));
+    const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
     const insertNewCellBelow = () => insertBelow(createCell(_, _renderers, 'cs'));
-    const insertNewScalaCellAbove = () => insertAbove(createCell(_, _renderers, 'sca'));
+    const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, _renderers, 'sca'));
     const insertNewScalaCellBelow = () => insertBelow(createCell(_, _renderers, 'sca'));
     const insertCellAboveAndRun = (type, input) => {
-      const cell = insertAbove(createCell(_, _renderers, type, input));
+      const cell = insertAbove(_, createCell(_, _renderers, type, input));
       cell.execute();
       return cell;
     };
@@ -143,7 +136,7 @@ export function notebook() {
             left = input.substr(0, cursorPosition);
             right = input.substr(cursorPosition);
             _.selectedCell.input(left);
-            insertCell(_.selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
+            insertCell(_, _.selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
             _.selectedCell.isActive(true);
           }
         }
@@ -151,17 +144,17 @@ export function notebook() {
     };
     const pasteCellAbove = () => {
       if (_.clipboardCell) {
-        return insertCell(_.selectedCellIndex, cloneCell(_, _renderers, _.clipboardCell));
+        return insertCell(_, _.selectedCellIndex, cloneCell(_, _renderers, _.clipboardCell));
       }
     };
     const pasteCellBelow = () => {
       if (_.clipboardCell) {
-        return insertCell(_.selectedCellIndex + 1, cloneCell(_, _renderers, _.clipboardCell));
+        return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _renderers, _.clipboardCell));
       }
     };
     const undoLastDelete = () => {
       if (_.lastDeletedCell) {
-        insertCell(_.selectedCellIndex + 1, _.lastDeletedCell);
+        insertCell(_, _.selectedCellIndex + 1, _.lastDeletedCell);
       }
       _.lastDeletedCell = null;
       return _.lastDeletedCell;
