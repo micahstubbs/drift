@@ -11207,13 +11207,13 @@
     }
   }
 
-  function deserialize(_, _localName, _remoteName, localName, remoteName, doc) {
+  function deserialize(_, localName, remoteName, doc) {
     const lodash = window._;
     let cell;
     let _i;
     let _len;
-    _localName(localName);
-    _remoteName(remoteName);
+    _.localName(localName);
+    _.remoteName(remoteName);
     const cells = (() => {
       let _i;
       let _len;
@@ -11940,20 +11940,20 @@
             }]
           };
 
-          return deserialize(_, _.localName, _.remoteName, acceptLocalName, acceptRemoteName, acceptDoc);
+          return deserialize(_, acceptLocalName, acceptRemoteName, acceptDoc);
         }
       });
       const duplicateNotebook = () => {
         const duplicateNotebookLocalName = `Copy of ${ _.localName() }`;
         const duplicateNotebookRemoteName = null;
         const duplicateNotebookDoc = serialize(_);
-        return deserialize(_, _.localName, _.remoteName, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
+        return deserialize(_, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
       };
       const openNotebook = (name, doc) => {
         const openNotebookLocalName = name;
         const openNotebookRemoteName = null;
         const openNotebookDoc = doc;
-        return deserialize(_, _.localName, _.remoteName, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
+        return deserialize(_, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
       };
       function loadNotebook(name) {
         return getObjectRequest(_, 'notebook', name, (error, doc) => {
@@ -11965,7 +11965,7 @@
           const loadNotebookLocalName = name;
           const loadNotebookRemoteName = name;
           const loadNotebookDoc = doc;
-          return deserialize(_, _.localName, _.remoteName, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
+          return deserialize(_, loadNotebookLocalName, loadNotebookRemoteName, loadNotebookDoc);
         });
       }
 

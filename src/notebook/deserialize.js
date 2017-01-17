@@ -3,8 +3,6 @@ import { selectCell } from './selectCell';
 
 export function deserialize(
   _,
-  _localName,
-  _remoteName,
   localName,
   remoteName,
   doc
@@ -13,8 +11,8 @@ export function deserialize(
   let cell;
   let _i;
   let _len;
-  _localName(localName);
-  _remoteName(remoteName);
+  _.localName(localName);
+  _.remoteName(remoteName);
   const cells = (() => {
     let _i;
     let _len;

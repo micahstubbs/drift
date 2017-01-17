@@ -26,7 +26,7 @@ import { insertNewScalaCellBelow } from './insertNewScalaCellBelow';
 import { appendCellAndRun } from './appendCellAndRun';
 import { moveCellDown } from './moveCellDown';
 import { moveCellUp } from './moveCellUp';
-import { mergeCellBelow } from './mergeCellBelow';
+import { mergeCellBelow } from './mergeCellBelow'
 import { splitCell } from './splitCell';
 import { pasteCellAbove } from './pasteCellAbove';
 import { pasteCellBelow } from './pasteCellBelow';
@@ -232,8 +232,6 @@ export function notebook() {
 
         return deserialize(
           _,
-          _.localName,
-          _.remoteName,
           acceptLocalName,
           acceptRemoteName,
           acceptDoc
@@ -246,8 +244,6 @@ export function notebook() {
       const duplicateNotebookDoc = serialize(_);
       return deserialize(
         _,
-        _.localName,
-        _.remoteName,
         duplicateNotebookLocalName,
         duplicateNotebookRemoteName,
         duplicateNotebookDoc
@@ -259,8 +255,6 @@ export function notebook() {
       const openNotebookDoc = doc;
       return deserialize(
         _,
-        _.localName,
-        _.remoteName,
         openNotebookLocalName,
         openNotebookRemoteName,
         openNotebookDoc
@@ -278,8 +272,6 @@ export function notebook() {
         const loadNotebookDoc = doc;
         return deserialize(
           _,
-          _.localName,
-          _.remoteName,
           loadNotebookLocalName,
           loadNotebookRemoteName,
           loadNotebookDoc
