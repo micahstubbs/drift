@@ -11725,6 +11725,20 @@
     return $('#keyboardHelpDialog').modal();
   }
 
+  function findBuildProperty(caption) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    let entry;
+    if (Flow.BuildProperties) {
+      entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption);
+      if (entry) {
+        return entry.value;
+      }
+      return void 0;
+    }
+    return void 0;
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11908,17 +11922,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const findBuildProperty = caption => {
-        let entry;
-        if (Flow.BuildProperties) {
-          entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption);
-          if (entry) {
-            return entry.value;
-          }
-          return void 0;
-        }
-        return void 0;
-      };
       const getBuildProperties = () => {
         const projectVersion = findBuildProperty('H2O Build project version');
         return [findBuildProperty('H2O Build git branch'), projectVersion, projectVersion ? lodash.last(projectVersion.split('.')) : void 0, findBuildProperty('H2O Build git hash') || 'master'];

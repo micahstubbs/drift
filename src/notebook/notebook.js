@@ -48,6 +48,7 @@ import { saveName } from './saveName';
 import { toggleSidebar } from './toggleSidebar';
 import selectPreviousCell from './selectPreviousCell';
 import displayKeyboardShortcuts from './displayKeyboardShortcuts';
+import findBuildProperty from './findBuildProperty';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -89,17 +90,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const findBuildProperty = caption => {
-      let entry;
-      if (Flow.BuildProperties) {
-        entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption);
-        if (entry) {
-          return entry.value;
-        }
-        return void 0;
-      }
-      return void 0;
-    };
     const getBuildProperties = () => {
       const projectVersion = findBuildProperty('H2O Build project version');
       return [
