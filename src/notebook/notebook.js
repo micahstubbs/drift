@@ -42,6 +42,7 @@ import { uploadFile } from './uploadFile';
 import { toggleInput } from './toggleInput';
 import { toggleOutput } from './toggleOutput';
 import { toggleAllInputs } from './toggleAllInputs';
+import { toggleAllOutputs } from './toggleAllOutputs';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -85,7 +86,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const toggleAllOutputs = () => _areOutputsHidden(!_areOutputsHidden());
     const toggleSidebar = () => _isSidebarHidden(!_isSidebarHidden());
     const showBrowser = () => {
       _isSidebarHidden(false);
@@ -389,7 +389,7 @@ export function notebook() {
           createMenuItem('Run All Cells Below', continueRunningAllCells),
           menuDivider,
           createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _, _areInputsHidden)),
-          createMenuItem('Toggle All Cell Outputs', toggleAllOutputs),
+          createMenuItem('Toggle All Cell Outputs', toggleAllOutputs.bind(this, _areOutputsHidden)),
           createMenuItem('Clear All Cell Outputs', clearAllCells),
           menuDivider,
           createMenuItem('Download this Flow...', exportNotebook),
