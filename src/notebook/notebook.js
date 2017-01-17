@@ -44,6 +44,7 @@ import { toggleOutput } from './toggleOutput';
 import { toggleAllInputs } from './toggleAllInputs';
 import { toggleAllOutputs } from './toggleAllOutputs';
 import { editName } from './editName';
+import { saveName } from './saveName';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -69,7 +70,6 @@ export function notebook() {
     });
     _.remoteName = Flow.Dataflow.signal(null);
     _.isEditingName = Flow.Dataflow.signal(false);
-    const saveName = () => _.isEditingName(false);
     _.cells = Flow.Dataflow.signals([]);
     _.selectedCell = null;
     _.selectedCellIndex = -1;
@@ -780,7 +780,7 @@ export function notebook() {
       name: _.localName,
       isEditingName: _.isEditingName,
       editName: editName.bind(this, _),
-      saveName,
+      saveName: saveName.bind(this, _),
       menus: _menus,
       sidebar: _sidebar,
       status: _status,

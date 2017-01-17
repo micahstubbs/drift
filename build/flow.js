@@ -11702,6 +11702,10 @@
     return _.isEditingName(true);
   }
 
+  function saveName(_) {
+    return _.isEditingName(false);
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11869,7 +11873,6 @@
       });
       _.remoteName = Flow.Dataflow.signal(null);
       _.isEditingName = Flow.Dataflow.signal(false);
-      const saveName = () => _.isEditingName(false);
       _.cells = Flow.Dataflow.signals([]);
       _.selectedCell = null;
       _.selectedCellIndex = -1;
@@ -12241,7 +12244,7 @@
         name: _.localName,
         isEditingName: _.isEditingName,
         editName: editName.bind(this, _),
-        saveName,
+        saveName: saveName.bind(this, _),
         menus: _menus,
         sidebar: _sidebar,
         status: _status,
