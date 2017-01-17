@@ -29,6 +29,7 @@ import { moveCellDown } from './moveCellDown';
 import { moveCellUp } from './moveCellUp';
 import { mergeCellBelow } from './mergeCellBelow';
 import { splitCell } from './splitCell';
+import { pasteCellAbove } from './pasteCellAbove';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -79,11 +80,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const pasteCellAbove = () => {
-      if (_.clipboardCell) {
-        return insertCell(_, _.selectedCellIndex, cloneCell(_, _.clipboardCell));
-      }
-    };
     const pasteCellBelow = () => {
       if (_.clipboardCell) {
         return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _.clipboardCell));
@@ -489,7 +485,7 @@ export function notebook() {
       menuDivider,
       createMenuItem('Cut Cell', cutCell, ['x']),
       createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']),
-      createMenuItem('Paste Cell Above', pasteCellAbove, [
+      createMenuItem('Paste Cell Above', pasteCellAbove.bind(this, _), [
         'shift',
         'v',
       ]),
