@@ -11706,6 +11706,10 @@
     return _.isEditingName(false);
   }
 
+  function toggleSidebar(_) {
+    return _.isSidebarHidden(!_.isSidebarHidden());
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11880,7 +11884,7 @@
       _.lastDeletedCell = null;
       const _areInputsHidden = Flow.Dataflow.signal(false);
       const _areOutputsHidden = Flow.Dataflow.signal(false);
-      const _isSidebarHidden = Flow.Dataflow.signal(false);
+      _.isSidebarHidden = Flow.Dataflow.signal(false);
       const _isRunningAll = Flow.Dataflow.signal(false);
       const _runningCaption = Flow.Dataflow.signal('Running');
       const _runningPercent = Flow.Dataflow.signal('0%');
@@ -11889,17 +11893,16 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const toggleSidebar = () => _isSidebarHidden(!_isSidebarHidden());
       const showBrowser = () => {
-        _isSidebarHidden(false);
+        _.isSidebarHidden(false);
         return _.showBrowser();
       };
       const showOutline = () => {
-        _isSidebarHidden(false);
+        _.isSidebarHidden(false);
         return _.showOutline();
       };
       const showClipboard = () => {
-        _isSidebarHidden(false);
+        _.isSidebarHidden(false);
         return _.showClipboard();
       };
       const selectPreviousCell = () => {
@@ -11958,7 +11961,7 @@
         return _.growl('Shutdown complete!', 'warning');
       });
       const showHelp = () => {
-        _isSidebarHidden(false);
+        _.isSidebarHidden(false);
         return _.showHelp();
       };
       const createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
@@ -12252,13 +12255,13 @@
         cells: _.cells,
         areInputsHidden: _areInputsHidden,
         areOutputsHidden: _areOutputsHidden,
-        isSidebarHidden: _isSidebarHidden,
+        isSidebarHidden: _.isSidebarHidden,
         isRunningAll: _isRunningAll,
         runningCaption: _runningCaption,
         runningPercent: _runningPercent,
         runningCellInput: _runningCellInput,
         stopRunningAll,
-        toggleSidebar,
+        toggleSidebar: toggleSidebar.bind(this, _),
         shortcutsHelp: {
           normalMode: normalModeKeyboardShortcutsHelp,
           editMode: editModeKeyboardShortcutsHelp

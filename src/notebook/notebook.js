@@ -45,6 +45,7 @@ import { toggleAllInputs } from './toggleAllInputs';
 import { toggleAllOutputs } from './toggleAllOutputs';
 import { editName } from './editName';
 import { saveName } from './saveName';
+import { toggleSidebar } from './toggleSidebar';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -77,7 +78,7 @@ export function notebook() {
     _.lastDeletedCell = null;
     const _areInputsHidden = Flow.Dataflow.signal(false);
     const _areOutputsHidden = Flow.Dataflow.signal(false);
-    const _isSidebarHidden = Flow.Dataflow.signal(false);
+    _.isSidebarHidden = Flow.Dataflow.signal(false);
     const _isRunningAll = Flow.Dataflow.signal(false);
     const _runningCaption = Flow.Dataflow.signal('Running');
     const _runningPercent = Flow.Dataflow.signal('0%');
@@ -86,17 +87,16 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const toggleSidebar = () => _isSidebarHidden(!_isSidebarHidden());
     const showBrowser = () => {
-      _isSidebarHidden(false);
+      _.isSidebarHidden(false);
       return _.showBrowser();
     };
     const showOutline = () => {
-      _isSidebarHidden(false);
+      _.isSidebarHidden(false);
       return _.showOutline();
     };
     const showClipboard = () => {
-      _isSidebarHidden(false);
+      _.isSidebarHidden(false);
       return _.showClipboard();
     };
     const selectPreviousCell = () => {
@@ -163,7 +163,7 @@ export function notebook() {
       return _.growl('Shutdown complete!', 'warning');
     });
     const showHelp = () => {
-      _isSidebarHidden(false);
+      _.isSidebarHidden(false);
       return _.showHelp();
     };
     const createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
@@ -788,13 +788,13 @@ export function notebook() {
       cells: _.cells,
       areInputsHidden: _areInputsHidden,
       areOutputsHidden: _areOutputsHidden,
-      isSidebarHidden: _isSidebarHidden,
+      isSidebarHidden: _.isSidebarHidden,
       isRunningAll: _isRunningAll,
       runningCaption: _runningCaption,
       runningPercent: _runningPercent,
       runningCellInput: _runningCellInput,
       stopRunningAll,
-      toggleSidebar,
+      toggleSidebar: toggleSidebar.bind(this, _),
       shortcutsHelp: {
         normalMode: normalModeKeyboardShortcutsHelp,
         editMode: editModeKeyboardShortcutsHelp,
