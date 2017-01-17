@@ -11665,6 +11665,10 @@
     });
   }
 
+  function toggleInput(_) {
+    return _.selectedCell.toggleInput();
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11850,7 +11854,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const toggleInput = () => _.selectedCell.toggleInput();
       const toggleOutput = () => _.selectedCell.toggleOutput();
       const toggleAllInputs = () => {
         let cell;
@@ -12093,7 +12096,7 @@
       // TODO createMenuItem('Split Cell', splitCell),
       // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
       // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
-      menuDivider, createMenuItem('Toggle Cell Input', toggleInput), createMenuItem('Toggle Cell Output', toggleOutput, ['o']), createMenuItem('Clear Cell Output', clearCell)];
+      menuDivider, createMenuItem('Toggle Cell Input', toggleInput.bind(this, _)), createMenuItem('Toggle Cell Output', toggleOutput, ['o']), createMenuItem('Clear Cell Output', clearCell)];
       const menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow)];
       if (_.onSparklingWater) {
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
