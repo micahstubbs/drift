@@ -38,6 +38,7 @@ import { runCellAndSelectBelow } from './runCellAndSelectBelow';
 import { saveNotebook } from './saveNotebook';
 import { loadNotebook } from './loadNotebook';
 import { promptForNotebook } from './promptForNotebook';
+import { uploadFile } from './uploadFile';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -45,7 +46,6 @@ import { postShutdownRequest } from '../h2oProxy/postShutdownRequest';
 
 import { flowStatus } from '../flowStatus';
 import { flowSidebar } from '../flowSidebar';
-import { flowFileUploadDialog } from '../flowFileUploadDialog';
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -82,19 +82,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const uploadFile = () => _.dialog(flowFileUploadDialog, result => {
-      let error;
-      let _ref;
-      if (result) {
-        error = result.error;
-        if (error) {
-          _ref = error.message;
-          return _.growl((_ref) != null ? _ref : error);
-        }
-        _.growl('File uploaded successfully!');
-        return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${flowPrelude.stringify(result.result.destination_frame)}]`);
-      }
-    });
     const toggleInput = () => _.selectedCell.toggleInput();
     const toggleOutput = () => _.selectedCell.toggleOutput();
     const toggleAllInputs = () => {
@@ -429,7 +416,7 @@ export function notebook() {
         createMenu('Cell', menuCell),
         createMenu('Data', [
           createMenuItem('Import Files...', executeCommand('importFiles')),
-          createMenuItem('Upload File...', uploadFile),
+          createMenuItem('Upload File...', uploadFile.bind(this, _)),
           createMenuItem('Split Frame...', executeCommand('splitFrame')),
           createMenuItem('Merge Frames...', executeCommand('mergeFrames')),
           menuDivider,

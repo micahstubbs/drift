@@ -11619,6 +11619,52 @@
     });
   }
 
+  function postUploadFileRequest(_, key, formData, go) {
+    return doUpload(_, `/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
+  }
+
+  function flowFileUploadDialog(_, _go) {
+    const Flow = window.Flow;
+    const _form = Flow.Dataflow.signal(null);
+    const _file = Flow.Dataflow.signal(null);
+    const uploadFile = key => postUploadFileRequest(_, key, new FormData(_form()), (error, result) => _go({
+      error,
+      result
+    }));
+    const accept = () => {
+      const file = _file();
+      if (file) {
+        return uploadFile(file.name);
+      }
+    };
+    const decline = () => _go(null);
+    return {
+      form: _form,
+      file: _file,
+      accept,
+      decline,
+      template: 'file-upload-dialog'
+    };
+  }
+
+  const flowPrelude$57 = flowPreludeFunction();
+
+  function uploadFile(_) {
+    return _.dialog(flowFileUploadDialog, result => {
+      let error;
+      let _ref;
+      if (result) {
+        error = result.error;
+        if (error) {
+          _ref = error.message;
+          return _.growl(_ref != null ? _ref : error);
+        }
+        _.growl('File uploaded successfully!');
+        return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$57.stringify(result.result.destination_frame) }]`);
+      }
+    });
+  }
+
   function postShutdownRequest(_, go) {
     return doPost(_, '/3/Shutdown', {}, go);
   }
@@ -11769,34 +11815,6 @@
     };
   }
 
-  function postUploadFileRequest(_, key, formData, go) {
-    return doUpload(_, `/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
-  }
-
-  function flowFileUploadDialog(_, _go) {
-    const Flow = window.Flow;
-    const _form = Flow.Dataflow.signal(null);
-    const _file = Flow.Dataflow.signal(null);
-    const uploadFile = key => postUploadFileRequest(_, key, new FormData(_form()), (error, result) => _go({
-      error,
-      result
-    }));
-    const accept = () => {
-      const file = _file();
-      if (file) {
-        return uploadFile(file.name);
-      }
-    };
-    const decline = () => _go(null);
-    return {
-      form: _form,
-      file: _file,
-      accept,
-      decline,
-      template: 'file-upload-dialog'
-    };
-  }
-
   const flowPrelude$56 = flowPreludeFunction();
 
   function notebook() {
@@ -11832,19 +11850,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const uploadFile = () => _.dialog(flowFileUploadDialog, result => {
-        let error;
-        let _ref;
-        if (result) {
-          error = result.error;
-          if (error) {
-            _ref = error.message;
-            return _.growl(_ref != null ? _ref : error);
-          }
-          _.growl('File uploaded successfully!');
-          return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$56.stringify(result.result.destination_frame) }]`);
-        }
-      });
       const toggleInput = () => _.selectedCell.toggleInput();
       const toggleOutput = () => _.selectedCell.toggleOutput();
       const toggleAllInputs = () => {
@@ -12095,7 +12100,7 @@
       }
       const initializeMenus = builder => {
         const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(`buildModel ${ flowPrelude$56.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand('getModels')), createMenuItem('List Grid Search Results', executeCommand('getGrids')), createMenuItem('Import Model...', executeCommand('importModel')), createMenuItem('Export Model...', executeCommand('exportModel'))]);
-        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook.bind(this, _)), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
+        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook.bind(this, _)), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand('importFiles')), createMenuItem('Upload File...', uploadFile.bind(this, _)), createMenuItem('Split Frame...', executeCommand('splitFrame')), createMenuItem('Merge Frames...', executeCommand('mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand('getFrames')), menuDivider, createMenuItem('Impute...', executeCommand('imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand('predict')), createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand('getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand('getJobs')), createMenuItem('Cluster Status', executeCommand('getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand('getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')), createMenuItem('Stack Trace', executeCommand('getStackTrace')), createMenuItem('Network Test', executeCommand('testNetwork')),
         // TODO Cluster I/O
         createMenuItem('Profiler', executeCommand('getProfile depth: 10')), createMenuItem('Timeline', executeCommand('getTimeline')),
         // TODO UDP Drop Test
@@ -12277,7 +12282,7 @@
     };
   }
 
-  const flowPrelude$57 = flowPreludeFunction();
+  const flowPrelude$58 = flowPreludeFunction();
 
   function clipboard() {
     const lodash = window._;
@@ -12304,7 +12309,7 @@
         }
         const execute = () => _.insertAndExecuteCell(_type, _input);
         const insert = () => _.insertCell(_type, _input);
-        flowPrelude$57.remove = () => {
+        flowPrelude$58.remove = () => {
           if (_canRemove) {
             return removeClip(_list, self);
           }
@@ -12314,7 +12319,7 @@
           input: _input,
           execute,
           insert,
-          remove: flowPrelude$57.remove,
+          remove: flowPrelude$58.remove,
           canRemove: _canRemove
         };
         return self;
@@ -12601,7 +12606,7 @@
     return requestWithOpts(_, '/3/Typeahead/files', opts, go);
   }
 
-  const flowPrelude$58 = flowPreludeFunction();
+  const flowPrelude$59 = flowPreludeFunction();
 
   function h2oProxy(_) {
     const lodash = window._;
