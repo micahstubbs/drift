@@ -32,6 +32,7 @@ import { pasteCellAbove } from './pasteCellAbove';
 import { pasteCellBelow } from './pasteCellBelow';
 import { undoLastDelete } from './undoLastDelete';
 import { runCell } from './runCell';
+import { runCellAndInsertBelow } from './runCellAndInsertBelow';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -82,10 +83,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const runCellAndInsertBelow = () => {
-      _.selectedCell.execute(() => insertNewCellBelow(_));
-      return false;
-    };
     // ipython has inconsistent behavior here.
     // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
     const runCellAndSelectBelow = () => {

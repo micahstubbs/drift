@@ -11433,6 +11433,11 @@
     return false;
   }
 
+  function runCellAndInsertBelow(_) {
+    _.selectedCell.execute(() => insertNewCellBelow(_));
+    return false;
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11727,10 +11732,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const runCellAndInsertBelow = () => {
-        _.selectedCell.execute(() => insertNewCellBelow(_));
-        return false;
-      };
       // ipython has inconsistent behavior here.
       // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
       const runCellAndSelectBelow = () => {
