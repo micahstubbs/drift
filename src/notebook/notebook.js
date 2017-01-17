@@ -27,6 +27,7 @@ import { insertNewScalaCellAbove } from './insertNewScalaCellAbove';
 import { insertNewScalaCellBelow } from './insertNewScalaCellBelow';
 import { appendCellAndRun } from './appendCellAndRun';
 import { moveCellDown } from './moveCellDown';
+import { moveCellUp } from './moveCellUp';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -77,15 +78,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const moveCellUp = () => {
-      let cells;
-      if (_.selectedCellIndex !== 0) {
-        cells = _.cells();
-        _.cells.splice(_.selectedCellIndex, 1);
-        _.selectedCellIndex--;
-        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
-      }
-    };
     const mergeCellBelow = () => {
       let nextCell;
       const cells = _.cells();
@@ -541,7 +533,7 @@ export function notebook() {
       ]),
       createMenuItem('Undo Delete Cell', undoLastDelete, ['z']),
       menuDivider,
-      createMenuItem('Move Cell Up', moveCellUp, [
+      createMenuItem('Move Cell Up', moveCellUp.bind(this, _), [
         'ctrl',
         'k',
       ]),
@@ -677,8 +669,8 @@ export function notebook() {
       ],
       [
         createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow),
-        createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp),
-        createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown),
+        createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)),
+        createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _)),
       ],
       [
         createTool('cut', 'Cut Cell (x)', cutCell),
