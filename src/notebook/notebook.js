@@ -14,7 +14,6 @@ import { convertCellToRaw } from './convertCellToRaw';
 import { convertCellToScala } from './convertCellToScala';
 import { copyCell } from './copyCell';
 import { cutCell } from './cutCell';
-import { removeCell } from './removeCell';
 import { deleteCell } from './deleteCell';
 import { insertAbove } from './insertAbove';
 import { insertCell } from './insertCell';
@@ -28,6 +27,7 @@ import { insertNewScalaCellBelow } from './insertNewScalaCellBelow';
 import { appendCellAndRun } from './appendCellAndRun';
 import { moveCellDown } from './moveCellDown';
 import { moveCellUp } from './moveCellUp';
+import { mergeCellBelow } from './mergeCellBelow';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -78,17 +78,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const mergeCellBelow = () => {
-      let nextCell;
-      const cells = _.cells();
-      if (_.selectedCellIndex !== cells.length - 1) {
-        nextCell = cells[_.selectedCellIndex + 1];
-        if (_.selectedCell.type() === nextCell.type()) {
-          nextCell.input(`${_.selectedCell.input()}\n${nextCell.input()}`);
-          removeCell(_, _.cells);
-        }
-      }
-    };
     const splitCell = () => {
       let cursorPosition;
       let input;
