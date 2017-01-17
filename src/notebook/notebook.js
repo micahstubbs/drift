@@ -21,6 +21,7 @@ import { insertCell } from './insertCell';
 import { insertBelow } from './insertBelow';
 import { appendCell } from './appendCell';
 import { insertCellBelow } from './insertCellBelow';
+import { insertNewCellAbove } from './insertNewCellAbove';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -45,6 +46,7 @@ export function notebook() {
   const $ = window.jQuery;
   const __slice = [].slice;
   Flow.notebook = (_, _renderers) => {
+    _.renderers = _renderers;
     let menuCell;
     const _localName = Flow.Dataflow.signal('Untitled Flow');
     Flow.Dataflow.react(_localName, name => {
@@ -71,22 +73,21 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
-    const insertNewCellBelow = () => insertBelow(_, createCell(_, _renderers, 'cs'));
-    const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, _renderers, 'sca'));
-    const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, _renderers, 'sca'));
+    const insertNewCellBelow = () => insertBelow(_, createCell(_, _.renderers, 'cs'));
+    const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, _.renderers, 'sca'));
+    const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, _.renderers, 'sca'));
     const insertCellAboveAndRun = (type, input) => {
-      const cell = insertAbove(_, createCell(_, _renderers, type, input));
+      const cell = insertAbove(_, createCell(_, _.renderers, type, input));
       cell.execute();
       return cell;
     };
     const insertCellBelowAndRun = (type, input) => {
-      const cell = insertBelow(_, createCell(_, _renderers, type, input));
+      const cell = insertBelow(_, createCell(_, _.renderers, type, input));
       cell.execute();
       return cell;
     };
     const appendCellAndRun = (type, input) => {
-      const cell = appendCell(_, createCell(_, _renderers, type, input));
+      const cell = appendCell(_, createCell(_, _.renderers, type, input));
       console.log('cell from appendCellAndRun', cell);
       cell.execute();
       return cell;
@@ -135,7 +136,7 @@ export function notebook() {
             left = input.substr(0, cursorPosition);
             right = input.substr(cursorPosition);
             _.selectedCell.input(left);
-            insertCell(_, _.selectedCellIndex + 1, createCell(_, _renderers, 'cs', right));
+            insertCell(_, _.selectedCellIndex + 1, createCell(_, _.renderers, 'cs', right));
             _.selectedCell.isActive(true);
           }
         }
@@ -143,12 +144,12 @@ export function notebook() {
     };
     const pasteCellAbove = () => {
       if (_.clipboardCell) {
-        return insertCell(_, _.selectedCellIndex, cloneCell(_, _renderers, _.clipboardCell));
+        return insertCell(_, _.selectedCellIndex, cloneCell(_, _.renderers, _.clipboardCell));
       }
     };
     const pasteCellBelow = () => {
       if (_.clipboardCell) {
-        return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _renderers, _.clipboardCell));
+        return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _.renderers, _.clipboardCell));
       }
     };
     const undoLastDelete = () => {
@@ -378,7 +379,7 @@ export function notebook() {
 
         return deserialize(
           _,
-          _renderers,
+          _.renderers,
           _localName,
           _remoteName,
           acceptLocalName,
@@ -393,7 +394,7 @@ export function notebook() {
       const duplicateNotebookDoc = serialize(_);
       return deserialize(
         _,
-        _renderers,
+        _.renderers,
         _localName,
         _remoteName,
         duplicateNotebookLocalName,
@@ -407,7 +408,7 @@ export function notebook() {
       const openNotebookDoc = doc;
       return deserialize(
         _,
-        _renderers,
+        _.renderers,
         _localName,
         _remoteName,
         openNotebookLocalName,
@@ -427,7 +428,7 @@ export function notebook() {
         const loadNotebookDoc = doc;
         return deserialize(
           _,
-          _renderers,
+          _.renderers,
           _localName,
           _remoteName,
           loadNotebookLocalName,
@@ -989,7 +990,7 @@ export function notebook() {
       Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
       Flow.Dataflow.link(_.executeAllCells, executeAllCells);
       Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, type, input));
-      Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, _, _renderers, type, input));
+      Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, _, _.renderers, type, input));
       Flow.Dataflow.link(_.saved, () => _.growl('Notebook saved.'));
       Flow.Dataflow.link(_.loaded, () => _.growl('Notebook loaded.'));
       executeCommand('assist')();
