@@ -30,6 +30,7 @@ import { mergeCellBelow } from './mergeCellBelow';
 import { splitCell } from './splitCell';
 import { pasteCellAbove } from './pasteCellAbove';
 import { pasteCellBelow } from './pasteCellBelow';
+import { undoLastDelete } from './undoLastDelete';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -80,13 +81,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const undoLastDelete = () => {
-      if (_.lastDeletedCell) {
-        insertCell(_, _.selectedCellIndex + 1, _.lastDeletedCell);
-      }
-      _.lastDeletedCell = null;
-      return _.lastDeletedCell;
-    };
     const runCell = () => {
       _.selectedCell.execute();
       return false;
@@ -490,7 +484,7 @@ export function notebook() {
         'd',
         'd',
       ]),
-      createMenuItem('Undo Delete Cell', undoLastDelete, ['z']),
+      createMenuItem('Undo Delete Cell', undoLastDelete.bind(this, _), ['z']),
       menuDivider,
       createMenuItem('Move Cell Up', moveCellUp.bind(this, _), [
         'ctrl',
