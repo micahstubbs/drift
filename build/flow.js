@@ -11893,10 +11893,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const showBrowser = () => {
-        _.isSidebarHidden(false);
-        return _.showBrowser();
-      };
       const showOutline = () => {
         _.isSidebarHidden(false);
         return _.showOutline();
