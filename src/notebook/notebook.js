@@ -18,6 +18,7 @@ import { removeCell } from './removeCell';
 import { deleteCell } from './deleteCell';
 import { insertAbove } from './insertAbove';
 import { insertCell } from './insertCell';
+import { insertBelow } from './insertBelow';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -68,21 +69,20 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const insertBelow = cell => insertCell(_, _.selectedCellIndex + 1, cell);
     const appendCell = cell => insertCell(_, _.cells().length, cell);
     const insertCellAbove = (type, input) => insertAbove(_, createCell(_, _renderers, type, input));
-    const insertCellBelow = (type, input) => insertBelow(createCell(_, _renderers, type, input));
+    const insertCellBelow = (type, input) => insertBelow(_, createCell(_, _renderers, type, input));
     const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
-    const insertNewCellBelow = () => insertBelow(createCell(_, _renderers, 'cs'));
+    const insertNewCellBelow = () => insertBelow(_, createCell(_, _renderers, 'cs'));
     const insertNewScalaCellAbove = () => insertAbove(_, createCell(_, _renderers, 'sca'));
-    const insertNewScalaCellBelow = () => insertBelow(createCell(_, _renderers, 'sca'));
+    const insertNewScalaCellBelow = () => insertBelow(_, createCell(_, _renderers, 'sca'));
     const insertCellAboveAndRun = (type, input) => {
       const cell = insertAbove(_, createCell(_, _renderers, type, input));
       cell.execute();
       return cell;
     };
     const insertCellBelowAndRun = (type, input) => {
-      const cell = insertBelow(createCell(_, _renderers, type, input));
+      const cell = insertBelow(_, createCell(_, _renderers, type, input));
       cell.execute();
       return cell;
     };
