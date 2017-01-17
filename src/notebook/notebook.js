@@ -45,8 +45,7 @@ export function notebook() {
   const Mousetrap = window.Mousetrap;
   const $ = window.jQuery;
   const __slice = [].slice;
-  Flow.notebook = (_, _renderers) => {
-    _.renderers = _renderers;
+  Flow.notebook = (_) => {
     let menuCell;
     const _localName = Flow.Dataflow.signal('Untitled Flow');
     Flow.Dataflow.react(_localName, name => {

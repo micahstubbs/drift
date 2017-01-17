@@ -10,12 +10,12 @@ export function flowApplication(_, routines) {
   flowApplicationContext(_);
   const _sandbox = flowSandbox(_, routines(_));
   // TODO support external renderers
-  const _renderers = flowRenderers(_, _sandbox);
-  console.log('_renderers from flowApplication', _renderers);
+  _.renderers = flowRenderers(_, _sandbox);
+  console.log('_.renderers from flowApplication', _.renderers);
   flowAnalytics(_);
   flowGrowl(_);
   flowAutosave(_);
-  const _notebook = Flow.notebook(_, _renderers);
+  const _notebook = Flow.notebook(_);
   return {
     context: _,
     sandbox: _sandbox,
