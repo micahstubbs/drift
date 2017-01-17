@@ -11459,6 +11459,11 @@
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
   }
 
+  function checkIfNameIsInUse(_, name, go) {
+    console.log('arguments from checkIfNameIsInUse', arguments);
+    return getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
+  }
+
   function getObjectRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/${ encodeURIComponent(type) }/${ encodeURIComponent(name) }`;
     return doGet(_, urlString, unwrap(go, result => JSON.parse(result.value)));
@@ -11748,7 +11753,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
       const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
         if (error) {
           return _.alert(`Error saving notebook: ${ error.message }`);
@@ -11779,7 +11783,7 @@
           storeNotebook(localName, remoteName);
         }
         // unsaved document
-        checkIfNameIsInUse(localName, isNameInUse => {
+        checkIfNameIsInUse(_, localName, isNameInUse => {
           if (isNameInUse) {
             return _.confirm('A notebook with that name already exists.\nDo you want to replace it with the one you\'re saving?', {
               acceptCaption: 'Replace',
