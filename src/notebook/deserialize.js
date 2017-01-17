@@ -3,7 +3,6 @@ import { selectCell } from './selectCell';
 
 export function deserialize(
   _,
-  _renderers,
   _localName,
   _remoteName,
   localName,

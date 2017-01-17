@@ -379,7 +379,6 @@ export function notebook() {
 
         return deserialize(
           _,
-          _.renderers,
           _localName,
           _remoteName,
           acceptLocalName,
@@ -394,7 +393,6 @@ export function notebook() {
       const duplicateNotebookDoc = serialize(_);
       return deserialize(
         _,
-        _.renderers,
         _localName,
         _remoteName,
         duplicateNotebookLocalName,
@@ -408,7 +406,6 @@ export function notebook() {
       const openNotebookDoc = doc;
       return deserialize(
         _,
-        _.renderers,
         _localName,
         _remoteName,
         openNotebookLocalName,
@@ -428,7 +425,6 @@ export function notebook() {
         const loadNotebookDoc = doc;
         return deserialize(
           _,
-          _.renderers,
           _localName,
           _remoteName,
           loadNotebookLocalName,
