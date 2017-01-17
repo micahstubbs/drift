@@ -11428,6 +11428,11 @@
     return _.lastDeletedCell;
   }
 
+  function runCell(_) {
+    _.selectedCell.execute();
+    return false;
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11722,10 +11727,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const runCell = () => {
-        _.selectedCell.execute();
-        return false;
-      };
       const runCellAndInsertBelow = () => {
         _.selectedCell.execute(() => insertNewCellBelow(_));
         return false;
@@ -12068,7 +12069,7 @@
         action: null
       };
       const _menus = Flow.Dataflow.signal(null);
-      menuCell = [createMenuItem('Run Cell', runCell, ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']), createMenuItem('Paste Cell Above', pasteCellAbove.bind(this, _), ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow.bind(this, _), ['v']),
+      menuCell = [createMenuItem('Run Cell', runCell.bind(this, _), ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']), createMenuItem('Paste Cell Above', pasteCellAbove.bind(this, _), ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow.bind(this, _), ['v']),
       // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
       createMenuItem('Delete Cell', deleteCell.bind(this, _), ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete.bind(this, _), ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp.bind(this, _), ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown.bind(this, _), ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']),
       // TODO createMenuItem('Split Cell', splitCell),
@@ -12104,7 +12105,7 @@
           icon: `fa fa-${ icon }`
         };
       };
-      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
+      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
 
       // (From IPython Notebook keyboard shortcuts dialog)
       //

@@ -31,6 +31,7 @@ import { splitCell } from './splitCell';
 import { pasteCellAbove } from './pasteCellAbove';
 import { pasteCellBelow } from './pasteCellBelow';
 import { undoLastDelete } from './undoLastDelete';
+import { runCell } from './runCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -81,10 +82,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const runCell = () => {
-      _.selectedCell.execute();
-      return false;
-    };
     const runCellAndInsertBelow = () => {
       _.selectedCell.execute(() => insertNewCellBelow(_));
       return false;
@@ -467,7 +464,7 @@ export function notebook() {
     };
     const _menus = Flow.Dataflow.signal(null);
     menuCell = [
-      createMenuItem('Run Cell', runCell, [
+      createMenuItem('Run Cell', runCell.bind(this, _), [
         'ctrl',
         'enter',
       ]),
@@ -634,7 +631,7 @@ export function notebook() {
       ],
       [
         createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow),
-        createTool('play', 'Run (ctrl+enter)', runCell),
+        createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)),
         createTool('forward', 'Run All', runAllCells),
       ],
       [createTool('question-circle', 'Assist Me', executeCommand('assist'))],
