@@ -372,12 +372,12 @@ export function notebook() {
         createTool('save', 'Save (s)', saveNotebook.bind(this, _)),
       ],
       [
-        createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow),
+        createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow.bind(this, _)),
         createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)),
         createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _)),
       ],
       [
-        createTool('cut', 'Cut Cell (x)', cutCell),
+        createTool('cut', 'Cut Cell (x)', cutCell.bind(this, _)),
         createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)),
         createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)),
         createTool('eraser', 'Clear Cell', clearCell),
