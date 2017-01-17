@@ -48,8 +48,8 @@ import { saveName } from './saveName';
 import { toggleSidebar } from './toggleSidebar';
 import selectPreviousCell from './selectPreviousCell';
 import displayKeyboardShortcuts from './displayKeyboardShortcuts';
-import getBuildProperties from './getBuildProperties';
 import displayDocumentation from './displayDocumentation';
+import displayFAQ from './displayFAQ';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -91,17 +91,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const displayFAQ = () => {
-      const _ref = getBuildProperties();
-      const gitBranch = _ref[0];
-      const projectVersion = _ref[1];
-      const buildVersion = _ref[2];
-      const gitHash = _ref[3];
-      if (buildVersion && buildVersion !== '99999') {
-        return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${gitBranch}/${buildVersion}/docs-website/h2o-docs/index.html`, '_blank');
-      }
-      return window.open(`https://github.com/h2oai/h2o-3/blob/${gitHash}/h2o-docs/src/product/howto/FAQ.md`, '_blank');
-    };
     const executeCommand = command => () => _.insertAndExecuteCell('cs', command);
     const displayAbout = () => $('#aboutDialog').modal();
     const shutdown = () => postShutdownRequest(_, (error, result) => {
