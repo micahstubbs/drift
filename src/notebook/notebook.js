@@ -87,10 +87,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const showClipboard = () => {
-      _.isSidebarHidden(false);
-      return _.showClipboard();
-    };
     const selectPreviousCell = () => {
       let cells;
       if (_.selectedCellIndex !== 0) {
