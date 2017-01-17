@@ -11326,6 +11326,10 @@
     return insertCell(_, _.selectedCellIndex + 1, cell);
   }
 
+  function appendCell(_, cell) {
+    return insertCell(_, _.cells().length, cell);
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11620,7 +11624,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const appendCell = cell => insertCell(_, _.cells().length, cell);
       const insertCellAbove = (type, input) => insertAbove(_, createCell(_, _renderers, type, input));
       const insertCellBelow = (type, input) => insertBelow(_, createCell(_, _renderers, type, input));
       const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
@@ -11638,7 +11641,7 @@
         return cell;
       };
       const appendCellAndRun = (type, input) => {
-        const cell = appendCell(createCell(_, _renderers, type, input));
+        const cell = appendCell(_, createCell(_, _renderers, type, input));
         console.log('cell from appendCellAndRun', cell);
         cell.execute();
         return cell;

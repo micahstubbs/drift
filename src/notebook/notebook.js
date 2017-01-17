@@ -19,6 +19,7 @@ import { deleteCell } from './deleteCell';
 import { insertAbove } from './insertAbove';
 import { insertCell } from './insertCell';
 import { insertBelow } from './insertBelow';
+import { appendCell } from './appendCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -69,7 +70,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const appendCell = cell => insertCell(_, _.cells().length, cell);
     const insertCellAbove = (type, input) => insertAbove(_, createCell(_, _renderers, type, input));
     const insertCellBelow = (type, input) => insertBelow(_, createCell(_, _renderers, type, input));
     const insertNewCellAbove = () => insertAbove(_, createCell(_, _renderers, 'cs'));
@@ -87,7 +87,7 @@ export function notebook() {
       return cell;
     };
     const appendCellAndRun = (type, input) => {
-      const cell = appendCell(createCell(_, _renderers, type, input));
+      const cell = appendCell(_, createCell(_, _renderers, type, input));
       console.log('cell from appendCellAndRun', cell);
       cell.execute();
       return cell;
