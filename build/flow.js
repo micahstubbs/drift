@@ -11238,7 +11238,7 @@
     }
   }
 
-  function cloneCell(_, _renderers, cell) {
+  function cloneCell(_, cell) {
     return createCell(_, cell.type(), cell.input());
   }
 
@@ -11701,12 +11701,12 @@
       };
       const pasteCellAbove = () => {
         if (_.clipboardCell) {
-          return insertCell(_, _.selectedCellIndex, cloneCell(_, _.renderers, _.clipboardCell));
+          return insertCell(_, _.selectedCellIndex, cloneCell(_, _.clipboardCell));
         }
       };
       const pasteCellBelow = () => {
         if (_.clipboardCell) {
-          return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _.renderers, _.clipboardCell));
+          return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _.clipboardCell));
         }
       };
       const undoLastDelete = () => {
