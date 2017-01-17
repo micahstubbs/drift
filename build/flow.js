@@ -11438,6 +11438,22 @@
     return false;
   }
 
+  function selectNextCell(_) {
+    const cells = _.cells();
+    if (_.selectedCellIndex !== cells.length - 1) {
+      selectCell(_, cells[_.selectedCellIndex + 1]);
+    }
+    // prevent arrow keys from scrolling the page
+    return false;
+  }
+
+  // ipython has inconsistent behavior here.
+  // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
+  function runCellAndSelectBelow(_) {
+    _.selectedCell.execute(() => selectNextCell(_));
+    return false;
+  }
+
   function getObjectExistsRequest(_, type, name, go) {
     const urlString = `/3/NodePersistentStorage/categories/${ encodeURIComponent(type) }/names/${ encodeURIComponent(name) }/exists`;
     return doGet(_, urlString, (error, result) => go(null, error ? false : result.exists));
@@ -11732,12 +11748,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      // ipython has inconsistent behavior here.
-      // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
-      const runCellAndSelectBelow = () => {
-        _.selectedCell.execute(() => selectNextCell());
-        return false;
-      };
       const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
       const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
         if (error) {
@@ -11847,14 +11857,6 @@
         _isSidebarHidden(false);
         return _.showClipboard();
       };
-      function selectNextCell() {
-        const cells = _.cells();
-        if (_.selectedCellIndex !== cells.length - 1) {
-          selectCell(_, cells[_.selectedCellIndex + 1]);
-        }
-        // prevent arrow keys from scrolling the page
-        return false;
-      }
       const selectPreviousCell = () => {
         let cells;
         if (_.selectedCellIndex !== 0) {
@@ -12106,7 +12108,7 @@
           icon: `fa fa-${ icon }`
         };
       };
-      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
+      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook), createTool('save', 'Save (s)', saveNotebook)], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand('assist'))]];
 
       // (From IPython Notebook keyboard shortcuts dialog)
       //

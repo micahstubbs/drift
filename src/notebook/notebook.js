@@ -33,6 +33,8 @@ import { pasteCellBelow } from './pasteCellBelow';
 import { undoLastDelete } from './undoLastDelete';
 import { runCell } from './runCell';
 import { runCellAndInsertBelow } from './runCellAndInsertBelow';
+import { selectNextCell } from './selectNextCell';
+import { runCellAndSelectBelow } from './runCellAndSelectBelow';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -83,12 +85,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    // ipython has inconsistent behavior here.
-    // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
-    const runCellAndSelectBelow = () => {
-      _.selectedCell.execute(() => selectNextCell());
-      return false;
-    };
     const checkIfNameIsInUse = (name, go) => getObjectExistsRequest(_, 'notebook', name, (error, exists) => go(exists));
     const storeNotebook = (localName, remoteName) => postPutObjectRequest(_, 'notebook', localName, serialize(_), error => {
       if (error) {
@@ -198,17 +194,6 @@ export function notebook() {
       _isSidebarHidden(false);
       return _.showClipboard();
     };
-    function selectNextCell() {
-      const cells = _.cells();
-      if (_.selectedCellIndex !== cells.length - 1) {
-        selectCell(
-          _,
-          cells[_.selectedCellIndex + 1]
-        );
-      }
-      // prevent arrow keys from scrolling the page
-      return false;
-    }
     const selectPreviousCell = () => {
       let cells;
       if (_.selectedCellIndex !== 0) {
@@ -627,7 +612,7 @@ export function notebook() {
         createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _)),
       ],
       [
-        createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow),
+        createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)),
         createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)),
         createTool('forward', 'Run All', runAllCells),
       ],
