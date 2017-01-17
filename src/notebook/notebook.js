@@ -54,6 +54,7 @@ import executeCommand from './executeCommand';
 import displayAbout from './displayAbout';
 import shutdown from './shutdown';
 import showHelp from './showHelp';
+import createNotebook from './createNotebook';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -94,31 +95,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
-      acceptCaption: 'Create New Notebook',
-      declineCaption: 'Cancel',
-    }, accept => {
-      let currentTime;
-      if (accept) {
-        currentTime = new Date().getTime();
-
-        const acceptLocalName = 'Untitled Flow';
-        const acceptRemoteName = null;
-        const acceptDoc = {
-          cells: [{
-            type: 'cs',
-            input: '',
-          }],
-        };
-
-        return deserialize(
-          _,
-          acceptLocalName,
-          acceptRemoteName,
-          acceptDoc
-        );
-      }
-    });
     const duplicateNotebook = () => {
       const duplicateNotebookLocalName = `Copy of ${_.localName()}`;
       const duplicateNotebookRemoteName = null;
@@ -308,7 +284,7 @@ export function notebook() {
       ]);
       return [
         createMenu('Flow', [
-          createMenuItem('New Flow', createNotebook),
+          createMenuItem('New Flow', createNotebook.bind(this, _)),
           createMenuItem('Open Flow...', promptForNotebook.bind(this, _)),
           createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']),
           createMenuItem('Make a Copy...', duplicateNotebook),
@@ -401,7 +377,7 @@ export function notebook() {
     };
     const _toolbar = [
       [
-        createTool('file-o', 'New', createNotebook),
+        createTool('file-o', 'New', createNotebook.bind(this, _)),
         createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)),
         createTool('save', 'Save (s)', saveNotebook.bind(this, _)),
       ],

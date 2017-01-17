@@ -11796,6 +11796,29 @@
     return _.showHelp();
   }
 
+  function createNotebook(_) {
+    return _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
+      acceptCaption: 'Create New Notebook',
+      declineCaption: 'Cancel'
+    }, accept => {
+      let currentTime;
+      if (accept) {
+        currentTime = new Date().getTime();
+
+        const acceptLocalName = 'Untitled Flow';
+        const acceptRemoteName = null;
+        const acceptDoc = {
+          cells: [{
+            type: 'cs',
+            input: ''
+          }]
+        };
+
+        return deserialize(_, acceptLocalName, acceptRemoteName, acceptDoc);
+      }
+    });
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -11975,26 +11998,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const createNotebook = () => _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
-        acceptCaption: 'Create New Notebook',
-        declineCaption: 'Cancel'
-      }, accept => {
-        let currentTime;
-        if (accept) {
-          currentTime = new Date().getTime();
-
-          const acceptLocalName = 'Untitled Flow';
-          const acceptRemoteName = null;
-          const acceptDoc = {
-            cells: [{
-              type: 'cs',
-              input: ''
-            }]
-          };
-
-          return deserialize(_, acceptLocalName, acceptRemoteName, acceptDoc);
-        }
-      });
       const duplicateNotebook = () => {
         const duplicateNotebookLocalName = `Copy of ${ _.localName() }`;
         const duplicateNotebookRemoteName = null;
@@ -12130,7 +12133,7 @@
       }
       const initializeMenus = builder => {
         const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(_, `buildModel ${ flowPrelude$56.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand(_, 'getModels')), createMenuItem('List Grid Search Results', executeCommand(_, 'getGrids')), createMenuItem('Import Model...', executeCommand(_, 'importModel')), createMenuItem('Export Model...', executeCommand(_, 'exportModel'))]);
-        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook), createMenuItem('Open Flow...', promptForNotebook.bind(this, _)), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _, _areInputsHidden)), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs.bind(this, _areOutputsHidden)), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand(_, 'importFiles')), createMenuItem('Upload File...', uploadFile.bind(this, _)), createMenuItem('Split Frame...', executeCommand(_, 'splitFrame')), createMenuItem('Merge Frames...', executeCommand(_, 'mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand(_, 'getFrames')), menuDivider, createMenuItem('Impute...', executeCommand(_, 'imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand(_, 'predict')), createMenuItem('Partial Dependence Plots...', executeCommand(_, 'buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand(_, 'getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand(_, 'getJobs')), createMenuItem('Cluster Status', executeCommand(_, 'getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand(_, 'getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand(_, 'createFrame')), createMenuItem('Stack Trace', executeCommand(_, 'getStackTrace')), createMenuItem('Network Test', executeCommand(_, 'testNetwork')),
+        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook.bind(this, _)), createMenuItem('Open Flow...', promptForNotebook.bind(this, _)), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook), menuDivider, createMenuItem('Run All Cells', runAllCells), createMenuItem('Run All Cells Below', continueRunningAllCells), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _, _areInputsHidden)), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs.bind(this, _areOutputsHidden)), createMenuItem('Clear All Cell Outputs', clearAllCells), menuDivider, createMenuItem('Download this Flow...', exportNotebook)]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand(_, 'importFiles')), createMenuItem('Upload File...', uploadFile.bind(this, _)), createMenuItem('Split Frame...', executeCommand(_, 'splitFrame')), createMenuItem('Merge Frames...', executeCommand(_, 'mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand(_, 'getFrames')), menuDivider, createMenuItem('Impute...', executeCommand(_, 'imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand(_, 'predict')), createMenuItem('Partial Dependence Plots...', executeCommand(_, 'buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand(_, 'getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand(_, 'getJobs')), createMenuItem('Cluster Status', executeCommand(_, 'getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand(_, 'getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand(_, 'createFrame')), createMenuItem('Stack Trace', executeCommand(_, 'getStackTrace')), createMenuItem('Network Test', executeCommand(_, 'testNetwork')),
         // TODO Cluster I/O
         createMenuItem('Profiler', executeCommand(_, 'getProfile depth: 10')), createMenuItem('Timeline', executeCommand(_, 'getTimeline')),
         // TODO UDP Drop Test
@@ -12153,7 +12156,7 @@
           icon: `fa fa-${ icon }`
         };
       };
-      const _toolbar = [[createTool('file-o', 'New', createNotebook), createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))]];
+      const _toolbar = [[createTool('file-o', 'New', createNotebook.bind(this, _)), createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells)], [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))]];
 
       // (From IPython Notebook keyboard shortcuts dialog)
       //
