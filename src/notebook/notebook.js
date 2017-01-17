@@ -28,6 +28,7 @@ import { appendCellAndRun } from './appendCellAndRun';
 import { moveCellDown } from './moveCellDown';
 import { moveCellUp } from './moveCellUp';
 import { mergeCellBelow } from './mergeCellBelow';
+import { splitCell } from './splitCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -78,28 +79,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const splitCell = () => {
-      let cursorPosition;
-      let input;
-      let left;
-      let right;
-      if (_.selectedCell.isActive()) {
-        input = _.selectedCell.input();
-        if (input.length > 1) {
-          cursorPosition = _.selectedCell.getCursorPosition();
-          if (
-            cursorPosition > 0 &&
-            cursorPosition < input.length - 1
-          ) {
-            left = input.substr(0, cursorPosition);
-            right = input.substr(cursorPosition);
-            _.selectedCell.input(left);
-            insertCell(_, _.selectedCellIndex + 1, createCell(_, 'cs', right));
-            _.selectedCell.isActive(true);
-          }
-        }
-      }
-    };
     const pasteCellAbove = () => {
       if (_.clipboardCell) {
         return insertCell(_, _.selectedCellIndex, cloneCell(_, _.clipboardCell));
