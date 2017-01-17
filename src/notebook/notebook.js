@@ -26,6 +26,7 @@ import { insertNewCellBelow } from './insertNewCellBelow';
 import { insertNewScalaCellAbove } from './insertNewScalaCellAbove';
 import { insertNewScalaCellBelow } from './insertNewScalaCellBelow';
 import { appendCellAndRun } from './appendCellAndRun';
+import { moveCellDown } from './moveCellDown';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -76,14 +77,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const moveCellDown = () => {
-      const cells = _.cells();
-      if (_.selectedCellIndex !== cells.length - 1) {
-        _.cells.splice(_.selectedCellIndex, 1);
-        _.selectedCellIndex++;
-        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
-      }
-    };
     const moveCellUp = () => {
       let cells;
       if (_.selectedCellIndex !== 0) {
@@ -552,7 +545,7 @@ export function notebook() {
         'ctrl',
         'k',
       ]),
-      createMenuItem('Move Cell Down', moveCellDown, [
+      createMenuItem('Move Cell Down', moveCellDown.bind(this, _), [
         'ctrl',
         'j',
       ]),
@@ -699,7 +692,7 @@ export function notebook() {
         createTool('play', 'Run (ctrl+enter)', runCell),
         createTool('forward', 'Run All', runAllCells),
       ],
-          [createTool('question-circle', 'Assist Me', executeCommand('assist'))],
+      [createTool('question-circle', 'Assist Me', executeCommand('assist'))],
     ];
 
 
