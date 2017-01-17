@@ -50,6 +50,7 @@ import selectPreviousCell from './selectPreviousCell';
 import displayKeyboardShortcuts from './displayKeyboardShortcuts';
 import displayDocumentation from './displayDocumentation';
 import displayFAQ from './displayFAQ';
+import executeCommand from './executeCommand';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -91,7 +92,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const executeCommand = command => () => _.insertAndExecuteCell('cs', command);
     const displayAbout = () => $('#aboutDialog').modal();
     const shutdown = () => postShutdownRequest(_, (error, result) => {
       if (error) {
@@ -308,12 +308,12 @@ export function notebook() {
       menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
     }
     const initializeMenus = builder => {
-      const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${builder.algo_full_name}...`, executeCommand(`buildModel ${flowPrelude.stringify(builder.algo)}`))).concat([
+      const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${builder.algo_full_name}...`, executeCommand(_, `buildModel ${flowPrelude.stringify(builder.algo)}`))).concat([
         menuDivider,
-        createMenuItem('List All Models', executeCommand('getModels')),
-        createMenuItem('List Grid Search Results', executeCommand('getGrids')),
-        createMenuItem('Import Model...', executeCommand('importModel')),
-        createMenuItem('Export Model...', executeCommand('exportModel')),
+        createMenuItem('List All Models', executeCommand(_, 'getModels')),
+        createMenuItem('List Grid Search Results', executeCommand(_, 'getGrids')),
+        createMenuItem('Import Model...', executeCommand(_, 'importModel')),
+        createMenuItem('Export Model...', executeCommand(_, 'exportModel')),
       ]);
       return [
         createMenu('Flow', [
@@ -333,23 +333,23 @@ export function notebook() {
         ]),
         createMenu('Cell', menuCell),
         createMenu('Data', [
-          createMenuItem('Import Files...', executeCommand('importFiles')),
+          createMenuItem('Import Files...', executeCommand(_, 'importFiles')),
           createMenuItem('Upload File...', uploadFile.bind(this, _)),
-          createMenuItem('Split Frame...', executeCommand('splitFrame')),
-          createMenuItem('Merge Frames...', executeCommand('mergeFrames')),
+          createMenuItem('Split Frame...', executeCommand(_, 'splitFrame')),
+          createMenuItem('Merge Frames...', executeCommand(_, 'mergeFrames')),
           menuDivider,
-          createMenuItem('List All Frames', executeCommand('getFrames')),
+          createMenuItem('List All Frames', executeCommand(_, 'getFrames')),
           menuDivider,
-          createMenuItem('Impute...', executeCommand('imputeColumn')),
+          createMenuItem('Impute...', executeCommand(_, 'imputeColumn')),
           // TODO Quantiles
           // TODO Interaction
         ]),
         createMenu('Model', modelMenuItems),
         createMenu('Score', [
-          createMenuItem('Predict...', executeCommand('predict')),
-          createMenuItem('Partial Dependence Plots...', executeCommand('buildPartialDependence')),
+          createMenuItem('Predict...', executeCommand(_, 'predict')),
+          createMenuItem('Partial Dependence Plots...', executeCommand(_, 'buildPartialDependence')),
           menuDivider,
-          createMenuItem('List All Predictions', executeCommand('getPredictions')),
+          createMenuItem('List All Predictions', executeCommand(_, 'getPredictions')),
           // TODO Confusion Matrix
           // TODO AUC
           // TODO Hit Ratio
@@ -358,28 +358,28 @@ export function notebook() {
           // TODO Multi-model Scoring
         ]),
         createMenu('Admin', [
-          createMenuItem('Jobs', executeCommand('getJobs')),
-          createMenuItem('Cluster Status', executeCommand('getCloud')),
+          createMenuItem('Jobs', executeCommand(_, 'getJobs')),
+          createMenuItem('Cluster Status', executeCommand(_, 'getCloud')),
           createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')),
           menuDivider,
           createMenuHeader('Inspect Log'),
-          createMenuItem('View Log', executeCommand('getLogFile')),
+          createMenuItem('View Log', executeCommand(_, 'getLogFile')),
           createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')),
           menuDivider,
           createMenuHeader('Advanced'),
-          createMenuItem('Create Synthetic Frame...', executeCommand('createFrame')),
-          createMenuItem('Stack Trace', executeCommand('getStackTrace')),
-          createMenuItem('Network Test', executeCommand('testNetwork')),
+          createMenuItem('Create Synthetic Frame...', executeCommand(_, 'createFrame')),
+          createMenuItem('Stack Trace', executeCommand(_, 'getStackTrace')),
+          createMenuItem('Network Test', executeCommand(_, 'testNetwork')),
           // TODO Cluster I/O
-          createMenuItem('Profiler', executeCommand('getProfile depth: 10')),
-          createMenuItem('Timeline', executeCommand('getTimeline')),
+          createMenuItem('Profiler', executeCommand(_, 'getProfile depth: 10')),
+          createMenuItem('Timeline', executeCommand(_, 'getTimeline')),
           // TODO UDP Drop Test
           // TODO Task Status
           createMenuItem('Shut Down', shutdown),
         ]),
         createMenu('Help', [
           // TODO createMenuItem('Tour', startTour, true),
-          createMenuItem('Assist Me', executeCommand('assist')),
+          createMenuItem('Assist Me', executeCommand(_, 'assist')),
           menuDivider,
           createMenuItem('Contents', showHelp),
           createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']),
@@ -431,7 +431,7 @@ export function notebook() {
         createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)),
         createTool('forward', 'Run All', runAllCells),
       ],
-      [createTool('question-circle', 'Assist Me', executeCommand('assist'))],
+      [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))],
     ];
 
 
@@ -705,7 +705,7 @@ export function notebook() {
       Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, _, type, input));
       Flow.Dataflow.link(_.saved, () => _.growl('Notebook saved.'));
       Flow.Dataflow.link(_.loaded, () => _.growl('Notebook loaded.'));
-      executeCommand('assist')();
+      executeCommand(_, 'assist')();
       // TODO setPristine() when autosave is implemented.
       _.setDirty();
       if (_.onSparklingWater) {
