@@ -11225,9 +11225,22 @@
       }
     }
 
-    function copyCell(_) {
-      _.clipboardCell = _.selectedCell;
-      return _.clipboardCell;
+    function insertCell(_, index, cell) {
+      _.cells.splice(index, 0, cell);
+      selectCell(_, cell);
+      return cell;
+    }
+
+    function insertAbove(_, cell) {
+      return insertCell(_, _.selectedCellIndex, cell);
+    }
+
+    function insertBelow(_, cell) {
+      return insertCell(_, _.selectedCellIndex + 1, cell);
+    }
+
+    function appendCell(_, cell) {
+      return insertCell(_, _.cells().length, cell);
     }
 
     function removeCell(_) {
@@ -11247,48 +11260,6 @@
         if (removedCell) {
           _.saveClip('trash', removedCell.type(), removedCell.input());
         }
-      }
-    }
-
-    function cutCell(_) {
-      copyCell(_);
-      return removeCell(_);
-    }
-
-    function deleteCell(_) {
-      _.lastDeletedCell = _.selectedCell;
-      return removeCell(_);
-    }
-
-    function insertCell(_, index, cell) {
-      _.cells.splice(index, 0, cell);
-      selectCell(_, cell);
-      return cell;
-    }
-
-    function insertAbove(_, cell) {
-      return insertCell(_, _.selectedCellIndex, cell);
-    }
-
-    function insertBelow(_, cell) {
-      return insertCell(_, _.selectedCellIndex + 1, cell);
-    }
-
-    function appendCell(_, cell) {
-      return insertCell(_, _.cells().length, cell);
-    }
-
-    function insertNewCellBelow(_) {
-      return insertBelow(_, createCell(_, 'cs'));
-    }
-
-    function moveCellUp(_) {
-      let cells;
-      if (_.selectedCellIndex !== 0) {
-        cells = _.cells();
-        _.cells.splice(_.selectedCellIndex, 1);
-        _.selectedCellIndex--;
-        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
       }
     }
 
@@ -11334,14 +11305,79 @@
       }
     }
 
-    function pasteCellBelow(_) {
-      if (_.clipboardCell) {
-        return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _.clipboardCell));
-      }
+    function editName(_) {
+      return _.isEditingName(true);
     }
 
-    function runCell(_) {
-      _.selectedCell.execute();
+    function saveName(_) {
+      return _.isEditingName(false);
+    }
+
+    function toggleSidebar(_) {
+      return _.isSidebarHidden(!_.isSidebarHidden());
+    }
+
+    function stopRunningAll(_) {
+      return _.isRunningAll(false);
+    }
+
+    // noop
+    function notImplemented() {
+      return {};
+    }
+
+    function createMenu(label, items) {
+      return {
+        label,
+        items
+      };
+    }
+
+    function toKeyboardHelp(shortcut) {
+      const lodash = window._;
+      const seq = shortcut[0];
+      const caption = shortcut[1];
+      const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${ key }</kbd>`).join(' ');
+      return {
+        keystrokes,
+        caption
+      };
+    }
+
+    function switchToEditMode(_) {
+      _.selectedCell.isActive(true);
+      return false;
+    }
+
+    function convertCellToCode(_) {
+      return _.selectedCell.type('cs');
+    }
+
+    function convertCellToMarkdown(_) {
+      console.log('arguments passed to convertCellToMarkdown', arguments);
+      _.selectedCell.type('md');
+      return _.selectedCell.execute();
+    }
+
+    function convertCellToRaw(_) {
+      _.selectedCell.type('raw');
+      return _.selectedCell.execute();
+    }
+
+    function convertCellToHeading(_, level) {
+      return () => {
+        _.selectedCell.type(`h${ level }`);
+        return _.selectedCell.execute();
+      };
+    }
+
+    function selectPreviousCell(_) {
+      let cells;
+      if (_.selectedCellIndex !== 0) {
+        cells = _.cells();
+        selectCell(_, cells[_.selectedCellIndex - 1]);
+      }
+      // prevent arrow keys from scrolling the page
       return false;
     }
 
@@ -11354,11 +11390,60 @@
       return false;
     }
 
-    // ipython has inconsistent behavior here.
-    // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
-    function runCellAndSelectBelow(_) {
-      _.selectedCell.execute(() => selectNextCell(_));
-      return false;
+    function moveCellUp(_) {
+      let cells;
+      if (_.selectedCellIndex !== 0) {
+        cells = _.cells();
+        _.cells.splice(_.selectedCellIndex, 1);
+        _.selectedCellIndex--;
+        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
+      }
+    }
+
+    function moveCellDown(_) {
+      const cells = _.cells();
+      if (_.selectedCellIndex !== cells.length - 1) {
+        _.cells.splice(_.selectedCellIndex, 1);
+        _.selectedCellIndex++;
+        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
+      }
+    }
+
+    function insertNewCellAbove(_) {
+      return insertAbove(_, createCell(_, 'cs'));
+    }
+
+    function insertNewCellBelow(_) {
+      return insertBelow(_, createCell(_, 'cs'));
+    }
+
+    function copyCell(_) {
+      _.clipboardCell = _.selectedCell;
+      return _.clipboardCell;
+    }
+
+    function cutCell(_) {
+      copyCell(_);
+      return removeCell(_);
+    }
+
+    function pasteCellBelow(_) {
+      if (_.clipboardCell) {
+        return insertCell(_, _.selectedCellIndex + 1, cloneCell(_, _.clipboardCell));
+      }
+    }
+
+    function undoLastDelete(_) {
+      if (_.lastDeletedCell) {
+        insertCell(_, _.selectedCellIndex + 1, _.lastDeletedCell);
+      }
+      _.lastDeletedCell = null;
+      return _.lastDeletedCell;
+    }
+
+    function deleteCell(_) {
+      _.lastDeletedCell = _.selectedCell;
+      return removeCell(_);
     }
 
     function getObjectExistsRequest(_, type, name, go) {
@@ -11428,6 +11513,162 @@
           });
         }
         return storeNotebook(_, localName, remoteName);
+      });
+    }
+
+    function toggleOutput(_) {
+      return _.selectedCell.toggleOutput();
+    }
+
+    function displayKeyboardShortcuts() {
+      const $ = window.jQuery;
+      return $('#keyboardHelpDialog').modal();
+    }
+
+    function convertCellToScala(_) {
+      return _.selectedCell.type('sca');
+    }
+
+    // (From IPython Notebook keyboard shortcuts dialog)
+    //
+    // The IPython Notebook has two different keyboard input modes.
+    // Edit mode allows you to type code/text into a cell
+    // and is indicated by a green cell border.
+    // Command mode binds the keyboard to notebook level
+    // actions and is indicated by a grey cell border.
+    //
+    // Command Mode (press Esc to enable)
+    //
+    function createNormalModeKeyboardShortcuts(_) {
+      const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode],
+      // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
+      // [ 'ctrl+enter', 'run cell', runCell ]
+      // [ 'alt+enter', 'run cell, insert below', runCellAndInsertBelow ]
+      ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(_, 1)], ['2', 'to heading 2', convertCellToHeading(_, 2)], ['3', 'to heading 3', convertCellToHeading(_, 3)], ['4', 'to heading 4', convertCellToHeading(_, 4)], ['5', 'to heading 5', convertCellToHeading(_, 5)], ['6', 'to heading 6', convertCellToHeading(_, 6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
+      // [ 'mod+s', 'save notebook', saveNotebook ]
+      // [ 'l', 'toggle line numbers' ]
+      ['o', 'toggle output', toggleOutput],
+      // [ 'shift+o', 'toggle output scrolling' ]
+      ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
+
+      if (_.onSparklingWater) {
+        normalModeKeyboardShortcuts.push(['q', 'to Scala', convertCellToScala]);
+      }
+
+      return normalModeKeyboardShortcuts;
+    }
+
+    function switchToCommandMode(_) {
+      return _.selectedCell.isActive(false);
+    }
+
+    // ipython has inconsistent behavior here.
+    // seems to be doing runCellAndInsertBelow if executed on the lowermost cell.
+    function runCellAndSelectBelow(_) {
+      _.selectedCell.execute(() => selectNextCell(_));
+      return false;
+    }
+
+    function runCell(_) {
+      _.selectedCell.execute();
+      return false;
+    }
+
+    function runCellAndInsertBelow(_) {
+      _.selectedCell.execute(() => insertNewCellBelow(_));
+      return false;
+    }
+
+    function createEditModeKeyboardShortcuts() {
+      //
+      // Edit Mode (press Enter to enable)
+      //
+      const editModeKeyboardShortcuts = [
+      // Tab : code completion or indent
+      // Shift-Tab : tooltip
+      // Cmd-] : indent
+      // Cmd-[ : dedent
+      // Cmd-a : select all
+      // Cmd-z : undo
+      // Cmd-Shift-z : redo
+      // Cmd-y : redo
+      // Cmd-Up : go to cell start
+      // Cmd-Down : go to cell end
+      // Opt-Left : go one word left
+      // Opt-Right : go one word right
+      // Opt-Backspace : del word before
+      // Opt-Delete : del word after
+      ['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
+      return editModeKeyboardShortcuts;
+    }
+
+    function setupKeyboardHandling(_, mode) {
+      const Mousetrap = window.Mousetrap;
+      const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
+      const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();
+      let caption;
+      let f;
+      let shortcut;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      let _ref;
+      let _ref1;
+      for (_i = 0, _len = normalModeKeyboardShortcuts.length; _i < _len; _i++) {
+        _ref = normalModeKeyboardShortcuts[_i];
+        shortcut = _ref[0];
+        caption = _ref[1];
+        f = _ref[2].bind(this, _);
+        Mousetrap.bind(shortcut, f);
+      }
+      for (_j = 0, _len1 = editModeKeyboardShortcuts.length; _j < _len1; _j++) {
+        _ref1 = editModeKeyboardShortcuts[_j];
+        shortcut = _ref1[0];
+        caption = _ref1[1];
+        f = _ref1[2].bind(this, _);
+        Mousetrap.bindGlobal(shortcut, f);
+      }
+    }
+
+    function createShortcutHint(shortcut) {
+      const lodash = window._;
+      return `<span style=\'float:right\'>${ lodash.map(shortcut, key => `<kbd>${ key }</kbd>`).join(' ') }</span>`;
+    }
+
+    function createMenuItem(label, action, shortcut) {
+      const lodash = window._;
+      const kbds = shortcut ? createShortcutHint(shortcut) : '';
+      return {
+        label: `${ lodash.escape(label) }${ kbds }`,
+        action
+      };
+    }
+
+    function executeCommand(_, command) {
+      return () => _.insertAndExecuteCell('cs', command);
+    }
+
+    function createNotebook(_) {
+      return _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
+        acceptCaption: 'Create New Notebook',
+        declineCaption: 'Cancel'
+      }, accept => {
+        let currentTime;
+        if (accept) {
+          currentTime = new Date().getTime();
+
+          const acceptLocalName = 'Untitled Flow';
+          const acceptRemoteName = null;
+          const acceptDoc = {
+            cells: [{
+              type: 'cs',
+              input: ''
+            }]
+          };
+
+          return deserialize(_, acceptLocalName, acceptRemoteName, acceptDoc);
+        }
       });
     }
 
@@ -11526,52 +11767,11 @@
       });
     }
 
-    function editName(_) {
-      return _.isEditingName(true);
-    }
-
-    function saveName(_) {
-      return _.isEditingName(false);
-    }
-
-    function toggleSidebar(_) {
-      return _.isSidebarHidden(!_.isSidebarHidden());
-    }
-
-    function moveCellDown(_) {
-      const cells = _.cells();
-      if (_.selectedCellIndex !== cells.length - 1) {
-        _.cells.splice(_.selectedCellIndex, 1);
-        _.selectedCellIndex++;
-        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
-      }
-    }
-
-    function executeCommand(_, command) {
-      return () => _.insertAndExecuteCell('cs', command);
-    }
-
-    function createNotebook(_) {
-      return _.confirm('This action will replace your active notebook.\nAre you sure you want to continue?', {
-        acceptCaption: 'Create New Notebook',
-        declineCaption: 'Cancel'
-      }, accept => {
-        let currentTime;
-        if (accept) {
-          currentTime = new Date().getTime();
-
-          const acceptLocalName = 'Untitled Flow';
-          const acceptRemoteName = null;
-          const acceptDoc = {
-            cells: [{
-              type: 'cs',
-              input: ''
-            }]
-          };
-
-          return deserialize(_, acceptLocalName, acceptRemoteName, acceptDoc);
-        }
-      });
+    function duplicateNotebook(_) {
+      const duplicateNotebookLocalName = `Copy of ${ _.localName() }`;
+      const duplicateNotebookRemoteName = null;
+      const duplicateNotebookDoc = serialize(_);
+      return deserialize(_, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
     }
 
     function executeNextCell(_, cells, cellIndex, cellCount, go) {
@@ -11630,223 +11830,6 @@
             return _.growl('Finished running your flow!', 'success');
         }
       });
-    }
-
-    function stopRunningAll(_) {
-      return _.isRunningAll(false);
-    }
-
-    function clearCell(_) {
-      _.selectedCell.clear();
-      return _.selectedCell.autoResize();
-    }
-
-    // noop
-    function notImplemented() {
-      return {};
-    }
-
-    function createMenu(label, items) {
-      return {
-        label,
-        items
-      };
-    }
-
-    function createTool(icon, label, action, isDisabled) {
-      if (isDisabled == null) {
-        isDisabled = false;
-      }
-      return {
-        label,
-        action,
-        isDisabled,
-        icon: `fa fa-${ icon }`
-      };
-    }
-
-    function toKeyboardHelp(shortcut) {
-      const lodash = window._;
-      const seq = shortcut[0];
-      const caption = shortcut[1];
-      const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${ key }</kbd>`).join(' ');
-      return {
-        keystrokes,
-        caption
-      };
-    }
-
-    function switchToEditMode(_) {
-      _.selectedCell.isActive(true);
-      return false;
-    }
-
-    function convertCellToCode(_) {
-      return _.selectedCell.type('cs');
-    }
-
-    function convertCellToMarkdown(_) {
-      console.log('arguments passed to convertCellToMarkdown', arguments);
-      _.selectedCell.type('md');
-      return _.selectedCell.execute();
-    }
-
-    function convertCellToRaw(_) {
-      _.selectedCell.type('raw');
-      return _.selectedCell.execute();
-    }
-
-    function convertCellToHeading(_, level) {
-      return () => {
-        _.selectedCell.type(`h${ level }`);
-        return _.selectedCell.execute();
-      };
-    }
-
-    function selectPreviousCell(_) {
-      let cells;
-      if (_.selectedCellIndex !== 0) {
-        cells = _.cells();
-        selectCell(_, cells[_.selectedCellIndex - 1]);
-      }
-      // prevent arrow keys from scrolling the page
-      return false;
-    }
-
-    function insertNewCellAbove(_) {
-      return insertAbove(_, createCell(_, 'cs'));
-    }
-
-    function undoLastDelete(_) {
-      if (_.lastDeletedCell) {
-        insertCell(_, _.selectedCellIndex + 1, _.lastDeletedCell);
-      }
-      _.lastDeletedCell = null;
-      return _.lastDeletedCell;
-    }
-
-    function toggleOutput(_) {
-      return _.selectedCell.toggleOutput();
-    }
-
-    function displayKeyboardShortcuts() {
-      const $ = window.jQuery;
-      return $('#keyboardHelpDialog').modal();
-    }
-
-    function convertCellToScala(_) {
-      return _.selectedCell.type('sca');
-    }
-
-    // (From IPython Notebook keyboard shortcuts dialog)
-    //
-    // The IPython Notebook has two different keyboard input modes.
-    // Edit mode allows you to type code/text into a cell
-    // and is indicated by a green cell border.
-    // Command mode binds the keyboard to notebook level
-    // actions and is indicated by a grey cell border.
-    //
-    // Command Mode (press Esc to enable)
-    //
-    function createNormalModeKeyboardShortcuts(_) {
-      const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode],
-      // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
-      // [ 'ctrl+enter', 'run cell', runCell ]
-      // [ 'alt+enter', 'run cell, insert below', runCellAndInsertBelow ]
-      ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(_, 1)], ['2', 'to heading 2', convertCellToHeading(_, 2)], ['3', 'to heading 3', convertCellToHeading(_, 3)], ['4', 'to heading 4', convertCellToHeading(_, 4)], ['5', 'to heading 5', convertCellToHeading(_, 5)], ['6', 'to heading 6', convertCellToHeading(_, 6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
-      // [ 'mod+s', 'save notebook', saveNotebook ]
-      // [ 'l', 'toggle line numbers' ]
-      ['o', 'toggle output', toggleOutput],
-      // [ 'shift+o', 'toggle output scrolling' ]
-      ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
-
-      if (_.onSparklingWater) {
-        normalModeKeyboardShortcuts.push(['q', 'to Scala', convertCellToScala]);
-      }
-
-      return normalModeKeyboardShortcuts;
-    }
-
-    function switchToCommandMode(_) {
-      return _.selectedCell.isActive(false);
-    }
-
-    function runCellAndInsertBelow(_) {
-      _.selectedCell.execute(() => insertNewCellBelow(_));
-      return false;
-    }
-
-    function createEditModeKeyboardShortcuts() {
-      //
-      // Edit Mode (press Enter to enable)
-      //
-      const editModeKeyboardShortcuts = [
-      // Tab : code completion or indent
-      // Shift-Tab : tooltip
-      // Cmd-] : indent
-      // Cmd-[ : dedent
-      // Cmd-a : select all
-      // Cmd-z : undo
-      // Cmd-Shift-z : redo
-      // Cmd-y : redo
-      // Cmd-Up : go to cell start
-      // Cmd-Down : go to cell end
-      // Opt-Left : go one word left
-      // Opt-Right : go one word right
-      // Opt-Backspace : del word before
-      // Opt-Delete : del word after
-      ['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
-      return editModeKeyboardShortcuts;
-    }
-
-    function setupKeyboardHandling(_, mode) {
-      const Mousetrap = window.Mousetrap;
-      const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
-      const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();
-      let caption;
-      let f;
-      let shortcut;
-      let _i;
-      let _j;
-      let _len;
-      let _len1;
-      let _ref;
-      let _ref1;
-      for (_i = 0, _len = normalModeKeyboardShortcuts.length; _i < _len; _i++) {
-        _ref = normalModeKeyboardShortcuts[_i];
-        shortcut = _ref[0];
-        caption = _ref[1];
-        f = _ref[2].bind(this, _);
-        Mousetrap.bind(shortcut, f);
-      }
-      for (_j = 0, _len1 = editModeKeyboardShortcuts.length; _j < _len1; _j++) {
-        _ref1 = editModeKeyboardShortcuts[_j];
-        shortcut = _ref1[0];
-        caption = _ref1[1];
-        f = _ref1[2].bind(this, _);
-        Mousetrap.bindGlobal(shortcut, f);
-      }
-    }
-
-    function createShortcutHint(shortcut) {
-      const lodash = window._;
-      return `<span style=\'float:right\'>${ lodash.map(shortcut, key => `<kbd>${ key }</kbd>`).join(' ') }</span>`;
-    }
-
-    function createMenuItem(label, action, shortcut) {
-      const lodash = window._;
-      const kbds = shortcut ? createShortcutHint(shortcut) : '';
-      return {
-        label: `${ lodash.escape(label) }${ kbds }`,
-        action
-      };
-    }
-
-    function duplicateNotebook(_) {
-      const duplicateNotebookLocalName = `Copy of ${ _.localName() }`;
-      const duplicateNotebookRemoteName = null;
-      const duplicateNotebookDoc = serialize(_);
-      return deserialize(_, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
     }
 
     function continueRunningAllCells(_) {
@@ -12056,6 +12039,11 @@
       return _.selectedCell.toggleInput();
     }
 
+    function clearCell(_) {
+      _.selectedCell.clear();
+      return _.selectedCell.autoResize();
+    }
+
     function insertNewScalaCellAbove(_) {
       return insertAbove(_, createCell(_, 'sca'));
     }
@@ -12131,6 +12119,23 @@
       if (_.onSparklingWater) {
         return _initializeInterpreter(_);
       }
+    }
+
+    function createTool(icon, label, action, isDisabled) {
+      if (isDisabled == null) {
+        isDisabled = false;
+      }
+      return {
+        label,
+        action,
+        isDisabled,
+        icon: `fa fa-${ icon }`
+      };
+    }
+
+    function createToolbar(_) {
+      const toolbar = [[createTool('file-o', 'New', createNotebook.bind(this, _)), createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow.bind(this, _)), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell.bind(this, _)), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell.bind(this, _)), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells.bind(this, _))], [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))]];
+      return toolbar;
     }
 
     function flowStatus(_) {
@@ -12319,7 +12324,7 @@
         // Top menu bar
         //
         _.menus = Flow.Dataflow.signal(null);
-        const _toolbar = [[createTool('file-o', 'New', createNotebook.bind(this, _)), createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow.bind(this, _)), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell.bind(this, _)), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell.bind(this, _)), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells.bind(this, _))], [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))]];
+        const _toolbar = createToolbar(_);
 
         const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
         const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();

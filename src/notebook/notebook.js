@@ -3,42 +3,27 @@ import { deserialize } from './deserialize';
 import { createCell } from './createCell';
 import { checkConsistency } from './checkConsistency';
 
-import { copyCell } from './copyCell';
-import { cutCell } from './cutCell';
-import { deleteCell } from './deleteCell';
 import { insertAbove } from './insertAbove';
 import { insertCell } from './insertCell';
 import { insertBelow } from './insertBelow';
 import { appendCell } from './appendCell';
-import { insertNewCellBelow } from './insertNewCellBelow';
-import { moveCellUp } from './moveCellUp';
 import { mergeCellBelow } from './mergeCellBelow';
 import { splitCell } from './splitCell';
 import { pasteCellAbove } from './pasteCellAbove';
-import { pasteCellBelow } from './pasteCellBelow';
-import { runCell } from './runCell';
-import { runCellAndSelectBelow } from './runCellAndSelectBelow';
-import { saveNotebook } from './saveNotebook';
-import { promptForNotebook } from './promptForNotebook';
+
 import { editName } from './editName';
 import { saveName } from './saveName';
 import { toggleSidebar } from './toggleSidebar';
-import { moveCellDown } from './moveCellDown';
 // figured out how to use `export default function` syntax here
 // hence no {} curly braces
-import executeCommand from './executeCommand';
-import createNotebook from './createNotebook';
-import runAllCells from './runAllCells';
 import stopRunningAll from './stopRunningAll';
-import clearCell from './clearCell';
 import notImplemented from './notImplemented';
 import createMenu from './createMenu';
-
-import createTool from './createTool';
 import toKeyboardHelp from './toKeyboardHelp';
 import createNormalModeKeyboardShortcuts from './createNormalModeKeyboardShortcuts';
 import createEditModeKeyboardShortcuts from './createEditModeKeyboardShortcuts';
 import initialize from './initialize';
+import createToolbar from './createToolbar';
 
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 
@@ -85,32 +70,8 @@ export function notebook() {
     // Top menu bar
     //
     _.menus = Flow.Dataflow.signal(null);
-    const _toolbar = [
-      [
-        createTool('file-o', 'New', createNotebook.bind(this, _)),
-        createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)),
-        createTool('save', 'Save (s)', saveNotebook.bind(this, _)),
-      ],
-      [
-        createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow.bind(this, _)),
-        createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)),
-        createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _)),
-      ],
-      [
-        createTool('cut', 'Cut Cell (x)', cutCell.bind(this, _)),
-        createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)),
-        createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)),
-        createTool('eraser', 'Clear Cell', clearCell.bind(this, _)),
-        createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _)),
-      ],
-      [
-        createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)),
-        createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)),
-        createTool('forward', 'Run All', runAllCells.bind(this, _)),
-      ],
-      [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))],
-    ];
-
+    const _toolbar = createToolbar(_);
+ 
     const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
     const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();
     const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
