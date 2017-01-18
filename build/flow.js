@@ -11932,6 +11932,11 @@
     }
   }
 
+  // noop
+  function notImplemented() {
+    return {};
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -12111,8 +12116,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      // noop
-      const notImplemented = () => {};
       const pasteCellandReplace = notImplemented;
       const mergeCellAbove = notImplemented;
       const startTour = notImplemented;

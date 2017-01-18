@@ -68,6 +68,7 @@ import continueRunningAllCells from './continueRunningAllCells';
 import stopRunningAll from './stopRunningAll';
 import clearCell from './clearCell';
 import clearAllCells from './clearAllCells';
+import notImplemented from './notImplemented';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -108,8 +109,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    // noop
-    const notImplemented = () => {};
     const pasteCellandReplace = notImplemented;
     const mergeCellAbove = notImplemented;
     const startTour = notImplemented;
