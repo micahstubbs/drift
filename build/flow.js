@@ -11238,41 +11238,6 @@
       }
     }
 
-    function switchToCommandMode(_) {
-      return _.selectedCell.isActive(false);
-    }
-
-    function switchToEditMode(_) {
-      _.selectedCell.isActive(true);
-      return false;
-    }
-
-    function convertCellToCode(_) {
-      return _.selectedCell.type('cs');
-    }
-
-    function convertCellToHeading(_, level) {
-      return () => {
-        _.selectedCell.type(`h${ level }`);
-        return _.selectedCell.execute();
-      };
-    }
-
-    function convertCellToMarkdown(_) {
-      console.log('arguments passed to convertCellToMarkdown', arguments);
-      _.selectedCell.type('md');
-      return _.selectedCell.execute();
-    }
-
-    function convertCellToRaw(_) {
-      _.selectedCell.type('raw');
-      return _.selectedCell.execute();
-    }
-
-    function convertCellToScala(_) {
-      return _.selectedCell.type('sca');
-    }
-
     function copyCell(_) {
       _.clipboardCell = _.selectedCell;
       return _.clipboardCell;
@@ -11353,15 +11318,6 @@
       return cell;
     }
 
-    function moveCellDown(_) {
-      const cells = _.cells();
-      if (_.selectedCellIndex !== cells.length - 1) {
-        _.cells.splice(_.selectedCellIndex, 1);
-        _.selectedCellIndex++;
-        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
-      }
-    }
-
     function moveCellUp(_) {
       let cells;
       if (_.selectedCellIndex !== 0) {
@@ -11430,11 +11386,6 @@
 
     function runCell(_) {
       _.selectedCell.execute();
-      return false;
-    }
-
-    function runCellAndInsertBelow(_) {
-      _.selectedCell.execute(() => insertNewCellBelow(_));
       return false;
     }
 
@@ -11639,19 +11590,13 @@
       return _.isSidebarHidden(!_.isSidebarHidden());
     }
 
-    function selectPreviousCell(_) {
-      let cells;
-      if (_.selectedCellIndex !== 0) {
-        cells = _.cells();
-        selectCell(_, cells[_.selectedCellIndex - 1]);
+    function moveCellDown(_) {
+      const cells = _.cells();
+      if (_.selectedCellIndex !== cells.length - 1) {
+        _.cells.splice(_.selectedCellIndex, 1);
+        _.selectedCellIndex++;
+        _.cells.splice(_.selectedCellIndex, 0, _.selectedCell);
       }
-      // prevent arrow keys from scrolling the page
-      return false;
-    }
-
-    function displayKeyboardShortcuts() {
-      const $ = window.jQuery;
-      return $('#keyboardHelpDialog').modal();
     }
 
     function executeCommand(_, command) {
@@ -11912,6 +11857,11 @@
       return _.showHelp();
     }
 
+    function displayKeyboardShortcuts() {
+      const $ = window.jQuery;
+      return $('#keyboardHelpDialog').modal();
+    }
+
     function findBuildProperty(caption) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -12012,6 +11962,137 @@
         keystrokes,
         caption
       };
+    }
+
+    function switchToEditMode(_) {
+      _.selectedCell.isActive(true);
+      return false;
+    }
+
+    function convertCellToCode(_) {
+      return _.selectedCell.type('cs');
+    }
+
+    function convertCellToMarkdown(_) {
+      console.log('arguments passed to convertCellToMarkdown', arguments);
+      _.selectedCell.type('md');
+      return _.selectedCell.execute();
+    }
+
+    function convertCellToRaw(_) {
+      _.selectedCell.type('raw');
+      return _.selectedCell.execute();
+    }
+
+    function convertCellToHeading(_, level) {
+      return () => {
+        _.selectedCell.type(`h${ level }`);
+        return _.selectedCell.execute();
+      };
+    }
+
+    function selectPreviousCell(_) {
+      let cells;
+      if (_.selectedCellIndex !== 0) {
+        cells = _.cells();
+        selectCell(_, cells[_.selectedCellIndex - 1]);
+      }
+      // prevent arrow keys from scrolling the page
+      return false;
+    }
+
+    function convertCellToScala(_) {
+      return _.selectedCell.type('sca');
+    }
+
+    // (From IPython Notebook keyboard shortcuts dialog)
+    //
+    // The IPython Notebook has two different keyboard input modes.
+    // Edit mode allows you to type code/text into a cell
+    // and is indicated by a green cell border.
+    // Command mode binds the keyboard to notebook level
+    // actions and is indicated by a grey cell border.
+    //
+    // Command Mode (press Esc to enable)
+    //
+    function getNormalModeKeyboardShortcuts(_) {
+      const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode],
+      // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
+      // [ 'ctrl+enter', 'run cell', runCell ]
+      // [ 'alt+enter', 'run cell, insert below', runCellAndInsertBelow ]
+      ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(_, 1)], ['2', 'to heading 2', convertCellToHeading(_, 2)], ['3', 'to heading 3', convertCellToHeading(_, 3)], ['4', 'to heading 4', convertCellToHeading(_, 4)], ['5', 'to heading 5', convertCellToHeading(_, 5)], ['6', 'to heading 6', convertCellToHeading(_, 6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
+      // [ 'mod+s', 'save notebook', saveNotebook ]
+      // [ 'l', 'toggle line numbers' ]
+      ['o', 'toggle output', toggleOutput],
+      // [ 'shift+o', 'toggle output scrolling' ]
+      ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
+
+      if (_.onSparklingWater) {
+        normalModeKeyboardShortcuts.push(['q', 'to Scala', convertCellToScala]);
+      }
+
+      return normalModeKeyboardShortcuts;
+    }
+
+    function switchToCommandMode(_) {
+      return _.selectedCell.isActive(false);
+    }
+
+    function runCellAndInsertBelow(_) {
+      _.selectedCell.execute(() => insertNewCellBelow(_));
+      return false;
+    }
+
+    function getEditModeKeyboardShortcuts() {
+      //
+      // Edit Mode (press Enter to enable)
+      //
+      const editModeKeyboardShortcuts = [
+      // Tab : code completion or indent
+      // Shift-Tab : tooltip
+      // Cmd-] : indent
+      // Cmd-[ : dedent
+      // Cmd-a : select all
+      // Cmd-z : undo
+      // Cmd-Shift-z : redo
+      // Cmd-y : redo
+      // Cmd-Up : go to cell start
+      // Cmd-Down : go to cell end
+      // Opt-Left : go one word left
+      // Opt-Right : go one word right
+      // Opt-Backspace : del word before
+      // Opt-Delete : del word after
+      ['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
+      return editModeKeyboardShortcuts;
+    }
+
+    function setupKeyboardHandling(_, mode) {
+      const Mousetrap = window.Mousetrap;
+      const normalModeKeyboardShortcuts = getNormalModeKeyboardShortcuts(_);
+      const editModeKeyboardShortcuts = getEditModeKeyboardShortcuts();
+      let caption;
+      let f;
+      let shortcut;
+      let _i;
+      let _j;
+      let _len;
+      let _len1;
+      let _ref;
+      let _ref1;
+      for (_i = 0, _len = normalModeKeyboardShortcuts.length; _i < _len; _i++) {
+        _ref = normalModeKeyboardShortcuts[_i];
+        shortcut = _ref[0];
+        caption = _ref[1];
+        f = _ref[2].bind(this, _);
+        Mousetrap.bind(shortcut, f);
+      }
+      for (_j = 0, _len1 = editModeKeyboardShortcuts.length; _j < _len1; _j++) {
+        _ref1 = editModeKeyboardShortcuts[_j];
+        shortcut = _ref1[0];
+        caption = _ref1[1];
+        f = _ref1[2].bind(this, _);
+        Mousetrap.bindGlobal(shortcut, f);
+      }
     }
 
     function flowStatus(_) {
@@ -12214,79 +12295,12 @@
         }
         const _toolbar = [[createTool('file-o', 'New', createNotebook.bind(this, _)), createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow.bind(this, _)), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell.bind(this, _)), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell.bind(this, _)), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells.bind(this, _))], [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))]];
 
-        // (From IPython Notebook keyboard shortcuts dialog)
-        //
-        // The IPython Notebook has two different keyboard input modes.
-        // Edit mode allows you to type code/text into a cell
-        // and is indicated by a green cell border.
-        // Command mode binds the keyboard to notebook level
-        // actions and is indicated by a grey cell border.
-        //
-        // Command Mode (press Esc to enable)
-        //
-        const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode],
-        // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
-        // [ 'ctrl+enter', 'run cell', runCell ]
-        // [ 'alt+enter', 'run cell, insert below', runCellAndInsertBelow ]
-        ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(_, 1)], ['2', 'to heading 2', convertCellToHeading(_, 2)], ['3', 'to heading 3', convertCellToHeading(_, 3)], ['4', 'to heading 4', convertCellToHeading(_, 4)], ['5', 'to heading 5', convertCellToHeading(_, 5)], ['6', 'to heading 6', convertCellToHeading(_, 6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
-        // [ 'mod+s', 'save notebook', saveNotebook ]
-        // [ 'l', 'toggle line numbers' ]
-        ['o', 'toggle output', toggleOutput],
-        // [ 'shift+o', 'toggle output scrolling' ]
-        ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
-
-        if (_.onSparklingWater) {
-          normalModeKeyboardShortcuts.push(['q', 'to Scala', convertCellToScala]);
-        }
-
-        //
-        // Edit Mode (press Enter to enable)
-        //
-        const editModeKeyboardShortcuts = [
-        // Tab : code completion or indent
-        // Shift-Tab : tooltip
-        // Cmd-] : indent
-        // Cmd-[ : dedent
-        // Cmd-a : select all
-        // Cmd-z : undo
-        // Cmd-Shift-z : redo
-        // Cmd-y : redo
-        // Cmd-Up : go to cell start
-        // Cmd-Down : go to cell end
-        // Opt-Left : go one word left
-        // Opt-Right : go one word right
-        // Opt-Backspace : del word before
-        // Opt-Delete : del word after
-        ['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
+        const normalModeKeyboardShortcuts = getNormalModeKeyboardShortcuts(_);
+        const editModeKeyboardShortcuts = getEditModeKeyboardShortcuts();
         const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
         const editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
-        const setupKeyboardHandling = mode => {
-          let caption;
-          let f;
-          let shortcut;
-          let _i;
-          let _j;
-          let _len;
-          let _len1;
-          let _ref;
-          let _ref1;
-          for (_i = 0, _len = normalModeKeyboardShortcuts.length; _i < _len; _i++) {
-            _ref = normalModeKeyboardShortcuts[_i];
-            shortcut = _ref[0];
-            caption = _ref[1];
-            f = _ref[2].bind(this, _);
-            Mousetrap.bind(shortcut, f);
-          }
-          for (_j = 0, _len1 = editModeKeyboardShortcuts.length; _j < _len1; _j++) {
-            _ref1 = editModeKeyboardShortcuts[_j];
-            shortcut = _ref1[0];
-            caption = _ref1[1];
-            f = _ref1[2].bind(this, _);
-            Mousetrap.bindGlobal(shortcut, f);
-          }
-        };
         const initialize = () => {
-          setupKeyboardHandling('normal');
+          setupKeyboardHandling(_, 'normal');
           setupMenus(_, menuCell);
           Flow.Dataflow.link(_.load, loadNotebook.bind(this, _));
           Flow.Dataflow.link(_.open, openNotebook.bind(this, _));
