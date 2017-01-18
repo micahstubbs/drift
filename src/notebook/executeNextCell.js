@@ -21,7 +21,13 @@ export default function executeNextCell(
         if (errors) {
           return go('failed', errors);
         }
-        return executeNextCell();
+        return executeNextCell(
+          _,
+          cells,
+          cellIndex,
+          cellCount,
+          go
+        );
       });
     }
     return go('done');

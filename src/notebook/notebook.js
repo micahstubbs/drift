@@ -63,7 +63,8 @@ import exportNotebook from './exportNotebook';
 import goToH2OUrl from './goToH2OUrl';
 import goToUrl from './goToUrl';
 import executeAllCells from './executeAllCells';
-
+import runAllCells from './runAllCells';
+ 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 
@@ -103,24 +104,7 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const runAllCells = fromBeginning => {
-      if (fromBeginning == null) {
-        fromBeginning = true;
-      }
-      return executeAllCells(_, fromBeginning, status => {
-        _.isRunningAll(false);
-        switch (status) {
-          case 'aborted':
-            return _.growl('Stopped running your flow.', 'warning');
-          case 'failed':
-            return _.growl('Failed running your flow.', 'danger');
-          default:
-            // 'done'
-            return _.growl('Finished running your flow!', 'success');
-        }
-      });
-    };
-    const continueRunningAllCells = () => runAllCells(false);
+    const continueRunningAllCells = () => runAllCells(_, false);
     const stopRunningAll = () => _.isRunningAll(false);
     const clearCell = () => {
       _.selectedCell.clear();
@@ -229,7 +213,7 @@ export function notebook() {
           createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']),
           createMenuItem('Make a Copy...', duplicateNotebook.bind(this, _)),
           menuDivider,
-          createMenuItem('Run All Cells', runAllCells),
+          createMenuItem('Run All Cells', runAllCells.bind(this, _)),
           createMenuItem('Run All Cells Below', continueRunningAllCells),
           menuDivider,
           createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _, _areInputsHidden)),
@@ -336,7 +320,7 @@ export function notebook() {
       [
         createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)),
         createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)),
-        createTool('forward', 'Run All', runAllCells),
+        createTool('forward', 'Run All', runAllCells.bind(this, _)),
       ],
       [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))],
     ];
