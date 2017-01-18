@@ -56,6 +56,7 @@ import shutdown from './shutdown';
 import showHelp from './showHelp';
 import createNotebook from './createNotebook';
 import duplicateNotebook from './duplicateNotebook';
+import openNotebook from './openNotebook';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -96,17 +97,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const openNotebook = (name, doc) => {
-      const openNotebookLocalName = name;
-      const openNotebookRemoteName = null;
-      const openNotebookDoc = doc;
-      return deserialize(
-        _,
-        openNotebookLocalName,
-        openNotebookRemoteName,
-        openNotebookDoc
-      );
-    };
     const exportNotebook = () => {
       const remoteName = _.remoteName();
       if (remoteName) {
@@ -655,7 +645,7 @@ export function notebook() {
       setupKeyboardHandling('normal');
       setupMenus();
       Flow.Dataflow.link(_.load, loadNotebook.bind(this, _));
-      Flow.Dataflow.link(_.open, openNotebook);
+      Flow.Dataflow.link(_.open, openNotebook.bind(this, _));
       Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
       Flow.Dataflow.link(_.executeAllCells, executeAllCells);
       Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, _, type, input));
