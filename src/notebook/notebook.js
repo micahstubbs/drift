@@ -57,6 +57,7 @@ import showHelp from './showHelp';
 import createNotebook from './createNotebook';
 import duplicateNotebook from './duplicateNotebook';
 import openNotebook from './openNotebook';
+import exportNotebook from './exportNotebook';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -97,13 +98,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const exportNotebook = () => {
-      const remoteName = _.remoteName();
-      if (remoteName) {
-        return window.open(`/3/NodePersistentStorage.bin/notebook/${remoteName}`, '_blank');
-      }
-      return _.alert('Please save this notebook before exporting.');
-    };
     const goToH2OUrl = url => () => window.open(window.Flow.ContextPath + url, '_blank');
     const goToUrl = url => () => window.open(url, '_blank');
     const executeAllCells = (fromBeginning, go) => {
@@ -276,7 +270,7 @@ export function notebook() {
           createMenuItem('Toggle All Cell Outputs', toggleAllOutputs.bind(this, _areOutputsHidden)),
           createMenuItem('Clear All Cell Outputs', clearAllCells),
           menuDivider,
-          createMenuItem('Download this Flow...', exportNotebook),
+          createMenuItem('Download this Flow...', exportNotebook.bind(this, _)),
         ]),
         createMenu('Cell', menuCell),
         createMenu('Data', [
