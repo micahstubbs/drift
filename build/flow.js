@@ -11937,6 +11937,13 @@
     return {};
   }
 
+  function createMenu(label, items) {
+    return {
+      label,
+      items
+    };
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -12123,10 +12130,6 @@
       //
       // Top menu bar
       //
-      const createMenu = (label, items) => ({
-        label,
-        items
-      });
       const createMenuHeader = label => ({
         label,
         action: null

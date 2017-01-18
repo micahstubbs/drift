@@ -69,6 +69,7 @@ import stopRunningAll from './stopRunningAll';
 import clearCell from './clearCell';
 import clearAllCells from './clearAllCells';
 import notImplemented from './notImplemented';
+import createMenu from './createMenu';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -116,10 +117,6 @@ export function notebook() {
     //
     // Top menu bar
     //
-    const createMenu = (label, items) => ({
-      label,
-      items,
-    });
     const createMenuHeader = label => ({
       label,
       action: null,
