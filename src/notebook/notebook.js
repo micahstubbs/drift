@@ -62,6 +62,7 @@ import openNotebook from './openNotebook';
 import exportNotebook from './exportNotebook';
 import goToH2OUrl from './goToH2OUrl';
 import goToUrl from './goToUrl';
+import executeAllCells from './executeAllCells';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -94,57 +95,20 @@ export function notebook() {
     const _areInputsHidden = Flow.Dataflow.signal(false);
     const _areOutputsHidden = Flow.Dataflow.signal(false);
     _.isSidebarHidden = Flow.Dataflow.signal(false);
-    const _isRunningAll = Flow.Dataflow.signal(false);
-    const _runningCaption = Flow.Dataflow.signal('Running');
-    const _runningPercent = Flow.Dataflow.signal('0%');
-    const _runningCellInput = Flow.Dataflow.signal('');
+    _.isRunningAll = Flow.Dataflow.signal(false);
+    _.runningCaption = Flow.Dataflow.signal('Running');
+    _.runningPercent = Flow.Dataflow.signal('0%');
+    _.runningCellInput = Flow.Dataflow.signal('');
     const _status = flowStatus(_);
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const executeAllCells = (fromBeginning, go) => {
-      let cellIndex;
-      let cells;
-      _isRunningAll(true);
-      cells = _.cells().slice(0);
-      const cellCount = cells.length;
-      cellIndex = 0;
-      if (!fromBeginning) {
-        cells = cells.slice(_.selectedCellIndex);
-        cellIndex = _.selectedCellIndex;
-      }
-      const executeNextCell = () => {
-        let cell;
-        // will be false if user-aborted
-        if (_isRunningAll()) {
-          cell = cells.shift();
-          if (cell) {
-            // Scroll immediately without affecting selection state.
-            cell.scrollIntoView(true);
-            cellIndex++;
-            _runningCaption(`Running cell ${cellIndex} of ${cellCount}`);
-            _runningPercent(`${Math.floor(100 * cellIndex / cellCount)}%`);
-            _runningCellInput(cell.input());
-            // TODO Continuation should be EFC, and passing an error should abort 'run all'
-            return cell.execute(errors => {
-              if (errors) {
-                return go('failed', errors);
-              }
-              return executeNextCell();
-            });
-          }
-          return go('done');
-        }
-        return go('aborted');
-      };
-      return executeNextCell();
-    };
     const runAllCells = fromBeginning => {
       if (fromBeginning == null) {
         fromBeginning = true;
       }
-      return executeAllCells(fromBeginning, status => {
-        _isRunningAll(false);
+      return executeAllCells(_, fromBeginning, status => {
+        _.isRunningAll(false);
         switch (status) {
           case 'aborted':
             return _.growl('Stopped running your flow.', 'warning');
@@ -157,7 +121,7 @@ export function notebook() {
       });
     };
     const continueRunningAllCells = () => runAllCells(false);
-    const stopRunningAll = () => _isRunningAll(false);
+    const stopRunningAll = () => _.isRunningAll(false);
     const clearCell = () => {
       _.selectedCell.clear();
       return _.selectedCell.autoResize();
@@ -643,7 +607,7 @@ export function notebook() {
       Flow.Dataflow.link(_.load, loadNotebook.bind(this, _));
       Flow.Dataflow.link(_.open, openNotebook.bind(this, _));
       Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
-      Flow.Dataflow.link(_.executeAllCells, executeAllCells);
+      Flow.Dataflow.link(_.executeAllCells, executeAllCells.bind(this, _));
       Flow.Dataflow.link(_.insertAndExecuteCell, (type, input) => lodash.defer(appendCellAndRun, _, type, input));
       Flow.Dataflow.link(_.insertCell, (type, input) => lodash.defer(insertCellBelow, _, type, input));
       Flow.Dataflow.link(_.saved, () => _.growl('Notebook saved.'));
@@ -669,10 +633,10 @@ export function notebook() {
       areInputsHidden: _areInputsHidden,
       areOutputsHidden: _areOutputsHidden,
       isSidebarHidden: _.isSidebarHidden,
-      isRunningAll: _isRunningAll,
-      runningCaption: _runningCaption,
-      runningPercent: _runningPercent,
-      runningCellInput: _runningCellInput,
+      isRunningAll: _.isRunningAll,
+      runningCaption: _.runningCaption,
+      runningPercent: _.runningPercent,
+      runningCellInput: _.runningCellInput,
       stopRunningAll,
       toggleSidebar: toggleSidebar.bind(this, _),
       shortcutsHelp: {
