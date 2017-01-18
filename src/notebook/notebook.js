@@ -46,6 +46,8 @@ import { toggleAllOutputs } from './toggleAllOutputs';
 import { editName } from './editName';
 import { saveName } from './saveName';
 import { toggleSidebar } from './toggleSidebar';
+// figured out how to use `export default function` syntax here
+// hence no {} curly braces
 import selectPreviousCell from './selectPreviousCell';
 import displayKeyboardShortcuts from './displayKeyboardShortcuts';
 import displayDocumentation from './displayDocumentation';
