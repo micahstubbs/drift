@@ -11841,6 +11841,10 @@
     return _.alert('Please save this notebook before exporting.');
   }
 
+  function goToH2OUrl(url) {
+    return () => window.open(window.Flow.ContextPath + url, '_blank');
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -12020,7 +12024,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const goToH2OUrl = url => () => window.open(window.Flow.ContextPath + url, '_blank');
       const goToUrl = url => () => window.open(url, '_blank');
       const executeAllCells = (fromBeginning, go) => {
         let cellIndex;

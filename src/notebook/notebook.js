@@ -58,6 +58,7 @@ import createNotebook from './createNotebook';
 import duplicateNotebook from './duplicateNotebook';
 import openNotebook from './openNotebook';
 import exportNotebook from './exportNotebook';
+import goToH2OUrl from './goToH2OUrl';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -98,7 +99,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const goToH2OUrl = url => () => window.open(window.Flow.ContextPath + url, '_blank');
     const goToUrl = url => () => window.open(url, '_blank');
     const executeAllCells = (fromBeginning, go) => {
       let cellIndex;
