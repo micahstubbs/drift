@@ -11944,6 +11944,13 @@
     };
   }
 
+  function createMenuHeader(label) {
+    return {
+      label,
+      action: null
+    };
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -12130,10 +12137,6 @@
       //
       // Top menu bar
       //
-      const createMenuHeader = label => ({
-        label,
-        action: null
-      });
       const createShortcutHint = shortcut => `<span style=\'float:right\'>${ lodash.map(shortcut, key => `<kbd>${ key }</kbd>`).join(' ') }</span>`;
       const createMenuItem = (label, action, shortcut) => {
         const kbds = shortcut ? createShortcutHint(shortcut) : '';

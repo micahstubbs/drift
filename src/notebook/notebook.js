@@ -70,6 +70,7 @@ import clearCell from './clearCell';
 import clearAllCells from './clearAllCells';
 import notImplemented from './notImplemented';
 import createMenu from './createMenu';
+import createMenuHeader from './createMenuHeader';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -117,10 +118,6 @@ export function notebook() {
     //
     // Top menu bar
     //
-    const createMenuHeader = label => ({
-      label,
-      action: null,
-    });
     const createShortcutHint = shortcut => `<span style=\'float:right\'>${lodash.map(shortcut, key => `<kbd>${key}</kbd>`).join(' ')}</span>`;
     const createMenuItem = (label, action, shortcut) => {
       const kbds = shortcut ? createShortcutHint(shortcut) : '';
