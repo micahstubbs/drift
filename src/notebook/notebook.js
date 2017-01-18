@@ -67,6 +67,7 @@ import runAllCells from './runAllCells';
 import continueRunningAllCells from './continueRunningAllCells';
 import stopRunningAll from './stopRunningAll';
 import clearCell from './clearCell';
+import clearAllCells from './clearAllCells';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -107,17 +108,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const clearAllCells = () => {
-      let cell;
-      let _i;
-      let _len;
-      const _ref = _.cells();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cell = _ref[_i];
-        cell.clear();
-        cell.autoResize();
-      }
-    };
     // noop
     const notImplemented = () => {};
     const pasteCellandReplace = notImplemented;
@@ -215,7 +205,7 @@ export function notebook() {
           menuDivider,
           createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _, _areInputsHidden)),
           createMenuItem('Toggle All Cell Outputs', toggleAllOutputs.bind(this, _areOutputsHidden)),
-          createMenuItem('Clear All Cell Outputs', clearAllCells),
+          createMenuItem('Clear All Cell Outputs', clearAllCells.bind(this, _)),
           menuDivider,
           createMenuItem('Download this Flow...', exportNotebook.bind(this, _)),
         ]),
