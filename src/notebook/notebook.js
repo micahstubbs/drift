@@ -65,6 +65,7 @@ import goToUrl from './goToUrl';
 import executeAllCells from './executeAllCells';
 import runAllCells from './runAllCells';
 import continueRunningAllCells from './continueRunningAllCells';
+import stopRunningAll from './stopRunningAll';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -105,7 +106,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const stopRunningAll = () => _.isRunningAll(false);
     const clearCell = () => {
       _.selectedCell.clear();
       return _.selectedCell.autoResize();
@@ -621,7 +621,7 @@ export function notebook() {
       runningCaption: _.runningCaption,
       runningPercent: _.runningPercent,
       runningCellInput: _.runningCellInput,
-      stopRunningAll,
+      stopRunningAll: stopRunningAll.bind(this, _),
       toggleSidebar: toggleSidebar.bind(this, _),
       shortcutsHelp: {
         normalMode: normalModeKeyboardShortcutsHelp,

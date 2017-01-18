@@ -11911,6 +11911,10 @@
     return runAllCells(_, false);
   }
 
+  function stopRunningAll(_) {
+    return _.isRunningAll(false);
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -12090,7 +12094,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const stopRunningAll = () => _.isRunningAll(false);
       const clearCell = () => {
         _.selectedCell.clear();
         return _.selectedCell.autoResize();
@@ -12290,7 +12293,7 @@
         runningCaption: _.runningCaption,
         runningPercent: _.runningPercent,
         runningCellInput: _.runningCellInput,
-        stopRunningAll,
+        stopRunningAll: stopRunningAll.bind(this, _),
         toggleSidebar: toggleSidebar.bind(this, _),
         shortcutsHelp: {
           normalMode: normalModeKeyboardShortcutsHelp,
