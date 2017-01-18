@@ -66,6 +66,7 @@ import executeAllCells from './executeAllCells';
 import runAllCells from './runAllCells';
 import continueRunningAllCells from './continueRunningAllCells';
 import stopRunningAll from './stopRunningAll';
+import clearCell from './clearCell';
 
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -106,10 +107,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const clearCell = () => {
-      _.selectedCell.clear();
-      return _.selectedCell.autoResize();
-    };
     const clearAllCells = () => {
       let cell;
       let _i;
@@ -188,7 +185,7 @@ export function notebook() {
       menuDivider,
       createMenuItem('Toggle Cell Input', toggleInput.bind(this, _)),
       createMenuItem('Toggle Cell Output', toggleOutput.bind(this, _), ['o']),
-      createMenuItem('Clear Cell Output', clearCell),
+      createMenuItem('Clear Cell Output', clearCell.bind(this, _)),
     ];
     const menuCellSW = [
       menuDivider,
@@ -314,7 +311,7 @@ export function notebook() {
         createTool('cut', 'Cut Cell (x)', cutCell.bind(this, _)),
         createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)),
         createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)),
-        createTool('eraser', 'Clear Cell', clearCell),
+        createTool('eraser', 'Clear Cell', clearCell.bind(this, _)),
         createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _)),
       ],
       [
