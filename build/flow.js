@@ -11845,6 +11845,10 @@
     return () => window.open(window.Flow.ContextPath + url, '_blank');
   }
 
+  function goToUrl(url) {
+    return () => window.open(url, '_blank');
+  }
+
   function flowStatus(_) {
     const lodash = window._;
     const Flow = window.Flow;
@@ -12024,7 +12028,6 @@
       const _sidebar = flowSidebar(_);
       const _about = Flow.about(_);
       const _dialogs = Flow.dialogs(_);
-      const goToUrl = url => () => window.open(url, '_blank');
       const executeAllCells = (fromBeginning, go) => {
         let cellIndex;
         let cells;
