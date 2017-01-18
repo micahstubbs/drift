@@ -36,8 +36,8 @@ import createMenu from './createMenu';
 
 import createTool from './createTool';
 import toKeyboardHelp from './toKeyboardHelp';
-import getNormalModeKeyboardShortcuts from './getNormalModeKeyboardShortcuts';
-import getEditModeKeyboardShortcuts from './getEditModeKeyboardShortcuts';
+import createNormalModeKeyboardShortcuts from './createNormalModeKeyboardShortcuts';
+import createEditModeKeyboardShortcuts from './createEditModeKeyboardShortcuts';
 import initialize from './initialize';
 
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
@@ -111,8 +111,8 @@ export function notebook() {
       [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))],
     ];
 
-    const normalModeKeyboardShortcuts = getNormalModeKeyboardShortcuts(_);
-    const editModeKeyboardShortcuts = getEditModeKeyboardShortcuts();
+    const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
+    const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();
     const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
     const editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
     Flow.Dataflow.link(_.ready, initialize.bind(this, _));

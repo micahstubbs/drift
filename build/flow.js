@@ -11748,7 +11748,7 @@
     //
     // Command Mode (press Esc to enable)
     //
-    function getNormalModeKeyboardShortcuts(_) {
+    function createNormalModeKeyboardShortcuts(_) {
       const normalModeKeyboardShortcuts = [['enter', 'edit mode', switchToEditMode],
       // [ 'shift+enter', 'run cell, select below', runCellAndSelectBelow ]
       // [ 'ctrl+enter', 'run cell', runCell ]
@@ -11776,7 +11776,7 @@
       return false;
     }
 
-    function getEditModeKeyboardShortcuts() {
+    function createEditModeKeyboardShortcuts() {
       //
       // Edit Mode (press Enter to enable)
       //
@@ -11801,8 +11801,8 @@
 
     function setupKeyboardHandling(_, mode) {
       const Mousetrap = window.Mousetrap;
-      const normalModeKeyboardShortcuts = getNormalModeKeyboardShortcuts(_);
-      const editModeKeyboardShortcuts = getEditModeKeyboardShortcuts();
+      const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
+      const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();
       let caption;
       let f;
       let shortcut;
@@ -12321,8 +12321,8 @@
         _.menus = Flow.Dataflow.signal(null);
         const _toolbar = [[createTool('file-o', 'New', createNotebook.bind(this, _)), createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow.bind(this, _)), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell.bind(this, _)), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell.bind(this, _)), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells.bind(this, _))], [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))]];
 
-        const normalModeKeyboardShortcuts = getNormalModeKeyboardShortcuts(_);
-        const editModeKeyboardShortcuts = getEditModeKeyboardShortcuts();
+        const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
+        const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();
         const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
         const editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
         Flow.Dataflow.link(_.ready, initialize$1.bind(this, _));

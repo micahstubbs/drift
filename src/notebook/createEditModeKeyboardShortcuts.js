@@ -5,7 +5,7 @@ import { runCellAndInsertBelow } from './runCellAndInsertBelow';
 import { splitCell } from './splitCell';
 import { saveNotebook } from './saveNotebook';
 
-export default function getEditModeKeyboardShortcuts() {
+export default function createEditModeKeyboardShortcuts() {
     //
     // Edit Mode (press Enter to enable)
     //

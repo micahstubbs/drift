@@ -1,10 +1,10 @@
-import getNormalModeKeyboardShortcuts from './getNormalModeKeyboardShortcuts';
-import getEditModeKeyboardShortcuts from './getEditModeKeyboardShortcuts';
+import createNormalModeKeyboardShortcuts from './createNormalModeKeyboardShortcuts';
+import createEditModeKeyboardShortcuts from './createEditModeKeyboardShortcuts';
 
 export default function setupKeyboardHandling(_, mode) {
   const Mousetrap = window.Mousetrap;
-  const normalModeKeyboardShortcuts = getNormalModeKeyboardShortcuts(_);
-  const editModeKeyboardShortcuts = getEditModeKeyboardShortcuts();
+  const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
+  const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();
   let caption;
   let f;
   let shortcut;

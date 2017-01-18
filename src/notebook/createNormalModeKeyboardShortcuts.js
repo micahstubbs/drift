@@ -31,7 +31,7 @@ import { convertCellToScala } from './convertCellToScala';
 //
 // Command Mode (press Esc to enable)
 //
-export default function getNormalModeKeyboardShortcuts(_) {
+export default function createNormalModeKeyboardShortcuts(_) {
   const normalModeKeyboardShortcuts = [
     [
       'enter',
