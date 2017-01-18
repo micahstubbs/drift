@@ -12003,6 +12003,17 @@
       };
     }
 
+    function toKeyboardHelp(shortcut) {
+      const lodash = window._;
+      const seq = shortcut[0];
+      const caption = shortcut[1];
+      const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${ key }</kbd>`).join(' ');
+      return {
+        keystrokes,
+        caption
+      };
+    }
+
     function flowStatus(_) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -12247,15 +12258,6 @@
         // Opt-Backspace : del word before
         // Opt-Delete : del word after
         ['esc', 'command mode', switchToCommandMode], ['ctrl+m', 'command mode', switchToCommandMode], ['shift+enter', 'run cell, select below', runCellAndSelectBelow], ['ctrl+enter', 'run cell', runCell], ['alt+enter', 'run cell, insert below', runCellAndInsertBelow], ['ctrl+shift+-', 'split cell', splitCell], ['mod+s', 'save notebook', saveNotebook]];
-        const toKeyboardHelp = shortcut => {
-          const seq = shortcut[0];
-          const caption = shortcut[1];
-          const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${ key }</kbd>`).join(' ');
-          return {
-            keystrokes,
-            caption
-          };
-        };
         const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
         const editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
         const setupKeyboardHandling = mode => {

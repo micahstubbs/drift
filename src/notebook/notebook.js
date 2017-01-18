@@ -59,6 +59,7 @@ import createMenu from './createMenu';
 import createMenuItem from './createMenuItem';
 import setupMenus from './setupMenus';
 import createTool from './createTool';
+import toKeyboardHelp from './toKeyboardHelp';
 
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 
@@ -406,15 +407,6 @@ export function notebook() {
         saveNotebook,
       ],
     ];
-    const toKeyboardHelp = shortcut => {
-      const seq = shortcut[0];
-      const caption = shortcut[1];
-      const keystrokes = lodash.map(seq.split(/\+/g), key => `<kbd>${key}</kbd>`).join(' ');
-      return {
-        keystrokes,
-        caption,
-      };
-    };
     const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);
     const editModeKeyboardShortcutsHelp = lodash.map(editModeKeyboardShortcuts, toKeyboardHelp);
     const setupKeyboardHandling = mode => {
