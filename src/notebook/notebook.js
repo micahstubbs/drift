@@ -64,7 +64,8 @@ import goToH2OUrl from './goToH2OUrl';
 import goToUrl from './goToUrl';
 import executeAllCells from './executeAllCells';
 import runAllCells from './runAllCells';
- 
+import continueRunningAllCells from './continueRunningAllCells';
+
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 
@@ -104,7 +105,6 @@ export function notebook() {
     const _sidebar = flowSidebar(_);
     const _about = Flow.about(_);
     const _dialogs = Flow.dialogs(_);
-    const continueRunningAllCells = () => runAllCells(_, false);
     const stopRunningAll = () => _.isRunningAll(false);
     const clearCell = () => {
       _.selectedCell.clear();
@@ -214,7 +214,7 @@ export function notebook() {
           createMenuItem('Make a Copy...', duplicateNotebook.bind(this, _)),
           menuDivider,
           createMenuItem('Run All Cells', runAllCells.bind(this, _)),
-          createMenuItem('Run All Cells Below', continueRunningAllCells),
+          createMenuItem('Run All Cells Below', continueRunningAllCells.bind(this, _)),
           menuDivider,
           createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _, _areInputsHidden)),
           createMenuItem('Toggle All Cell Outputs', toggleAllOutputs.bind(this, _areOutputsHidden)),
