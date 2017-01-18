@@ -58,6 +58,7 @@ import notImplemented from './notImplemented';
 import createMenu from './createMenu';
 import createMenuItem from './createMenuItem';
 import setupMenus from './setupMenus';
+import createTool from './createTool';
 
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 
@@ -114,7 +115,7 @@ export function notebook() {
         'enter',
       ]),
       menuDivider,
-      createMenuItem('Cut Cell', cutCell, ['x']),
+      createMenuItem('Cut Cell', cutCell.bind(this, _), ['x']),
       createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']),
       createMenuItem('Paste Cell Above', pasteCellAbove.bind(this, _), [
         'shift',
@@ -137,8 +138,8 @@ export function notebook() {
         'j',
       ]),
       menuDivider,
-      createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']),
-      createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']),
+      createMenuItem('Insert Cell Above', insertNewCellAbove.bind(this, _), ['a']),
+      createMenuItem('Insert Cell Below', insertNewCellBelow.bind(this, _), ['b']),
       // TODO createMenuItem('Split Cell', splitCell),
       // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
       // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
@@ -149,23 +150,12 @@ export function notebook() {
     ];
     const menuCellSW = [
       menuDivider,
-      createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove),
-      createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow),
+      createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove.bind(this, _)),
+      createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow.bind(this, _)),
     ];
     if (_.onSparklingWater) {
       menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
     }
-    const createTool = (icon, label, action, isDisabled) => {
-      if (isDisabled == null) {
-        isDisabled = false;
-      }
-      return {
-        label,
-        action,
-        isDisabled,
-        icon: `fa fa-${icon}`,
-      };
-    };
     const _toolbar = [
       [
         createTool('file-o', 'New', createNotebook.bind(this, _)),

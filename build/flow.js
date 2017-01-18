@@ -11300,7 +11300,7 @@
 
     function cutCell(_) {
       copyCell(_);
-      return removeCell();
+      return removeCell(_);
     }
 
     function deleteCell(_) {
@@ -11379,7 +11379,7 @@
         nextCell = cells[_.selectedCellIndex + 1];
         if (_.selectedCell.type() === nextCell.type()) {
           nextCell.input(`${ _.selectedCell.input() }\n${ nextCell.input() }`);
-          removeCell(_, _.cells);
+          removeCell(_);
         }
       }
     }
@@ -11991,6 +11991,18 @@
         return requestModelBuilders(_, (error, builders) => _.menus(initializeMenus(_, menuCell, error ? [] : builders)));
     }
 
+    function createTool(icon, label, action, isDisabled) {
+      if (isDisabled == null) {
+        isDisabled = false;
+      }
+      return {
+        label,
+        action,
+        isDisabled,
+        icon: `fa fa-${ icon }`
+      };
+    }
+
     function flowStatus(_) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -12178,28 +12190,17 @@
         // Top menu bar
         //
         _.menus = Flow.Dataflow.signal(null);
-        menuCell = [createMenuItem('Run Cell', runCell.bind(this, _), ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']), createMenuItem('Paste Cell Above', pasteCellAbove.bind(this, _), ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow.bind(this, _), ['v']),
+        menuCell = [createMenuItem('Run Cell', runCell.bind(this, _), ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell.bind(this, _), ['x']), createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']), createMenuItem('Paste Cell Above', pasteCellAbove.bind(this, _), ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow.bind(this, _), ['v']),
         // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
-        createMenuItem('Delete Cell', deleteCell.bind(this, _), ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete.bind(this, _), ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp.bind(this, _), ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown.bind(this, _), ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove, ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow, ['b']),
+        createMenuItem('Delete Cell', deleteCell.bind(this, _), ['d', 'd']), createMenuItem('Undo Delete Cell', undoLastDelete.bind(this, _), ['z']), menuDivider, createMenuItem('Move Cell Up', moveCellUp.bind(this, _), ['ctrl', 'k']), createMenuItem('Move Cell Down', moveCellDown.bind(this, _), ['ctrl', 'j']), menuDivider, createMenuItem('Insert Cell Above', insertNewCellAbove.bind(this, _), ['a']), createMenuItem('Insert Cell Below', insertNewCellBelow.bind(this, _), ['b']),
         // TODO createMenuItem('Split Cell', splitCell),
         // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
         // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
         menuDivider, createMenuItem('Toggle Cell Input', toggleInput.bind(this, _)), createMenuItem('Toggle Cell Output', toggleOutput.bind(this, _), ['o']), createMenuItem('Clear Cell Output', clearCell.bind(this, _))];
-        const menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow)];
+        const menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove.bind(this, _)), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow.bind(this, _))];
         if (_.onSparklingWater) {
           menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
         }
-        const createTool = (icon, label, action, isDisabled) => {
-          if (isDisabled == null) {
-            isDisabled = false;
-          }
-          return {
-            label,
-            action,
-            isDisabled,
-            icon: `fa fa-${ icon }`
-          };
-        };
         const _toolbar = [[createTool('file-o', 'New', createNotebook.bind(this, _)), createTool('folder-open-o', 'Open', promptForNotebook.bind(this, _)), createTool('save', 'Save (s)', saveNotebook.bind(this, _))], [createTool('plus', 'Insert Cell Below (b)', insertNewCellBelow.bind(this, _)), createTool('arrow-up', 'Move Cell Up (ctrl+k)', moveCellUp.bind(this, _)), createTool('arrow-down', 'Move Cell Down (ctrl+j)', moveCellDown.bind(this, _))], [createTool('cut', 'Cut Cell (x)', cutCell.bind(this, _)), createTool('copy', 'Copy Cell (c)', copyCell.bind(this, _)), createTool('paste', 'Paste Cell Below (v)', pasteCellBelow.bind(this, _)), createTool('eraser', 'Clear Cell', clearCell.bind(this, _)), createTool('trash-o', 'Delete Cell (d d)', deleteCell.bind(this, _))], [createTool('step-forward', 'Run and Select Below', runCellAndSelectBelow.bind(this, _)), createTool('play', 'Run (ctrl+enter)', runCell.bind(this, _)), createTool('forward', 'Run All', runAllCells.bind(this, _))], [createTool('question-circle', 'Assist Me', executeCommand(_, 'assist'))]];
 
         // (From IPython Notebook keyboard shortcuts dialog)

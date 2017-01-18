@@ -3,5 +3,5 @@ import { removeCell } from './removeCell';
 
 export function cutCell(_) {
   copyCell(_);
-  return removeCell();
+  return removeCell(_);
 }

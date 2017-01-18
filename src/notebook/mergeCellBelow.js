@@ -7,7 +7,7 @@ export function mergeCellBelow(_) {
     nextCell = cells[_.selectedCellIndex + 1];
     if (_.selectedCell.type() === nextCell.type()) {
       nextCell.input(`${_.selectedCell.input()}\n${nextCell.input()}`);
-      removeCell(_, _.cells);
+      removeCell(_);
     }
   }
 }
