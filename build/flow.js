@@ -11619,83 +11619,12 @@
     });
   }
 
-  function postUploadFileRequest(_, key, formData, go) {
-    return doUpload(_, `/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
-  }
-
-  function flowFileUploadDialog(_, _go) {
-    const Flow = window.Flow;
-    const _form = Flow.Dataflow.signal(null);
-    const _file = Flow.Dataflow.signal(null);
-    const uploadFile = key => postUploadFileRequest(_, key, new FormData(_form()), (error, result) => _go({
-      error,
-      result
-    }));
-    const accept = () => {
-      const file = _file();
-      if (file) {
-        return uploadFile(file.name);
-      }
-    };
-    const decline = () => _go(null);
-    return {
-      form: _form,
-      file: _file,
-      accept,
-      decline,
-      template: 'file-upload-dialog'
-    };
-  }
-
-  const flowPrelude$57 = flowPreludeFunction();
-
-  function uploadFile(_) {
-    return _.dialog(flowFileUploadDialog, result => {
-      let error;
-      let _ref;
-      if (result) {
-        error = result.error;
-        if (error) {
-          _ref = error.message;
-          return _.growl(_ref != null ? _ref : error);
-        }
-        _.growl('File uploaded successfully!');
-        return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$57.stringify(result.result.destination_frame) }]`);
-      }
-    });
-  }
-
   function toggleInput(_) {
     return _.selectedCell.toggleInput();
   }
 
   function toggleOutput(_) {
     return _.selectedCell.toggleOutput();
-  }
-
-  function toggleAllInputs(_, _areInputsHidden) {
-    let cell;
-    let _i;
-    let _len;
-    let _ref;
-    const wereHidden = _areInputsHidden();
-    _areInputsHidden(!wereHidden);
-    //
-    // If cells are generated while inputs are hidden, the input boxes
-    //   do not resize to fit contents. So explicitly ask all cells
-    //   to resize themselves.
-    //
-    if (wereHidden) {
-      _ref = _.cells();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cell = _ref[_i];
-        cell.autoResize();
-      }
-    }
-  }
-
-  function toggleAllOutputs(_areOutputsHidden) {
-    return _areOutputsHidden(!_areOutputsHidden());
   }
 
   function editName(_) {
@@ -11725,75 +11654,8 @@
     return $('#keyboardHelpDialog').modal();
   }
 
-  function findBuildProperty(caption) {
-    const lodash = window._;
-    const Flow = window.Flow;
-    let entry;
-    if (Flow.BuildProperties) {
-      entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption);
-      if (entry) {
-        return entry.value;
-      }
-      return void 0;
-    }
-    return void 0;
-  }
-
-  function getBuildProperties() {
-    const lodash = window._;
-    const projectVersion = findBuildProperty('H2O Build project version');
-    return [findBuildProperty('H2O Build git branch'), projectVersion, projectVersion ? lodash.last(projectVersion.split('.')) : void 0, findBuildProperty('H2O Build git hash') || 'master'];
-  }
-
-  function displayDocumentation() {
-    const _ref = getBuildProperties();
-    const gitBranch = _ref[0];
-    const projectVersion = _ref[1];
-    const buildVersion = _ref[2];
-    const gitHash = _ref[3];
-    if (buildVersion && buildVersion !== '99999') {
-      return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${ gitBranch }/${ buildVersion }/docs-website/h2o-docs/index.html`, '_blank');
-    }
-    return window.open(`https://github.com/h2oai/h2o-3/blob/${ gitHash }/h2o-docs/src/product/flow/README.md`, '_blank');
-  }
-
-  function displayFAQ() {
-    const _ref = getBuildProperties();
-    const gitBranch = _ref[0];
-    const projectVersion = _ref[1];
-    const buildVersion = _ref[2];
-    const gitHash = _ref[3];
-    if (buildVersion && buildVersion !== '99999') {
-      return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${ gitBranch }/${ buildVersion }/docs-website/h2o-docs/index.html`, '_blank');
-    }
-    return window.open(`https://github.com/h2oai/h2o-3/blob/${ gitHash }/h2o-docs/src/product/howto/FAQ.md`, '_blank');
-  }
-
   function executeCommand(_, command) {
     return () => _.insertAndExecuteCell('cs', command);
-  }
-
-  function displayAbout() {
-    const $ = window.jQuery;
-    return $('#aboutDialog').modal();
-  }
-
-  function postShutdownRequest(_, go) {
-    return doPost(_, '/3/Shutdown', {}, go);
-  }
-
-  function shutdown(_) {
-    return postShutdownRequest(_, (error, result) => {
-      if (error) {
-        return _.growl(`Shutdown failed: ${ error.message }`, 'danger');
-      }
-      return _.growl('Shutdown complete!', 'warning');
-    });
-  }
-
-  function showHelp(_) {
-    _.isSidebarHidden(false);
-    return _.showHelp();
   }
 
   function createNotebook(_) {
@@ -11819,34 +11681,11 @@
     });
   }
 
-  function duplicateNotebook(_) {
-    const duplicateNotebookLocalName = `Copy of ${ _.localName() }`;
-    const duplicateNotebookRemoteName = null;
-    const duplicateNotebookDoc = serialize(_);
-    return deserialize(_, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
-  }
-
   function openNotebook(_, name, doc) {
     const openNotebookLocalName = name;
     const openNotebookRemoteName = null;
     const openNotebookDoc = doc;
     return deserialize(_, openNotebookLocalName, openNotebookRemoteName, openNotebookDoc);
-  }
-
-  function exportNotebook(_) {
-    const remoteName = _.remoteName();
-    if (remoteName) {
-      return window.open(`/3/NodePersistentStorage.bin/notebook/${ remoteName }`, '_blank');
-    }
-    return _.alert('Please save this notebook before exporting.');
-  }
-
-  function goToH2OUrl(url) {
-    return () => window.open(window.Flow.ContextPath + url, '_blank');
-  }
-
-  function goToUrl(url) {
-    return () => window.open(url, '_blank');
   }
 
   function executeNextCell(_, cells, cellIndex, cellCount, go) {
@@ -11907,10 +11746,6 @@
     });
   }
 
-  function continueRunningAllCells(_) {
-    return runAllCells(_, false);
-  }
-
   function stopRunningAll(_) {
     return _.isRunningAll(false);
   }
@@ -11918,18 +11753,6 @@
   function clearCell(_) {
     _.selectedCell.clear();
     return _.selectedCell.autoResize();
-  }
-
-  function clearAllCells(_) {
-    let cell;
-    let _i;
-    let _len;
-    const _ref = _.cells();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      cell = _ref[_i];
-      cell.clear();
-      cell.autoResize();
-    }
   }
 
   // noop
@@ -11941,13 +11764,6 @@
     return {
       label,
       items
-    };
-  }
-
-  function createMenuHeader(label) {
-    return {
-      label,
-      action: null
     };
   }
 
@@ -11963,6 +11779,212 @@
       label: `${ lodash.escape(label) }${ kbds }`,
       action
     };
+  }
+
+  function duplicateNotebook(_) {
+    const duplicateNotebookLocalName = `Copy of ${ _.localName() }`;
+    const duplicateNotebookRemoteName = null;
+    const duplicateNotebookDoc = serialize(_);
+    return deserialize(_, duplicateNotebookLocalName, duplicateNotebookRemoteName, duplicateNotebookDoc);
+  }
+
+  function continueRunningAllCells(_) {
+    return runAllCells(_, false);
+  }
+
+  function toggleAllInputs(_) {
+    let cell;
+    let _i;
+    let _len;
+    let _ref;
+    const wereHidden = _.areInputsHidden();
+    _.areInputsHidden(!wereHidden);
+    //
+    // If cells are generated while inputs are hidden, the input boxes
+    //   do not resize to fit contents. So explicitly ask all cells
+    //   to resize themselves.
+    //
+    if (wereHidden) {
+      _ref = _.cells();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        cell = _ref[_i];
+        cell.autoResize();
+      }
+    }
+  }
+
+  function toggleAllOutputs(_) {
+    return _.areOutputsHidden(!_.areOutputsHidden());
+  }
+
+  function clearAllCells(_) {
+    let cell;
+    let _i;
+    let _len;
+    const _ref = _.cells();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      cell = _ref[_i];
+      cell.clear();
+      cell.autoResize();
+    }
+  }
+
+  function exportNotebook(_) {
+    const remoteName = _.remoteName();
+    if (remoteName) {
+      return window.open(`/3/NodePersistentStorage.bin/notebook/${ remoteName }`, '_blank');
+    }
+    return _.alert('Please save this notebook before exporting.');
+  }
+
+  function postUploadFileRequest(_, key, formData, go) {
+    return doUpload(_, `/3/PostFile?destination_frame=${ encodeURIComponent(key) }`, formData, go);
+  }
+
+  function flowFileUploadDialog(_, _go) {
+    const Flow = window.Flow;
+    const _form = Flow.Dataflow.signal(null);
+    const _file = Flow.Dataflow.signal(null);
+    const uploadFile = key => postUploadFileRequest(_, key, new FormData(_form()), (error, result) => _go({
+      error,
+      result
+    }));
+    const accept = () => {
+      const file = _file();
+      if (file) {
+        return uploadFile(file.name);
+      }
+    };
+    const decline = () => _go(null);
+    return {
+      form: _form,
+      file: _file,
+      accept,
+      decline,
+      template: 'file-upload-dialog'
+    };
+  }
+
+  const flowPrelude$58 = flowPreludeFunction();
+
+  function uploadFile(_) {
+    return _.dialog(flowFileUploadDialog, result => {
+      let error;
+      let _ref;
+      if (result) {
+        error = result.error;
+        if (error) {
+          _ref = error.message;
+          return _.growl(_ref != null ? _ref : error);
+        }
+        _.growl('File uploaded successfully!');
+        return _.insertAndExecuteCell('cs', `setupParse source_frames: [ ${ flowPrelude$58.stringify(result.result.destination_frame) }]`);
+      }
+    });
+  }
+
+  function goToH2OUrl(url) {
+    return () => window.open(window.Flow.ContextPath + url, '_blank');
+  }
+
+  function createMenuHeader(label) {
+    return {
+      label,
+      action: null
+    };
+  }
+
+  function postShutdownRequest(_, go) {
+    return doPost(_, '/3/Shutdown', {}, go);
+  }
+
+  function shutdown(_) {
+    return postShutdownRequest(_, (error, result) => {
+      if (error) {
+        return _.growl(`Shutdown failed: ${ error.message }`, 'danger');
+      }
+      return _.growl('Shutdown complete!', 'warning');
+    });
+  }
+
+  function showHelp(_) {
+    _.isSidebarHidden(false);
+    return _.showHelp();
+  }
+
+  function findBuildProperty(caption) {
+    const lodash = window._;
+    const Flow = window.Flow;
+    let entry;
+    if (Flow.BuildProperties) {
+      entry = lodash.find(Flow.BuildProperties, entry => entry.caption === caption);
+      if (entry) {
+        return entry.value;
+      }
+      return void 0;
+    }
+    return void 0;
+  }
+
+  function getBuildProperties() {
+    const lodash = window._;
+    const projectVersion = findBuildProperty('H2O Build project version');
+    return [findBuildProperty('H2O Build git branch'), projectVersion, projectVersion ? lodash.last(projectVersion.split('.')) : void 0, findBuildProperty('H2O Build git hash') || 'master'];
+  }
+
+  function displayDocumentation() {
+    const _ref = getBuildProperties();
+    const gitBranch = _ref[0];
+    const projectVersion = _ref[1];
+    const buildVersion = _ref[2];
+    const gitHash = _ref[3];
+    if (buildVersion && buildVersion !== '99999') {
+      return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${ gitBranch }/${ buildVersion }/docs-website/h2o-docs/index.html`, '_blank');
+    }
+    return window.open(`https://github.com/h2oai/h2o-3/blob/${ gitHash }/h2o-docs/src/product/flow/README.md`, '_blank');
+  }
+
+  function displayFAQ() {
+    const _ref = getBuildProperties();
+    const gitBranch = _ref[0];
+    const projectVersion = _ref[1];
+    const buildVersion = _ref[2];
+    const gitHash = _ref[3];
+    if (buildVersion && buildVersion !== '99999') {
+      return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${ gitBranch }/${ buildVersion }/docs-website/h2o-docs/index.html`, '_blank');
+    }
+    return window.open(`https://github.com/h2oai/h2o-3/blob/${ gitHash }/h2o-docs/src/product/howto/FAQ.md`, '_blank');
+  }
+
+  function goToUrl(url) {
+    return () => window.open(url, '_blank');
+  }
+
+  function displayAbout() {
+    const $ = window.jQuery;
+    return $('#aboutDialog').modal();
+  }
+
+  const menuDivider = {
+    label: null,
+    action: null
+  };
+
+  const flowPrelude$57 = flowPreludeFunction();
+
+  function initializeMenus(_, menuCell, builder) {
+    const lodash = window._;
+    const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(_, `buildModel ${ flowPrelude$57.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand(_, 'getModels')), createMenuItem('List Grid Search Results', executeCommand(_, 'getGrids')), createMenuItem('Import Model...', executeCommand(_, 'importModel')), createMenuItem('Export Model...', executeCommand(_, 'exportModel'))]);
+    return [createMenu('Flow', [createMenuItem('New Flow', createNotebook.bind(this, _)), createMenuItem('Open Flow...', promptForNotebook.bind(this, _)), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook.bind(this, _)), menuDivider, createMenuItem('Run All Cells', runAllCells.bind(this, _)), createMenuItem('Run All Cells Below', continueRunningAllCells.bind(this, _)), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _)), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs.bind(this, _)), createMenuItem('Clear All Cell Outputs', clearAllCells.bind(this, _)), menuDivider, createMenuItem('Download this Flow...', exportNotebook.bind(this, _))]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand(_, 'importFiles')), createMenuItem('Upload File...', uploadFile.bind(this, _)), createMenuItem('Split Frame...', executeCommand(_, 'splitFrame')), createMenuItem('Merge Frames...', executeCommand(_, 'mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand(_, 'getFrames')), menuDivider, createMenuItem('Impute...', executeCommand(_, 'imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand(_, 'predict')), createMenuItem('Partial Dependence Plots...', executeCommand(_, 'buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand(_, 'getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand(_, 'getJobs')), createMenuItem('Cluster Status', executeCommand(_, 'getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand(_, 'getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand(_, 'createFrame')), createMenuItem('Stack Trace', executeCommand(_, 'getStackTrace')), createMenuItem('Network Test', executeCommand(_, 'testNetwork')),
+    // TODO Cluster I/O
+    createMenuItem('Profiler', executeCommand(_, 'getProfile depth: 10')), createMenuItem('Timeline', executeCommand(_, 'getTimeline')),
+    // TODO UDP Drop Test
+    // TODO Task Status
+    createMenuItem('Shut Down', shutdown.bind(this, _))]), createMenu('Help', [
+    // TODO createMenuItem('Tour', startTour, true),
+    createMenuItem('Assist Me', executeCommand(_, 'assist')), menuDivider, createMenuItem('Contents', showHelp.bind(this, _)), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider,
+    // TODO Tutorial Flows
+    createMenuItem('About', displayAbout)])];
   }
 
   function flowStatus(_) {
@@ -12133,8 +12155,8 @@
       _.selectedCellIndex = -1;
       _.clipboardCell = null;
       _.lastDeletedCell = null;
-      const _areInputsHidden = Flow.Dataflow.signal(false);
-      const _areOutputsHidden = Flow.Dataflow.signal(false);
+      _.areInputsHidden = Flow.Dataflow.signal(false);
+      _.areOutputsHidden = Flow.Dataflow.signal(false);
       _.isSidebarHidden = Flow.Dataflow.signal(false);
       _.isRunningAll = Flow.Dataflow.signal(false);
       _.runningCaption = Flow.Dataflow.signal('Running');
@@ -12151,10 +12173,6 @@
       //
       // Top menu bar
       //
-      const menuDivider = {
-        label: null,
-        action: null
-      };
       const _menus = Flow.Dataflow.signal(null);
       menuCell = [createMenuItem('Run Cell', runCell.bind(this, _), ['ctrl', 'enter']), menuDivider, createMenuItem('Cut Cell', cutCell, ['x']), createMenuItem('Copy Cell', copyCell.bind(this, _), ['c']), createMenuItem('Paste Cell Above', pasteCellAbove.bind(this, _), ['shift', 'v']), createMenuItem('Paste Cell Below', pasteCellBelow.bind(this, _), ['v']),
       // TODO createMenuItem('Paste Cell and Replace', pasteCellandReplace, true),
@@ -12167,20 +12185,7 @@
       if (_.onSparklingWater) {
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
       }
-      const initializeMenus = builder => {
-        const modelMenuItems = lodash.map(builder, builder => createMenuItem(`${ builder.algo_full_name }...`, executeCommand(_, `buildModel ${ flowPrelude$56.stringify(builder.algo) }`))).concat([menuDivider, createMenuItem('List All Models', executeCommand(_, 'getModels')), createMenuItem('List Grid Search Results', executeCommand(_, 'getGrids')), createMenuItem('Import Model...', executeCommand(_, 'importModel')), createMenuItem('Export Model...', executeCommand(_, 'exportModel'))]);
-        return [createMenu('Flow', [createMenuItem('New Flow', createNotebook.bind(this, _)), createMenuItem('Open Flow...', promptForNotebook.bind(this, _)), createMenuItem('Save Flow', saveNotebook.bind(this, _), ['s']), createMenuItem('Make a Copy...', duplicateNotebook.bind(this, _)), menuDivider, createMenuItem('Run All Cells', runAllCells.bind(this, _)), createMenuItem('Run All Cells Below', continueRunningAllCells.bind(this, _)), menuDivider, createMenuItem('Toggle All Cell Inputs', toggleAllInputs.bind(this, _, _areInputsHidden)), createMenuItem('Toggle All Cell Outputs', toggleAllOutputs.bind(this, _areOutputsHidden)), createMenuItem('Clear All Cell Outputs', clearAllCells.bind(this, _)), menuDivider, createMenuItem('Download this Flow...', exportNotebook.bind(this, _))]), createMenu('Cell', menuCell), createMenu('Data', [createMenuItem('Import Files...', executeCommand(_, 'importFiles')), createMenuItem('Upload File...', uploadFile.bind(this, _)), createMenuItem('Split Frame...', executeCommand(_, 'splitFrame')), createMenuItem('Merge Frames...', executeCommand(_, 'mergeFrames')), menuDivider, createMenuItem('List All Frames', executeCommand(_, 'getFrames')), menuDivider, createMenuItem('Impute...', executeCommand(_, 'imputeColumn'))]), createMenu('Model', modelMenuItems), createMenu('Score', [createMenuItem('Predict...', executeCommand(_, 'predict')), createMenuItem('Partial Dependence Plots...', executeCommand(_, 'buildPartialDependence')), menuDivider, createMenuItem('List All Predictions', executeCommand(_, 'getPredictions'))]), createMenu('Admin', [createMenuItem('Jobs', executeCommand(_, 'getJobs')), createMenuItem('Cluster Status', executeCommand(_, 'getCloud')), createMenuItem('Water Meter (CPU meter)', goToH2OUrl('perfbar.html')), menuDivider, createMenuHeader('Inspect Log'), createMenuItem('View Log', executeCommand(_, 'getLogFile')), createMenuItem('Download Logs', goToH2OUrl('3/Logs/download')), menuDivider, createMenuHeader('Advanced'), createMenuItem('Create Synthetic Frame...', executeCommand(_, 'createFrame')), createMenuItem('Stack Trace', executeCommand(_, 'getStackTrace')), createMenuItem('Network Test', executeCommand(_, 'testNetwork')),
-        // TODO Cluster I/O
-        createMenuItem('Profiler', executeCommand(_, 'getProfile depth: 10')), createMenuItem('Timeline', executeCommand(_, 'getTimeline')),
-        // TODO UDP Drop Test
-        // TODO Task Status
-        createMenuItem('Shut Down', shutdown.bind(this, _))]), createMenu('Help', [
-        // TODO createMenuItem('Tour', startTour, true),
-        createMenuItem('Assist Me', executeCommand(_, 'assist')), menuDivider, createMenuItem('Contents', showHelp.bind(this, _)), createMenuItem('Keyboard Shortcuts', displayKeyboardShortcuts, ['h']), menuDivider, createMenuItem('Documentation', displayDocumentation), createMenuItem('FAQ', displayFAQ), createMenuItem('H2O.ai', goToUrl('http://h2o.ai/')), createMenuItem('H2O on Github', goToUrl('https://github.com/h2oai/h2o-3')), createMenuItem('Report an issue', goToUrl('http://jira.h2o.ai')), createMenuItem('Forum / Ask a question', goToUrl('https://groups.google.com/d/forum/h2ostream')), menuDivider,
-        // TODO Tutorial Flows
-        createMenuItem('About', displayAbout)])];
-      };
-      const setupMenus = () => requestModelBuilders(_, (error, builders) => _menus(initializeMenus(error ? [] : builders)));
+      const setupMenus = () => requestModelBuilders(_, (error, builders) => _menus(initializeMenus(_, menuCell, error ? [] : builders)));
       const createTool = (icon, label, action, isDisabled) => {
         if (isDisabled == null) {
           isDisabled = false;
@@ -12303,8 +12308,8 @@
         status: _status,
         toolbar: _toolbar,
         cells: _.cells,
-        areInputsHidden: _areInputsHidden,
-        areOutputsHidden: _areOutputsHidden,
+        areInputsHidden: _.areInputsHidden,
+        areOutputsHidden: _.areOutputsHidden,
         isSidebarHidden: _.isSidebarHidden,
         isRunningAll: _.isRunningAll,
         runningCaption: _.runningCaption,
@@ -12351,7 +12356,7 @@
     };
   }
 
-  const flowPrelude$58 = flowPreludeFunction();
+  const flowPrelude$59 = flowPreludeFunction();
 
   function clipboard() {
     const lodash = window._;
@@ -12378,7 +12383,7 @@
         }
         const execute = () => _.insertAndExecuteCell(_type, _input);
         const insert = () => _.insertCell(_type, _input);
-        flowPrelude$58.remove = () => {
+        flowPrelude$59.remove = () => {
           if (_canRemove) {
             return removeClip(_list, self);
           }
@@ -12388,7 +12393,7 @@
           input: _input,
           execute,
           insert,
-          remove: flowPrelude$58.remove,
+          remove: flowPrelude$59.remove,
           canRemove: _canRemove
         };
         return self;
@@ -12675,7 +12680,7 @@
     return requestWithOpts(_, '/3/Typeahead/files', opts, go);
   }
 
-  const flowPrelude$59 = flowPreludeFunction();
+  const flowPrelude$60 = flowPreludeFunction();
 
   function h2oProxy(_) {
     const lodash = window._;

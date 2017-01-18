@@ -1,10 +1,10 @@
-export function toggleAllInputs(_, _areInputsHidden) {
+export function toggleAllInputs(_) {
   let cell;
   let _i;
   let _len;
   let _ref;
-  const wereHidden = _areInputsHidden();
-  _areInputsHidden(!wereHidden);
+  const wereHidden = _.areInputsHidden();
+  _.areInputsHidden(!wereHidden);
       //
       // If cells are generated while inputs are hidden, the input boxes
       //   do not resize to fit contents. So explicitly ask all cells

@@ -1,3 +1,3 @@
-export function toggleAllOutputs(_areOutputsHidden) {
-  return _areOutputsHidden(!_areOutputsHidden());
+export function toggleAllOutputs(_) {
+  return _.areOutputsHidden(!_.areOutputsHidden());
 }
