@@ -57,9 +57,8 @@ import clearCell from './clearCell';
 import notImplemented from './notImplemented';
 import createMenu from './createMenu';
 import createMenuItem from './createMenuItem';
-import initializeMenus from './initializeMenus';
+import setupMenus from './setupMenus';
 
-import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
 import { getObjectExistsRequest } from '../h2oProxy/getObjectExistsRequest';
 
 import { flowStatus } from '../flowStatus';
@@ -108,7 +107,7 @@ export function notebook() {
     //
     // Top menu bar
     //
-    const _menus = Flow.Dataflow.signal(null);
+    _.menus = Flow.Dataflow.signal(null);
     menuCell = [
       createMenuItem('Run Cell', runCell.bind(this, _), [
         'ctrl',
@@ -156,11 +155,6 @@ export function notebook() {
     if (_.onSparklingWater) {
       menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
     }
-    const setupMenus = () => requestModelBuilders(_, (error, builders) => _menus(initializeMenus(
-      _,
-      menuCell,
-      error ? [] : builders
-    )));
     const createTool = (icon, label, action, isDisabled) => {
       if (isDisabled == null) {
         isDisabled = false;
@@ -460,7 +454,7 @@ export function notebook() {
     };
     const initialize = () => {
       setupKeyboardHandling('normal');
-      setupMenus();
+      setupMenus(_, menuCell);
       Flow.Dataflow.link(_.load, loadNotebook.bind(this, _));
       Flow.Dataflow.link(_.open, openNotebook.bind(this, _));
       Flow.Dataflow.link(_.selectCell, selectCell.bind(this, _));
@@ -482,7 +476,7 @@ export function notebook() {
       isEditingName: _.isEditingName,
       editName: editName.bind(this, _),
       saveName: saveName.bind(this, _),
-      menus: _menus,
+      menus: _.menus,
       sidebar: _sidebar,
       status: _status,
       toolbar: _toolbar,
