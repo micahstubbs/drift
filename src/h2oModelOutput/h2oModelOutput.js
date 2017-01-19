@@ -195,31 +195,7 @@ export function h2oModelOutput(_, _go, refresh) {
         if (table) {
           renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
         }
-        output = _.model.output;
-        if (output) {
-          if (output.model_category === 'Multinomial') {
-            _ref6 = output.training_metrics;
-            _ref7 = _ref6.cm;
-            confusionMatrix = _ref6 != null ? _ref7 != null ? _ref7.table : void 0 : void 0;
-            if (confusionMatrix) {
-              renderMultinomialConfusionMatrix(_, 'Training Metrics - Confusion Matrix', confusionMatrix);
-            }
-            _ref8 = output.validation_metrics;
-            _ref9 = _ref8.cm;
-            confusionMatrix = _ref8 != null ? _ref9 != null ? _ref9.table : void 0 : void 0;
-            if (confusionMatrix) {
-              renderMultinomialConfusionMatrix(_, 'Validation Metrics - Confusion Matrix', confusionMatrix);
-            }
-            _ref10 = output.cross_validation_metrics;
-            if (_ref10 !== null) {
-              _ref11 = _ref10.cm;
-            }
-            confusionMatrix = _ref10 != null ? _ref11 != null ? _ref11.table : void 0 : void 0;
-            if (confusionMatrix) {
-              renderMultinomialConfusionMatrix(_, 'Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-            }
-          }
-        }
+        renderConfusionMatrices(_)
         break;
       case 'gbm':
       case 'drf':
