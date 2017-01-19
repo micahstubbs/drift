@@ -4664,6 +4664,10 @@
       }
     }
 
+    function toggle(_) {
+      return _.modelOutputIsExpanded(!_.modelOutputIsExpanded());
+    }
+
     function download(type, url, go) {
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -4733,7 +4737,7 @@
         let _ref6;
         let _ref7;let _ref8;
         let _ref9;
-        const _isExpanded = Flow.Dataflow.signal(false);
+        _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
         _.plots = Flow.Dataflow.signals([]);
         const _pojoPreview = Flow.Dataflow.signal(null);
         const _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, preview => {
@@ -5010,7 +5014,6 @@
             renderPlot(_, tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
           }
         }
-        const toggle = () => _isExpanded(!_isExpanded());
         const cloneModel = () => alert('Not implemented');
         const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
         const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
@@ -5036,8 +5039,8 @@
           algo: _.model.algo_full_name,
           plots: _.plots,
           inputParameters: _inputParameters,
-          isExpanded: _isExpanded,
-          toggle,
+          isExpanded: _.modelOutputIsExpanded,
+          toggle: toggle.bind(this, _),
           cloneModel,
           predict,
           inspect,

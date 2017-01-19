@@ -2,6 +2,7 @@ import getAucAsLabel from './getAucAsLabel';
 import getThresholdsAndCriteria from './getThresholdsAndCriteria';
 import renderPlot from './renderPlot';
 import renderConfusionMatrices from './renderConfusionMatrices';
+import toggle from './toggle';
 
 import { requestPojoPreview } from '../h2oProxy/requestPojoPreview';
 import { highlight } from '../utils/highlight';
@@ -47,7 +48,7 @@ export function h2oModelOutput(_, _go, refresh) {
     let _ref6;
     let _ref7; let _ref8;
     let _ref9;
-    const _isExpanded = Flow.Dataflow.signal(false);
+    _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
     _.plots = Flow.Dataflow.signals([]);
     const _pojoPreview = Flow.Dataflow.signal(null);
     const _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, preview => {
@@ -194,7 +195,7 @@ export function h2oModelOutput(_, _go, refresh) {
         if (table) {
           renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
         }
-        renderConfusionMatrices(_)
+        renderConfusionMatrices(_);
         break;
       case 'gbm':
       case 'drf':
@@ -324,7 +325,6 @@ export function h2oModelOutput(_, _go, refresh) {
         renderPlot(_, tableName + (table.metadata.description ? ` (${table.metadata.description})` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
       }
     }
-    const toggle = () => _isExpanded(!_isExpanded());
     const cloneModel = () => alert('Not implemented');
     const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(_.model.model_id.name)}`);
     const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_.model.model_id.name)}`);
@@ -350,8 +350,8 @@ export function h2oModelOutput(_, _go, refresh) {
       algo: _.model.algo_full_name,
       plots: _.plots,
       inputParameters: _inputParameters,
-      isExpanded: _isExpanded,
-      toggle,
+      isExpanded: _.modelOutputIsExpanded,
+      toggle: toggle.bind(this, _),
       cloneModel,
       predict,
       inspect,
