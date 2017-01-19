@@ -101,7 +101,7 @@ import { h2oExportFrameInput } from '../h2oExportFrameInput';
 import { h2oImportModelInput } from '../h2oImportModelInput';
 import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
-import { h2oModelOutput } from '../h2oModelOutput';
+import { h2oModelOutput } from '../h2oModelOutput/h2oModelOutput';
 import { h2oDataFrameOutput } from '../h2oDataFrameOutput';
 import { h2oModelInput } from '../h2oModelInput/h2oModelInput';
 import { h2oImputeInput } from '../h2oImputeInput/h2oImputeInput';

@@ -1,8 +1,8 @@
-import { requestPojoPreview } from './h2oProxy/requestPojoPreview';
-import { highlight } from './utils/highlight';
-import { format4f } from './routines/format4f';
+import { requestPojoPreview } from '../h2oProxy/requestPojoPreview';
+import { highlight } from '../utils/highlight';
+import { format4f } from '../routines/format4f';
 
-import { flowPreludeFunction } from './flowPreludeFunction';
+import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oModelOutput(_, _go, _model, refresh) {

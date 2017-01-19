@@ -4,7 +4,7 @@ import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { inspect_ } from './inspect_';
 import { render_ } from './render_';
 
-import { h2oModelOutput } from '../h2oModelOutput';
+import { h2oModelOutput } from '../h2oModelOutput/h2oModelOutput';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
