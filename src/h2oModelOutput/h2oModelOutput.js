@@ -5,6 +5,7 @@ import renderConfusionMatrices from './renderConfusionMatrices';
 import toggle from './toggle';
 import cloneModel from './cloneModel';
 import predict from './predict';
+import inspect from './inspect';
 
 import { requestPojoPreview } from '../h2oProxy/requestPojoPreview';
 import { highlight } from '../utils/highlight';
@@ -327,7 +328,6 @@ export function h2oModelOutput(_, _go, refresh) {
         renderPlot(_, tableName + (table.metadata.description ? ` (${table.metadata.description})` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
       }
     }
-    const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(_.model.model_id.name)}`);
     const previewPojo = () => requestPojoPreview(_.model.model_id.name, (error, result) => {
       if (error) {
         return _pojoPreview(`<pre>${lodash.escape(error)}</pre>`);
@@ -354,7 +354,7 @@ export function h2oModelOutput(_, _go, refresh) {
       toggle: toggle.bind(this, _),
       cloneModel,
       predict: predict.bind(this, _),
-      inspect,
+      inspect: inspect.bind(this, _),
       previewPojo,
       downloadPojo,
       downloadMojo,
