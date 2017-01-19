@@ -4716,6 +4716,16 @@
       return code;
     }
 
+    function previewPojo(_) {
+      const lodash = window._;
+      return requestPojoPreview(_.model.model_id.name, (error, result) => {
+        if (error) {
+          return _.pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
+        }
+        return _.pojoPreview(`<pre>${ highlight(result, 'java') }</pre>`);
+      });
+    }
+
     const flowPrelude$33 = flowPreludeFunction();
 
     function h2oModelOutput(_, _go, refresh) {
@@ -4758,8 +4768,8 @@
         let _ref9;
         _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
         _.plots = Flow.Dataflow.signals([]);
-        const _pojoPreview = Flow.Dataflow.signal(null);
-        const _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, preview => {
+        _.pojoPreview = Flow.Dataflow.signal(null);
+        const _isPojoLoaded = Flow.Dataflow.lift(_.pojoPreview, preview => {
           if (preview) {
             return true;
           }
@@ -5033,12 +5043,6 @@
             renderPlot(_, tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
           }
         }
-        const previewPojo = () => requestPojoPreview(_.model.model_id.name, (error, result) => {
-          if (error) {
-            return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
-          }
-          return _pojoPreview(`<pre>${ highlight(result, 'java') }</pre>`);
-        });
         const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_.model.model_id.name) }`, '_blank');
         const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_.model.model_id.name) }/mojo`, '_blank');
         const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
@@ -5060,10 +5064,10 @@
           cloneModel,
           predict: predict.bind(this, _),
           inspect: inspect.bind(this, _),
-          previewPojo,
+          previewPojo: previewPojo.bind(this, _),
           downloadPojo,
           downloadMojo,
-          pojoPreview: _pojoPreview,
+          pojoPreview: _.pojoPreview,
           isPojoLoaded: _isPojoLoaded,
           exportModel,
           deleteModel

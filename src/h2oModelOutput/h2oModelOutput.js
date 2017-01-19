@@ -6,9 +6,7 @@ import toggle from './toggle';
 import cloneModel from './cloneModel';
 import predict from './predict';
 import inspect from './inspect';
-
-import { requestPojoPreview } from '../h2oProxy/requestPojoPreview';
-import { highlight } from '../utils/highlight';
+import previewPojo from './previewPojo';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -53,8 +51,8 @@ export function h2oModelOutput(_, _go, refresh) {
     let _ref9;
     _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
     _.plots = Flow.Dataflow.signals([]);
-    const _pojoPreview = Flow.Dataflow.signal(null);
-    const _isPojoLoaded = Flow.Dataflow.lift(_pojoPreview, preview => {
+    _.pojoPreview = Flow.Dataflow.signal(null);
+    const _isPojoLoaded = Flow.Dataflow.lift(_.pojoPreview, preview => {
       if (preview) {
         return true;
       }
@@ -328,12 +326,6 @@ export function h2oModelOutput(_, _go, refresh) {
         renderPlot(_, tableName + (table.metadata.description ? ` (${table.metadata.description})` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
       }
     }
-    const previewPojo = () => requestPojoPreview(_.model.model_id.name, (error, result) => {
-      if (error) {
-        return _pojoPreview(`<pre>${lodash.escape(error)}</pre>`);
-      }
-      return _pojoPreview(`<pre>${highlight(result, 'java')}</pre>`);
-    });
     const downloadPojo = () => window.open(`/3/Models.java/${encodeURIComponent(_.model.model_id.name)}`, '_blank');
     const downloadMojo = () => window.open(`/3/Models/${encodeURIComponent(_.model.model_id.name)}/mojo`, '_blank');
     const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_.model.model_id.name)}`);
@@ -355,10 +347,10 @@ export function h2oModelOutput(_, _go, refresh) {
       cloneModel,
       predict: predict.bind(this, _),
       inspect: inspect.bind(this, _),
-      previewPojo,
+      previewPojo: previewPojo.bind(this, _),
       downloadPojo,
       downloadMojo,
-      pojoPreview: _pojoPreview,
+      pojoPreview: _.pojoPreview,
       isPojoLoaded: _isPojoLoaded,
       exportModel,
       deleteModel,
