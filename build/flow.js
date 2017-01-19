@@ -4418,6 +4418,61 @@
       });
     }
 
+    function getAucAsLabel(_, model, tableName) {
+      const metrics = _.inspect(tableName, model);
+      if (metrics) {
+        return ` , AUC = ${ metrics.schema.AUC.at(0) }`;
+      }
+      return '';
+    }
+
+    function getThresholdsAndCriteria(_, table, tableName) {
+      let criteria;
+      let i;
+      let idxVector;
+      let metricVector;
+      let thresholdVector;
+      let thresholds;
+      const criterionTable = _.inspect(tableName, _.model);
+      if (criterionTable) {
+        // Threshold dropdown items
+        thresholdVector = table.schema.threshold;
+        thresholds = (() => {
+          let _i;
+          let _ref;
+          const _results = [];
+          for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
+            _results.push({
+              index: i,
+              value: thresholdVector.at(i)
+            });
+          }
+          return _results;
+        })();
+
+        // Threshold criterion dropdown item
+        metricVector = criterionTable.schema.metric;
+        idxVector = criterionTable.schema.idx;
+        criteria = (() => {
+          let _i;
+          let _ref;
+          const _results = [];
+          for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
+            _results.push({
+              index: idxVector.at(i),
+              value: metricVector.valueAt(i)
+            });
+          }
+          return _results;
+        })();
+        return {
+          thresholds,
+          criteria
+        };
+      }
+      return void 0;
+    }
+
     function download(type, url, go) {
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -4449,12 +4504,12 @@
 
     const flowPrelude$33 = flowPreludeFunction();
 
-    function h2oModelOutput(_, _go, _model, refresh) {
+    function h2oModelOutput(_, _go, refresh) {
       const lodash = window._;
       const Flow = window.Flow;
       const $ = window.jQuery;
       const _output = Flow.Dataflow.signal(null);
-      const createOutput = _model => {
+      const createOutput = _ => {
         let confusionMatrix;
         let lambdaSearchParameter;
         let output;
@@ -4498,7 +4553,7 @@
         });
 
         // TODO use _.enumerate()
-        const _inputParameters = lodash.map(_model.parameters, parameter => {
+        const _inputParameters = lodash.map(_.model.parameters, parameter => {
           const type = parameter.type;
           const defaultValue = parameter.default_value;
           const actualValue = parameter.actual_value;
@@ -4542,59 +4597,6 @@
             isModified: defaultValue === actualValue
           };
         });
-        const getAucAsLabel = (model, tableName) => {
-          const metrics = _.inspect(tableName, model);
-          if (metrics) {
-            return ` , AUC = ${ metrics.schema.AUC.at(0) }`;
-          }
-          return '';
-        };
-        const getThresholdsAndCriteria = (model, tableName) => {
-          let criteria;
-          let i;
-          let idxVector;
-          let metricVector;
-          let thresholdVector;
-          let thresholds;
-          const criterionTable = _.inspect(tableName, _model);
-          if (criterionTable) {
-            // Threshold dropdown items
-            thresholdVector = table.schema.threshold;
-            thresholds = (() => {
-              let _i;
-              let _ref;
-              const _results = [];
-              for (i = _i = 0, _ref = thresholdVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
-                _results.push({
-                  index: i,
-                  value: thresholdVector.at(i)
-                });
-              }
-              return _results;
-            })();
-
-            // Threshold criterion dropdown item
-            metricVector = criterionTable.schema.metric;
-            idxVector = criterionTable.schema.idx;
-            criteria = (() => {
-              let _i;
-              let _ref;
-              const _results = [];
-              for (i = _i = 0, _ref = metricVector.count(); _ref >= 0 ? _i < _ref : _i > _ref; i = _ref >= 0 ? ++_i : --_i) {
-                _results.push({
-                  index: idxVector.at(i),
-                  value: metricVector.valueAt(i)
-                });
-              }
-              return _results;
-            })();
-            return {
-              thresholds,
-              criteria
-            };
-          }
-          return void 0;
-        };
 
         // TODO Mega-hack alert
         // Last arg thresholdsAndCriteria applicable only to
@@ -4749,43 +4751,43 @@
             isCollapsed: false
           });
         };
-        switch (_model.algo) {
+        switch (_.model.algo) {
           case 'kmeans':
-            table = _.inspect('output - Scoring History', _model);
+            table = _.inspect('output - Scoring History', _.model);
             if (table) {
               renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
             }
             break;
           case 'glm':
-            table = _.inspect('output - Scoring History', _model);
+            table = _.inspect('output - Scoring History', _.model);
             if (table) {
-              lambdaSearchParameter = lodash.find(_model.parameters, parameter => parameter.name === 'lambda_search');
+              lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
               if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
                 renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
               } else {
                 renderPlot('Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
               }
             }
-            table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-              renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-              renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-              renderPlot(`ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - Standardized Coefficient Magnitudes', _model);
+            table = _.inspect('output - Standardized Coefficient Magnitudes', _.model);
             if (table) {
               renderPlot('Standardized Coefficient Magnitudes', false, _.plot(g => g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25))));
             }
-            output = _model.output;
+            output = _.model.output;
             if (output) {
               if (output.model_category === 'Multinomial') {
                 _ref = output.training_metrics;
@@ -4811,7 +4813,7 @@
             break;
           case 'deeplearning':
           case 'deepwater':
-            table = _.inspect('output - Scoring History', _model);
+            table = _.inspect('output - Scoring History', _.model);
             if (table) {
               if (table.schema.validation_logloss && table.schema.training_logloss) {
                 renderPlot('Scoring History - logloss', false, _.plot(g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
@@ -4832,38 +4834,38 @@
                 }
               }
             }
-            table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`'ROC Curve - Validation Metrics' + ${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+              renderPlot(`'ROC Curve - Validation Metrics' + ${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`'ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+              renderPlot(`'ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - Variable Importances', _model);
+            table = _.inspect('output - Variable Importances', _.model);
             if (table) {
               renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
             }
-            output = _model.output;
+            output = _.model.output;
             if (output) {
               if (output.model_category === 'Multinomial') {
                 _ref6 = output.training_metrics;
@@ -4892,7 +4894,7 @@
           case 'gbm':
           case 'drf':
           case 'svm':
-            table = _.inspect('output - Scoring History', _model);
+            table = _.inspect('output - Scoring History', _.model);
             if (table) {
               if (table.schema.validation_logloss && table.schema.training_logloss) {
                 renderPlot('Scoring History - logloss', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
@@ -4907,38 +4909,38 @@
                 }
               }
             }
-            table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Validation Metrics${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - Variable Importances', _model);
+            table = _.inspect('output - Variable Importances', _.model);
             if (table) {
               renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
             }
-            output = _model.output;
+            output = _.model.output;
             if (output) {
               if (output.model_category === 'Multinomial') {
                 _ref12 = output.training_metrics;
@@ -4965,38 +4967,38 @@
           // end of when 'gbm', 'drf', 'svm'
 
           case 'stackedensemble':
-            table = _.inspect('output - training_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - training_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - validation_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`'ROC Curve - Validation Metrics${ getAucAsLabel(_model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - validation_metrics - Maximum Metrics'));
+              renderPlot(`'ROC Curve - Validation Metrics${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _model);
+            table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
             if (table) {
               plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
 
               // TODO Mega-hack alert.
               // Last arg thresholdsAndCriteria applicable only to
               // ROC charts for binomial models.
-              renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_model, 'output - cross_validation_metrics - Maximum Metrics'));
+              renderPlot(`ROC Curve - Cross Validation Metrics${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
             }
-            table = _.inspect('output - Variable Importances', _model);
+            table = _.inspect('output - Variable Importances', _.model);
             if (table) {
               renderPlot('Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
             }
-            output = _model.output;
+            output = _.model.output;
             if (output) {
               if (output.model_category === 'Multinomial') {
                 _ref18 = output.training_metrics;
@@ -5025,25 +5027,25 @@
         }
         // end of stackedensemble
 
-        table = _.inspect('output - training_metrics - Gains/Lift Table', _model);
+        table = _.inspect('output - training_metrics - Gains/Lift Table', _.model);
         if (table) {
           renderPlot('Training Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
         }
-        table = _.inspect('output - validation_metrics - Gains/Lift Table', _model);
+        table = _.inspect('output - validation_metrics - Gains/Lift Table', _.model);
         if (table) {
           renderPlot('Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
         }
-        table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _model);
+        table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _.model);
         if (table) {
           renderPlot('Cross Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
         }
-        const _ref24 = _.ls(_model);
+        const _ref24 = _.ls(_.model);
         for (_i = 0, _len = _ref24.length; _i < _len; _i++) {
           tableName = _ref24[_i];
           if (!(tableName !== 'parameters')) {
             continue;
           }
-          _ref25 = _model.output;
+          _ref25 = _.model.output;
 
           // Skip confusion matrix tables for multinomial models
           output = (_ref25 != null ? _ref25.model_category : void 0) === 'Multinomial';
@@ -5056,35 +5058,35 @@
               continue;
             }
           }
-          table = _.inspect(tableName, _model);
+          table = _.inspect(tableName, _.model);
           if (table) {
             renderPlot(tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
           }
         }
         const toggle = () => _isExpanded(!_isExpanded());
         const cloneModel = () => alert('Not implemented');
-        const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$33.stringify(_model.model_id.name) }`);
-        const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$33.stringify(_model.model_id.name) }`);
-        const previewPojo = () => requestPojoPreview(_model.model_id.name, (error, result) => {
+        const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
+        const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
+        const previewPojo = () => requestPojoPreview(_.model.model_id.name, (error, result) => {
           if (error) {
             return _pojoPreview(`<pre>${ lodash.escape(error) }</pre>`);
           }
           return _pojoPreview(`<pre>${ highlight(result, 'java') }</pre>`);
         });
-        const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_model.model_id.name) }`, '_blank');
-        const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_model.model_id.name) }/mojo`, '_blank');
-        const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$33.stringify(_model.model_id.name) }`);
+        const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_.model.model_id.name) }`, '_blank');
+        const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_.model.model_id.name) }/mojo`, '_blank');
+        const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
         const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
           acceptCaption: 'Delete Model',
           declineCaption: 'Cancel'
         }, accept => {
           if (accept) {
-            return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$33.stringify(_model.model_id.name) }`);
+            return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
           }
         });
         return {
-          key: _model.model_id,
-          algo: _model.algo_full_name,
+          key: _.model.model_id,
+          algo: _.model.algo_full_name,
           plots: _plots,
           inputParameters: _inputParameters,
           isExpanded: _isExpanded,
@@ -5110,7 +5112,7 @@
       function _refresh() {
         refresh((error, model) => {
           if (!error) {
-            _output(createOutput(model));
+            _output(createOutput(_));
             if (_isLive()) {
               return lodash.delay(_refresh, 2000);
             }
@@ -5118,7 +5120,7 @@
         });
       }
       const _toggleRefresh = () => _isLive(!_isLive());
-      _output(createOutput(_model));
+      _output(createOutput(_));
       lodash.defer(_go);
       return {
         output: _output,
@@ -5164,7 +5166,8 @@
         return go(null, lodash.extend(model));
       });
       lodash.extend(model);
-      return render_(_, model, h2oModelOutput, model, refresh);
+      _.model = model;
+      return render_(_, model, h2oModelOutput, refresh);
     }
 
     function requestModel(_, modelKey, go) {
@@ -8151,7 +8154,8 @@
             return go(null, lodash.extend(model));
           });
           lodash.extend(model);
-          return render_(model, h2oModelOutput, model, refresh);
+          _.model = model;
+          return render_(model, h2oModelOutput, refresh);
         };
         const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
         const createPlot = (f, go) => _plot(f(lightning), (error, vis) => {

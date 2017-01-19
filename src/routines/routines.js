@@ -195,7 +195,8 @@ export function routines() {
         return go(null, lodash.extend(model));
       });
       lodash.extend(model);
-      return render_(model, h2oModelOutput, model, refresh);
+      _.model = model;
+      return render_(model, h2oModelOutput, refresh);
     };
     const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
     const createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
