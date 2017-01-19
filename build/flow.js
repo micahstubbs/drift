@@ -4726,6 +4726,10 @@
       });
     }
 
+    function downloadPojo(_) {
+      return window.open(`/3/Models.java/${ encodeURIComponent(_.model.model_id.name) }`, '_blank');
+    }
+
     const flowPrelude$33 = flowPreludeFunction();
 
     function h2oModelOutput(_, _go, refresh) {
@@ -5043,7 +5047,6 @@
             renderPlot(_, tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
           }
         }
-        const downloadPojo = () => window.open(`/3/Models.java/${ encodeURIComponent(_.model.model_id.name) }`, '_blank');
         const downloadMojo = () => window.open(`/3/Models/${ encodeURIComponent(_.model.model_id.name) }/mojo`, '_blank');
         const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
         const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
@@ -5065,7 +5068,7 @@
           predict: predict.bind(this, _),
           inspect: inspect.bind(this, _),
           previewPojo: previewPojo.bind(this, _),
-          downloadPojo,
+          downloadPojo: downloadPojo.bind(this, _),
           downloadMojo,
           pojoPreview: _.pojoPreview,
           isPojoLoaded: _isPojoLoaded,
