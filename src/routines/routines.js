@@ -206,10 +206,10 @@ export function routines() {
           if (error) {
             return go(error);
           }
-        })
+          return go(null, extendPlot(vis));
+        });
       }
-      return go(null, extendPlot(vis));
-    }
+    };
     const inspect = function (a, b) {
       if (arguments.length === 1) {
         return inspect$1(a);
