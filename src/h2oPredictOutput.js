@@ -17,7 +17,7 @@ export function h2oPredictOutput(_, _go, prediction) {
     frame = prediction.frame;
     model = prediction.model;
   }
-  const _plots = Flow.Dataflow.signals([]);
+  _.plots = Flow.Dataflow.signals([]);
   const _canInspect = prediction.__meta;
   const renderPlot = (title, prediction, render) => {
     const container = Flow.Dataflow.signal(null);
@@ -43,7 +43,7 @@ export function h2oPredictOutput(_, _go, prediction) {
       });
       return container(vis.element);
     });
-    return _plots.push({
+    return _.plots.push({
       title,
       plot: container,
       combineWithFrame,
@@ -82,7 +82,7 @@ export function h2oPredictOutput(_, _go, prediction) {
   };
   lodash.defer(_go);
   return {
-    plots: _plots,
+    plots: _.plots,
     inspect,
     canInspect: _canInspect,
     template: 'flow-predict-output',

@@ -24,7 +24,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
   });
 
   // Hold as many plots as are present in the result.
-  const _plots = [];
+  _.plots = [];
 
   const _ref = _result.partial_dependence_data;
   for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -33,7 +33,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
     if (table) {
       x = data.columns[0].name;
       y = data.columns[1].name;
-      _plots.push(section = {
+      _.plots.push(section = {
         title: `${x} vs ${y}`,
         plot: Flow.Dataflow.signal(null),
         frame: Flow.Dataflow.signal(null),
@@ -50,7 +50,7 @@ export function h2oPartialDependenceOutput(_, _go, _result) {
     destinationKey: _destinationKey,
     modelId: _modelId,
     frameId: _frameId,
-    plots: _plots,
+    plots: _.plots,
     isFrameShown: _isFrameShown,
     viewFrame: _viewFrame,
     template: 'flow-partial-dependence-output',
