@@ -1,10 +1,10 @@
 import getAucAsLabel from './getAucAsLabel';
 import getThresholdsAndCriteria from './getThresholdsAndCriteria';
 import renderPlot from './renderPlot';
+import renderMultinomialConfusionMatrix from './renderMultinomialConfusionMatrix';
 
 import { requestPojoPreview } from '../h2oProxy/requestPojoPreview';
 import { highlight } from '../utils/highlight';
-import { format4f } from '../routines/format4f';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -102,57 +102,6 @@ export function h2oModelOutput(_, _go, refresh) {
         isModified: defaultValue === actualValue,
       };
     });
-    const renderMultinomialConfusionMatrix = (title, cm) => {
-      let cell;
-      let cells;
-      let column;
-      let i;
-      let rowIndex;
-      let _i;
-      const _ref = Flow.HTML.template('table.flow-confusion-matrix', 'tbody', 'tr', 'td', 'td.strong', 'td.bg-yellow');
-      const table = _ref[0];
-      const tbody = _ref[1];
-      const tr = _ref[2];
-      const normal = _ref[3];
-      const bold = _ref[4];
-      const yellow = _ref[5];
-      const columnCount = cm.columns.length;
-      const rowCount = cm.rowcount;
-      const headers = lodash.map(cm.columns, (column, i) => bold(column.description));
-
-      // NW corner cell
-      headers.unshift(normal(' '));
-      const rows = [tr(headers)];
-      const errorColumnIndex = columnCount - 2;
-      const totalRowIndex = rowCount - 1;
-      for (rowIndex = _i = 0; rowCount >= 0 ? _i < rowCount : _i > rowCount; rowIndex = rowCount >= 0 ? ++_i : --_i) {
-        cells = (() => {
-          let _j;
-          let _len;
-          const _ref1 = cm.data;
-          const _results = [];
-          for (i = _j = 0, _len = _ref1.length; _j < _len; i = ++_j) {
-            column = _ref1[i];
-
-            // Last two columns should be emphasized
-            // special-format error column
-            cell = i < errorColumnIndex ? i === rowIndex ? yellow : rowIndex < totalRowIndex ? normal : bold : bold;
-            _results.push(cell(i === errorColumnIndex ? format4f(column[rowIndex]) : column[rowIndex]));
-          }
-          return _results;
-        })();
-        // Add the corresponding column label
-        cells.unshift(bold(rowIndex === rowCount - 1 ? 'Total' : cm.columns[rowIndex].description));
-        rows.push(tr(cells));
-      }
-      return _.plots.push({
-        title: title + (cm.description ? ` ${cm.description}` : ''),
-        plot: Flow.Dataflow.signal(Flow.HTML.render('div', table(tbody(rows)))),
-        frame: Flow.Dataflow.signal(null),
-        controls: Flow.Dataflow.signal(null),
-        isCollapsed: false,
-      });
-    };
     switch (_.model.algo) {
       case 'kmeans':
         table = _.inspect('output - Scoring History', _.model);
@@ -189,27 +138,38 @@ export function h2oModelOutput(_, _go, refresh) {
         if (table) {
           renderPlot(_, 'Standardized Coefficient Magnitudes', false, _.plot(g => g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25))));
         }
+        console.log('_ from h2oModelOutput', _);
+        console.log('_.model from h2oModelOutput', _.model);
+        console.log('_.model.output from h2oModelOutput', _.model.output);
+
         output = _.model.output;
-        if (output) {
-          if (output.model_category === 'Multinomial') {
-            _ref = output.training_metrics;
-            _ref1 = _ref.cm;
-            confusionMatrix = _ref != null ? _ref1 != null ? _ref1.table : void 0 : void 0;
-            if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
-            }
-            _ref2 = output.validation_metrics;
-            _ref3 = _ref2.cm;
-            confusionMatrix = _ref2 != null ? _ref3 != null ? _ref3.table : void 0 : void 0;
-            if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
-            }
-            _ref4 = output.cross_validation_metrics;
-            _ref5 = _ref4.cm;
-            confusionMatrix = _ref4 != null ? _ref5 != null ? _ref5.table : void 0 : void 0;
-            if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-            }
+        if (output.model_category === 'Multinomial') {
+          // training metrics
+          if (
+            output.training_metrics !== null &&
+            output.training_metrics.cm !== null &&
+            output.training_metrics.cm.table
+          ) {
+            confusionMatrix = output.training_metrics.cm.table;
+            renderMultinomialConfusionMatrix(_, 'Training Metrics - Confusion Matrix', confusionMatrix);
+          }
+          // validation metrics
+          if (
+            output.validation_metrics !== null &&
+            output.validation_metrics.cm !== null &&
+            output.validation_metrics.cm.table
+          ) {
+            confusionMatrix = output.validation_metrics.cm.table;
+            renderMultinomialConfusionMatrix(_, 'Validation Metrics - Confusion Matrix', confusionMatrix);
+          }
+          // cross validation metrics
+          if (
+            output.cross_validation_metrics !== null &&
+            output.cross_validation_metrics.cm !== null &&
+            output.cross_validation_metrics.cm.table
+          ) {
+            confusionMatrix = output.cross_validation_metrics.cm.table;
+            renderMultinomialConfusionMatrix(_, 'Cross Validation Metrics - Confusion Matrix', confusionMatrix);
           }
         }
         break;
@@ -274,13 +234,13 @@ export function h2oModelOutput(_, _go, refresh) {
             _ref7 = _ref6.cm;
             confusionMatrix = _ref6 != null ? _ref7 != null ? _ref7.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Training Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref8 = output.validation_metrics;
             _ref9 = _ref8.cm;
             confusionMatrix = _ref8 != null ? _ref9 != null ? _ref9.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Validation Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref10 = output.cross_validation_metrics;
             if (_ref10 !== null) {
@@ -288,7 +248,7 @@ export function h2oModelOutput(_, _go, refresh) {
             }
             confusionMatrix = _ref10 != null ? _ref11 != null ? _ref11.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Cross Validation Metrics - Confusion Matrix', confusionMatrix);
             }
           }
         }
@@ -349,19 +309,19 @@ export function h2oModelOutput(_, _go, refresh) {
             _ref13 = _ref12.cm;
             confusionMatrix = _ref12 != null ? _ref13 != null ? _ref13.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Training Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref14 = output.validation_metrics;
             _ref15 = _ref14.cm;
             confusionMatrix = _ref14 != null ? _ref15 != null ? _ref15.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Validation Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref16 = output.cross_validation_metrics;
             _ref17 = _ref16.cm;
             confusionMatrix = _ref16 != null ? _ref17 != null ? _ref17.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Cross Validation Metrics - Confusion Matrix', confusionMatrix);
             }
           }
         }
@@ -407,19 +367,19 @@ export function h2oModelOutput(_, _go, refresh) {
             _ref19 = _ref18.cm;
             confusionMatrix = _ref18 != null ? _ref19 != null ? _ref19.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Training Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Training Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref20 = output.validation_metrics;
             _ref21 = _ref20.cm;
             confusionMatrix = _ref20 != null ? _ref21 != null ? _ref21.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Validation Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Validation Metrics - Confusion Matrix', confusionMatrix);
             }
             _ref22 = output.cross_validation_metrics;
             _ref23 = _ref22.cm;
             confusionMatrix = _ref22 != null ? _ref23 != null ? _ref23.table : void 0 : void 0;
             if (confusionMatrix) {
-              renderMultinomialConfusionMatrix('Cross Validation Metrics - Confusion Matrix', confusionMatrix);
+              renderMultinomialConfusionMatrix(_, 'Cross Validation Metrics - Confusion Matrix', confusionMatrix);
             }
           }
         }
