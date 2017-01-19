@@ -4931,29 +4931,7 @@
             if (table) {
               renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
             }
-            output = _.model.output;
-            if (output) {
-              if (output.model_category === 'Multinomial') {
-                _ref12 = output.training_metrics;
-                _ref13 = _ref12.cm;
-                confusionMatrix = _ref12 != null ? _ref13 != null ? _ref13.table : void 0 : void 0;
-                if (confusionMatrix) {
-                  renderMultinomialConfusionMatrix(_, 'Training Metrics - Confusion Matrix', confusionMatrix);
-                }
-                _ref14 = output.validation_metrics;
-                _ref15 = _ref14.cm;
-                confusionMatrix = _ref14 != null ? _ref15 != null ? _ref15.table : void 0 : void 0;
-                if (confusionMatrix) {
-                  renderMultinomialConfusionMatrix(_, 'Validation Metrics - Confusion Matrix', confusionMatrix);
-                }
-                _ref16 = output.cross_validation_metrics;
-                _ref17 = _ref16.cm;
-                confusionMatrix = _ref16 != null ? _ref17 != null ? _ref17.table : void 0 : void 0;
-                if (confusionMatrix) {
-                  renderMultinomialConfusionMatrix(_, 'Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-                }
-              }
-            }
+            renderConfusionMatrices(_);
             break;
           // end of when 'gbm', 'drf', 'svm'
 
@@ -4989,29 +4967,7 @@
             if (table) {
               renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
             }
-            output = _.model.output;
-            if (output) {
-              if (output.model_category === 'Multinomial') {
-                _ref18 = output.training_metrics;
-                _ref19 = _ref18.cm;
-                confusionMatrix = _ref18 != null ? _ref19 != null ? _ref19.table : void 0 : void 0;
-                if (confusionMatrix) {
-                  renderMultinomialConfusionMatrix(_, 'Training Metrics - Confusion Matrix', confusionMatrix);
-                }
-                _ref20 = output.validation_metrics;
-                _ref21 = _ref20.cm;
-                confusionMatrix = _ref20 != null ? _ref21 != null ? _ref21.table : void 0 : void 0;
-                if (confusionMatrix) {
-                  renderMultinomialConfusionMatrix(_, 'Validation Metrics - Confusion Matrix', confusionMatrix);
-                }
-                _ref22 = output.cross_validation_metrics;
-                _ref23 = _ref22.cm;
-                confusionMatrix = _ref22 != null ? _ref23 != null ? _ref23.table : void 0 : void 0;
-                if (confusionMatrix) {
-                  renderMultinomialConfusionMatrix(_, 'Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-                }
-              }
-            }
+            renderConfusionMatrices(_);
             break;
           default:
           // do nothing

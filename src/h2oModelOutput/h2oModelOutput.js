@@ -1,7 +1,6 @@
 import getAucAsLabel from './getAucAsLabel';
 import getThresholdsAndCriteria from './getThresholdsAndCriteria';
 import renderPlot from './renderPlot';
-import renderMultinomialConfusionMatrix from './renderMultinomialConfusionMatrix';
 import renderConfusionMatrices from './renderConfusionMatrices';
 
 import { requestPojoPreview } from '../h2oProxy/requestPojoPreview';
