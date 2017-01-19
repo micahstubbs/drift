@@ -4668,6 +4668,10 @@
       return _.modelOutputIsExpanded(!_.modelOutputIsExpanded());
     }
 
+    function cloneModel() {
+      return alert('Not implemented');
+    }
+
     function download(type, url, go) {
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -5014,7 +5018,6 @@
             renderPlot(_, tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
           }
         }
-        const cloneModel = () => alert('Not implemented');
         const predict = () => _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
         const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
         const previewPojo = () => requestPojoPreview(_.model.model_id.name, (error, result) => {
