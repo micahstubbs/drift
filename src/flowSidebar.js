@@ -1,10 +1,10 @@
 import { flowOutline } from './flowOutline';
 import { flowBrowser } from './flowBrowser';
 
-export function flowSidebar(_, cells) {
+export function flowSidebar(_) {
   const Flow = window.Flow;
   const _mode = Flow.Dataflow.signal('help');
-  const _outline = flowOutline(_, cells);
+  const _outline = flowOutline(_);
   const _isOutlineMode = Flow.Dataflow.lift(_mode, mode => mode === 'outline');
   const switchToOutline = () => _mode('outline');
   const _browser = flowBrowser(_);

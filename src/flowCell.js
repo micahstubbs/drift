@@ -1,7 +1,7 @@
 import { formatElapsedTime } from './utils/formatElapsedTime';
 import { formatClockTime } from './utils/formatClockTime';
 
-export function flowCell(_, _renderers, type, input) {
+export function flowCell(_, type, input) {
   const lodash = window._;
   const Flow = window.Flow;
   if (type == null) {
@@ -12,7 +12,7 @@ export function flowCell(_, _renderers, type, input) {
   }
   const _guid = lodash.uniqueId();
   const _type = Flow.Dataflow.signal(type);
-  const _render = Flow.Dataflow.lift(_type, type => _renderers[type](_guid));
+  const _render = Flow.Dataflow.lift(_type, type => _.renderers[type](_guid));
   const _isCode = Flow.Dataflow.lift(_render, render => render.isCode);
   const _isSelected = Flow.Dataflow.signal(false);
   const _isActive = Flow.Dataflow.signal(false);
