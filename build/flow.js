@@ -4542,17 +4542,6 @@
             isModified: defaultValue === actualValue
           };
         });
-
-        // TODO copied over from routines.coffee. replace post h2o.js integration.
-        const format4f = number => {
-          if (number) {
-            if (number === 'NaN') {
-              return void 0;
-            }
-            return number.toFixed(4).replace(/\.0+$/, '.0');
-          }
-          return number;
-        };
         const getAucAsLabel = (model, tableName) => {
           const metrics = _.inspect(tableName, model);
           if (metrics) {
@@ -13367,13 +13356,11 @@
       const pasteCellandReplace = notImplemented;
       const mergeCellAbove = notImplemented;
       const startTour = notImplemented;
-
       //
       // Top menu bar
       //
       _.menus = Flow.Dataflow.signal(null);
       const _toolbar = createToolbar(_);
-
       const normalModeKeyboardShortcuts = createNormalModeKeyboardShortcuts(_);
       const editModeKeyboardShortcuts = createEditModeKeyboardShortcuts();
       const normalModeKeyboardShortcutsHelp = lodash.map(normalModeKeyboardShortcuts, toKeyboardHelp);

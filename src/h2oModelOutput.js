@@ -1,5 +1,6 @@
 import { requestPojoPreview } from './h2oProxy/requestPojoPreview';
 import { highlight } from './utils/highlight';
+import { format4f } from './routines/format4f';
 
 import { flowPreludeFunction } from './flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -97,17 +98,6 @@ export function h2oModelOutput(_, _go, _model, refresh) {
         isModified: defaultValue === actualValue,
       };
     });
-
-    // TODO copied over from routines.coffee. replace post h2o.js integration.
-    const format4f = number => {
-      if (number) {
-        if (number === 'NaN') {
-          return void 0;
-        }
-        return number.toFixed(4).replace(/\.0+$/, '.0');
-      }
-      return number;
-    };
     const getAucAsLabel = (model, tableName) => {
       const metrics = _.inspect(tableName, model);
       if (metrics) {
