@@ -8,6 +8,7 @@ import predict from './predict';
 import inspect from './inspect';
 import previewPojo from './previewPojo';
 import downloadPojo from './downloadPojo';
+import downloadMojo from './downloadMojo';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -327,7 +328,6 @@ export function h2oModelOutput(_, _go, refresh) {
         renderPlot(_, tableName + (table.metadata.description ? ` (${table.metadata.description})` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
       }
     }
-    const downloadMojo = () => window.open(`/3/Models/${encodeURIComponent(_.model.model_id.name)}/mojo`, '_blank');
     const exportModel = () => _.insertAndExecuteCell('cs', `exportModel ${flowPrelude.stringify(_.model.model_id.name)}`);
     const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
       acceptCaption: 'Delete Model',
@@ -349,7 +349,7 @@ export function h2oModelOutput(_, _go, refresh) {
       inspect: inspect.bind(this, _),
       previewPojo: previewPojo.bind(this, _),
       downloadPojo: downloadPojo.bind(this, _),
-      downloadMojo,
+      downloadMojo: downloadMojo.bind(this, _),
       pojoPreview: _.pojoPreview,
       isPojoLoaded: _isPojoLoaded,
       exportModel,
