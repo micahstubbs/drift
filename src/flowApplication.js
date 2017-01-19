@@ -4,6 +4,7 @@ import { flowAnalytics } from './flowAnalytics';
 import { flowGrowl } from './flowGrowl';
 import { flowAutosave } from './flowAutosave';
 import { flowRenderers } from './notebook/flowRenderers';
+import flowNotebook from './notebook/flowNotebook';
 
 export function flowApplication(_, routines) {
   const Flow = window.Flow;
@@ -15,11 +16,10 @@ export function flowApplication(_, routines) {
   flowAnalytics(_);
   flowGrowl(_);
   flowAutosave(_);
-  const _notebook = Flow.notebook(_);
+  const _notebook = flowNotebook(_);
   return {
     context: _,
     sandbox: _sandbox,
     view: _notebook,
   };
 }
-
