@@ -2,6 +2,7 @@ import getAucAsLabel from './getAucAsLabel';
 import getThresholdsAndCriteria from './getThresholdsAndCriteria';
 import renderPlot from './renderPlot';
 import renderMultinomialConfusionMatrix from './renderMultinomialConfusionMatrix';
+import renderConfusionMatrices from './renderConfusionMatrices';
 
 import { requestPojoPreview } from '../h2oProxy/requestPojoPreview';
 import { highlight } from '../utils/highlight';
@@ -138,40 +139,7 @@ export function h2oModelOutput(_, _go, refresh) {
         if (table) {
           renderPlot(_, 'Standardized Coefficient Magnitudes', false, _.plot(g => g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25))));
         }
-        console.log('_ from h2oModelOutput', _);
-        console.log('_.model from h2oModelOutput', _.model);
-        console.log('_.model.output from h2oModelOutput', _.model.output);
-
-        output = _.model.output;
-        if (output.model_category === 'Multinomial') {
-          // training metrics
-          if (
-            output.training_metrics !== null &&
-            output.training_metrics.cm !== null &&
-            output.training_metrics.cm.table
-          ) {
-            confusionMatrix = output.training_metrics.cm.table;
-            renderMultinomialConfusionMatrix(_, 'Training Metrics - Confusion Matrix', confusionMatrix);
-          }
-          // validation metrics
-          if (
-            output.validation_metrics !== null &&
-            output.validation_metrics.cm !== null &&
-            output.validation_metrics.cm.table
-          ) {
-            confusionMatrix = output.validation_metrics.cm.table;
-            renderMultinomialConfusionMatrix(_, 'Validation Metrics - Confusion Matrix', confusionMatrix);
-          }
-          // cross validation metrics
-          if (
-            output.cross_validation_metrics !== null &&
-            output.cross_validation_metrics.cm !== null &&
-            output.cross_validation_metrics.cm.table
-          ) {
-            confusionMatrix = output.cross_validation_metrics.cm.table;
-            renderMultinomialConfusionMatrix(_, 'Cross Validation Metrics - Confusion Matrix', confusionMatrix);
-          }
-        }
+        renderConfusionMatrices(_);
         break;
       case 'deeplearning':
       case 'deepwater':
