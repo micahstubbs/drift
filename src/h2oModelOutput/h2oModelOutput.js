@@ -1,5 +1,6 @@
 import getAucAsLabel from './getAucAsLabel';
 import getThresholdsAndCriteria from './getThresholdsAndCriteria';
+import renderTable from './renderTable';
 
 import { requestPojoPreview } from '../h2oProxy/requestPojoPreview';
 import { highlight } from '../utils/highlight';
@@ -144,8 +145,7 @@ export function h2oModelOutput(_, _go, refresh) {
             const frame = _arg.frame;
             const indices = _arg.indices;
             const subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
-            const renderTable = g => g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
-            _.plot(renderTable)((error, table) => {
+            _.plot(renderTable.bind(this, indices, subframe))((error, table) => {
               if (!error) {
                 return linkedFrame(table.element);
               }

@@ -4473,6 +4473,11 @@
       return void 0;
     }
 
+    function renderTable(indices, subframe, g) {
+      const lodash = window._;
+      return g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
+    }
+
     function download(type, url, go) {
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -4640,8 +4645,7 @@
                 const frame = _arg.frame;
                 const indices = _arg.indices;
                 const subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
-                const renderTable = g => g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
-                _.plot(renderTable)((error, table) => {
+                _.plot(renderTable.bind(this, indices, subframe))((error, table) => {
                   if (!error) {
                     return linkedFrame(table.element);
                   }
