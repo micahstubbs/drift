@@ -101,7 +101,7 @@ import { h2oExportFrameInput } from '../h2oExportFrameInput';
 import { h2oImportModelInput } from '../h2oImportModelInput';
 import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
-import { h2oModelOutput } from '../h2oModelOutput';
+import { h2oModelOutput } from '../h2oModelOutput/h2oModelOutput';
 import { h2oDataFrameOutput } from '../h2oDataFrameOutput';
 import { h2oModelInput } from '../h2oModelInput/h2oModelInput';
 import { h2oImputeInput } from '../h2oImputeInput/h2oImputeInput';
@@ -195,15 +195,21 @@ export function routines() {
         return go(null, lodash.extend(model));
       });
       lodash.extend(model);
-      return render_(model, h2oModelOutput, model, refresh);
+      _.model = model;
+      return render_(model, h2oModelOutput, refresh);
     };
     const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
-    const createPlot = (f, go) => _plot(f(lightning), (error, vis) => {
-      if (error) {
-        return go(error);
+    const createPlot = (f, go) => {
+      console.log('f from routines createPlot', f);
+      if (lodash.isFunction(f)) {
+        return _plot(f(lightning), (error, vis) => {
+          if (error) {
+            return go(error);
+          }
+          return go(null, extendPlot(vis));
+        });
       }
-      return go(null, extendPlot(vis));
-    });
+    };
     const inspect = function (a, b) {
       if (arguments.length === 1) {
         return inspect$1(a);
@@ -273,8 +279,9 @@ export function routines() {
       return inspection;
     };
     const plot = f => {
+      console.log('f from routines plot', f);
       if (_isFuture(f)) {
-        return _fork(proceed, h2oPlotInput, f);
+        return _fork(proceed, _, h2oPlotInput, f);
       } else if (lodash.isFunction(f)) {
         return _fork(createPlot, f);
       }

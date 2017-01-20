@@ -4,7 +4,7 @@ import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { inspect_ } from './inspect_';
 import { render_ } from './render_';
 
-import { h2oModelOutput } from '../h2oModelOutput';
+import { h2oModelOutput } from '../h2oModelOutput/h2oModelOutput';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
@@ -44,5 +44,6 @@ export function extendModel(_, model) {
     return go(null, lodash.extend(model));
   });
   lodash.extend(model);
-  return render_(_, model, h2oModelOutput, model, refresh);
+  _.model = model;
+  return render_(_, model, h2oModelOutput, refresh);
 }
