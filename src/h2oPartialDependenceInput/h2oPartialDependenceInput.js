@@ -1,7 +1,7 @@
-import { getModelsRequest } from './h2oProxy/getModelsRequest';
-import { uuid } from './utils/uuid';
+import { getModelsRequest } from '../h2oProxy/getModelsRequest';
+import { uuid } from '../utils/uuid';
 
-import { flowPreludeFunction } from './flowPreludeFunction';
+import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oPartialDependenceInput(_, _go) {

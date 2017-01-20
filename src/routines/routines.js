@@ -96,7 +96,7 @@ import { h2oPredictInput } from '../h2oPredictInput';
 import { h2oCreateFrameInput } from '../h2oCreateFrameInput';
 import { h2oSplitFrameInput } from '../h2oSplitFrameInput';
 import { h2oMergeFramesInput } from '../h2oMergeFramesInput';
-import { h2oPartialDependenceInput } from '../h2oPartialDependenceInput';
+import { h2oPartialDependenceInput } from '../h2oPartialDependenceInput/h2oPartialDependenceInput';
 import { h2oExportFrameInput } from '../h2oExportFrameInput';
 import { h2oImportModelInput } from '../h2oImportModelInput';
 import { h2oExportModelInput } from '../h2oExportModelInput';
