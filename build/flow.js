@@ -6548,6 +6548,16 @@
       return _selectionCount(_selectionCount() + amount);
     }
 
+    function changeSelection(source, value) {
+      let entry;
+      let _i;
+      let _len;
+      for (_i = 0, _len = source.length; _i < _len; _i++) {
+        entry = source[_i];
+        entry.isSelected(value);
+      }
+    }
+
     const flowPrelude$49 = flowPreludeFunction();
 
     function h2oPartialDependenceInput(_, _go) {
@@ -6577,7 +6587,7 @@
 
       const _selectionCount = Flow.Dataflow.signal(0);
 
-      let _isUpdatingSelectionCount = false;
+      const _isUpdatingSelectionCount = false;
 
       const _searchTerm = Flow.Dataflow.signal('');
       const _searchCaption = Flow.Dataflow.lift(_columns, _filteredItems, _selectionCount, _currentPage, _maxPages, (entries, filteredItems, selectionCount, currentPage, maxPages) => {
@@ -6597,6 +6607,8 @@
       });
 
       const _hasFilteredItems = Flow.Dataflow.lift(_columns, entries => entries.length > 0);
+      // this is too tightly coupled
+      // defer for now
       const filterItems = () => {
         let entry;
         let hide;
@@ -6621,15 +6633,6 @@
         return _visibleItems(_filteredItems().slice(start, start + maxItemsPerPage));
       };
       Flow.Dataflow.react(_searchTerm, lodash.throttle(filterItems, 500));
-      const changeSelection = (source, value) => {
-        let entry;
-        let j;
-        let len;
-        for (j = 0, len = source.length; j < len; j++) {
-          entry = source[j];
-          entry.isSelected(value);
-        }
-      };
       const _selectFiltered = () => {
         const entries = _filteredItems();
         blockSelectionUpdates(() => changeSelection(entries, true));
@@ -7346,16 +7349,6 @@
         missingLabel: value.missingLabel,
         missingPercent: value.missingPercent
       };
-    }
-
-    function changeSelection(source, value) {
-      let entry;
-      let _i;
-      let _len;
-      for (_i = 0, _len = source.length; _i < _len; _i++) {
-        entry = source[_i];
-        entry.isSelected(value);
-      }
     }
 
     function createListControl(parameter) {

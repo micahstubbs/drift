@@ -2,6 +2,7 @@ import { getModelsRequest } from '../h2oProxy/getModelsRequest';
 import { uuid } from '../utils/uuid';
 import { blockSelectionUpdates } from '../h2oModelInput/createListControl/blockSelectionUpdates';
 import { incrementSelectionCount } from '../h2oModelInput/createListControl/incrementSelectionCount';
+import { changeSelection } from '../h2oModelInput/createListControl/changeSelection';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -33,7 +34,7 @@ export function h2oPartialDependenceInput(_, _go) {
 
   const _selectionCount = Flow.Dataflow.signal(0);
 
-  let _isUpdatingSelectionCount = false;
+  const _isUpdatingSelectionCount = false;
 
   const _searchTerm = Flow.Dataflow.signal('');
   const _searchCaption = Flow.Dataflow.lift(_columns, _filteredItems, _selectionCount, _currentPage, _maxPages, (entries, filteredItems, selectionCount, currentPage, maxPages) => {
@@ -82,15 +83,6 @@ export function h2oPartialDependenceInput(_, _go) {
     return _visibleItems(_filteredItems().slice(start, start + maxItemsPerPage));
   };
   Flow.Dataflow.react(_searchTerm, lodash.throttle(filterItems, 500));
-  const changeSelection = (source, value) => {
-    let entry;
-    let j;
-    let len;
-    for (j = 0, len = source.length; j < len; j++) {
-      entry = source[j];
-      entry.isSelected(value);
-    }
-  };
   const _selectFiltered = () => {
     const entries = _filteredItems();
     blockSelectionUpdates(() => changeSelection(entries, true));
