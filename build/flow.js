@@ -6543,6 +6543,11 @@
       return _isUpdatingSelectionCount;
     }
 
+    function incrementSelectionCount(amount, _selectionCount) {
+      const Flow = window.Flow;
+      return _selectionCount(_selectionCount() + amount);
+    }
+
     const flowPrelude$49 = flowPreludeFunction();
 
     function h2oPartialDependenceInput(_, _go) {
@@ -6590,8 +6595,6 @@
         }
         return caption;
       });
-
-      const incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
 
       const _hasFilteredItems = Flow.Dataflow.lift(_columns, entries => entries.length > 0);
       const filterItems = () => {
@@ -6712,9 +6715,9 @@
                 Flow.Dataflow.react(isSelected, isSelected => {
                   if (!_isUpdatingSelectionCount) {
                     if (isSelected) {
-                      incrementSelectionCount(1);
+                      incrementSelectionCount(1, _selectionCount);
                     } else {
-                      incrementSelectionCount(-1);
+                      incrementSelectionCount(-1, _selectionCount);
                     }
                   }
                 });
@@ -7322,11 +7325,6 @@
       control.value = _value;
       control.gridedValues = Flow.Dataflow.lift(control.values, values => createGridableValues(values));
       return control;
-    }
-
-    function incrementSelectionCount(amount, _selectionCount) {
-      const Flow = window.Flow;
-      return _selectionCount(_selectionCount() + amount);
     }
 
     function createEntry(value, _selectionCount, _isUpdatingSelectionCount) {

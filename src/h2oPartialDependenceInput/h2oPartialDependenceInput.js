@@ -1,6 +1,7 @@
 import { getModelsRequest } from '../h2oProxy/getModelsRequest';
 import { uuid } from '../utils/uuid';
 import { blockSelectionUpdates } from '../h2oModelInput/createListControl/blockSelectionUpdates';
+import { incrementSelectionCount } from '../h2oModelInput/createListControl/incrementSelectionCount';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -50,8 +51,6 @@ export function h2oPartialDependenceInput(_, _go) {
     }
     return caption;
   });
-
-  const incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
 
   const _hasFilteredItems = Flow.Dataflow.lift(_columns, entries => entries.length > 0);
   const filterItems = () => {
@@ -175,9 +174,9 @@ export function h2oPartialDependenceInput(_, _go) {
             Flow.Dataflow.react(isSelected, isSelected => {
               if (!_isUpdatingSelectionCount) {
                 if (isSelected) {
-                  incrementSelectionCount(1);
+                  incrementSelectionCount(1, _selectionCount);
                 } else {
-                  incrementSelectionCount(-1);
+                  incrementSelectionCount(-1, _selectionCount);
                 }
               }
             });
