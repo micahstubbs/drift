@@ -10,6 +10,7 @@ import previewPojo from './previewPojo';
 import downloadPojo from './downloadPojo';
 import downloadMojo from './downloadMojo';
 import exportModel from './exportModel';
+import deleteModel from './deleteModel';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -329,14 +330,6 @@ export function h2oModelOutput(_, _go, refresh) {
         renderPlot(_, tableName + (table.metadata.description ? ` (${table.metadata.description})` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
       }
     }
-    const deleteModel = () => _.confirm('Are you sure you want to delete this model?', {
-      acceptCaption: 'Delete Model',
-      declineCaption: 'Cancel',
-    }, accept => {
-      if (accept) {
-        return _.insertAndExecuteCell('cs', `deleteModel ${flowPrelude.stringify(_.model.model_id.name)}`);
-      }
-    });
     return {
       key: _.model.model_id,
       algo: _.model.algo_full_name,
@@ -353,7 +346,7 @@ export function h2oModelOutput(_, _go, refresh) {
       pojoPreview: _.pojoPreview,
       isPojoLoaded: _isPojoLoaded,
       exportModel: exportModel.bind(this, _),
-      deleteModel,
+      deleteModel: deleteModel.bind(this, _),
     };
   };
   const _isLive = Flow.Dataflow.signal(false);
