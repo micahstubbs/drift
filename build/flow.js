@@ -7807,6 +7807,7 @@
       const _exception = Flow.Dataflow.signal(null);
       const _algorithms = Flow.Dataflow.signal([]);
       const _algorithm = Flow.Dataflow.signal(null);
+      const _createModelDeviancePlot = Flow.Dataflow.signal(false);
       const _canCreateModel = Flow.Dataflow.lift(_algorithm, algorithm => {
         if (algorithm) {
           return true;
@@ -7838,6 +7839,7 @@
         modelForm: _modelForm,
         canCreateModel: _canCreateModel,
         createModel,
+        createModelDeviancePlot: _createModelDeviancePlot,
         template: 'flow-model-input'
       };
     }
