@@ -1,5 +1,6 @@
 import { getModelsRequest } from '../h2oProxy/getModelsRequest';
 import { uuid } from '../utils/uuid';
+import { blockSelectionUpdates } from '../h2oModelInput/createListControl/blockSelectionUpdates';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -49,12 +50,6 @@ export function h2oPartialDependenceInput(_, _go) {
     }
     return caption;
   });
-
-  const blockSelectionUpdates = (f) => {
-    _isUpdatingSelectionCount = true;
-    f();
-    _isUpdatingSelectionCount = false;
-  };
 
   const incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
 

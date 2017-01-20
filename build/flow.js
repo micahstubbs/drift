@@ -6536,6 +6536,13 @@
       };
     }
 
+    function blockSelectionUpdates(f) {
+      let _isUpdatingSelectionCount = true;
+      f();
+      _isUpdatingSelectionCount = false;
+      return _isUpdatingSelectionCount;
+    }
+
     const flowPrelude$49 = flowPreludeFunction();
 
     function h2oPartialDependenceInput(_, _go) {
@@ -6583,12 +6590,6 @@
         }
         return caption;
       });
-
-      const blockSelectionUpdates = f => {
-        _isUpdatingSelectionCount = true;
-        f();
-        _isUpdatingSelectionCount = false;
-      };
 
       const incrementSelectionCount = amount => _selectionCount(_selectionCount() + amount);
 
@@ -7321,13 +7322,6 @@
       control.value = _value;
       control.gridedValues = Flow.Dataflow.lift(control.values, values => createGridableValues(values));
       return control;
-    }
-
-    function blockSelectionUpdates(f) {
-      let _isUpdatingSelectionCount = true;
-      f();
-      _isUpdatingSelectionCount = false;
-      return _isUpdatingSelectionCount;
     }
 
     function incrementSelectionCount(amount, _selectionCount) {
