@@ -53,6 +53,8 @@ export function h2oPartialDependenceInput(_, _go) {
   });
 
   const _hasFilteredItems = Flow.Dataflow.lift(_columns, entries => entries.length > 0);
+  // this is too tightly coupled
+  // defer for now
   const filterItems = () => {
     let entry;
     let hide;
