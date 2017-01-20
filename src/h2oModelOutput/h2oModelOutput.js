@@ -1,5 +1,6 @@
 import _refresh from './_refresh';
 import createOutput from './createOutput';
+import _toggleRefresh from './_toggleRefresh';
 
 
 export function h2oModelOutput(_, _go, refresh) {
@@ -13,12 +14,11 @@ export function h2oModelOutput(_, _go, refresh) {
       return _refresh(_, refresh);
     }
   });
-  const _toggleRefresh = () => _.isLive(!_.isLive());
   _.output(createOutput(_));
   lodash.defer(_go);
   return {
     output: _.output,
-    toggleRefresh: _toggleRefresh,
+    toggleRefresh: _toggleRefresh.bind(this, _),
     isLive: _.isLive,
     template: 'flow-model-output',
   };
