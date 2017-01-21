@@ -859,6 +859,10 @@
       const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
       const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
       _lastUsedSearchTerm = null;
+
+      // some messy state here
+      // attempting to abstract this out produces an error
+      // defer for now
       const refreshColumns = pageIndex => {
         const searchTerm = _columnNameSearchTerm();
         if (searchTerm !== _lastUsedSearchTerm) {
@@ -4518,6 +4522,15 @@
       });
     }
 
+    function goToUrl(url) {
+      return () => window.open(url, '_blank');
+    }
+
+    function showModelDeviancesPlot() {
+      console.log('showModelDeviancesPlot was called');
+      goToUrl('http://residuals.h2o.ai:8080')();
+    }
+
     function renderTable(indices, subframe, g) {
       const lodash = window._;
       return g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
@@ -5236,7 +5249,9 @@
         pojoPreview: _.pojoPreview,
         isPojoLoaded: _isPojoLoaded,
         exportModel: exportModel.bind(this, _),
-        deleteModel: deleteModel.bind(this, _)
+        deleteModel: deleteModel.bind(this, _),
+        createModelDeviancesPlot: _.createModelDeviancesPlot,
+        showModelDeviancesPlot
       };
     }
 
@@ -8075,6 +8090,15 @@
       }));
     }
 
+    function requestFrames$1(_, go) {
+      return doGet(_, '/3/Frames', (error, result) => {
+        if (error) {
+          return go(error);
+        }
+        return go(null, result.frames);
+      });
+    }
+
     const flowPrelude$59 = flowPreludeFunction();
 
     function h2oModelInput(_, _go, _algo, _opts) {
@@ -8084,13 +8108,36 @@
       const _exception = Flow.Dataflow.signal(null);
       const _algorithms = Flow.Dataflow.signal([]);
       const _algorithm = Flow.Dataflow.signal(null);
-      const _createModelDeviancePlot = Flow.Dataflow.signal(false);
+      _.createModelDeviancesPlot = Flow.Dataflow.signal(false);
+      const _frames = Flow.Dataflow.signals([]);
+      const _selectedFrame = Flow.Dataflow.signal(null);
+
       const _canCreateModel = Flow.Dataflow.lift(_algorithm, algorithm => {
         if (algorithm) {
           return true;
         }
         return false;
       });
+      // request frames for the comparison frame select box
+      requestFrames$1(_, (error, frames) => {
+        let frame;
+        if (error) {
+          return _exception(new Flow.Error('Error fetching frame list.', error));
+        }
+        return _frames((() => {
+          let _i;
+          let _len;
+          const _results = [];
+          for (_i = 0, _len = frames.length; _i < _len; _i++) {
+            frame = frames[_i];
+            if (!frame.is_text) {
+              _results.push(frame.frame_id.name);
+            }
+          }
+          return _results;
+        })());
+      });
+
       const _modelForm = Flow.Dataflow.signal(null);
       (() => requestModelBuilders(_, (error, modelBuilders) => {
         _algorithms(modelBuilders);
@@ -8108,6 +8155,7 @@
         });
       }))();
       const createModel = () => _modelForm().createModel();
+
       lodash.defer(_go);
       return {
         parentException: _exception, // XXX hacky
@@ -8116,7 +8164,9 @@
         modelForm: _modelForm,
         canCreateModel: _canCreateModel,
         createModel,
-        createModelDeviancePlot: _createModelDeviancePlot,
+        createModelDeviancesPlot: _.createModelDeviancesPlot,
+        frames: _frames,
+        selectedFrame: _selectedFrame,
         template: 'flow-model-input'
       };
     }
@@ -11473,15 +11523,6 @@
       return doPost(_, '/3/SplitFrame', opts, go);
     }
 
-    function requestFrames$1(_, go) {
-      return doGet(_, '/3/Frames', (error, result) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, result.frames);
-      });
-    }
-
     function requestFrameSummary$1(_, key, go) {
       const lodash = window._;
       doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, result => lodash.head(result.frames)));
@@ -13276,10 +13317,6 @@
         return window.open(`http://h2o-release.s3.amazonaws.com/h2o/${ gitBranch }/${ buildVersion }/docs-website/h2o-docs/index.html`, '_blank');
       }
       return window.open(`https://github.com/h2oai/h2o-3/blob/${ gitHash }/h2o-docs/src/product/howto/FAQ.md`, '_blank');
-    }
-
-    function goToUrl(url) {
-      return () => window.open(url, '_blank');
     }
 
     function displayAbout() {

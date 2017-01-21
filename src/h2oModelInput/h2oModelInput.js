@@ -1,6 +1,9 @@
 import { populateFramesAndColumns } from './populateFramesAndColumns';
 import { h2oModelBuilderForm } from './h2oModelBuilderForm/h2oModelBuilderForm';
+
 import { requestModelBuilders } from '../h2oProxy/requestModelBuilders';
+import { requestFrames } from '../h2oProxy/requestFrames';
+
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
@@ -11,7 +14,7 @@ export function h2oModelInput(_, _go, _algo, _opts) {
   const _exception = Flow.Dataflow.signal(null);
   const _algorithms = Flow.Dataflow.signal([]);
   const _algorithm = Flow.Dataflow.signal(null);
-  const _createModelDeviancePlot = Flow.Dataflow.signal(false);
+  _.createModelDeviancesPlot = Flow.Dataflow.signal(false);
   const _frames = Flow.Dataflow.signals([]);
   const _selectedFrame = Flow.Dataflow.signal(null);
 
@@ -21,6 +24,26 @@ export function h2oModelInput(_, _go, _algo, _opts) {
     }
     return false;
   });
+  // request frames for the comparison frame select box
+  requestFrames(_, (error, frames) => {
+    let frame;
+    if (error) {
+      return _exception(new Flow.Error('Error fetching frame list.', error));
+    }
+    return _frames((() => {
+      let _i;
+      let _len;
+      const _results = [];
+      for (_i = 0, _len = frames.length; _i < _len; _i++) {
+        frame = frames[_i];
+        if (!frame.is_text) {
+          _results.push(frame.frame_id.name);
+        }
+      }
+      return _results;
+    })());
+  });
+
   const _modelForm = Flow.Dataflow.signal(null);
   ((() => requestModelBuilders(_, (error, modelBuilders) => {
     _algorithms(modelBuilders);
@@ -38,6 +61,7 @@ export function h2oModelInput(_, _go, _algo, _opts) {
     });
   }))());
   const createModel = () => _modelForm().createModel();
+
   lodash.defer(_go);
   return {
     parentException: _exception, // XXX hacky
@@ -46,10 +70,9 @@ export function h2oModelInput(_, _go, _algo, _opts) {
     modelForm: _modelForm,
     canCreateModel: _canCreateModel,
     createModel,
-    createModelDeviancePlot: _createModelDeviancePlot,
+    createModelDeviancesPlot: _.createModelDeviancesPlot,
     frames: _frames,
     selectedFrame: _selectedFrame,
-    updateColumns: _updateColumns,
     template: 'flow-model-input',
   };
 }
