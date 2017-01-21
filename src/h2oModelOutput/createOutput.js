@@ -11,6 +11,7 @@ import downloadPojo from './downloadPojo';
 import downloadMojo from './downloadMojo';
 import exportModel from './exportModel';
 import deleteModel from './deleteModel';
+import showModelDeviancesPlot from './showModelDeviancesPlot';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -344,5 +345,7 @@ export default function createOutput(_) {
     isPojoLoaded: _isPojoLoaded,
     exportModel: exportModel.bind(this, _),
     deleteModel: deleteModel.bind(this, _),
+    createModelDeviancesPlot: _.createModelDeviancesPlot,
+    showModelDeviancesPlot,
   };
 }
