@@ -1,6 +1,8 @@
-import goToUrl from '../notebook/goToUrl';
+import goToH2OUrl from '../notebook/goToUrl';
 
-export default function showModelDeviancesPlot() {
+export default function showModelDeviancesPlot(_) {
   console.log('showModelDeviancesPlot was called');
-  goToUrl('http://residuals.h2o.ai:8080')();
+  const modelID = _.model.model_id.name;
+  console.log('modelID from showModelDeviancesPlot', modelID);
+  goToH2OUrl(`/vis-parameters.html?model_id=${modelID}`)();
 }

@@ -130,6 +130,6 @@ export default function createOutput(_) {
     exportModel: exportModel.bind(this, _),
     deleteModel: deleteModel.bind(this, _),
     createModelDeviancesPlot: _.createModelDeviancesPlot,
-    showModelDeviancesPlot,
+    showModelDeviancesPlot: showModelDeviancesPlot.bind(this, _)
   };
 }

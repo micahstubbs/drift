@@ -7,3 +7,4 @@ selenium-debug.log
 nightwatch.json
 tests/example.js
 npm-debug.log
+tasks.md
