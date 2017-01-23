@@ -4757,9 +4757,11 @@
       return () => window.open(url, '_blank');
     }
 
-    function showModelDeviancesPlot() {
+    function showModelDeviancesPlot(_) {
       console.log('showModelDeviancesPlot was called');
-      goToUrl('http://residuals.h2o.ai:8080')();
+      const modelID = _.model.model_id.name;
+      console.log('modelID from showModelDeviancesPlot', modelID);
+      goToUrl(`/vis-parameters.html?model_id=${ modelID }`)();
     }
 
     const flowPrelude$33 = flowPreludeFunction();
@@ -5094,7 +5096,7 @@
         exportModel: exportModel.bind(this, _),
         deleteModel: deleteModel.bind(this, _),
         createModelDeviancesPlot: _.createModelDeviancesPlot,
-        showModelDeviancesPlot
+        showModelDeviancesPlot: showModelDeviancesPlot.bind(this, _)
       };
     }
 
@@ -13009,6 +13011,7 @@
     }
 
     function goToH2OUrl(url) {
+      console.log('window.Flow.ContextPath from goToH2OUrl', window.Flow.ContextPath);
       return () => window.open(window.Flow.ContextPath + url, '_blank');
     }
 
