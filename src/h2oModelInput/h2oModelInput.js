@@ -16,7 +16,7 @@ export function h2oModelInput(_, _go, _algo, _opts) {
   const _algorithm = Flow.Dataflow.signal(null);
   _.createModelDeviancesPlot = Flow.Dataflow.signal(false);
   const _frames = Flow.Dataflow.signals([]);
-  const _selectedFrame = Flow.Dataflow.signal(null);
+  _.selectedFrame = Flow.Dataflow.signal(null);
 
   const _canCreateModel = Flow.Dataflow.lift(_algorithm, algorithm => {
     if (algorithm) {
@@ -72,7 +72,7 @@ export function h2oModelInput(_, _go, _algo, _opts) {
     createModel,
     createModelDeviancesPlot: _.createModelDeviancesPlot,
     frames: _frames,
-    selectedFrame: _selectedFrame,
+    selectedFrame: _.selectedFrame,
     template: 'flow-model-input',
   };
 }

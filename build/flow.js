@@ -4760,8 +4760,10 @@
     function showModelDeviancesPlot(_) {
       console.log('showModelDeviancesPlot was called');
       const modelID = _.model.model_id.name;
+      const selectedFrame = _.selectedFrame();
       console.log('modelID from showModelDeviancesPlot', modelID);
-      goToUrl(`/vis-parameters.html?model_id=${ modelID }`)();
+      console.log('selectedFrame from showModelDeviancesPlot', selectedFrame);
+      goToUrl(`/vis-parameters.html?model_id=${ modelID }&selected_frame=${ selectedFrame }`)();
     }
 
     const flowPrelude$33 = flowPreludeFunction();
@@ -7831,7 +7833,7 @@
       const _algorithm = Flow.Dataflow.signal(null);
       _.createModelDeviancesPlot = Flow.Dataflow.signal(false);
       const _frames = Flow.Dataflow.signals([]);
-      const _selectedFrame = Flow.Dataflow.signal(null);
+      _.selectedFrame = Flow.Dataflow.signal(null);
 
       const _canCreateModel = Flow.Dataflow.lift(_algorithm, algorithm => {
         if (algorithm) {
@@ -7887,7 +7889,7 @@
         createModel,
         createModelDeviancesPlot: _.createModelDeviancesPlot,
         frames: _frames,
-        selectedFrame: _selectedFrame,
+        selectedFrame: _.selectedFrame,
         template: 'flow-model-input'
       };
     }
