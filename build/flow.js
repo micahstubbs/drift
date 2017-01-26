@@ -4849,7 +4849,8 @@
         case 'kmeans':
           table = _.inspect('output - Scoring History', _.model);
           if (table) {
-            renderPlot(_, 'Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
+            const plotFunction = _.plot(g => g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table)));
+            renderPlot(_, 'Scoring History', false, plotFunction);
           }
           break;
         case 'glm':
