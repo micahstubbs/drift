@@ -4849,7 +4849,8 @@
         case 'kmeans':
           table = _.inspect('output - Scoring History', _.model);
           if (table) {
-            const plotFunction = _.plot(g => g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table)));
+            const gFunction = g => g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+            const plotFunction = _.plot(gFunction);
             renderPlot(_, 'Scoring History', false, plotFunction);
           }
           break;
@@ -4858,9 +4859,7 @@
           if (table) {
             lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
             if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
-              const gFunction = g => {
-                return g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
-              };
+              const gFunction = g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
               const plotFunction = _.plot(gFunction);
               renderPlot(_, 'Scoring History', false, plotFunction);
             } else {
