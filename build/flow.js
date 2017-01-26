@@ -5241,16 +5241,25 @@
 
     function showRoomscaleScatterplot(options) {
       console.log('showRoomscaleScatterplot was called');
-      const selectedFrame = options.frame_id;
+      const selectedFrame = options.frameID;
       console.log('selectedFrame from showModelDeviancesPlot', selectedFrame);
 
-      // hard code values for `small-synth-data` for now
-      // add proper form input soon
-      const xVariable = 'C4';
-      const yVariable = 'C5';
-      const zVariable = 'C6';
-      const colorVariable = 'C2';
+      const xVariable = options.xVariable;
+      const yVariable = options.yVariable;
+      const zVariable = options.zVariable;
+      const colorVariable = options.colorVariable;
       goToUrl(`/roomscale-scatterplot.html?frame_id=${ selectedFrame }&x_variable=${ xVariable }&y_variable=${ yVariable }&z_variable=${ zVariable }&color_variable=${ colorVariable }`)();
+      return {};
+    }
+
+    function requestFrameSummaryWithoutData(_, key, go) {
+      return doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
+        const lodash = window._;
+        if (error) {
+          return go(error);
+        }
+        return go(null, lodash.head(result.frames));
+      });
     }
 
     const flowPrelude$39 = flowPreludeFunction();
@@ -5265,6 +5274,10 @@
       const _models = Flow.Dataflow.signals([]);
       const _selectedModel = Flow.Dataflow.signals(null);
       _.selectedFrame = Flow.Dataflow.signal(null);
+      _.selectedXVariable = Flow.Dataflow.signal(null);
+      _.selectedYVariable = Flow.Dataflow.signal(null);
+      _.selectedZVariable = Flow.Dataflow.signal(null);
+      _.selectedColorVariable = Flow.Dataflow.signal(null);
       const _useCustomColumns = Flow.Dataflow.signal(false);
       const _columns = Flow.Dataflow.signal([]);
       const _nbins = Flow.Dataflow.signal(20);
@@ -5272,7 +5285,7 @@
       //  a conditional check that makes sure that
       //  all fields in the form are filled in
       //  before the button is shown as active
-      const _canCompute = Flow.Dataflow.lift(_destinationKey, _.selectedFrame, _selectedModel, _nbins, (dk, sf, sm, nb) => dk && sf && sm && nb);
+      const _canCompute = Flow.Dataflow.lift(_.selectedFrame, sf => sf);
       const _compute = () => {
         if (!_canCompute()) {
           return;
@@ -5290,9 +5303,9 @@
         const ref = _columns();
         for (i = 0, len = ref.length; i < len; i++) {
           col = ref[i];
-          if (col.isSelected()) {
-            cols = `${ cols }"${ col.value }",`;
-          }
+          // if (col.isSelected()) {
+          //   cols = `${cols}"${col.value}",`;
+          // }
         }
 
         if (cols !== '') {
@@ -5301,7 +5314,11 @@
 
         const opts = {
           // destination_key: _destinationKey(),
-          frame_id: _.selectedFrame()
+          frameID: _.selectedFrame(),
+          xVariable: _.selectedXVariable(),
+          yVariable: _.selectedYVariable(),
+          zVariable: _.selectedZVariable(),
+          colorVariable: _.selectedColorVariable()
         };
 
         // assemble a string
@@ -5334,12 +5351,43 @@
         })());
       });
 
+      const _updateColumns = () => {
+        const frameKey = _.selectedFrame();
+        if (frameKey) {
+          return requestFrameSummaryWithoutData(_, frameKey, (error, frame) => {
+            let columnLabels;
+            let columnValues;
+            if (!error) {
+              columnValues = frame.columns.map(column => column.label);
+              columnLabels = frame.columns.map(column => {
+                const missingPercent = 100 * column.missing_count / frame.rows;
+                console.log('column from _updateColumns', column);
+                return {
+                  type: column.type === 'enum' ? `enum(${ column.domain_cardinality })` : column.type,
+                  value: column.label,
+                  missingPercent,
+                  missingLabel: missingPercent === 0 ? '' : `${ Math.round(missingPercent) }% NA`
+                };
+              });
+              console.log('columnLabels from _updateColumns', columnLabels);
+              _columns(columnLabels.map(d => d.value));
+            }
+          });
+        }
+      };
+
       lodash.defer(_go);
       return {
         exception: _exception,
         destinationKey: _destinationKey,
         frames: _frames,
+        columns: _columns,
+        updateColumns: _updateColumns,
         selectedFrame: _.selectedFrame,
+        selectedXVariable: _.selectedXVariable,
+        selectedYVariable: _.selectedYVariable,
+        selectedZVariable: _.selectedZVariable,
+        selectedColorVariable: _.selectedColorVariable,
         nbins: _nbins,
         compute: _compute,
         canCompute: _canCompute,
@@ -11410,16 +11458,6 @@
     function requestFrameSummary$1(_, key, go) {
       const lodash = window._;
       doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary`, unwrap(go, result => lodash.head(result.frames)));
-    }
-
-    function requestFrameSummaryWithoutData(_, key, go) {
-      return doGet(_, `/3/Frames/${ encodeURIComponent(key) }/summary?_exclude_fields=frames/chunk_summary,frames/distribution_summary,frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles`, (error, result) => {
-        const lodash = window._;
-        if (error) {
-          return go(error);
-        }
-        return go(null, lodash.head(result.frames));
-      });
     }
 
     function requestDeleteFrame$1(_, key, go) {
