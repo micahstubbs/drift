@@ -4942,6 +4942,7 @@
         case 'gbm':
         case 'drf':
         case 'svm':
+        case 'xgboost':
           table = _.inspect('output - Scoring History', _.model);
           if (table) {
             if (table.schema.validation_logloss && table.schema.training_logloss) {
@@ -4990,7 +4991,6 @@
           }
           renderConfusionMatrices(_);
           break;
-        // end of when 'gbm', 'drf', 'svm'
 
         case 'stackedensemble':
           table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
