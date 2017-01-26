@@ -5241,6 +5241,7 @@
 
     function showRoomscaleScatterplot(options) {
       console.log('showRoomscaleScatterplot was called');
+      console.log('arguments passed to showRoomscaleScatterplot', arguments);
       const selectedFrame = options.frameID;
       console.log('selectedFrame from showModelDeviancesPlot', selectedFrame);
 
@@ -5248,8 +5249,12 @@
       const yVariable = options.yVariable;
       const zVariable = options.zVariable;
       const colorVariable = options.colorVariable;
-      goToUrl(`/roomscale-scatterplot.html?frame_id=${ selectedFrame }&x_variable=${ xVariable }&y_variable=${ yVariable }&z_variable=${ zVariable }&color_variable=${ colorVariable }`)();
-      return {};
+      const plotUrl = `/roomscale-scatterplot.html?frame_id=${ selectedFrame }&x_variable=${ xVariable }&y_variable=${ yVariable }&z_variable=${ zVariable }&color_variable=${ colorVariable }`;
+      goToUrl(plotUrl)();
+      return {
+        plotUrl,
+        template: 'flow-roomscale-scatterplot-output'
+      };
     }
 
     function requestFrameSummaryWithoutData(_, key, go) {
