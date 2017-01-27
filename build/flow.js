@@ -4418,7 +4418,7 @@
       });
     }
 
-    function getAucAsLabel$1(_, model, tableName) {
+    function getAucAsLabel(_, model, tableName) {
       const metrics = _.inspect(tableName, model);
       if (metrics) {
         return ` , AUC = ${ metrics.schema.AUC.at(0) }`;
@@ -4426,7 +4426,7 @@
       return '';
     }
 
-    function getThresholdsAndCriteria$1(_, table, tableName) {
+    function getThresholdsAndCriteria(_, table, tableName) {
       let criteria;
       let i;
       let idxVector;
@@ -4483,7 +4483,7 @@
     // TODO Mega-hack alert
     // Last arg thresholdsAndCriteria applicable only to
     // ROC charts for binomial models.
-    function renderPlot$1(_, title, isCollapsed, render, thresholdsAndCriteria) {
+    function renderPlot(_, title, isCollapsed, render, thresholdsAndCriteria) {
       const lodash = window._;
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -4756,7 +4756,7 @@
     function plotKMeansScoringHistory(_, table) {
       const gFunction = g => g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
       const plotFunction = _.plot(gFunction);
-      renderPlot$1(_, 'Scoring History', false, plotFunction);
+      renderPlot(_, 'Scoring History', false, plotFunction);
     }
 
     function plotGLMScoringHistory(_, table) {
@@ -4770,14 +4770,30 @@
         const gFunction = g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
         plotFunction = _.plot(gFunction);
       }
-      renderPlot$1(_, 'Scoring History', false, plotFunction);
+      renderPlot(_, 'Scoring History', false, plotFunction);
     }
 
-    function plotGLMThreshholdsTrainingMetrics(_, table) {
-      const plotFunction = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+    function plotGLMThresholdsTrainingMetrics(_, table) {
+      const gFunction = g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+      const plotFunction = _.plot(gFunction);
       const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics');
       const plotTitle = `ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`;
       renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
+    }
+
+    function plotGLMThresholdsMetrics(_, table) {
+      const gFunction = g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+      const plotFunction = _.plot(gFunction);
+      const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics');
+      const plotTitle = `ROC Curve - Validation Metrics${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`;
+      renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
+    }
+
+    function plotGLMCrossValidationMetrics(_, table) {
+      const gFunction = g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+      const plotFunction = _.plot(gFunction);
+      const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics');
+      renderPlot(_, `ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotFunction, thresholdFunction);
     }
 
     const flowPrelude$33 = flowPreludeFunction();
@@ -4872,6 +4888,7 @@
           isModified: defaultValue === actualValue
         };
       });
+      console.log('_.model.algo from createOutput', _.model.algo);
       switch (_.model.algo) {
         case 'kmeans':
           table = _.inspect('output - Scoring History', _.model);
@@ -4886,21 +4903,19 @@
           }
           table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
-            plotGLMThreshholdsTrainingMetrics(_, table);
+            plotGLMThresholdsTrainingMetrics(_, table);
           }
           table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
-            plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-            renderPlot$1(_, `ROC Curve - Validation Metrics${ getAucAsLabel$1(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - validation_metrics - Maximum Metrics'));
+            plotGLMThresholdsMetrics(_, table);
           }
           table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
-            plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-            renderPlot$1(_, `ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel$1(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
+            plotGLMCrossValidationMetrics(_, table);
           }
           table = _.inspect('output - Standardized Coefficient Magnitudes', _.model);
           if (typeof table !== 'undefined') {
-            renderPlot$1(_, 'Standardized Coefficient Magnitudes', false, _.plot(g => g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25))));
+            renderPlot(_, 'Standardized Coefficient Magnitudes', false, _.plot(g => g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25))));
           }
           renderConfusionMatrices(_);
           break;
@@ -4909,21 +4924,21 @@
           table = _.inspect('output - Scoring History', _.model);
           if (typeof table !== 'undefined') {
             if (table.schema.validation_logloss && table.schema.training_logloss) {
-              renderPlot$1(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
+              renderPlot(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
             } else if (table.schema.training_logloss) {
-              renderPlot$1(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
+              renderPlot(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
             }
             if (table.schema.training_deviance) {
               if (table.schema.validation_deviance) {
-                renderPlot$1(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
+                renderPlot(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
               } else {
-                renderPlot$1(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
+                renderPlot(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
               }
             } else if (table.schema.training_mse) {
               if (table.schema.validation_mse) {
-                renderPlot$1(_, 'Scoring History - MSE', false, _.plot(g => g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
+                renderPlot(_, 'Scoring History - MSE', false, _.plot(g => g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
               } else {
-                renderPlot$1(_, 'Scoring History - MSE', false, _.plot(g => g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
+                renderPlot(_, 'Scoring History - MSE', false, _.plot(g => g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
               }
             }
           }
@@ -4934,7 +4949,7 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `ROC Curve - Training Metrics${ getAucAsLabel$1(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - training_metrics - Maximum Metrics'));
+            renderPlot(_, `ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
@@ -4943,7 +4958,7 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `'ROC Curve - Validation Metrics' + ${ getAucAsLabel$1(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - validation_metrics - Maximum Metrics'));
+            renderPlot(_, `'ROC Curve - Validation Metrics' + ${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
@@ -4952,11 +4967,11 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `'ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel$1(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
+            renderPlot(_, `'ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - Variable Importances', _.model);
           if (typeof table !== 'undefined') {
-            renderPlot$1(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
+            renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
           }
           renderConfusionMatrices(_);
           break;
@@ -4967,15 +4982,15 @@
           table = _.inspect('output - Scoring History', _.model);
           if (typeof table !== 'undefined') {
             if (table.schema.validation_logloss && table.schema.training_logloss) {
-              renderPlot$1(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
+              renderPlot(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
             } else if (table.schema.training_logloss) {
-              renderPlot$1(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
+              renderPlot(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
             }
             if (table.schema.training_deviance) {
               if (table.schema.validation_deviance) {
-                renderPlot$1(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
+                renderPlot(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('number_of_trees', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
               } else {
-                renderPlot$1(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
+                renderPlot(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('number_of_trees', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
               }
             }
           }
@@ -4986,7 +5001,7 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `ROC Curve - Training Metrics${ getAucAsLabel$1(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - training_metrics - Maximum Metrics'));
+            renderPlot(_, `ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
@@ -4995,7 +5010,7 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `ROC Curve - Validation Metrics${ getAucAsLabel$1(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - validation_metrics - Maximum Metrics'));
+            renderPlot(_, `ROC Curve - Validation Metrics${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
@@ -5004,11 +5019,11 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `ROC Curve - Cross Validation Metrics${ getAucAsLabel$1(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
+            renderPlot(_, `ROC Curve - Cross Validation Metrics${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - Variable Importances', _.model);
           if (typeof table !== 'undefined') {
-            renderPlot$1(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
+            renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
           }
           renderConfusionMatrices(_);
           break;
@@ -5021,7 +5036,7 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `ROC Curve - Training Metrics${ getAucAsLabel$1(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - training_metrics - Maximum Metrics'));
+            renderPlot(_, `ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
@@ -5030,7 +5045,7 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `'ROC Curve - Validation Metrics${ getAucAsLabel$1(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - validation_metrics - Maximum Metrics'));
+            renderPlot(_, `'ROC Curve - Validation Metrics${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
           if (typeof table !== 'undefined') {
@@ -5039,11 +5054,11 @@
             // TODO Mega-hack alert.
             // Last arg thresholdsAndCriteria applicable only to
             // ROC charts for binomial models.
-            renderPlot$1(_, `ROC Curve - Cross Validation Metrics${ getAucAsLabel$1(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria$1(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
+            renderPlot(_, `ROC Curve - Cross Validation Metrics${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotter, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
           }
           table = _.inspect('output - Variable Importances', _.model);
           if (typeof table !== 'undefined') {
-            renderPlot$1(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
+            renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
           }
           renderConfusionMatrices(_);
           break;
@@ -5054,15 +5069,15 @@
 
       table = _.inspect('output - training_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {
-        renderPlot$1(_, 'Training Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
+        renderPlot(_, 'Training Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
       }
       table = _.inspect('output - validation_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {
-        renderPlot$1(_, 'Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
+        renderPlot(_, 'Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
       }
       table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {
-        renderPlot$1(_, 'Cross Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
+        renderPlot(_, 'Cross Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
       }
       const _ref24 = _.ls(_.model);
       for (_i = 0, _len = _ref24.length; _i < _len; _i++) {
@@ -5085,7 +5100,7 @@
         }
         table = _.inspect(tableName, _.model);
         if (typeof table !== 'undefined') {
-          renderPlot$1(_, tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
+          renderPlot(_, tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
         }
       }
       return {

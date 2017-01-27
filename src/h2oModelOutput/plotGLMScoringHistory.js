@@ -40,7 +40,7 @@ export default function plotGLMScoringHistory(_, table) {
         )
       ),
       g.from(table)
-    )
+    );
     plotFunction = _.plot(gFunction);
   }
   renderPlot(

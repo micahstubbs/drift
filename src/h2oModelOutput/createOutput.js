@@ -14,6 +14,8 @@ import deleteModel from './deleteModel';
 import plotKMeansScoringHistory from './plotKMeansScoringHistory';
 import plotGLMScoringHistory from './plotGLMScoringHistory';
 import plotGLMThresholdsTrainingMetrics from './plotGLMThresholdsTrainingMetrics';
+import plotGLMThresholdsValidationMetrics from './plotGLMThresholdsValidationMetrics';
+import plotGLMCrossValidationMetrics from './plotGLMCrossValidationMetrics';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -108,6 +110,7 @@ export default function createOutput(_) {
       isModified: defaultValue === actualValue,
     };
   });
+  console.log('_.model.algo from createOutput', _.model.algo);
   switch (_.model.algo) {
     case 'kmeans':
       table = _.inspect('output - Scoring History', _.model);
@@ -126,13 +129,11 @@ export default function createOutput(_) {
       }
       table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
       if (typeof table !== 'undefined') {
-        plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-        renderPlot(_, `ROC Curve - Validation Metrics${getAucAsLabel(_, _.model, 'output - validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics'));
+        plotGLMThresholdsValidationMetrics(_, table);
       }
       table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
       if (typeof table !== 'undefined') {
-        plotter = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-        renderPlot(_, `ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_, _.model, 'output - cross_validation_metrics')}`, false, plotter, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
+        plotGLMCrossValidationMetrics(_, table);
       }
       table = _.inspect('output - Standardized Coefficient Magnitudes', _.model);
       if (typeof table !== 'undefined') {
