@@ -13,7 +13,7 @@ import exportModel from './exportModel';
 import deleteModel from './deleteModel';
 import plotKMeansScoringHistory from './plotKMeansScoringHistory';
 import plotGLMScoringHistory from './plotGLMScoringHistory';
-import plotGLMThreshholdsTrainingMetrics from './plotGLMThreshholdsTrainingMetrics';
+import plotGLMThresholdsTrainingMetrics from './plotGLMThresholdsTrainingMetrics';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -122,7 +122,7 @@ export default function createOutput(_) {
       }
       table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
       if (typeof table !== 'undefined') {
-        plotGLMThreshholdsTrainingMetrics(_, table);
+        plotGLMThresholdsTrainingMetrics(_, table);
       }
       table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
       if (typeof table !== 'undefined') {
