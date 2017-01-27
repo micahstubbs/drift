@@ -1,10 +1,17 @@
 import renderPlot from './renderPlot';
+import generateTwoPathPointGFunction from './generateTwoPathPointGFunction';
 
 export default function plotDeepNetScoringHistory(_, table) {
   //
   // if we have both training and validation logloss
   //
   if (table.schema.validation_logloss && table.schema.training_logloss) {
+    const gFunction = generateTwoPathPointGFunction(
+      ['epochs', 'training_logloss', '#1f77b4'],
+      ['epochs', 'validation_logloss', '#ff7f0e'],
+      table
+    );
+    /*
     const gFunction = g => g(
       g.path(
         g.position('epochs', 'training_logloss'),
@@ -32,6 +39,7 @@ export default function plotDeepNetScoringHistory(_, table) {
       ),
       g.from(table)
     );
+    */
     const plotFunction = _.plot(gFunction);
     renderPlot(
       _,

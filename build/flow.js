@@ -4825,12 +4825,51 @@
       }
     }
 
+    function generateTwoPathPointGFunction(a, b, table) {
+      const positionKeyA = a[0];
+      const positionValueA = a[1];
+      const strokeColorValueA = a[2];
+      const positionKeyB = b[0];
+      const positionValueB = b[1];
+      const strokeColorValueB = b[2];
+      return g => g(g.path(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.path(g.position(positionKeyB, positionValueB), g.strokeColor(g.value(strokeColorValueB))), g.point(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.point(g.position(positionKeyB, positionValueB), g.strokeColor(g.value(strokeColorValueB))), g.from(table));
+    }
+
     function plotDeepNetScoringHistory(_, table) {
       //
       // if we have both training and validation logloss
       //
       if (table.schema.validation_logloss && table.schema.training_logloss) {
-        const gFunction = g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+        const gFunction = generateTwoPathPointGFunction(['epochs', 'training_logloss', '#1f77b4'], ['epochs', 'validation_logloss', '#ff7f0e'], table);
+        /*
+        const gFunction = g => g(
+          g.path(
+            g.position('epochs', 'training_logloss'),
+            g.strokeColor(
+              g.value('#1f77b4')
+            )
+          ),
+          g.path(
+            g.position('epochs', 'validation_logloss'),
+            g.strokeColor(
+              g.value('#ff7f0e')
+            )
+          ),
+          g.point(
+            g.position('epochs', 'training_logloss'),
+            g.strokeColor(
+              g.value('#1f77b4')
+            )
+          ),
+          g.point(
+            g.position('epochs', 'validation_logloss'),
+            g.strokeColor(
+              g.value('#ff7f0e')
+            )
+          ),
+          g.from(table)
+        );
+        */
         const plotFunction = _.plot(gFunction);
         renderPlot(_, 'Scoring History - logloss', false, plotFunction);
         //
