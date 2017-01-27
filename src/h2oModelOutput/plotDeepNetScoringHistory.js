@@ -89,20 +89,9 @@ export default function plotDeepNetScoringHistory(_, table) {
     // if we have only training mse
     //
     } else {
-      const gFunction = g => g(
-        g.path(
-          g.position('epochs', 'training_mse'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.point(
-          g.position('epochs', 'training_mse'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.from(table)
+      const gFunction = generateOnePathPointGFunction(
+        ['epochs', 'training_mse', '#1f77b4'],
+        table
       );
       const plotFunction = _.plot(gFunction);
       renderPlot(
