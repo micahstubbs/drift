@@ -1,7 +1,11 @@
 import renderPlot from './renderPlot';
 
 export default function plotGLMScoringHistory(_, table) {
-  const gFunction = g => g(
+  const lodash = window._;
+  const lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
+  let plotFunction;
+  if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
+    const gFunction = g => g(
       g.path(
         g.position('lambda', 'explained_deviance_train'),
         g.strokeColor(g.value('#1f77b4'))
@@ -20,7 +24,26 @@ export default function plotGLMScoringHistory(_, table) {
       ),
       g.from(table)
     );
-  const plotFunction = _.plot(gFunction);
+    plotFunction = _.plot(gFunction);
+  } else {
+    plotFunction = _.plot(
+      g => g(
+        g.path(
+          g.position('iteration', 'objective'),
+          g.strokeColor(
+            g.value('#1f77b4')
+          )
+        ),
+        g.point(
+          g.position('iteration', 'objective'),
+          g.strokeColor(
+            g.value('#1f77b4')
+          )
+        ),
+        g.from(table)
+      )
+    );
+  }
   renderPlot(
     _,
     'Scoring History',

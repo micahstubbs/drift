@@ -117,12 +117,7 @@ export default function createOutput(_) {
     case 'glm':
       table = _.inspect('output - Scoring History', _.model);
       if (table) {
-        lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
-        if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
-          plotGLMScoringHistory(_, table);
-        } else {
-          renderPlot(_, 'Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
-        }
+        plotGLMScoringHistory(_, table);
       }
       table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
       if (table) {

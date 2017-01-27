@@ -4760,8 +4760,15 @@
     }
 
     function plotGLMScoringHistory(_, table) {
-      const gFunction = g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
-      const plotFunction = _.plot(gFunction);
+      const lodash = window._;
+      const lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
+      let plotFunction;
+      if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
+        const gFunction = g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+        plotFunction = _.plot(gFunction);
+      } else {
+        plotFunction = _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table)));
+      }
       renderPlot(_, 'Scoring History', false, plotFunction);
     }
 
@@ -4867,12 +4874,7 @@
         case 'glm':
           table = _.inspect('output - Scoring History', _.model);
           if (table) {
-            lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
-            if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
-              plotGLMScoringHistory(_, table);
-            } else {
-              renderPlot(_, 'Scoring History', false, _.plot(g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
-            }
+            plotGLMScoringHistory(_, table);
           }
           table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
           if (table) {
