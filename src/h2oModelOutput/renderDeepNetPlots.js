@@ -1,7 +1,3 @@
-import renderPlot from './renderPlot';
-import getAucAsLabel from './getAucAsLabel';
-import getThresholdsAndCriteria from './getThresholdsAndCriteria';
-
 import plotDeepNetScoringHistory from './plotDeepNetScoringHistory';
 import plotDeepNetThresholdsTrainingMetrics from './plotDeepNetThresholdsTrainingMetrics';
 import plotDeepNetThresholdsValidationMetrics from './plotDeepNetThresholdsValidationMetrics';
