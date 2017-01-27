@@ -4825,28 +4825,62 @@
       }
     }
 
+    function plotDeepNetScoringHistory(_, table) {
+      //
+      // if we have both training and validation logloss
+      //
+      if (table.schema.validation_logloss && table.schema.training_logloss) {
+        const gFunction = g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+        const plotFunction = _.plot(gFunction);
+        renderPlot(_, 'Scoring History - logloss', false, plotFunction);
+        //
+        // if we have only training logloss
+        //
+      } else if (table.schema.training_logloss) {
+        const gFunction = g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+        const plotFunction = _.plot(gFunction);
+        renderPlot(_, 'Scoring History - logloss', false, plotFunction);
+      }
+      if (table.schema.training_deviance) {
+        //
+        // if we have training deviance and validation deviance
+        //
+        if (table.schema.validation_deviance) {
+          const gFunction = g => g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+          const plotFunction = _.plot(gFunction);
+          renderPlot(_, 'Scoring History - Deviance', false, plotFunction);
+          //
+          // if we have only training deviance
+          //
+        } else {
+          const gFunction = g => g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+          const plotFunction = _.plot(gFunction);
+          renderPlot(_, 'Scoring History - Deviance', false, plotFunction);
+        }
+      } else if (table.schema.training_mse) {
+        //
+        // if we have training mse and validation mse
+        //
+        if (table.schema.validation_mse) {
+          const gFunction = g => g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+          const plotFunction = _.plot(gFunction);
+          renderPlot(_, 'Scoring History - MSE', false, plotFunction);
+          //
+          // if we have only training mse
+          //
+        } else {
+          const gFunction = g => g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+          const plotFunction = _.plot(gFunction);
+          renderPlot(_, 'Scoring History - MSE', false, plotFunction);
+        }
+      }
+    }
+
     function renderDeepNetPlots(_, table) {
       let plotFunction;
       table = _.inspect('output - Scoring History', _.model);
       if (typeof table !== 'undefined') {
-        if (table.schema.validation_logloss && table.schema.training_logloss) {
-          renderPlot(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_logloss'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
-        } else if (table.schema.training_logloss) {
-          renderPlot(_, 'Scoring History - logloss', false, _.plot(g => g(g.path(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_logloss'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
-        }
-        if (table.schema.training_deviance) {
-          if (table.schema.validation_deviance) {
-            renderPlot(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_deviance'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
-          } else {
-            renderPlot(_, 'Scoring History - Deviance', false, _.plot(g => g(g.path(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_deviance'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
-          }
-        } else if (table.schema.training_mse) {
-          if (table.schema.validation_mse) {
-            renderPlot(_, 'Scoring History - MSE', false, _.plot(g => g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'validation_mse'), g.strokeColor(g.value('#ff7f0e'))), g.from(table))));
-          } else {
-            renderPlot(_, 'Scoring History - MSE', false, _.plot(g => g(g.path(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('epochs', 'training_mse'), g.strokeColor(g.value('#1f77b4'))), g.from(table))));
-          }
-        }
+        plotDeepNetScoringHistory(_, table);
       }
       table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
       if (typeof table !== 'undefined') {
