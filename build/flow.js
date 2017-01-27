@@ -4920,7 +4920,6 @@
     }
 
     function renderDeepNetPlots(_, table) {
-      let plotFunction;
       table = _.inspect('output - Scoring History', _.model);
       if (typeof table !== 'undefined') {
         plotDeepNetScoringHistory(_, table);

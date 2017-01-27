@@ -9,7 +9,6 @@ import plotDeepNetThresholdsCrossValidationMetrics from './plotDeepNetThresholds
 import plotDeepNetVariableImportances from './plotDeepNetVariableImportances';
 
 export default function renderDeepNetPlots(_, table) {
-  let plotFunction;
   table = _.inspect('output - Scoring History', _.model);
   if (typeof table !== 'undefined') {
     plotDeepNetScoringHistory(_, table);
