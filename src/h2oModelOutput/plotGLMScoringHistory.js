@@ -26,23 +26,22 @@ export default function plotGLMScoringHistory(_, table) {
     );
     plotFunction = _.plot(gFunction);
   } else {
-    plotFunction = _.plot(
-      g => g(
-        g.path(
-          g.position('iteration', 'objective'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.point(
-          g.position('iteration', 'objective'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.from(table)
-      )
-    );
+    const gFunction = g => g(
+      g.path(
+        g.position('iteration', 'objective'),
+        g.strokeColor(
+          g.value('#1f77b4')
+        )
+      ),
+      g.point(
+        g.position('iteration', 'objective'),
+        g.strokeColor(
+          g.value('#1f77b4')
+        )
+      ),
+      g.from(table)
+    )
+    plotFunction = _.plot(gFunction);
   }
   renderPlot(
     _,
