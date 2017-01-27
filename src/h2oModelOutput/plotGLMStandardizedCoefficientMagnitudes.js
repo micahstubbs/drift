@@ -1,6 +1,7 @@
 import renderPlot from './renderPlot';
 
 export default function plotGLMStandardizedCoefficientMagnitudes(_, table) {
+  const plotTitle = 'Standardized Coefficient Magnitudes';
   const gFunction = g => g(
     g.rect(
       g.position('coefficients', 'names'),
@@ -12,7 +13,7 @@ export default function plotGLMStandardizedCoefficientMagnitudes(_, table) {
   const plotFunction = _.plot(gFunction);
   renderPlot(
     _,
-    'Standardized Coefficient Magnitudes',
+    plotTitle,
     false,
     plotFunction
   );

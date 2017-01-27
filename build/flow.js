@@ -4778,6 +4778,7 @@
 
     function plotGLMScoringHistory(_, table) {
       const lodash = window._;
+      const plotTitle = 'Scoring History';
       const lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
       let plotFunction;
       if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
@@ -4787,7 +4788,7 @@
         const gFunction = generateOnePathPointGFunction(['iteration', 'objective', '#1f77b4'], table);
         plotFunction = _.plot(gFunction);
       }
-      renderPlot(_, 'Scoring History', false, plotFunction);
+      renderPlot(_, plotTitle, false, plotFunction);
     }
 
     function plotGLMThresholdsTrainingMetrics(_, table) {
@@ -4807,16 +4808,18 @@
     }
 
     function plotGLMCrossValidationMetrics(_, table) {
+      const plotTitle = `ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`;
       const gFunction = g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
       const plotFunction = _.plot(gFunction);
       const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics');
-      renderPlot(_, `ROC Curve - Cross Validation Metrics' + ${ getAucAsLabel(_, _.model, 'output - cross_validation_metrics') }`, false, plotFunction, thresholdFunction);
+      renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
     }
 
     function plotGLMStandardizedCoefficientMagnitudes(_, table) {
+      const plotTitle = 'Standardized Coefficient Magnitudes';
       const gFunction = g => g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, 'Standardized Coefficient Magnitudes', false, plotFunction);
+      renderPlot(_, plotTitle, false, plotFunction);
     }
 
     function renderGLMPlots(_, table) {

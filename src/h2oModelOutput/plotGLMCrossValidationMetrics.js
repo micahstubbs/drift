@@ -3,6 +3,7 @@ import getAucAsLabel from './getAucAsLabel';
 import renderPlot from './renderPlot';
 
 export default function plotGLMCrossValidationMetrics(_, table) {
+  const plotTitle = `ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_, _.model, 'output - cross_validation_metrics')}`;
   const gFunction = g => g(
     g.path(
       g.position('fpr', 'tpr')
@@ -28,7 +29,7 @@ export default function plotGLMCrossValidationMetrics(_, table) {
   );
   renderPlot(
     _,
-    `ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_, _.model, 'output - cross_validation_metrics')}`,
+    plotTitle,
     false,
     plotFunction,
     thresholdFunction

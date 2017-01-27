@@ -4,6 +4,7 @@ import generateTwoPathPointGFunction from './generateTwoPathPointGFunction';
 
 export default function plotGLMScoringHistory(_, table) {
   const lodash = window._;
+  const plotTitle = 'Scoring History';
   const lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
   let plotFunction;
   if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
@@ -22,7 +23,7 @@ export default function plotGLMScoringHistory(_, table) {
   }
   renderPlot(
     _,
-    'Scoring History',
+    plotTitle,
     false,
     plotFunction
   );
