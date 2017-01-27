@@ -11,35 +11,6 @@ export default function plotDeepNetScoringHistory(_, table) {
       ['epochs', 'validation_logloss', '#ff7f0e'],
       table
     );
-    /*
-    const gFunction = g => g(
-      g.path(
-        g.position('epochs', 'training_logloss'),
-        g.strokeColor(
-          g.value('#1f77b4')
-        )
-      ),
-      g.path(
-        g.position('epochs', 'validation_logloss'),
-        g.strokeColor(
-          g.value('#ff7f0e')
-        )
-      ),
-      g.point(
-        g.position('epochs', 'training_logloss'),
-        g.strokeColor(
-          g.value('#1f77b4')
-        )
-      ),
-      g.point(
-        g.position('epochs', 'validation_logloss'),
-        g.strokeColor(
-          g.value('#ff7f0e')
-        )
-      ),
-      g.from(table)
-    );
-    */
     const plotFunction = _.plot(gFunction);
     renderPlot(
       _,
@@ -79,32 +50,10 @@ export default function plotDeepNetScoringHistory(_, table) {
     // if we have training deviance and validation deviance
     //
     if (table.schema.validation_deviance) {
-      const gFunction = g => g(
-        g.path(
-          g.position('epochs', 'training_deviance'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.path(
-          g.position('epochs', 'validation_deviance'),
-          g.strokeColor(
-            g.value('#ff7f0e')
-          )
-        ),
-        g.point(
-          g.position('epochs', 'training_deviance'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.point(
-          g.position('epochs', 'validation_deviance'),
-          g.strokeColor(
-            g.value('#ff7f0e')
-          )
-        ),
-        g.from(table)
+      const gFunction = generateTwoPathPointGFunction(
+        ['epochs', 'training_deviance', '#1f77b4'],
+        ['epochs', 'validation_deviance', '#ff7f0e'],
+        table
       );
       const plotFunction = _.plot(gFunction);
       renderPlot(
