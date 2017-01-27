@@ -4759,15 +4759,32 @@
       renderPlot(_, 'Scoring History', false, plotFunction);
     }
 
+    function generateOnePathPointGFunction(a, table) {
+      const positionKeyA = a[0];
+      const positionValueA = a[1];
+      const strokeColorValueA = a[2];
+      return g => g(g.path(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.point(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.from(table));
+    }
+
+    function generateTwoPathPointGFunction(a, b, table) {
+      const positionKeyA = a[0];
+      const positionValueA = a[1];
+      const strokeColorValueA = a[2];
+      const positionKeyB = b[0];
+      const positionValueB = b[1];
+      const strokeColorValueB = b[2];
+      return g => g(g.path(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.path(g.position(positionKeyB, positionValueB), g.strokeColor(g.value(strokeColorValueB))), g.point(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.point(g.position(positionKeyB, positionValueB), g.strokeColor(g.value(strokeColorValueB))), g.from(table));
+    }
+
     function plotGLMScoringHistory(_, table) {
       const lodash = window._;
       const lambdaSearchParameter = lodash.find(_.model.parameters, parameter => parameter.name === 'lambda_search');
       let plotFunction;
       if (lambdaSearchParameter != null ? lambdaSearchParameter.actual_value : void 0) {
-        const gFunction = g => g(g.path(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.path(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.point(g.position('lambda', 'explained_deviance_train'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('lambda', 'explained_deviance_test'), g.strokeColor(g.value('#ff7f0e'))), g.from(table));
+        const gFunction = generateTwoPathPointGFunction(['lambda', 'explained_deviance_train', '#1f77b4'], ['lambda', 'explained_deviance_test', '#ff7f0e'], table);
         plotFunction = _.plot(gFunction);
       } else {
-        const gFunction = g => g(g.path(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'objective'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
+        const gFunction = generateOnePathPointGFunction(['iteration', 'objective', '#1f77b4'], table);
         plotFunction = _.plot(gFunction);
       }
       renderPlot(_, 'Scoring History', false, plotFunction);
@@ -4823,23 +4840,6 @@
       if (typeof table !== 'undefined') {
         plotGLMStandardizedCoefficientMagnitudes(_, table);
       }
-    }
-
-    function generateOnePathPointGFunction(a, table) {
-      const positionKeyA = a[0];
-      const positionValueA = a[1];
-      const strokeColorValueA = a[2];
-      return g => g(g.path(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.point(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.from(table));
-    }
-
-    function generateTwoPathPointGFunction(a, b, table) {
-      const positionKeyA = a[0];
-      const positionValueA = a[1];
-      const strokeColorValueA = a[2];
-      const positionKeyB = b[0];
-      const positionValueB = b[1];
-      const strokeColorValueB = b[2];
-      return g => g(g.path(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.path(g.position(positionKeyB, positionValueB), g.strokeColor(g.value(strokeColorValueB))), g.point(g.position(positionKeyA, positionValueA), g.strokeColor(g.value(strokeColorValueA))), g.point(g.position(positionKeyB, positionValueB), g.strokeColor(g.value(strokeColorValueB))), g.from(table));
     }
 
     function plotDeepNetScoringHistory(_, table) {
