@@ -5,6 +5,7 @@ import getThresholdsAndCriteria from './getThresholdsAndCriteria';
 import plotDeepNetScoringHistory from './plotDeepNetScoringHistory';
 import plotDeepNetThresholdsTrainingMetrics from './plotDeepNetThresholdsTrainingMetrics';
 import plotDeepNetThresholdsValidationMetrics from './plotDeepNetThresholdsValidationMetrics';
+import plotDeepNetThresholdsCrossValidationMetrics from './plotDeepNetThresholdsCrossValidationMetrics';
 
 export default function renderDeepNetPlots(_, table) {
   let plotFunction;
@@ -22,12 +23,7 @@ export default function renderDeepNetPlots(_, table) {
   }
   table = _.inspect('output - cross_validation_metrics - Metrics for Thresholds', _.model);
   if (typeof table !== 'undefined') {
-    plotFunction = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-
-          // TODO Mega-hack alert.
-          // Last arg thresholdsAndCriteria applicable only to
-          // ROC charts for binomial models.
-    renderPlot(_, `'ROC Curve - Cross Validation Metrics' + ${getAucAsLabel(_, _.model, 'output - cross_validation_metrics')}`, false, plotFunction, getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics'));
+    plotDeepNetThresholdsCrossValidationMetrics(_, table);
   }
   table = _.inspect('output - Variable Importances', _.model);
   if (typeof table !== 'undefined') {
