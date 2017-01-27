@@ -1,4 +1,5 @@
 import renderPlot from './renderPlot';
+import generateOnePathPointGFunction from './generateOnePathPointGFunction';
 import generateTwoPathPointGFunction from './generateTwoPathPointGFunction';
 
 export default function plotDeepNetScoringHistory(_, table) {
@@ -22,20 +23,9 @@ export default function plotDeepNetScoringHistory(_, table) {
   // if we have only training logloss
   //
   } else if (table.schema.training_logloss) {
-    const gFunction = g => g(
-      g.path(
-        g.position('epochs', 'training_logloss'),
-        g.strokeColor(
-          g.value('#1f77b4')
-        )
-      ),
-      g.point(
-        g.position('epochs', 'training_logloss'),
-        g.strokeColor(
-          g.value('#1f77b4')
-        )
-      ),
-      g.from(table)
+    const gFunction = generateOnePathPointGFunction(
+      ['epochs', 'training_logloss', '#1f77b4'],
+      table
     );
     const plotFunction = _.plot(gFunction);
     renderPlot(
@@ -66,20 +56,9 @@ export default function plotDeepNetScoringHistory(_, table) {
     // if we have only training deviance
     //
     } else {
-      const gFunction = g => g(
-        g.path(
-          g.position('epochs', 'training_deviance'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.point(
-          g.position('epochs', 'training_deviance'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.from(table)
+      const gFunction = generateOnePathPointGFunction(
+        ['epochs', 'training_deviance', '#1f77b4'],
+        table
       );
       const plotFunction = _.plot(gFunction);
       renderPlot(
@@ -94,32 +73,10 @@ export default function plotDeepNetScoringHistory(_, table) {
     // if we have training mse and validation mse
     //
     if (table.schema.validation_mse) {
-      const gFunction = g => g(
-        g.path(
-          g.position('epochs', 'training_mse'),
-          g.strokeColor(
-            g.value('#1f77b4')
-          )
-        ),
-        g.path(
-          g.position('epochs', 'validation_mse'),
-          g.strokeColor(
-            g.value('#ff7f0e')
-          )
-        ),
-        g.point(
-        g.position('epochs', 'training_mse'),
-        g.strokeColor(
-          g.value('#1f77b4')
-        )
-        ),
-        g.point(
-          g.position('epochs', 'validation_mse'),
-          g.strokeColor(
-            g.value('#ff7f0e')
-          )
-        ),
-        g.from(table)
+      const gFunction = generateTwoPathPointGFunction(
+        ['epochs', 'training_mse', '#1f77b4'],
+        ['epochs', 'validation_mse', '#ff7f0e'],
+        table
       );
       const plotFunction = _.plot(gFunction);
       renderPlot(
