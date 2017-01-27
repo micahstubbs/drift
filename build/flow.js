@@ -4912,6 +4912,13 @@
       renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
     }
 
+    function plotDeepNetVariableImportances(_, table) {
+      const plotTitle = 'Variable Importances';
+      const gFunction = g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
+      const plotFunction = _.plot(gFunction);
+      renderPlot(_, plotTitle, false, plotFunction);
+    }
+
     function renderDeepNetPlots(_, table) {
       let plotFunction;
       table = _.inspect('output - Scoring History', _.model);
@@ -4932,7 +4939,7 @@
       }
       table = _.inspect('output - Variable Importances', _.model);
       if (typeof table !== 'undefined') {
-        renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
+        plotDeepNetVariableImportances(_, table);
       }
     }
 

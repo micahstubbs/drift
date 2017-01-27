@@ -6,6 +6,7 @@ import plotDeepNetScoringHistory from './plotDeepNetScoringHistory';
 import plotDeepNetThresholdsTrainingMetrics from './plotDeepNetThresholdsTrainingMetrics';
 import plotDeepNetThresholdsValidationMetrics from './plotDeepNetThresholdsValidationMetrics';
 import plotDeepNetThresholdsCrossValidationMetrics from './plotDeepNetThresholdsCrossValidationMetrics';
+import plotDeepNetVariableImportances from './plotDeepNetVariableImportances';
 
 export default function renderDeepNetPlots(_, table) {
   let plotFunction;
@@ -27,6 +28,6 @@ export default function renderDeepNetPlots(_, table) {
   }
   table = _.inspect('output - Variable Importances', _.model);
   if (typeof table !== 'undefined') {
-    renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
+    plotDeepNetVariableImportances(_, table);
   }
 }
