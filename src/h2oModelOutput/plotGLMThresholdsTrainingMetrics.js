@@ -1,4 +1,4 @@
-export default function plotGLMThreshholdsTrainingMetrics(_, table) {
+export default function plotGLMThresholdsTrainingMetrics(_, table) {
   const plotFunction = _.plot(
     g => g(
       g.path(
