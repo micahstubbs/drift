@@ -12,9 +12,9 @@
     "no-shadow": "off", 
     "no-use-before-define": "off",
     "no-param-reassign": "off",
-    "no-unused-vars": "off",
     "no-alert": "off",
     "no-nested-ternary": "off",
-    "no-return-assign": ["error", "always"]
+    "no-return-assign": ["error", "always"],
+    "no-unused-vars": "off"
   }
 }

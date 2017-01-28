@@ -1,7 +1,7 @@
 {
   "name": "drift",
   "version": "0.1.0",
-  "description": "d3 scatterplot visualization with a distance-limited voronoi overlay for improved tooltip interaction",
+  "description": "an ES2015 port of h2o-flow",
   "main": "build/flow.js",
   "scripts": {
     "prepublish": "rm -rf build && mkdir build && rollup -c -- src/index.js",
