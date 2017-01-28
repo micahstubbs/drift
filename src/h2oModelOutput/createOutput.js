@@ -25,8 +25,7 @@ export default function createOutput(_) {
   let output;
   let table;
   let tableName;
-  let _i;
-  let _len;
+
   _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
   _.plots = Flow.Dataflow.signals([]);
   _.pojoPreview = Flow.Dataflow.signal(null);
@@ -119,17 +118,15 @@ export default function createOutput(_) {
 
   renderGainsLiftPlots(_, table);
 
-  const _ref24 = _.ls(_.model);
-  let _ref25;
-  for (_i = 0, _len = _ref24.length; _i < _len; _i++) {
-    tableName = _ref24[_i];
+  const tableNames = _.ls(_.model);
+  for (let i = 0; i < tableNames.length; i++) {
+    tableName = tableNames[i];
     if (!(tableName !== 'parameters')) {
       continue;
     }
-    _ref25 = _.model.output;
 
     // Skip confusion matrix tables for multinomial models
-    output = (_ref25 != null ? _ref25.model_category : void 0) === 'Multinomial';
+    output = (_.model.output != null ? _.model.output.model_category : void 0) === 'Multinomial';
     if (output) {
       if (tableName.indexOf('output - training_metrics - cm') === 0) {
         continue;
