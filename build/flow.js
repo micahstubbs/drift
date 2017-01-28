@@ -4418,118 +4418,6 @@
       });
     }
 
-    function renderTable(indices, subframe, g) {
-      const lodash = window._;
-      return g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
-    }
-
-    const flowPrelude$33 = flowPreludeFunction();
-
-    // TODO Mega-hack alert
-    // Last arg thresholdsAndCriteria applicable only to
-    // ROC charts for binomial models.
-    function renderPlot(_, title, isCollapsed, render, thresholdsAndCriteria) {
-      const lodash = window._;
-      const Flow = window.Flow;
-      const $ = window.jQuery;
-      let rocPanel;
-      const container = Flow.Dataflow.signal(null);
-      const linkedFrame = Flow.Dataflow.signal(null);
-
-      // TODO HACK
-      if (thresholdsAndCriteria) {
-        rocPanel = {
-          thresholds: Flow.Dataflow.signals(thresholdsAndCriteria.thresholds),
-          threshold: Flow.Dataflow.signal(null),
-          criteria: Flow.Dataflow.signals(thresholdsAndCriteria.criteria),
-          criterion: Flow.Dataflow.signal(null)
-        };
-      }
-      render((error, vis) => {
-        let _autoHighlight;
-        if (error) {
-          return console.debug(error);
-        }
-        $('a', vis.element).on('click', e => {
-          const $a = $(e.target);
-          switch ($a.attr('data-type')) {
-            case 'frame':
-              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$33.stringify($a.attr('data-key')) }`);
-            case 'model':
-              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$33.stringify($a.attr('data-key')) }`);
-            default:
-            // do nothing
-          }
-        });
-        container(vis.element);
-        _autoHighlight = true;
-        if (vis.subscribe) {
-          vis.subscribe('markselect', _arg => {
-            let currentCriterion;
-            let selectedIndex;
-            const frame = _arg.frame;
-            const indices = _arg.indices;
-            const subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
-            _.plot(renderTable.bind(this, indices, subframe))((error, table) => {
-              if (!error) {
-                return linkedFrame(table.element);
-              }
-            });
-
-            // TODO HACK
-            if (rocPanel) {
-              if (indices.length === 1) {
-                selectedIndex = lodash.head(indices);
-                _autoHighlight = false;
-                rocPanel.threshold(lodash.find(rocPanel.thresholds(), threshold => threshold.index === selectedIndex));
-                currentCriterion = rocPanel.criterion();
-
-                // More than one criterion can point to the same threshold,
-                // so ensure that we're preserving the existing criterion, if any.
-                if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
-                  rocPanel.criterion(lodash.find(rocPanel.criteria(), criterion => criterion.index === selectedIndex));
-                }
-                _autoHighlight = true;
-              } else {
-                rocPanel.criterion(null);
-                rocPanel.threshold(null);
-              }
-            }
-          });
-          vis.subscribe('markdeselect', () => {
-            linkedFrame(null);
-
-            // TODO HACK
-            if (rocPanel) {
-              rocPanel.criterion(null);
-              return rocPanel.threshold(null);
-            }
-          });
-
-          // TODO HACK
-          if (rocPanel) {
-            Flow.Dataflow.react(rocPanel.threshold, threshold => {
-              if (threshold && _autoHighlight) {
-                return vis.highlight([threshold.index]);
-              }
-            });
-            return Flow.Dataflow.react(rocPanel.criterion, criterion => {
-              if (criterion && _autoHighlight) {
-                return vis.highlight([criterion.index]);
-              }
-            });
-          }
-        }
-      });
-      return _.plots.push({
-        title,
-        plot: container,
-        frame: linkedFrame,
-        controls: Flow.Dataflow.signal(rocPanel),
-        isCollapsed
-      });
-    }
-
     function renderMultinomialConfusionMatrix(_, title, cm) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -4617,19 +4505,19 @@
       return alert('Not implemented');
     }
 
-    const flowPrelude$34 = flowPreludeFunction();
+    const flowPrelude$33 = flowPreludeFunction();
 
     // the function called when the predict button
     // on the model output cell
     // is clicked
     function predict(_) {
-      return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$34.stringify(_.model.model_id.name) }`);
+      return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$33.stringify(_.model.model_id.name) }`);
     }
 
-    const flowPrelude$35 = flowPreludeFunction();
+    const flowPrelude$34 = flowPreludeFunction();
 
     function inspect(_) {
-      _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$35.stringify(_.model.model_id.name) }`);
+      _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$34.stringify(_.model.model_id.name) }`);
     }
 
     function download(type, url, go) {
@@ -4679,13 +4567,13 @@
       return window.open(`/3/Models/${ encodeURIComponent(_.model.model_id.name) }/mojo`, '_blank');
     }
 
-    const flowPrelude$36 = flowPreludeFunction();
+    const flowPrelude$35 = flowPreludeFunction();
 
     function exportModel(_) {
-      return _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$36.stringify(_.model.model_id.name) }`);
+      return _.insertAndExecuteCell('cs', `exportModel ${ flowPrelude$35.stringify(_.model.model_id.name) }`);
     }
 
-    const flowPrelude$37 = flowPreludeFunction();
+    const flowPrelude$36 = flowPreludeFunction();
 
     function deleteModel(_) {
       return _.confirm('Are you sure you want to delete this model?', {
@@ -4693,8 +4581,120 @@
         declineCaption: 'Cancel'
       }, accept => {
         if (accept) {
-          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$37.stringify(_.model.model_id.name) }`);
+          return _.insertAndExecuteCell('cs', `deleteModel ${ flowPrelude$36.stringify(_.model.model_id.name) }`);
         }
+      });
+    }
+
+    function renderTable(indices, subframe, g) {
+      const lodash = window._;
+      return g(indices.length > 1 ? g.select() : g.select(lodash.head(indices)), g.from(subframe));
+    }
+
+    const flowPrelude$37 = flowPreludeFunction();
+
+    // TODO Mega-hack alert
+    // Last arg thresholdsAndCriteria applicable only to
+    // ROC charts for binomial models.
+    function renderPlot(_, title, isCollapsed, render, thresholdsAndCriteria) {
+      const lodash = window._;
+      const Flow = window.Flow;
+      const $ = window.jQuery;
+      let rocPanel;
+      const container = Flow.Dataflow.signal(null);
+      const linkedFrame = Flow.Dataflow.signal(null);
+
+      // TODO HACK
+      if (thresholdsAndCriteria) {
+        rocPanel = {
+          thresholds: Flow.Dataflow.signals(thresholdsAndCriteria.thresholds),
+          threshold: Flow.Dataflow.signal(null),
+          criteria: Flow.Dataflow.signals(thresholdsAndCriteria.criteria),
+          criterion: Flow.Dataflow.signal(null)
+        };
+      }
+      render((error, vis) => {
+        let _autoHighlight;
+        if (error) {
+          return console.debug(error);
+        }
+        $('a', vis.element).on('click', e => {
+          const $a = $(e.target);
+          switch ($a.attr('data-type')) {
+            case 'frame':
+              return _.insertAndExecuteCell('cs', `getFrameSummary ${ flowPrelude$37.stringify($a.attr('data-key')) }`);
+            case 'model':
+              return _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$37.stringify($a.attr('data-key')) }`);
+            default:
+            // do nothing
+          }
+        });
+        container(vis.element);
+        _autoHighlight = true;
+        if (vis.subscribe) {
+          vis.subscribe('markselect', _arg => {
+            let currentCriterion;
+            let selectedIndex;
+            const frame = _arg.frame;
+            const indices = _arg.indices;
+            const subframe = window.plot.createFrame(frame.label, frame.vectors, indices);
+            _.plot(renderTable.bind(this, indices, subframe))((error, table) => {
+              if (!error) {
+                return linkedFrame(table.element);
+              }
+            });
+
+            // TODO HACK
+            if (rocPanel) {
+              if (indices.length === 1) {
+                selectedIndex = lodash.head(indices);
+                _autoHighlight = false;
+                rocPanel.threshold(lodash.find(rocPanel.thresholds(), threshold => threshold.index === selectedIndex));
+                currentCriterion = rocPanel.criterion();
+
+                // More than one criterion can point to the same threshold,
+                // so ensure that we're preserving the existing criterion, if any.
+                if (!currentCriterion || currentCriterion && currentCriterion.index !== selectedIndex) {
+                  rocPanel.criterion(lodash.find(rocPanel.criteria(), criterion => criterion.index === selectedIndex));
+                }
+                _autoHighlight = true;
+              } else {
+                rocPanel.criterion(null);
+                rocPanel.threshold(null);
+              }
+            }
+          });
+          vis.subscribe('markdeselect', () => {
+            linkedFrame(null);
+
+            // TODO HACK
+            if (rocPanel) {
+              rocPanel.criterion(null);
+              return rocPanel.threshold(null);
+            }
+          });
+
+          // TODO HACK
+          if (rocPanel) {
+            Flow.Dataflow.react(rocPanel.threshold, threshold => {
+              if (threshold && _autoHighlight) {
+                return vis.highlight([threshold.index]);
+              }
+            });
+            return Flow.Dataflow.react(rocPanel.criterion, criterion => {
+              if (criterion && _autoHighlight) {
+                return vis.highlight([criterion.index]);
+              }
+            });
+          }
+        }
+      });
+      return _.plots.push({
+        title,
+        plot: container,
+        frame: linkedFrame,
+        controls: Flow.Dataflow.signal(rocPanel),
+        isCollapsed
       });
     }
 
@@ -5153,13 +5153,41 @@
       }
     }
 
+    function renderTables(_) {
+      let tableName;
+      let output;
+      let table;
+      const tableNames = _.ls(_.model);
+      for (let i = 0; i < tableNames.length; i++) {
+        tableName = tableNames[i];
+        if (!(tableName !== 'parameters')) {
+          continue;
+        }
+        // Skip confusion matrix tables for multinomial models
+        output = (_.model.output != null ? _.model.output.model_category : void 0) === 'Multinomial';
+        if (output) {
+          if (tableName.indexOf('output - training_metrics - cm') === 0) {
+            continue;
+          } else if (tableName.indexOf('output - validation_metrics - cm') === 0) {
+            continue;
+          } else if (tableName.indexOf('output - cross_validation_metrics - cm') === 0) {
+            continue;
+          }
+        }
+        table = _.inspect(tableName, _.model);
+        if (typeof table !== 'undefined') {
+          const plotTitle = tableName + (table.metadata.description ? ` (${ table.metadata.description })` : '');
+          const gFunction = g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table));
+          const plotFunction = _.plot(gFunction);
+          renderPlot(_, plotTitle, true, plotFunction);
+        }
+      }
+    }
+
     function createOutput(_) {
       const lodash = window._;
       const Flow = window.Flow;
-      let output;
       let table;
-      let tableName;
-
       _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
       _.plots = Flow.Dataflow.signals([]);
       _.pojoPreview = Flow.Dataflow.signal(null);
@@ -5251,30 +5279,8 @@
       }
 
       renderGainsLiftPlots(_, table);
+      renderTables(_);
 
-      const tableNames = _.ls(_.model);
-      for (let i = 0; i < tableNames.length; i++) {
-        tableName = tableNames[i];
-        if (!(tableName !== 'parameters')) {
-          continue;
-        }
-
-        // Skip confusion matrix tables for multinomial models
-        output = (_.model.output != null ? _.model.output.model_category : void 0) === 'Multinomial';
-        if (output) {
-          if (tableName.indexOf('output - training_metrics - cm') === 0) {
-            continue;
-          } else if (tableName.indexOf('output - validation_metrics - cm') === 0) {
-            continue;
-          } else if (tableName.indexOf('output - cross_validation_metrics - cm') === 0) {
-            continue;
-          }
-        }
-        table = _.inspect(tableName, _.model);
-        if (typeof table !== 'undefined') {
-          renderPlot(_, tableName + (table.metadata.description ? ` (${ table.metadata.description })` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
-        }
-      }
       return {
         key: _.model.model_id,
         algo: _.model.algo_full_name,

@@ -1,6 +1,5 @@
 /* eslint no-unused-vars: "error"*/
 
-import renderPlot from './renderPlot';
 import renderConfusionMatrices from './renderConfusionMatrices';
 import toggle from './toggle';
 import cloneModel from './cloneModel';
@@ -18,14 +17,12 @@ import renderDeepNetPlots from './renderDeepNetPlots';
 import renderTreeAlgoPlots from './renderTreeAlgoPlots';
 import renderStackedEnsemblePlots from './renderStackedEnsemblePlots';
 import renderGainsLiftPlots from './renderGainsLiftPlots';
+import renderTables from './renderTables';
 
 export default function createOutput(_) {
   const lodash = window._;
   const Flow = window.Flow;
-  let output;
   let table;
-  let tableName;
-
   _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
   _.plots = Flow.Dataflow.signals([]);
   _.pojoPreview = Flow.Dataflow.signal(null);
@@ -117,30 +114,8 @@ export default function createOutput(_) {
   }
 
   renderGainsLiftPlots(_, table);
+  renderTables(_);
 
-  const tableNames = _.ls(_.model);
-  for (let i = 0; i < tableNames.length; i++) {
-    tableName = tableNames[i];
-    if (!(tableName !== 'parameters')) {
-      continue;
-    }
-
-    // Skip confusion matrix tables for multinomial models
-    output = (_.model.output != null ? _.model.output.model_category : void 0) === 'Multinomial';
-    if (output) {
-      if (tableName.indexOf('output - training_metrics - cm') === 0) {
-        continue;
-      } else if (tableName.indexOf('output - validation_metrics - cm') === 0) {
-        continue;
-      } else if (tableName.indexOf('output - cross_validation_metrics - cm') === 0) {
-        continue;
-      }
-    }
-    table = _.inspect(tableName, _.model);
-    if (typeof table !== 'undefined') {
-      renderPlot(_, tableName + (table.metadata.description ? ` (${table.metadata.description})` : ''), true, _.plot(g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table))));
-    }
-  }
   return {
     key: _.model.model_id,
     algo: _.model.algo_full_name,
