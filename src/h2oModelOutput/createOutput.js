@@ -67,7 +67,7 @@ export default function createOutput(_) {
     return false;
   });
 
-    // TODO use _.enumerate()
+  // TODO use _.enumerate()
   const _inputParameters = lodash.map(_.model.parameters, parameter => {
     const type = parameter.type;
     const defaultValue = parameter.default_value;
@@ -112,6 +112,9 @@ export default function createOutput(_) {
       isModified: defaultValue === actualValue,
     };
   });
+
+  // look at the algo of the current model
+  // and render the relevant plots and tables
   console.log('_.model.algo from createOutput', _.model.algo);
   switch (_.model.algo) {
     case 'kmeans':

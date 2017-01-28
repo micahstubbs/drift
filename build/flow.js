@@ -5245,6 +5245,9 @@
           isModified: defaultValue === actualValue
         };
       });
+
+      // look at the algo of the current model
+      // and render the relevant plots and tables
       console.log('_.model.algo from createOutput', _.model.algo);
       switch (_.model.algo) {
         case 'kmeans':
