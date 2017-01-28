@@ -4759,6 +4759,13 @@
       renderPlot(_, 'Scoring History', false, plotFunction);
     }
 
+    function plotGainsLiftTrainingMetrics(_, table) {
+      const plotTitle = 'Training Metrics - Gains/Lift Table';
+      const gFunction = g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
+      const plotFunction = _.plot(gFunction);
+      renderPlot(_, plotTitle, false, plotFunction);
+    }
+
     function generateOnePathPointGFunction(a, table) {
       const positionKeyA = a[0];
       const positionValueA = a[1];
@@ -5243,7 +5250,7 @@
 
       table = _.inspect('output - training_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {
-        renderPlot(_, 'Training Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
+        plotGainsLiftTrainingMetrics(_, table);
       }
       table = _.inspect('output - validation_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {

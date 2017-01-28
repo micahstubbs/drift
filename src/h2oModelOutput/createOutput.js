@@ -12,6 +12,7 @@ import downloadMojo from './downloadMojo';
 import exportModel from './exportModel';
 import deleteModel from './deleteModel';
 import plotKMeansScoringHistory from './plotKMeansScoringHistory';
+import plotGainsLiftTrainingMetrics from './plotGainsLiftTrainingMetrics';
 
 import renderGLMPlots from './renderGLMPlots';
 import renderDeepNetPlots from './renderDeepNetPlots';
@@ -145,7 +146,7 @@ export default function createOutput(_) {
 
   table = _.inspect('output - training_metrics - Gains/Lift Table', _.model);
   if (typeof table !== 'undefined') {
-    renderPlot(_, 'Training Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
+    plotGainsLiftTrainingMetrics(_, table);
   }
   table = _.inspect('output - validation_metrics - Gains/Lift Table', _.model);
   if (typeof table !== 'undefined') {
