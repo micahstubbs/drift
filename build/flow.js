@@ -4991,7 +4991,8 @@
 
     function plotTreeAlgoThresholdsTrainingMetrics(_, table) {
       const plotTitle = `ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`;
-      const plotFunction = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
+      const gFunction = g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+      const plotFunction = _.plot(gFunction);
       // TODO fix this hack
       // Mega-hack alert
       // Last arg thresholdsAndCriteria only applies to
