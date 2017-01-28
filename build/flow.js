@@ -5124,6 +5124,13 @@
       renderPlot(_, plotTitle, false, plotFunction);
     }
 
+    function plotGainsLiftValidationMetrics(_, table) {
+      const plotTitle = 'Validation Metrics - Gains/Lift Table';
+      const gFunction = g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
+      const plotFunction = _.plot(gFunction);
+      renderPlot(_, plotTitle, false, plotFunction);
+    }
+
     function renderGainsLiftPlots(_, table) {
       table = _.inspect('output - training_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {
@@ -5131,7 +5138,7 @@
       }
       table = _.inspect('output - validation_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {
-        renderPlot(_, 'Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
+        plotGainsLiftValidationMetrics(_, table);
       }
       table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {
