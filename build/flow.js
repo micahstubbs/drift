@@ -5055,15 +5055,23 @@
       }
     }
 
+    function plotStackedEnsembleThresholdsTrainingMetrics(_, table) {
+      const plotTitle = `ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`;
+      const gFunction = g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
+      const plotFunction = _.plot(gFunction);
+      // TODO fix this hack
+      // Mega-hack alert
+      // Last arg thresholdsAndCriteria applies only to
+      // ROC charts for binomial models
+      const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics');
+      renderPlot(_, plotTitle, false, plotFunction, thresholdsFunction);
+    }
+
     function renderStackedEnsemblePlots(_, table) {
       let plotFunction;
       table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
       if (typeof table !== 'undefined') {
-        plotFunction = _.plot(g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1)));
-        // TODO Mega-hack alert.
-        // Last arg thresholdsAndCriteria applicable only to
-        // ROC charts for binomial models.
-        renderPlot(_, `ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`, false, plotFunction, getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics'));
+        plotStackedEnsembleThresholdsTrainingMetrics(_, table);
       }
       table = _.inspect('output - validation_metrics - Metrics for Thresholds', _.model);
       if (typeof table !== 'undefined') {
