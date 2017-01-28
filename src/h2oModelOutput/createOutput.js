@@ -1,7 +1,5 @@
 /* eslint no-unused-vars: "error"*/
 
-import getAucAsLabel from './getAucAsLabel';
-import getThresholdsAndCriteria from './getThresholdsAndCriteria';
 import renderPlot from './renderPlot';
 import renderConfusionMatrices from './renderConfusionMatrices';
 import toggle from './toggle';
@@ -21,16 +19,10 @@ import renderTreeAlgoPlots from './renderTreeAlgoPlots';
 import renderStackedEnsemblePlots from './renderStackedEnsemblePlots';
 import renderGainsLiftPlots from './renderGainsLiftPlots';
 
-import { flowPreludeFunction } from '../flowPreludeFunction';
-const flowPrelude = flowPreludeFunction();
-
 export default function createOutput(_) {
   const lodash = window._;
   const Flow = window.Flow;
-  let confusionMatrix;
-  let lambdaSearchParameter;
   let output;
-  let plotter;
   let table;
   let tableName;
   let _i;
@@ -128,6 +120,7 @@ export default function createOutput(_) {
   renderGainsLiftPlots(_, table);
 
   const _ref24 = _.ls(_.model);
+  let _ref25;
   for (_i = 0, _len = _ref24.length; _i < _len; _i++) {
     tableName = _ref24[_i];
     if (!(tableName !== 'parameters')) {
