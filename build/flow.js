@@ -5025,8 +5025,14 @@
       renderPlot(_, plotTitle, false, plotFunction, thresholdsFunction);
     }
 
+    function plotTreeAlgoVariableImportances(_, table) {
+      const plotTitle = 'Variable Importances';
+      const gFunction = g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
+      const plotFunction = _.plot(gFunction);
+      renderPlot(_, plotTitle, false, plotFunction);
+    }
+
     function renderTreeAlgoPlots(_, table) {
-      let plotFunction;
       table = _.inspect('output - Scoring History', _.model);
       if (typeof table !== 'undefined') {
         plotTreeAlgoScoringHistory(_, table);
@@ -5045,7 +5051,7 @@
       }
       table = _.inspect('output - Variable Importances', _.model);
       if (typeof table !== 'undefined') {
-        renderPlot(_, 'Variable Importances', false, _.plot(g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25))));
+        plotTreeAlgoVariableImportances(_, table);
       }
     }
 
