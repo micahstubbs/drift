@@ -4704,6 +4704,13 @@
       renderPlot(_, 'Scoring History', false, plotFunction);
     }
 
+    function renderKMeansPlots(_) {
+      const table = _.inspect('output - Scoring History', _.model);
+      if (typeof table !== 'undefined') {
+        plotKMeansScoringHistory(_, table);
+      }
+    }
+
     function generateOnePathPointGFunction(a, table) {
       const positionKeyA = a[0];
       const positionValueA = a[1];
@@ -4822,7 +4829,8 @@
       renderPlot(_, plotTitle, false, plotFunction);
     }
 
-    function renderGLMPlots(_, table) {
+    function renderGLMPlots(_) {
+      let table;
       table = _.inspect('output - Scoring History', _.model);
       if (typeof table !== 'undefined') {
         plotGLMScoringHistory(_, table);
@@ -4939,7 +4947,8 @@
       renderPlot(_, plotTitle, false, plotFunction);
     }
 
-    function renderDeepNetPlots(_, table) {
+    function renderDeepNetPlots(_) {
+      let table;
       table = _.inspect('output - Scoring History', _.model);
       if (typeof table !== 'undefined') {
         plotDeepNetScoringHistory(_, table);
@@ -5032,7 +5041,8 @@
       renderPlot(_, plotTitle, false, plotFunction);
     }
 
-    function renderTreeAlgoPlots(_, table) {
+    function renderTreeAlgoPlots(_) {
+      let table;
       table = _.inspect('output - Scoring History', _.model);
       if (typeof table !== 'undefined') {
         plotTreeAlgoScoringHistory(_, table);
@@ -5098,7 +5108,8 @@
       renderPlot(_, plotTitle, false, plotFunction);
     }
 
-    function renderStackedEnsemblePlots(_, table) {
+    function renderStackedEnsemblePlots(_) {
+      let table;
       table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
       if (typeof table !== 'undefined') {
         plotStackedEnsembleThresholdsTrainingMetrics(_, table);
@@ -5138,7 +5149,8 @@
       renderPlot(_, plotTitle, false, plotFunction);
     }
 
-    function renderGainsLiftPlots(_, table) {
+    function renderGainsLiftPlots(_) {
+      let table;
       table = _.inspect('output - training_metrics - Gains/Lift Table', _.model);
       if (typeof table !== 'undefined') {
         plotGainsLiftTrainingMetrics(_, table);
@@ -5187,7 +5199,6 @@
     function createOutput(_) {
       const lodash = window._;
       const Flow = window.Flow;
-      let table;
       _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
       _.plots = Flow.Dataflow.signals([]);
       _.pojoPreview = Flow.Dataflow.signal(null);
@@ -5246,39 +5257,35 @@
 
       // look at the algo of the current model
       // and render the relevant plots and tables
-      console.log('_.model.algo from createOutput', _.model.algo);
       switch (_.model.algo) {
         case 'kmeans':
-          table = _.inspect('output - Scoring History', _.model);
-          if (typeof table !== 'undefined') {
-            plotKMeansScoringHistory(_, table);
-          }
+          renderKMeansPlots(_);
           break;
         case 'glm':
-          renderGLMPlots(_, table);
+          renderGLMPlots(_);
           renderConfusionMatrices(_);
           break;
         case 'deeplearning':
         case 'deepwater':
-          renderDeepNetPlots(_, table);
+          renderDeepNetPlots(_);
           renderConfusionMatrices(_);
           break;
         case 'gbm':
         case 'drf':
         case 'svm':
         case 'xgboost':
-          renderTreeAlgoPlots(_, table);
+          renderTreeAlgoPlots(_);
           renderConfusionMatrices(_);
           break;
         case 'stackedensemble':
-          renderStackedEnsemblePlots(_, table);
+          renderStackedEnsemblePlots(_);
           renderConfusionMatrices(_);
           break;
         default:
         // do nothing
       }
 
-      renderGainsLiftPlots(_, table);
+      renderGainsLiftPlots(_);
       renderTables(_);
 
       return {

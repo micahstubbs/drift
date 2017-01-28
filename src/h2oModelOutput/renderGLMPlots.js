@@ -4,7 +4,8 @@ import plotGLMThresholdsValidationMetrics from './plotGLMThresholdsValidationMet
 import plotGLMCrossValidationMetrics from './plotGLMCrossValidationMetrics';
 import plotGLMStandardizedCoefficientMagnitudes from './plotGLMStandardizedCoefficientMagnitudes';
 
-export default function renderGLMPlots(_, table) {
+export default function renderGLMPlots(_) {
+  let table;
   table = _.inspect('output - Scoring History', _.model);
   if (typeof table !== 'undefined') {
     plotGLMScoringHistory(_, table);

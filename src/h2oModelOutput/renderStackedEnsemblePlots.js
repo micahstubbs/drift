@@ -3,7 +3,8 @@ import plotStackedEnsemblesThresholdsValidationMetrics from './plotStackedEnsemb
 import plotStackedEnsembleThresholdsCrossValidationMetrics from './plotStackedEnsembleThresholdsCrossValidationMetrics';
 import plotStackedEnsembleVariableImportances from './plotStackedEnsembleVariableImportances';
 
-export default function renderStackedEnsemblePlots(_, table) {
+export default function renderStackedEnsemblePlots(_) {
+  let table;
   table = _.inspect('output - training_metrics - Metrics for Thresholds', _.model);
   if (typeof table !== 'undefined') {
     plotStackedEnsembleThresholdsTrainingMetrics(_, table);

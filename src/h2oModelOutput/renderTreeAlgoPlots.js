@@ -4,7 +4,8 @@ import plotTreeAlgoThresholdsValidationMetrics from './plotTreeAlgoThresholdsVal
 import plotTreeAlgoThresholdsCrossValidationMetrics from './plotTreeAlgoThresholdsCrossValidationMetrics';
 import plotTreeAlgoVariableImportances from './plotTreeAlgoVariableImportances';
 
-export default function renderTreeAlgoPlots(_, table) {
+export default function renderTreeAlgoPlots(_) {
+  let table;
   table = _.inspect('output - Scoring History', _.model);
   if (typeof table !== 'undefined') {
     plotTreeAlgoScoringHistory(_, table);

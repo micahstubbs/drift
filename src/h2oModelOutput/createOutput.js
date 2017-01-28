@@ -10,8 +10,8 @@ import downloadPojo from './downloadPojo';
 import downloadMojo from './downloadMojo';
 import exportModel from './exportModel';
 import deleteModel from './deleteModel';
-import plotKMeansScoringHistory from './plotKMeansScoringHistory';
 
+import renderKMeansPlots from './renderKMeansPlots';
 import renderGLMPlots from './renderGLMPlots';
 import renderDeepNetPlots from './renderDeepNetPlots';
 import renderTreeAlgoPlots from './renderTreeAlgoPlots';
@@ -22,7 +22,6 @@ import renderTables from './renderTables';
 export default function createOutput(_) {
   const lodash = window._;
   const Flow = window.Flow;
-  let table;
   _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
   _.plots = Flow.Dataflow.signals([]);
   _.pojoPreview = Flow.Dataflow.signal(null);
@@ -81,39 +80,35 @@ export default function createOutput(_) {
 
   // look at the algo of the current model
   // and render the relevant plots and tables
-  console.log('_.model.algo from createOutput', _.model.algo);
   switch (_.model.algo) {
     case 'kmeans':
-      table = _.inspect('output - Scoring History', _.model);
-      if (typeof table !== 'undefined') {
-        plotKMeansScoringHistory(_, table);
-      }
+      renderKMeansPlots(_);
       break;
     case 'glm':
-      renderGLMPlots(_, table);
+      renderGLMPlots(_);
       renderConfusionMatrices(_);
       break;
     case 'deeplearning':
     case 'deepwater':
-      renderDeepNetPlots(_, table);
+      renderDeepNetPlots(_);
       renderConfusionMatrices(_);
       break;
     case 'gbm':
     case 'drf':
     case 'svm':
     case 'xgboost':
-      renderTreeAlgoPlots(_, table);
+      renderTreeAlgoPlots(_);
       renderConfusionMatrices(_);
       break;
     case 'stackedensemble':
-      renderStackedEnsemblePlots(_, table);
+      renderStackedEnsemblePlots(_);
       renderConfusionMatrices(_);
       break;
     default:
       // do nothing
   }
 
-  renderGainsLiftPlots(_, table);
+  renderGainsLiftPlots(_);
   renderTables(_);
 
   return {

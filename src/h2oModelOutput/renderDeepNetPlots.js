@@ -4,7 +4,8 @@ import plotDeepNetThresholdsValidationMetrics from './plotDeepNetThresholdsValid
 import plotDeepNetThresholdsCrossValidationMetrics from './plotDeepNetThresholdsCrossValidationMetrics';
 import plotDeepNetVariableImportances from './plotDeepNetVariableImportances';
 
-export default function renderDeepNetPlots(_, table) {
+export default function renderDeepNetPlots(_) {
+  let table;
   table = _.inspect('output - Scoring History', _.model);
   if (typeof table !== 'undefined') {
     plotDeepNetScoringHistory(_, table);
