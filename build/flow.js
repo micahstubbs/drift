@@ -5288,6 +5288,13 @@
       renderGainsLiftPlots(_);
       renderTables(_);
 
+      const downloadSVG = (() => {
+        const e = document.createElement('script');
+        e.setAttribute('src', 'svg-crowbar.js');
+        e.setAttribute('class', 'svg-crowbar');
+        document.body.appendChild(e);
+      })();
+
       return {
         key: _.model.model_id,
         algo: _.model.algo_full_name,
@@ -5304,7 +5311,8 @@
         pojoPreview: _.pojoPreview,
         isPojoLoaded: _isPojoLoaded,
         exportModel: exportModel.bind(this, _),
-        deleteModel: deleteModel.bind(this, _)
+        deleteModel: deleteModel.bind(this, _),
+        downloadSVG
       };
     }
 
@@ -5493,8 +5501,15 @@
     function h2oPlotOutput(_, _go, _plot) {
       const lodash = window._;
       lodash.defer(_go);
+      const downloadSVG = (() => {
+        const e = document.createElement('script');
+        e.setAttribute('src', 'svg-crowbar.js');
+        e.setAttribute('class', 'svg-crowbar');
+        document.body.appendChild(e);
+      })();
       return {
         plot: _plot,
+        downloadSVG,
         template: 'flow-plot-output'
       };
     }

@@ -111,6 +111,13 @@ export default function createOutput(_) {
   renderGainsLiftPlots(_);
   renderTables(_);
 
+  const downloadSVG = (() => { 
+    const e = document.createElement('script'); 
+    e.setAttribute('src', 'svg-crowbar.js');
+    e.setAttribute('class', 'svg-crowbar'); 
+    document.body.appendChild(e); 
+  })();
+
   return {
     key: _.model.model_id,
     algo: _.model.algo_full_name,
@@ -128,5 +135,6 @@ export default function createOutput(_) {
     isPojoLoaded: _isPojoLoaded,
     exportModel: exportModel.bind(this, _),
     deleteModel: deleteModel.bind(this, _),
+    downloadSVG
   };
 }
