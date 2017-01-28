@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: "error"*/
+
 import getAucAsLabel from './getAucAsLabel';
 import getThresholdsAndCriteria from './getThresholdsAndCriteria';
 import renderPlot from './renderPlot';
