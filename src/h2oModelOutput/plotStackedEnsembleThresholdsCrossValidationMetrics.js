@@ -2,8 +2,8 @@ import renderPlot from './renderPlot';
 import getAucAsLabel from './getAucAsLabel';
 import getThresholdsAndCriteria from './getThresholdsAndCriteria';
 
-export default function plotStackedEnsembleThresholdsTrainingMetrics(_, table) {
-  const plotTitle = `ROC Curve - Training Metrics${getAucAsLabel(_, _.model, 'output - training_metrics')}`;
+export default function plotStackedEnsembleThresholdsCrossValidationMetrics(_, table) {
+  const plotTitle = `ROC Curve - Cross Validation Metrics${getAucAsLabel(_, _.model, 'output - cross_validation_metrics')}`;
   const gFunction = g => g(
     g.path(
       g.position('fpr', 'tpr')
@@ -26,7 +26,7 @@ export default function plotStackedEnsembleThresholdsTrainingMetrics(_, table) {
   // Mega-hack alert
   // Last arg thresholdsAndCriteria only applies to
   // ROC charts for binomial models
-  const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics');
+  const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics');
   renderPlot(
     _,
     plotTitle,
