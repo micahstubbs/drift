@@ -142,7 +142,6 @@ export default function createOutput(_) {
     default:
         // do nothing
   }
-    // end of stackedensemble
 
   table = _.inspect('output - training_metrics - Gains/Lift Table', _.model);
   if (typeof table !== 'undefined') {
