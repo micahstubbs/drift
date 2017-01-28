@@ -12,12 +12,12 @@ import downloadMojo from './downloadMojo';
 import exportModel from './exportModel';
 import deleteModel from './deleteModel';
 import plotKMeansScoringHistory from './plotKMeansScoringHistory';
-import plotGainsLiftTrainingMetrics from './plotGainsLiftTrainingMetrics';
 
 import renderGLMPlots from './renderGLMPlots';
 import renderDeepNetPlots from './renderDeepNetPlots';
 import renderTreeAlgoPlots from './renderTreeAlgoPlots';
 import renderStackedEnsemblePlots from './renderStackedEnsemblePlots';
+import renderGainsLiftPlots from './renderGainsLiftPlots';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -141,21 +141,11 @@ export default function createOutput(_) {
       renderConfusionMatrices(_);
       break;
     default:
-        // do nothing
+      // do nothing
   }
 
-  table = _.inspect('output - training_metrics - Gains/Lift Table', _.model);
-  if (typeof table !== 'undefined') {
-    plotGainsLiftTrainingMetrics(_, table);
-  }
-  table = _.inspect('output - validation_metrics - Gains/Lift Table', _.model);
-  if (typeof table !== 'undefined') {
-    renderPlot(_, 'Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
-  }
-  table = _.inspect('output - cross_validation_metrics - Gains/Lift Table', _.model);
-  if (typeof table !== 'undefined') {
-    renderPlot(_, 'Cross Validation Metrics - Gains/Lift Table', false, _.plot(g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table))));
-  }
+  renderGainsLiftPlots(_, table);
+
   const _ref24 = _.ls(_.model);
   for (_i = 0, _len = _ref24.length; _i < _len; _i++) {
     tableName = _ref24[_i];
@@ -164,7 +154,7 @@ export default function createOutput(_) {
     }
     _ref25 = _.model.output;
 
-      // Skip confusion matrix tables for multinomial models
+    // Skip confusion matrix tables for multinomial models
     output = (_ref25 != null ? _ref25.model_category : void 0) === 'Multinomial';
     if (output) {
       if (tableName.indexOf('output - training_metrics - cm') === 0) {
