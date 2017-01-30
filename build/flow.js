@@ -732,6 +732,15 @@
       };
     }
 
+    function renderPlot(container, render) {
+      return render((error, vis) => {
+        if (error) {
+          return console.debug(error);
+        }
+        return container(vis.element);
+      });
+    }
+
     function formatBytes(bytes) {
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
       if (bytes === 0) {
@@ -757,12 +766,6 @@
       const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
       const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
       const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-      const renderPlot = (container, render) => render((error, vis) => {
-        if (error) {
-          return console.debug(error);
-        }
-        return container(vis.element);
-      });
       const renderGrid = render => render((error, vis) => {
         if (error) {
           return console.debug(error);
@@ -4472,7 +4475,7 @@
     // TODO Mega-hack alert
     // Last arg thresholdsAndCriteria applicable only to
     // ROC charts for binomial models.
-    function renderPlot(_, title, isCollapsed, render, thresholdsAndCriteria) {
+    function renderPlot$1(_, title, isCollapsed, render, thresholdsAndCriteria) {
       const lodash = window._;
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -4577,7 +4580,7 @@
     function plotKMeansScoringHistory(_, table) {
       const gFunction = g => g(g.path(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.point(g.position('iteration', 'within_cluster_sum_of_squares'), g.strokeColor(g.value('#1f77b4'))), g.from(table));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, 'Scoring History', false, plotFunction);
+      renderPlot$1(_, 'Scoring History', false, plotFunction);
     }
 
     function renderKMeansPlots(_) {
@@ -4616,7 +4619,7 @@
         const gFunction = generateOnePathPointGFunction(['iteration', 'objective', '#1f77b4'], table);
         plotFunction = _.plot(gFunction);
       }
-      renderPlot(_, plotTitle, false, plotFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction);
     }
 
     function getThresholdsAndCriteria(_, table, tableName) {
@@ -4679,7 +4682,7 @@
       const plotFunction = _.plot(gFunction);
       const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics');
       const plotTitle = `ROC Curve - Training Metrics${ getAucAsLabel(_, _.model, 'output - training_metrics') }`;
-      renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdFunction);
     }
 
     function plotGLMThresholdsMetrics(_, table) {
@@ -4687,7 +4690,7 @@
       const plotFunction = _.plot(gFunction);
       const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics');
       const plotTitle = `ROC Curve - Validation Metrics${ getAucAsLabel(_, _.model, 'output - validation_metrics') }`;
-      renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdFunction);
     }
 
     function plotGLMCrossValidationMetrics(_, table) {
@@ -4695,14 +4698,14 @@
       const gFunction = g => g(g.path(g.position('fpr', 'tpr')), g.line(g.position(g.value(1), g.value(0)), g.strokeColor(g.value('red'))), g.from(table), g.domainX_HACK(0, 1), g.domainY_HACK(0, 1));
       const plotFunction = _.plot(gFunction);
       const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdFunction);
     }
 
     function plotGLMStandardizedCoefficientMagnitudes(_, table) {
       const plotTitle = 'Standardized Coefficient Magnitudes';
       const gFunction = g => g(g.rect(g.position('coefficients', 'names'), g.fillColor('sign')), g.from(table), g.limit(25));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, plotTitle, false, plotFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction);
     }
 
     function renderGLMPlots(_) {
@@ -4736,14 +4739,14 @@
       if (table.schema.validation_logloss && table.schema.training_logloss) {
         const gFunction = generateTwoPathPointGFunction(['epochs', 'training_logloss', '#1f77b4'], ['epochs', 'validation_logloss', '#ff7f0e'], table);
         const plotFunction = _.plot(gFunction);
-        renderPlot(_, 'Scoring History - logloss', false, plotFunction);
+        renderPlot$1(_, 'Scoring History - logloss', false, plotFunction);
         //
         // if we have only training logloss
         //
       } else if (table.schema.training_logloss) {
         const gFunction = generateOnePathPointGFunction(['epochs', 'training_logloss', '#1f77b4'], table);
         const plotFunction = _.plot(gFunction);
-        renderPlot(_, 'Scoring History - logloss', false, plotFunction);
+        renderPlot$1(_, 'Scoring History - logloss', false, plotFunction);
       }
       if (table.schema.training_deviance) {
         //
@@ -4752,14 +4755,14 @@
         if (table.schema.validation_deviance) {
           const gFunction = generateTwoPathPointGFunction(['epochs', 'training_deviance', '#1f77b4'], ['epochs', 'validation_deviance', '#ff7f0e'], table);
           const plotFunction = _.plot(gFunction);
-          renderPlot(_, 'Scoring History - Deviance', false, plotFunction);
+          renderPlot$1(_, 'Scoring History - Deviance', false, plotFunction);
           //
           // if we have only training deviance
           //
         } else {
           const gFunction = generateOnePathPointGFunction(['epochs', 'training_deviance', '#1f77b4'], table);
           const plotFunction = _.plot(gFunction);
-          renderPlot(_, 'Scoring History - Deviance', false, plotFunction);
+          renderPlot$1(_, 'Scoring History - Deviance', false, plotFunction);
         }
       } else if (table.schema.training_mse) {
         //
@@ -4768,14 +4771,14 @@
         if (table.schema.validation_mse) {
           const gFunction = generateTwoPathPointGFunction(['epochs', 'training_mse', '#1f77b4'], ['epochs', 'validation_mse', '#ff7f0e'], table);
           const plotFunction = _.plot(gFunction);
-          renderPlot(_, 'Scoring History - MSE', false, plotFunction);
+          renderPlot$1(_, 'Scoring History - MSE', false, plotFunction);
           //
           // if we have only training mse
           //
         } else {
           const gFunction = generateOnePathPointGFunction(['epochs', 'training_mse', '#1f77b4'], table);
           const plotFunction = _.plot(gFunction);
-          renderPlot(_, 'Scoring History - MSE', false, plotFunction);
+          renderPlot$1(_, 'Scoring History - MSE', false, plotFunction);
         }
       }
     }
@@ -4789,7 +4792,7 @@
       // the last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models.
       const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdFunction);
     }
 
     function plotDeepNetThresholdsValidationMetrics(_, table) {
@@ -4801,7 +4804,7 @@
       // Last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models.
       const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdFunction);
     }
 
     function plotDeepNetThresholdsCrossValidationMetrics(_, table) {
@@ -4813,14 +4816,14 @@
       // Last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models
       const thresholdFunction = getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdFunction);
     }
 
     function plotDeepNetVariableImportances(_, table) {
       const plotTitle = 'Variable Importances';
       const gFunction = g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, plotTitle, false, plotFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction);
     }
 
     function renderDeepNetPlots(_) {
@@ -4852,24 +4855,24 @@
         const plotTitle = 'Scoring History - logloss';
         const gFunction = generateTwoPathPointGFunction(['number_of_trees', 'training_logloss', '#1f77b4'], ['number_of_trees', 'validation_logloss', '#ff7f0e'], table);
         const plotFunction = _.plot(gFunction);
-        renderPlot(_, plotTitle, false, plotFunction);
+        renderPlot$1(_, plotTitle, false, plotFunction);
       } else if (table.schema.training_logloss) {
         const plotTitle = 'Scoring History - logloss';
         const gFunction = generateOnePathPointGFunction(['number_of_trees', 'training_logloss', '#1f77b4'], table);
         const plotFunction = _.plot(gFunction);
-        renderPlot(_, plotTitle, false, plotFunction);
+        renderPlot$1(_, plotTitle, false, plotFunction);
       }
       if (table.schema.training_deviance) {
         if (table.schema.validation_deviance) {
           const plotTitle = 'Scoring History - Deviance';
           const gFunction = generateTwoPathPointGFunction(['number_of_trees', 'training_logloss', '#1f77b4'], ['number_of_trees', 'validation_logloss', '#ff7f0e'], table);
           const plotFunction = _.plot(gFunction);
-          renderPlot(_, plotTitle, false, plotFunction);
+          renderPlot$1(_, plotTitle, false, plotFunction);
         } else {
           const plotTitle = 'Scoring History - Deviance';
           const gFunction = generateOnePathPointGFunction(['number_of_trees', 'training_deviance', '#1f77b4'], table);
           const plotFunction = _.plot(gFunction);
-          renderPlot(_, plotTitle, false, plotFunction);
+          renderPlot$1(_, plotTitle, false, plotFunction);
         }
       }
     }
@@ -4883,7 +4886,7 @@
       // Last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models
       const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdsFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdsFunction);
     }
 
     function plotTreeAlgoThresholdsValidationMetrics(_, table) {
@@ -4895,7 +4898,7 @@
       // Last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models
       const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdsFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdsFunction);
     }
 
     function plotTreeAlgoThresholdsCrossValidationMetrics(_, table) {
@@ -4907,14 +4910,14 @@
       // Last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models
       const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdsFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdsFunction);
     }
 
     function plotTreeAlgoVariableImportances(_, table) {
       const plotTitle = 'Variable Importances';
       const gFunction = g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, plotTitle, false, plotFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction);
     }
 
     function renderTreeAlgoPlots(_) {
@@ -4950,7 +4953,7 @@
       // Last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models
       const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - training_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdsFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdsFunction);
     }
 
     function plotStackedEnsemblesThresholdsValidationMetrics(_, table) {
@@ -4962,7 +4965,7 @@
       // Last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models
       const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - validation_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdsFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdsFunction);
     }
 
     function plotStackedEnsembleThresholdsCrossValidationMetrics(_, table) {
@@ -4974,14 +4977,14 @@
       // Last arg thresholdsAndCriteria only applies to
       // ROC charts for binomial models
       const thresholdsFunction = getThresholdsAndCriteria(_, table, 'output - cross_validation_metrics - Maximum Metrics');
-      renderPlot(_, plotTitle, false, plotFunction, thresholdsFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction, thresholdsFunction);
     }
 
     function plotStackedEnsembleVariableImportances(_, table) {
       const plotTitle = 'Variable Importances';
       const gFunction = g => g(g.rect(g.position('scaled_importance', 'variable')), g.from(table), g.limit(25));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, plotTitle, false, plotFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction);
     }
 
     function renderStackedEnsemblePlots(_) {
@@ -5008,21 +5011,21 @@
       const plotTitle = 'Training Metrics - Gains/Lift Table';
       const gFunction = g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, plotTitle, false, plotFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction);
     }
 
     function plotGainsLiftValidationMetrics(_, table) {
       const plotTitle = 'Validation Metrics - Gains/Lift Table';
       const gFunction = g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, plotTitle, false, plotFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction);
     }
 
     function plotGainsLiftCrossValidationMetrics(_, table) {
       const plotTitle = 'Cross Validation Metrics - Gains/Lift Table';
       const gFunction = g => g(g.path(g.position('cumulative_data_fraction', 'cumulative_capture_rate'), g.strokeColor(g.value('black'))), g.path(g.position('cumulative_data_fraction', 'cumulative_lift'), g.strokeColor(g.value('green'))), g.from(table));
       const plotFunction = _.plot(gFunction);
-      renderPlot(_, plotTitle, false, plotFunction);
+      renderPlot$1(_, plotTitle, false, plotFunction);
     }
 
     function renderGainsLiftPlots(_) {
@@ -5067,7 +5070,7 @@
           const plotTitle = tableName + (table.metadata.description ? ` (${ table.metadata.description })` : '');
           const gFunction = g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table));
           const plotFunction = _.plot(gFunction);
-          renderPlot(_, plotTitle, true, plotFunction);
+          renderPlot$1(_, plotTitle, true, plotFunction);
         }
       }
     }

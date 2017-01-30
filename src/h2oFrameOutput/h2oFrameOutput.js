@@ -1,3 +1,5 @@
+import renderPlot from './renderPlot';
+
 import { formatBytes } from '../utils/formatBytes';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
@@ -17,12 +19,6 @@ export function h2oFrameOutput(_, _go, _frame) {
   const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
   const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
   const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-  const renderPlot = (container, render) => render((error, vis) => {
-    if (error) {
-      return console.debug(error);
-    }
-    return container(vis.element);
-  });
   const renderGrid = render => render((error, vis) => {
     if (error) {
       return console.debug(error);
