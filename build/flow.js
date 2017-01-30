@@ -732,6 +732,66 @@
       };
     }
 
+    const flowPrelude$7 = flowPreludeFunction();
+
+    function createModel(_) {
+      const codeCellCode = `assist buildModel, null, training_frame: ${ flowPrelude$7.stringify(_.frame.frame_id.name) }`;
+      return _.insertAndExecuteCell('cs', codeCellCode);
+    }
+
+    const flowPrelude$8 = flowPreludeFunction();
+
+    function inspect(_) {
+      const codeCellCode = `inspect getFrameSummary ${ flowPrelude$8.stringify(_.frame.frame_id.name) }`;
+      return _.insertAndExecuteCell('cs', codeCellCode);
+    }
+
+    const flowPrelude$9 = flowPreludeFunction();
+
+    function inspectData(_) {
+      const codeCellCode = `getFrameData ${ flowPrelude$9.stringify(_.frame.frame_id.name) }`;
+      return _.insertAndExecuteCell('cs', codeCellCode);
+    }
+
+    const flowPrelude$10 = flowPreludeFunction();
+
+    function splitFrame(_) {
+      const codeCellCode = `assist splitFrame, ${ flowPrelude$10.stringify(_.frame.frame_id.name) }`;
+      return _.insertAndExecuteCell('cs', codeCellCode);
+    }
+
+    const flowPrelude$11 = flowPreludeFunction();
+
+    function predict(_) {
+      const codeCellCode = `predict frame: ${ flowPrelude$11.stringify(_.frame.frame_id.name) }`;
+      return _.insertAndExecuteCell('cs', codeCellCode);
+    }
+
+    function download(_) {
+      return window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_.frame.frame_id.name) }` }`, '_blank');
+    }
+
+    const flowPrelude$12 = flowPreludeFunction();
+
+    function exportFrame(_) {
+      const codeCellCode = `exportFrame ${ flowPrelude$12.stringify(_.frame.frame_id.name) }`;
+      return _.insertAndExecuteCell('cs', codeCellCode);
+    }
+
+    const flowPrelude$13 = flowPreludeFunction();
+
+    function deleteFrame(_) {
+      return _.confirm('Are you sure you want to delete this frame?', {
+        acceptCaption: 'Delete Frame',
+        declineCaption: 'Cancel'
+      }, accept => {
+        if (accept) {
+          const codeCellCode = `deleteFrame ${ flowPrelude$13.stringify(_.frame.frame_id.name) }`;
+          return _.insertAndExecuteCell('cs', codeCellCode);
+        }
+      });
+    }
+
     function renderPlot(container, render) {
       return render((error, vis) => {
         if (error) {
@@ -741,7 +801,7 @@
       });
     }
 
-    const flowPrelude$7 = flowPreludeFunction();
+    const flowPrelude$14 = flowPreludeFunction();
 
     function renderGrid(_, render) {
       const $ = window.jQuery;
@@ -753,11 +813,11 @@
           const $a = $(e.target);
           switch ($a.attr('data-type')) {
             case 'summary-link':
-              return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$7.stringify(_.frame.frame_id.name) }, ${ flowPrelude$7.stringify($a.attr('data-key')) }`);
+              return _.insertAndExecuteCell('cs', `getColumnSummary ${ flowPrelude$14.stringify(_.frame.frame_id.name) }, ${ flowPrelude$14.stringify($a.attr('data-key')) }`);
             case 'as-factor-link':
-              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$7.stringify(_.frame.frame_id.name) }, column: ${ flowPrelude$7.stringify($a.attr('data-key')) }, type: \'enum\'`);
+              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$14.stringify(_.frame.frame_id.name) }, column: ${ flowPrelude$14.stringify($a.attr('data-key')) }, type: \'enum\'`);
             case 'as-numeric-link':
-              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$7.stringify(_.frame.frame_id.name) }, column: ${ flowPrelude$7.stringify($a.attr('data-key')) }, type: \'int\'`);
+              return _.insertAndExecuteCell('cs', `changeColumnType frame: ${ flowPrelude$14.stringify(_.frame.frame_id.name) }, column: ${ flowPrelude$14.stringify($a.attr('data-key')) }, type: \'int\'`);
             default:
             // do nothing
           }
@@ -766,64 +826,10 @@
       });
     }
 
-    const flowPrelude$8 = flowPreludeFunction();
-
-    function createModel(_) {
-      const codeCellCode = `assist buildModel, null, training_frame: ${ flowPrelude$8.stringify(_.frame.frame_id.name) }`;
-      return _.insertAndExecuteCell('cs', codeCellCode);
-    }
-
-    const flowPrelude$9 = flowPreludeFunction();
-
-    function inspect(_) {
-      const codeCellCode = `inspect getFrameSummary ${ flowPrelude$9.stringify(_.frame.frame_id.name) }`;
-      return _.insertAndExecuteCell('cs', codeCellCode);
-    }
-
-    const flowPrelude$10 = flowPreludeFunction();
-
-    function inspectData(_) {
-      const codeCellCode = `getFrameData ${ flowPrelude$10.stringify(_.frame.frame_id.name) }`;
-      return _.insertAndExecuteCell('cs', codeCellCode);
-    }
-
-    const flowPrelude$11 = flowPreludeFunction();
-
-    function splitFrame(_) {
-      const codeCellCode = `assist splitFrame, ${ flowPrelude$11.stringify(_.frame.frame_id.name) }`;
-      return _.insertAndExecuteCell('cs', codeCellCode);
-    }
-
-    const flowPrelude$12 = flowPreludeFunction();
-
-    function predict(_) {
-      const codeCellCode = `predict frame: ${ flowPrelude$12.stringify(_.frame.frame_id.name) }`;
-      return _.insertAndExecuteCell('cs', codeCellCode);
-    }
-
-    function download(_) {
-      return window.open(`${ window.Flow.ContextPath }${ `3/DownloadDataset?frame_id=${ encodeURIComponent(_.frame.frame_id.name) }` }`, '_blank');
-    }
-
-    const flowPrelude$13 = flowPreludeFunction();
-
-    function exportFrame(_) {
-      const codeCellCode = `exportFrame ${ flowPrelude$13.stringify(_.frame.frame_id.name) }`;
-      return _.insertAndExecuteCell('cs', codeCellCode);
-    }
-
-    const flowPrelude$14 = flowPreludeFunction();
-
-    function deleteFrame(_) {
-      return _.confirm('Are you sure you want to delete this frame?', {
-        acceptCaption: 'Delete Frame',
-        declineCaption: 'Cancel'
-      }, accept => {
-        if (accept) {
-          const codeCellCode = `deleteFrame ${ flowPrelude$14.stringify(_.frame.frame_id.name) }`;
-          return _.insertAndExecuteCell('cs', codeCellCode);
-        }
-      });
+    function renderFrame(_, _chunkSummary, _distributionSummary, frame) {
+      renderGrid(_, _.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
+      renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
+      return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
     }
 
     function formatBytes(bytes) {
@@ -849,12 +855,6 @@
       const _maxPages = Flow.Dataflow.signal(Math.ceil(_.frame.total_column_count / MaxItemsPerPage));
       const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
       const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-
-      const renderFrame = frame => {
-        renderGrid(_, _.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
-        renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
-        return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
-      };
       _lastUsedSearchTerm = null;
       const refreshColumns = pageIndex => {
         const searchTerm = _columnNameSearchTerm();
@@ -870,7 +870,7 @@
           } else {
             _lastUsedSearchTerm = searchTerm;
             _currentPage(pageIndex);
-            return renderFrame(frame);
+            return renderFrame(_, _chunkSummary, _distributionSummary, frame);
           }
         });
       };
@@ -887,7 +887,7 @@
         }
       };
       Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
-      renderFrame(_.frame);
+      renderFrame(_, _chunkSummary, _distributionSummary, _.frame);
       lodash.defer(_go);
       return {
         key: _.frame.frame_id.name,
