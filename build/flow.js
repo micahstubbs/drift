@@ -766,6 +766,17 @@
       });
     }
 
+    function renderFrame(_) {
+      const gridPlotFunction = _.plot(g => g(g.select(), g.from(_.inspect('columns', _.frame))));
+      renderGrid(_, gridPlotFunction);
+
+      const chunkSummaryPlotFunction = _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', _.frame))));
+      renderPlot(_.chunkSummary, chunkSummaryPlotFunction);
+
+      const distributionSummaryPlotFunction = _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', _.frame))));
+      renderPlot(_.distributionSummary, distributionSummaryPlotFunction);
+    }
+
     const flowPrelude$8 = flowPreludeFunction();
 
     function createModel(_) {
@@ -842,18 +853,13 @@
       let _lastUsedSearchTerm;
       const MaxItemsPerPage = 20;
       _.grid = Flow.Dataflow.signal(null);
-      const _chunkSummary = Flow.Dataflow.signal(null);
-      const _distributionSummary = Flow.Dataflow.signal(null);
+      _.chunkSummary = Flow.Dataflow.signal(null);
+      _.distributionSummary = Flow.Dataflow.signal(null);
       const _columnNameSearchTerm = Flow.Dataflow.signal(null);
       const _currentPage = Flow.Dataflow.signal(0);
       const _maxPages = Flow.Dataflow.signal(Math.ceil(_.frame.total_column_count / MaxItemsPerPage));
       const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
       const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-      const renderFrame = frame => {
-        renderGrid(_, _.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
-        renderPlot(_chunkSummary, _.plot(g => g(g.select(), g.from(_.inspect('Chunk compression summary', frame)))));
-        return renderPlot(_distributionSummary, _.plot(g => g(g.select(), g.from(_.inspect('Frame distribution summary', frame)))));
-      };
       _lastUsedSearchTerm = null;
       const refreshColumns = pageIndex => {
         const searchTerm = _columnNameSearchTerm();
@@ -862,14 +868,14 @@
         }
         const startIndex = pageIndex * MaxItemsPerPage;
         const itemCount = startIndex + MaxItemsPerPage < _.frame.total_column_count ? MaxItemsPerPage : _.frame.total_column_count - startIndex;
-        return _.requestFrameSummarySliceE(_, _.frame.frame_id.name, searchTerm, startIndex, itemCount, (error, frame) => {
+        return _.requestFrameSummarySliceE(_, _.frame.frame_id.name, searchTerm, startIndex, itemCount, error => {
           if (error) {
             // empty
             // TODO
           } else {
             _lastUsedSearchTerm = searchTerm;
             _currentPage(pageIndex);
-            return renderFrame(frame);
+            return renderFrame(_);
           }
         });
       };
@@ -886,15 +892,15 @@
         }
       };
       Flow.Dataflow.react(_columnNameSearchTerm, lodash.throttle(refreshColumns, 500));
-      renderFrame(_.frame);
+      renderFrame(_);
       lodash.defer(_go);
       return {
         key: _.frame.frame_id.name,
         rowCount: _.frame.rows,
         columnCount: _.frame.total_column_count,
         size: formatBytes(_.frame.byte_size),
-        chunkSummary: _chunkSummary,
-        distributionSummary: _distributionSummary,
+        chunkSummary: _.chunkSummary,
+        distributionSummary: _.distributionSummary,
         columnNameSearchTerm: _columnNameSearchTerm,
         grid: _.grid,
         inspect: inspect.bind(this, _),
