@@ -9,7 +9,6 @@ import { inspect_ } from './inspect_';
 import { flow_ } from './flow_';
 import { ls } from './ls';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
-import { inspectObject } from './inspectObject';
 import { proceed } from './proceed';
 import { gui } from './gui';
 import { _assistance } from './_assistance';
@@ -33,7 +32,6 @@ import { requestImportAndParseFiles } from './requestImportAndParseFiles';
 import { requestParseFiles } from './requestParseFiles';
 import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
-import { inspectModelParameters } from './inspectModelParameters';
 import { requestParseSetup } from './requestParseSetup';
 import { requestCancelJob } from './requestCancelJob';
 import { requestPartialDependence } from './requestPartialDependence';
@@ -82,13 +80,11 @@ import { h2oExportFrameInput } from '../h2oExportFrameInput';
 import { h2oImportModelInput } from '../h2oImportModelInput';
 import { h2oExportModelInput } from '../h2oExportModelInput';
 import { h2oNoAssist } from '../h2oNoAssist';
-import { h2oModelOutput } from '../h2oModelOutput/h2oModelOutput';
 import { h2oDataFrameOutput } from '../h2oDataFrameOutput';
 import { h2oModelInput } from '../h2oModelInput/h2oModelInput';
 import { h2oImputeInput } from '../h2oImputeInput/h2oImputeInput';
 
 import { getGridRequest } from '../h2oProxy/getGridRequest';
-import { getModelRequest } from '../h2oProxy/getModelRequest';
 import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
 import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
@@ -132,42 +128,6 @@ export function routines() {
         go,
       ].concat(args));
       return raw;
-    };
-    const extendModel = (model) => {
-      lodash.extend = model => {
-        let table;
-        let tableName;
-        let _i;
-        let _len;
-        let _ref1;
-        const inspections = {};
-        inspections.parameters = inspectModelParameters(model);
-        const origin = `getModel ${flowPrelude.stringify(model.model_id.name)}`;
-        inspectObject(inspections, 'output', origin, model.output);
-
-        // Obviously, an array of 2d tables calls for a megahack.
-        if (model.__meta.schema_type === 'NaiveBayesModel') {
-          if (lodash.isArray(model.output.pcond)) {
-            _ref1 = model.output.pcond;
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              table = _ref1[_i];
-              tableName = `output - pcond - ${table.name}`;
-              inspections[tableName] = inspectTwoDimTable_(origin, tableName, table);
-            }
-          }
-        }
-        inspect_(model, inspections);
-        return model;
-      };
-      const refresh = go => getModelRequest(_, model.model_id.name, (error, model) => {
-        if (error) {
-          return go(error);
-        }
-        return go(null, lodash.extend(model));
-      });
-      lodash.extend(model);
-      _.model = model;
-      return render_(model, h2oModelOutput, refresh);
     };
     const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
     const createPlot = (f, go) => {
