@@ -3,6 +3,7 @@
 import renderPlot from './renderPlot';
 import renderGrid from './renderGrid';
 import createModel from './createModel';
+import inspect from './inspect';
 
 import { formatBytes } from '../utils/formatBytes';
 
@@ -23,7 +24,6 @@ export function h2oFrameOutput(_, _go, _frame) {
   const _maxPages = Flow.Dataflow.signal(Math.ceil(_.frame.total_column_count / MaxItemsPerPage));
   const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
   const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-  const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(_.frame.frame_id.name)}`);
   const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${flowPrelude.stringify(_.frame.frame_id.name)}`);
   const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${flowPrelude.stringify(_.frame.frame_id.name)}`);
   const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(_.frame.frame_id.name)}`);
@@ -85,7 +85,7 @@ export function h2oFrameOutput(_, _go, _frame) {
     distributionSummary: _distributionSummary,
     columnNameSearchTerm: _columnNameSearchTerm,
     grid: _.grid,
-    inspect,
+    inspect: inspect.bind(this, _),
     createModel: createModel.bind(this, _),
     inspectData,
     splitFrame,
