@@ -2,6 +2,7 @@
 
 import renderPlot from './renderPlot';
 import renderGrid from './renderGrid';
+import createModel from './createModel';
 
 import { formatBytes } from '../utils/formatBytes';
 
@@ -22,7 +23,6 @@ export function h2oFrameOutput(_, _go, _frame) {
   const _maxPages = Flow.Dataflow.signal(Math.ceil(_.frame.total_column_count / MaxItemsPerPage));
   const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
   const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-  const createModel = () => _.insertAndExecuteCell('cs', `assist buildModel, null, training_.frame: ${flowPrelude.stringify(_.frame.frame_id.name)}`);
   const inspect = () => _.insertAndExecuteCell('cs', `inspect getFrameSummary ${flowPrelude.stringify(_.frame.frame_id.name)}`);
   const inspectData = () => _.insertAndExecuteCell('cs', `getFrameData ${flowPrelude.stringify(_.frame.frame_id.name)}`);
   const splitFrame = () => _.insertAndExecuteCell('cs', `assist splitFrame, ${flowPrelude.stringify(_.frame.frame_id.name)}`);
@@ -86,7 +86,7 @@ export function h2oFrameOutput(_, _go, _frame) {
     columnNameSearchTerm: _columnNameSearchTerm,
     grid: _.grid,
     inspect,
-    createModel,
+    createModel: createModel.bind(this, _),
     inspectData,
     splitFrame,
     predict,
