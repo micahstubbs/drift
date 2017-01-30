@@ -10,11 +10,9 @@ import splitFrame from './splitFrame';
 import predict from './predict';
 import download from './download';
 import exportFrame from './exportFrame';
+import deleteFrame from './deleteFrame';
 
 import { formatBytes } from '../utils/formatBytes';
-
-import { flowPreludeFunction } from '../flowPreludeFunction';
-const flowPrelude = flowPreludeFunction();
 
 export function h2oFrameOutput(_, _go, _frame) {
   const lodash = window._;
@@ -30,15 +28,6 @@ export function h2oFrameOutput(_, _go, _frame) {
   const _maxPages = Flow.Dataflow.signal(Math.ceil(_.frame.total_column_count / MaxItemsPerPage));
   const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
   const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-
-  const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
-    acceptCaption: 'Delete Frame',
-    declineCaption: 'Cancel',
-  }, accept => {
-    if (accept) {
-      return _.insertAndExecuteCell('cs', `deleteFrame ${flowPrelude.stringify(_.frame.frame_id.name)}`);
-    }
-  });
 
   const renderFrame = frame => {
     renderGrid(_, _.plot(g => g(g.select(), g.from(_.inspect('columns', frame)))));
@@ -99,7 +88,7 @@ export function h2oFrameOutput(_, _go, _frame) {
     canGoToNextPage: _canGoToNextPage,
     goToPreviousPage,
     goToNextPage,
-    deleteFrame,
+    deleteFrame: deleteFrame.bind(this, _),
     template: 'flow-frame-output',
   };
 }

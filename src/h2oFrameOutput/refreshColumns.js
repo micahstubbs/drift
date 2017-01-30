@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import renderFrame from './renderFrame';
 
 export default function refreshColumns(_, pageIndex) {
