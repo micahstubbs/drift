@@ -5288,12 +5288,12 @@
       renderGainsLiftPlots(_);
       renderTables(_);
 
-      const downloadSVG = (() => {
-        const e = document.createElement('script');
-        e.setAttribute('src', 'svg-crowbar.js');
-        e.setAttribute('class', 'svg-crowbar');
-        document.body.appendChild(e);
-      })();
+      // const downloadSVG = (() => { 
+      //   const e = document.createElement('script'); 
+      //   e.setAttribute('src', 'svg-crowbar.js');
+      //   e.setAttribute('class', 'svg-crowbar'); 
+      //   document.body.appendChild(e); 
+      // })();
 
       return {
         key: _.model.model_id,
@@ -5308,11 +5308,11 @@
         previewPojo: previewPojo.bind(this, _),
         downloadPojo: downloadPojo.bind(this, _),
         downloadMojo: downloadMojo.bind(this, _),
+        // downloadSVG,
         pojoPreview: _.pojoPreview,
         isPojoLoaded: _isPojoLoaded,
         exportModel: exportModel.bind(this, _),
-        deleteModel: deleteModel.bind(this, _),
-        downloadSVG
+        deleteModel: deleteModel.bind(this, _)
       };
     }
 
@@ -5345,9 +5345,17 @@
         }
       });
       _.output(createOutput(_));
+      const downloadSVG = () => {
+        console.log('downloadSVG from h2oModelOutput was called');
+        const e = document.createElement('script');
+        e.setAttribute('src', 'svg-crowbar.js');
+        e.setAttribute('class', 'svg-crowbar');
+        document.body.appendChild(e);
+      };
       lodash.defer(_go);
       return {
         output: _.output,
+        downloadSVG,
         toggleRefresh: _toggleRefresh.bind(this, _),
         isLive: _.isLive,
         template: 'flow-model-output'
@@ -5501,15 +5509,15 @@
     function h2oPlotOutput(_, _go, _plot) {
       const lodash = window._;
       lodash.defer(_go);
-      const downloadSVG = (() => {
-        const e = document.createElement('script');
-        e.setAttribute('src', 'svg-crowbar.js');
-        e.setAttribute('class', 'svg-crowbar');
-        document.body.appendChild(e);
-      })();
+      // const downloadSVG = (() => { 
+      //   const e = document.createElement('script'); 
+      //   e.setAttribute('src', 'svg-crowbar.js');
+      //   e.setAttribute('class', 'svg-crowbar'); 
+      //   document.body.appendChild(e); 
+      // })();
       return {
         plot: _plot,
-        downloadSVG,
+        // downloadSVG,
         template: 'flow-plot-output'
       };
     }

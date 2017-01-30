@@ -15,9 +15,17 @@ export function h2oModelOutput(_, _go, refresh) {
     }
   });
   _.output(createOutput(_));
+  const downloadSVG = () => {
+    console.log('downloadSVG from h2oModelOutput was called');
+    const e = document.createElement('script'); 
+    e.setAttribute('src', 'svg-crowbar.js');
+    e.setAttribute('class', 'svg-crowbar'); 
+    document.body.appendChild(e); 
+  };
   lodash.defer(_go);
   return {
     output: _.output,
+    downloadSVG,
     toggleRefresh: _toggleRefresh.bind(this, _),
     isLive: _.isLive,
     template: 'flow-model-output',

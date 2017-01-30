@@ -111,12 +111,12 @@ export default function createOutput(_) {
   renderGainsLiftPlots(_);
   renderTables(_);
 
-  const downloadSVG = (() => { 
-    const e = document.createElement('script'); 
-    e.setAttribute('src', 'svg-crowbar.js');
-    e.setAttribute('class', 'svg-crowbar'); 
-    document.body.appendChild(e); 
-  })();
+  // const downloadSVG = (() => { 
+  //   const e = document.createElement('script'); 
+  //   e.setAttribute('src', 'svg-crowbar.js');
+  //   e.setAttribute('class', 'svg-crowbar'); 
+  //   document.body.appendChild(e); 
+  // })();
 
   return {
     key: _.model.model_id,
@@ -131,10 +131,10 @@ export default function createOutput(_) {
     previewPojo: previewPojo.bind(this, _),
     downloadPojo: downloadPojo.bind(this, _),
     downloadMojo: downloadMojo.bind(this, _),
+    // downloadSVG,
     pojoPreview: _.pojoPreview,
     isPojoLoaded: _isPojoLoaded,
     exportModel: exportModel.bind(this, _),
-    deleteModel: deleteModel.bind(this, _),
-    downloadSVG
+    deleteModel: deleteModel.bind(this, _)
   };
 }
