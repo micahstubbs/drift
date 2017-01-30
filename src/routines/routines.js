@@ -1,8 +1,5 @@
-import { getTwoDimData } from './getTwoDimData';
-import { format6fi } from './format6fi';
-import { createArrays } from './createArrays';
-import { parseAndFormatArray } from './parseAndFormatArray';
-import { parseAndFormatObjectArray } from './parseAndFormatObjectArray';
+/* eslint no-unused-vars: "error"*/
+
 import { _fork } from './_fork';
 import { _join } from './_join';
 import { _call } from './_call';
@@ -10,24 +7,12 @@ import { _apply } from './_apply';
 import { _plot } from './_plot';
 import { inspect_ } from './inspect_';
 import { flow_ } from './flow_';
-import { render_ } from './render_';
 import { ls } from './ls';
-import { transformBinomialMetrics } from './transformBinomialMetrics';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
-import { getModelParameterValue } from './getModelParameterValue';
-import { inspectRawObject_ } from './inspectRawObject_';
-import { inspectRawArray_ } from './inspectRawArray_';
-import { inspectObjectArray_ } from './inspectObjectArray_';
 import { inspectObject } from './inspectObject';
 import { proceed } from './proceed';
 import { gui } from './gui';
 import { _assistance } from './_assistance';
-import { extendJobs } from './extendJobs';
-import { extendFrameSummary } from './extendFrameSummary';
-import { read } from './read';
-import { extendPrediction } from './extendPrediction';
-import { inspectFrameColumns } from './inspectFrameColumns';
-import { inspectFrameData } from './inspectFrameData';
 import { requestFrame } from './requestFrame';
 import { requestFrameData } from './requestFrameData';
 import { requestColumnSummary } from './requestColumnSummary';
@@ -48,7 +33,6 @@ import { requestImportAndParseFiles } from './requestImportAndParseFiles';
 import { requestParseFiles } from './requestParseFiles';
 import { requestModelBuild } from './requestModelBuild';
 import { requestPredict } from './requestPredict';
-import { unwrapPrediction } from './unwrapPrediction';
 import { inspectModelParameters } from './inspectModelParameters';
 import { requestParseSetup } from './requestParseSetup';
 import { requestCancelJob } from './requestCancelJob';
@@ -79,12 +63,9 @@ import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
 import { h2oPlotOutput } from '../h2oPlotOutput';
 import { h2oPlotInput } from '../h2oPlotInput';
-import { h2oCloudOutput } from '../h2oCloudOutput';
-import { h2oPartialDependenceOutput } from '../h2oPartialDependenceOutput';
 import { h2oGridOutput } from '../h2oGridOutput';
 import { h2oPredictsOutput } from '../h2oPredictsOutput';
 import { h2oH2OFrameOutput } from '../h2oH2OFrameOutput';
-import { h2oFrameOutput } from '../h2oFrameOutput';
 import { h2oRDDsOutput } from '../h2oRDDsOutput';
 import { h2oDataFramesOutput } from '../h2oDataFramesOutput';
 import { h2oScalaCodeOutput } from '../h2oScalaCodeOutput';
@@ -108,9 +89,7 @@ import { h2oImputeInput } from '../h2oImputeInput/h2oImputeInput';
 
 import { getGridRequest } from '../h2oProxy/getGridRequest';
 import { getModelRequest } from '../h2oProxy/getModelRequest';
-import { getPredictionRequest } from '../h2oProxy/getPredictionRequest';
 import { getPredictionsRequest } from '../h2oProxy/getPredictionsRequest';
-import { getTimelineRequest } from '../h2oProxy/getTimelineRequest';
 import { getRDDsRequest } from '../h2oProxy/getRDDsRequest';
 import { getDataFramesRequest } from '../h2oProxy/getDataFramesRequest';
 import { postScalaIntpRequest } from '../h2oProxy/postScalaIntpRequest';
@@ -118,7 +97,6 @@ import { postScalaCodeRequest } from '../h2oProxy/postScalaCodeRequest';
 import { postAsH2OFrameFromRDDRequest } from '../h2oProxy/postAsH2OFrameFromRDDRequest';
 import { postAsH2OFrameFromDFRequest } from '../h2oProxy/postAsH2OFrameFromDFRequest';
 import { postAsDataFrameRequest } from '../h2oProxy/postAsDataFrameRequest';
-import { postPredictRequest } from '../h2oProxy/postPredictRequest';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -134,19 +112,12 @@ export function routines() {
     lightning.settings.axisLabelFont = '11px "Source Code Pro", monospace';
     lightning.settings.axisTitleFont = 'bold 11px "Source Code Pro", monospace';
   }
-  const createVector = lightning.createVector;
-  const createFactor = lightning.createFactor;
-  const createList = lightning.createList;
-  const createDataframe = lightning.createFrame;
   H2O.Routines = _ => {
     let attrname;
     let f;
-    let name;
     let routinesOnSw;
 
     // TODO move these into Flow.Async
-    let _ref;
-    let _schemaHacks;
     const _isFuture = Flow.Async.isFuture;
     const _async = Flow.Async.async;
     const _get = Flow.Async.get;
