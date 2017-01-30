@@ -6,6 +6,7 @@ import createModel from './createModel';
 import inspect from './inspect';
 import inspectData from './inspectData';
 import splitFrame from './splitFrame';
+import predict from './predict';
 
 import { formatBytes } from '../utils/formatBytes';
 
@@ -26,7 +27,6 @@ export function h2oFrameOutput(_, _go, _frame) {
   const _maxPages = Flow.Dataflow.signal(Math.ceil(_.frame.total_column_count / MaxItemsPerPage));
   const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
   const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-  const predict = () => _.insertAndExecuteCell('cs', `predict frame: ${flowPrelude.stringify(_.frame.frame_id.name)}`);
   const download = () => window.open(`${window.Flow.ContextPath}${(`3/DownloadDataset?frame_id=${encodeURIComponent(_.frame.frame_id.name)}`)}`, '_blank');
   const exportFrame = () => _.insertAndExecuteCell('cs', `exportFrame ${flowPrelude.stringify(_.frame.frame_id.name)}`);
   const deleteFrame = () => _.confirm('Are you sure you want to delete this frame?', {
@@ -89,7 +89,7 @@ export function h2oFrameOutput(_, _go, _frame) {
     createModel: createModel.bind(this, _),
     inspectData: inspectData.bind(this, _),
     splitFrame: splitFrame.bind(this, _),
-    predict,
+    predict: predict.bind(this, _),
     download,
     exportFrame,
     canGoToPreviousPage: _canGoToPreviousPage,
