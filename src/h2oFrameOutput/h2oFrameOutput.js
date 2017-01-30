@@ -1,6 +1,6 @@
-import { formatBytes } from './utils/formatBytes';
+import { formatBytes } from '../utils/formatBytes';
 
-import { flowPreludeFunction } from './flowPreludeFunction';
+import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oFrameOutput(_, _go, _frame) {
