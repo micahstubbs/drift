@@ -27,6 +27,10 @@ export function h2oFrameOutput(_, _go, _frame) {
   const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
   const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
   _lastUsedSearchTerm = null;
+
+  // some messy state here
+  // attempting to abstract this out produces an error
+  // defer for now
   const refreshColumns = pageIndex => {
     const searchTerm = _columnNameSearchTerm();
     if (searchTerm !== _lastUsedSearchTerm) {
