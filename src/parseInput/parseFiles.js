@@ -1,4 +1,22 @@
-export function parseFiles(_columns, _headerOptions, _headerOption) {
+import { flowPreludeFunction } from '../flowPreludeFunction';
+const flowPrelude = flowPreludeFunction();
+
+export function parseFiles(
+  _,
+  _columns,
+  _headerOptions,
+  _headerOption,
+  _inputKey,
+  _inputs,
+  _destinationKey,
+  _parseType,
+  _delimiter,
+  _columnCount,
+  _useSingleQuotes,
+  _canReconfigure,
+  _deleteOnDone,
+  _chunkSize
+) {
   const lodash = window._;
   let column;
   let columnNames;
@@ -30,5 +48,6 @@ export function parseFiles(_columns, _headerOptions, _headerOption) {
     }
     return _results;
   })();
-      return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
+  const codeCellCode = 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize(); // eslint-disable-line prefer-template
+  return _.insertAndExecuteCell('cs', codeCellCode);
 }
