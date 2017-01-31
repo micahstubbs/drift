@@ -3,7 +3,7 @@ import { inspect_ } from './inspect_';
 import { inspectTwoDimTable_ } from './inspectTwoDimTable_';
 import { inspectFrameColumns } from './inspectFrameColumns';
 
-import { h2oFrameOutput } from '../h2oFrameOutput';
+import { h2oFrameOutput } from '../h2oFrameOutput/h2oFrameOutput';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
