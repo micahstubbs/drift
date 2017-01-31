@@ -14,6 +14,6 @@ export default function showRoomscaleScatterplot(options) {
   goToH2OUrl(plotUrl)();
   return {
     plotUrl,
-    template: 'flow-roomscale-scatterplot-output'
+    template: 'flow-roomscale-scatterplot-output',
   };
 }
