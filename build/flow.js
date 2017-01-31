@@ -2470,7 +2470,7 @@
 
     const flowPrelude$24 = flowPreludeFunction();
 
-    function parseFiles(_columns, _headerOptions, _headerOption, _inputKey, _inputs) {
+    function parseFiles(_, _columns, _headerOptions, _headerOption, _inputKey, _inputs, _destinationKey, _parseType, _delimiter, _columnCount, _useSingleQuotes, _canReconfigure, _deleteOnDone, _chunkSize) {
       const lodash = window._;
       let column;
       let columnNames;
@@ -2502,7 +2502,8 @@
         }
         return _results;
       })();
-      return _.insertAndExecuteCell('cs', 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude$24.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude$24.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude$24.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude$24.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude$24.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize()); // eslint-disable-line
+      const codeCellCode = 'parseFiles\n  ' + _inputKey + ': ' + flowPrelude$24.stringify(_inputs[_inputKey]) + '\n  destination_frame: ' + flowPrelude$24.stringify(_destinationKey()) + '\n  parse_type: ' + flowPrelude$24.stringify(_parseType().type) + '\n  separator: ' + _delimiter().charCode + '\n  number_columns: ' + _columnCount() + '\n  single_quotes: ' + _useSingleQuotes() + '\n  ' + (_canReconfigure() ? 'column_names: ' + flowPrelude$24.stringify(columnNames) + '\n  ' : '') + (_canReconfigure() ? 'column_types: ' + flowPrelude$24.stringify(columnTypes) + '\n  ' : '') + 'delete_on_done: ' + _deleteOnDone() + '\n  check_header: ' + headerOption + '\n  chunk_size: ' + _chunkSize(); // eslint-disable-line prefer-template
+      return _.insertAndExecuteCell('cs', codeCellCode);
     }
 
     function _columnsAccessorFunction(preview) {
@@ -2601,7 +2602,7 @@
       });
       Flow.Dataflow.react(_parseType, _delimiter, _useSingleQuotes, _headerOption, () => {
         _currentPage = 0;
-        return refreshPreview(_, _columns, _sourceKeys, _parseType, _delimiter, _useSingleQuotes, _headerOptions, _headerOption, _preview);
+        return refreshPreview(_, _columns, _sourceKeys, _parseType, _delimiter, _useSingleQuotes, _headerOptions, _headerOption, _preview, _delimiter);
       });
       const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
       const _activePage = Flow.Dataflow.lift(_columns, columns => makePage(_currentPage, columns));
@@ -2626,7 +2627,7 @@
         headerOption: _headerOption,
         deleteOnDone: _deleteOnDone,
         columns: _visibleColumns,
-        parseFiles: parseFiles.bind(this, _columns, _headerOptions, _headerOption, _inputKey, _inputs),
+        parseFiles: parseFiles.bind(this, _, _columns, _headerOptions, _headerOption, _inputKey, _inputs, _destinationKey, _parseType, _delimiter, _columnCount, _useSingleQuotes, _canReconfigure, _deleteOnDone, _chunkSize),
         columnNameSearchTerm: _columnNameSearchTerm,
         canGoToNextPage: _canGoToNextPage,
         canGoToPreviousPage: _canGoToPreviousPage,

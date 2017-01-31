@@ -86,7 +86,8 @@ export function h2oSetupParseOutput(_, _go, _inputs, _result) {
         _useSingleQuotes,
         _headerOptions,
         _headerOption,
-        _preview
+        _preview,
+        _delimiter
       );
   });
   const _filteredColumns = Flow.Dataflow.lift(_columns, columns => columns);
@@ -112,7 +113,23 @@ export function h2oSetupParseOutput(_, _go, _inputs, _result) {
     headerOption: _headerOption,
     deleteOnDone: _deleteOnDone,
     columns: _visibleColumns,
-    parseFiles: parseFiles.bind(this, _columns, _headerOptions, _headerOption),
+    parseFiles: parseFiles.bind(
+      this,
+      _,
+      _columns,
+      _headerOptions,
+      _headerOption,
+      _inputKey,
+      _inputs,
+      _destinationKey,
+      _parseType,
+      _delimiter,
+      _columnCount,
+      _useSingleQuotes,
+      _canReconfigure,
+      _deleteOnDone,
+      _chunkSize
+    ),
     columnNameSearchTerm: _columnNameSearchTerm,
     canGoToNextPage: _canGoToNextPage,
     canGoToPreviousPage: _canGoToPreviousPage,
