@@ -2,7 +2,7 @@ import { inspectParametersAcrossModels } from './inspectParametersAcrossModels';
 import { render_ } from './render_';
 import { inspect_ } from './inspect_';
 
-import { h2oModelsOutput } from '../h2oModelsOutput';
+import { h2oModelsOutput } from '../h2oModelsOutput/h2oModelsOutput';
 
 export function extendModels(_, models) {
   const lodash = window._;
