@@ -1,7 +1,10 @@
-import { flowPreludeFunction } from './flowPreludeFunction';
+import predict from './predict';
+
+import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
 
 export function h2oModelsOutput(_, _go, _models) {
+  console.log('h2oModelsOutput was called');
   const lodash = window._;
   const Flow = window.Flow;
   const _modelViews = Flow.Dataflow.signal([]);
@@ -45,7 +48,6 @@ export function h2oModelsOutput(_, _go, _models) {
       })();
       return _checkedModelCount(checkedViews.length);
     });
-    const predict = () => _.insertAndExecuteCell('cs', `predict model: ${flowPrelude.stringify(model.model_id.name)}`);
     const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
     alert('Not implemented');
     const view = () => _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model.model_id.name)}`);
@@ -54,7 +56,7 @@ export function h2oModelsOutput(_, _go, _models) {
       key: model.model_id.name,
       algo: model.algo_full_name,
       isChecked: _isChecked,
-      predict,
+      predict: predict.bind(this, _, model),
       clone: cloneModel,
       inspect,
       view,
