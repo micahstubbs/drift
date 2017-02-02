@@ -2061,7 +2061,8 @@
     const flowPrelude$22 = flowPreludeFunction();
 
     function predict$1(_, model) {
-      return _.insertAndExecuteCell('cs', `predict model: ${ flowPrelude$22.stringify(model.model_id.name) }`);
+      const codeCellCode = `predict model: ${ flowPrelude$22.stringify(model.model_id.name) }`;
+      return _.insertAndExecuteCell('cs', codeCellCode);
     }
 
     const flowPrelude$21 = flowPreludeFunction();
