@@ -1,6 +1,7 @@
 import predict from './predict';
 import compareModels from './compareModels';
 import cloneModel from './cloneModel';
+import view from './view';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -50,7 +51,6 @@ export function h2oModelsOutput(_, _go, _models) {
       })();
       return _checkedModelCount(checkedViews.length);
     });
-    const view = () => _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model.model_id.name)}`);
     const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(model.model_id.name)}`);
     return {
       key: model.model_id.name,
@@ -59,7 +59,7 @@ export function h2oModelsOutput(_, _go, _models) {
       predict: predict.bind(this, _, model),
       clone: cloneModel,
       inspect,
-      view,
+      view: view.bind(this, _, model),
     };
   };
   const buildModel = () => _.insertAndExecuteCell('cs', 'buildModel');
