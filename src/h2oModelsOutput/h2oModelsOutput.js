@@ -1,4 +1,5 @@
 import predict from './predict';
+import compareModels from './compareModels';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -77,7 +78,6 @@ export function h2oModelsOutput(_, _go, _models) {
     }
     return _results;
   };
-  const compareModels = () => _.insertAndExecuteCell('cs', `inspect getModels ${flowPrelude.stringify(collectSelectedKeys())}`);
   const predictUsingModels = () => _.insertAndExecuteCell('cs', `predict models: ${flowPrelude.stringify(collectSelectedKeys())}`);
   const deleteModels = () => _.confirm('Are you sure you want to delete these models?', {
     acceptCaption: 'Delete Models',
@@ -112,7 +112,7 @@ export function h2oModelsOutput(_, _go, _models) {
     modelViews: _modelViews,
     hasModels: _models.length > 0,
     buildModel,
-    compareModels,
+    compareModels: compareModels.bind(this, _, collectSelectedKeys),
     predictUsingModels,
     deleteModels,
     checkedModelCount: _checkedModelCount,
