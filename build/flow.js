@@ -2072,6 +2072,12 @@
       return _.insertAndExecuteCell('cs', codeCellCode);
     }
 
+    function cloneModel() {
+      // const codeCellCode = `cloneModel ${flowPrelude.stringify(model.model_id.name)}`;
+      // return _.insertAndExecuteCell('cs', codeCellCode);
+      alert('Not implemented');
+    }
+
     const flowPrelude$21 = flowPreludeFunction();
 
     function h2oModelsOutput(_, _go, _models) {
@@ -2119,8 +2125,6 @@
           })();
           return _checkedModelCount(checkedViews.length);
         });
-        const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
-        alert('Not implemented');
         const view = () => _.insertAndExecuteCell('cs', `getModel ${ flowPrelude$21.stringify(model.model_id.name) }`);
         const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${ flowPrelude$21.stringify(model.model_id.name) }`);
         return {
@@ -4453,7 +4457,7 @@
       return _.modelOutputIsExpanded(!_.modelOutputIsExpanded());
     }
 
-    function cloneModel() {
+    function cloneModel$1() {
       return alert('Not implemented');
     }
 
@@ -5247,7 +5251,7 @@
         inputParameters: _inputParameters,
         isExpanded: _.modelOutputIsExpanded,
         toggle: toggle.bind(this, _),
-        cloneModel,
+        cloneModel: cloneModel$1,
         predict: predict$2.bind(this, _),
         inspect: inspect$1.bind(this, _),
         previewPojo: previewPojo.bind(this, _),

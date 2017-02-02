@@ -1,5 +1,6 @@
 import predict from './predict';
 import compareModels from './compareModels';
+import cloneModel from './cloneModel';
 
 import { flowPreludeFunction } from '../flowPreludeFunction';
 const flowPrelude = flowPreludeFunction();
@@ -49,8 +50,6 @@ export function h2oModelsOutput(_, _go, _models) {
       })();
       return _checkedModelCount(checkedViews.length);
     });
-    const cloneModel = () => // return _.insertAndExecuteCell('cs', `cloneModel ${flowPrelude.stringify(model.model_id.name)}`);
-    alert('Not implemented');
     const view = () => _.insertAndExecuteCell('cs', `getModel ${flowPrelude.stringify(model.model_id.name)}`);
     const inspect = () => _.insertAndExecuteCell('cs', `inspect getModel ${flowPrelude.stringify(model.model_id.name)}`);
     return {
