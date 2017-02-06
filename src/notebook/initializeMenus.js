@@ -79,6 +79,9 @@ export default function initializeMenus(_, menuCell, builder) {
           // TODO Gains/Lift Table
           // TODO Multi-model Scoring
     ]),
+    createMenu('Plot', [
+      createMenuItem('Partial Dependence Plots...', executeCommand(_, 'buildPartialDependence')),
+    ]),
     createMenu('Admin', [
       createMenuItem('Jobs', executeCommand(_, 'getJobs')),
       createMenuItem('Cluster Status', executeCommand(_, 'getCloud')),
