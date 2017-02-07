@@ -5,7 +5,7 @@
   "main": "build/flow.js",
   "scripts": {
     "prepublish": "rm -rf build && mkdir build && rollup -c -- src/index.js",
-    "build": "rm -rf build && mkdir build && rollup -c  -- src/index.js && cp build/flow.js ../h2o-3/h2o-web/src/main/resources/www/flow/js/flow.js",
+    "build": "rm -rf build && mkdir build && rollup -c  -- src/index.js && cp build/flow.js ../h2o-3/h2o-web/src/main/resources/www/flow/js/flow.js && cp build/flow.js ../h2o-3/h2o-web/lib/h2o-flow/build/js/flow.js",
     "lint": "eslint index.js src --fix"
   },
   "repository": {
