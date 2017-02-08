@@ -56,6 +56,8 @@ import { requestPrediction } from './requestPrediction';
 import { requestFrameSummarySlice } from './requestFrameSummarySlice';
 import { requestFrameSummary } from './requestFrameSummary';
 import { getJobs } from './getJobs';
+import roomscaleScatterplotInput from '../roomscaleScatterplotInput';
+import showRoomscaleScatterplot from '../showRoomscaleScatterplot';
 
 import { h2oInspectsOutput } from '../h2oInspectsOutput';
 import { h2oInspectOutput } from '../h2oInspectOutput';
@@ -293,6 +295,12 @@ export function routines() {
         return _fork(requestPartialDependenceData, _, destinationKey);
       }
       return assist(getPartialDependence);
+    };
+   const buildRoomscaleScatterplot = options => {
+      if (options) {
+        return _fork(showRoomscaleScatterplot, _, options);
+      }
+      return assist(buildRoomscaleScatterplot);
     };
     // depends on `assist`
     const getFrame = frameKey => {
@@ -844,6 +852,8 @@ export function routines() {
           return _fork(proceed, _, h2oImportModelInput, args);
         case exportModel:
           return _fork(proceed, _, h2oExportModelInput, args);
+        case buildRoomscaleScatterplot:
+          return _fork(proceed, _, roomscaleScatterplotInput, args);
         default:
           return _fork(proceed, _, h2oNoAssist, []);
       }
@@ -924,6 +934,8 @@ export function routines() {
       splitFrame,
       mergeFrames,
       buildPartialDependence,
+      buildRoomscaleScatterplot,
+      showRoomscaleScatterplot,
       getPartialDependence,
       getFrames,
       getFrame,

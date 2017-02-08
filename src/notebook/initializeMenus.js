@@ -81,6 +81,7 @@ export default function initializeMenus(_, menuCell, builder) {
     ]),
     createMenu('Plot', [
       createMenuItem('Partial Dependence Plots...', executeCommand(_, 'buildPartialDependence')),
+      createMenuItem('Roomscale Scatterplot...', executeCommand(_, 'buildRoomscaleScatterplot')),
     ]),
     createMenu('Admin', [
       createMenuItem('Jobs', executeCommand(_, 'getJobs')),
