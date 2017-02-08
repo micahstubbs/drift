@@ -8,7 +8,6 @@ follow the [dev guide](https://github.com/h2oai/h2o-flow/blob/master/README.md#d
 
 in the same directory as [h2o-3](https://github.com/h2oai/h2o-3) and [h2o-flow](https://github.com/h2oai/h2o-flow):  
 `git clone git@github.com:micahstubbs/drift.git`  
-
 `cd drift`  
 `npm install`  
 
