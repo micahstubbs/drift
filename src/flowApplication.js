@@ -5,6 +5,9 @@ import { flowGrowl } from './flowGrowl';
 import { flowAutosave } from './flowAutosave';
 import { flowRenderers } from './notebook/flowRenderers';
 import flowNotebook from './notebook/flowNotebook';
+import { requestPack } from './h2oProxy/requestPack';
+import { requestFlow } from './h2oProxy/requestFlow';
+import { requestRemoveAll } from './routines/requestRemoveAll';
 
 export function flowApplication(_, routines) {
   const Flow = window.Flow;
@@ -17,6 +20,9 @@ export function flowApplication(_, routines) {
   flowGrowl(_);
   flowAutosave(_);
   const _notebook = flowNotebook(_);
+  _.requestPack = requestPack;
+  _.requestFlow = requestFlow;
+  _.requestRemoveAll = requestRemoveAll;
   return {
     context: _,
     sandbox: _sandbox,

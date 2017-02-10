@@ -13798,6 +13798,9 @@
       flowGrowl(_);
       flowAutosave(_);
       const _notebook = flowNotebook(_);
+      _.requestPack = requestPack;
+      _.requestFlow = requestFlow;
+      _.requestRemoveAll = requestRemoveAll;
       return {
         context: _,
         sandbox: _sandbox,
