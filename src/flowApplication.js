@@ -1,6 +1,6 @@
 import { flowApplicationContext } from './flowApplicationContext';
 import { flowSandbox } from './flowSandbox';
-import { flowAnalytics } from './flowAnalytics';
+// import { flowAnalytics } from './flowAnalytics';
 import { flowGrowl } from './flowGrowl';
 import { flowAutosave } from './flowAutosave';
 import { flowRenderers } from './notebook/flowRenderers';
@@ -13,7 +13,7 @@ export function flowApplication(_, routines) {
   // TODO support external renderers
   _.renderers = flowRenderers(_, _sandbox);
   console.log('_.renderers from flowApplication', _.renderers);
-  flowAnalytics(_);
+  // flowAnalytics(_);
   flowGrowl(_);
   flowAutosave(_);
   const _notebook = flowNotebook(_);
