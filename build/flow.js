@@ -11760,6 +11760,27 @@
       };
     }
 
+    function postEchoRequest(_, message, go) {
+      return doPost(_, '/3/LogAndEcho', { message }, go);
+    }
+
+    function flowAnalytics(_) {
+      const lodash = window._;
+      const Flow = window.Flow;
+      if (typeof window.ga !== 'undefined') {
+        Flow.Dataflow.link(_.trackEvent, (category, action, label, value) => lodash.defer(() => window.ga('send', 'event', category, action, label, value)));
+        return Flow.Dataflow.link(_.trackException, description => lodash.defer(() => {
+          postEchoRequest(_, `FLOW: ${ description }`, () => {});
+          return window.ga('send', 'exception', {
+            exDescription: description,
+            exFatal: false,
+            appName: 'Flow',
+            appVersion: Flow.Version
+          });
+        }));
+      }
+    }
+
     function flowGrowl(_) {
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -13794,7 +13815,7 @@
       // TODO support external renderers
       _.renderers = flowRenderers(_, _sandbox);
       console.log('_.renderers from flowApplication', _.renderers);
-      // flowAnalytics(_);
+      flowAnalytics(_);
       flowGrowl(_);
       flowAutosave(_);
       const _notebook = flowNotebook(_);
