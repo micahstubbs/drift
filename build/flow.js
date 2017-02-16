@@ -12548,6 +12548,7 @@
             return _result(result);
           },
           error(error) {
+            console.log('error from flowCell() execute() render() error()', error);
             _hasError(true);
             if (error.name === 'FlowError') {
               // XXX review
