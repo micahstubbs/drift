@@ -12607,9 +12607,7 @@
         scrollIntoView(immediate) {
           return _actions.scrollIntoView(immediate);
         },
-        templateOf(view) {
-          return view.template;
-        },
+        templateOf,
         template: 'flow-cell'
       };
       return self;
