@@ -12481,6 +12481,10 @@
       return _result(result);
     }
 
+    function dataFunction(_outputs, result) {
+      return _outputs.push(result);
+    }
+
     function flowCell(_, type, input) {
       console.log('arguments from flowCell', arguments);
       const lodash = window._;
@@ -12590,9 +12594,7 @@
           input = `runScalaCode ${ _.scalaIntpId() }, \'${ input }\'`;
         }
         render(input, {
-          data(result) {
-            return _outputs.push(result);
-          },
+          data: dataFunction.bind(this, _outputs),
           close: closeFunction.bind(this, _result),
           error: errorFunction.bind(this, _, _hasError, _outputs, _errors),
           end: endFunction.bind(this, _hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go)

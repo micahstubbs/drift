@@ -7,6 +7,7 @@ import getCursorPosition from './getCursorPosition';
 import endFunction from './endFunction';
 import errorFunction from './errorFunction';
 import closeFunction from './closeFunction';
+import dataFunction from './dataFunction';
 
 export function flowCell(_, type, input) {
   console.log('arguments from flowCell', arguments);
@@ -119,13 +120,8 @@ export function flowCell(_, type, input) {
     render(
       input,
       {
-        data(result) {
-          return _outputs.push(result);
-        },
-        close: closeFunction.bind(
-          this,
-          _result
-        ),
+        data: dataFunction.bind(this, _outputs),
+        close: closeFunction.bind(this, _result),
         error: errorFunction.bind(
           this,
           _,
