@@ -12534,6 +12534,10 @@
       return _isOutputHidden(!_isOutputHidden());
     }
 
+    function toggleInput(_isInputVisible) {
+      return _isInputVisible(!_isInputVisible());
+    }
+
     function flowCell(_, type, input) {
       console.log('arguments from flowCell', arguments);
       const lodash = window._;
@@ -12607,7 +12611,6 @@
       // TODO
       const activate = () => _isActive(true);
       const clip = () => _.saveClip('user', _type(), _input());
-      const toggleInput = () => _isInputVisible(!_isInputVisible());
       const self = {
         guid: _guid,
         type: _type,
@@ -12624,7 +12627,7 @@
         result: _result,
         hasOutput: _hasOutput,
         isInputVisible: _isInputVisible,
-        toggleInput,
+        toggleInput: toggleInput.bind(this, _isInputVisible),
         isOutputHidden: _isOutputHidden,
         toggleOutput: toggleOutput.bind(this, _isOutputHidden),
         select,
@@ -13514,7 +13517,7 @@
         return requestModelBuilders(_, (error, builders) => _.menus(initializeMenus(_, menuCell, error ? [] : builders)));
     }
 
-    function toggleInput(_) {
+    function toggleInput$1(_) {
       return _.selectedCell.toggleInput();
     }
 
@@ -13539,7 +13542,7 @@
       // TODO createMenuItem('Split Cell', splitCell),
       // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
       // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
-      menuDivider, createMenuItem('Toggle Cell Input', toggleInput.bind(this, _)), createMenuItem('Toggle Cell Output', toggleOutput$1.bind(this, _), ['o']), createMenuItem('Clear Cell Output', clearCell.bind(this, _))];
+      menuDivider, createMenuItem('Toggle Cell Input', toggleInput$1.bind(this, _)), createMenuItem('Toggle Cell Output', toggleOutput$1.bind(this, _), ['o']), createMenuItem('Clear Cell Output', clearCell.bind(this, _))];
       const menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove.bind(this, _)), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow.bind(this, _))];
       if (_.onSparklingWater) {
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
