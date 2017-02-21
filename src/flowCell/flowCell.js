@@ -117,31 +117,29 @@ export function flowCell(_, type, input) {
       // pass the cell body as an argument, representing the scala code, to the appropriate function
       input = `runScalaCode ${_.scalaIntpId()}, \'${input}\'`;
     }
-    render(
-      input,
-      {
-        data: dataFunction.bind(this, _outputs),
-        close: closeFunction.bind(this, _result),
-        error: errorFunction.bind(
-          this,
-          _,
-          _hasError,
-          _outputs,
-          _errors
-        ),
-        end: endFunction.bind(
-          this,
-          _hasInput,
-          _isCode,
-          _isBusy,
-          _time,
-          _hasError,
-          _errors,
-          startTime,
-          go
-        ),
-      }
-    );
+    const outputObject = {
+      data: dataFunction.bind(this, _outputs),
+      close: closeFunction.bind(this, _result),
+      error: errorFunction.bind(
+        this,
+        _,
+        _hasError,
+        _outputs,
+        _errors
+      ),
+      end: endFunction.bind(
+        this,
+        _hasInput,
+        _isCode,
+        _isBusy,
+        _time,
+        _hasError,
+        _errors,
+        startTime,
+        go
+      ),
+    };
+    render(input, outputObject);
     return _isActive(false);
   };
   const self = {
