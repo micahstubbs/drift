@@ -12410,6 +12410,52 @@
       };
     }
 
+    function templateOf(view) {
+      return view.template;
+    }
+
+    function scrollIntoView(_actions, immediate) {
+      return _actions.scrollIntoView(immediate);
+    }
+
+    function autoResize(_actions) {
+      return _actions.autoResize();
+    }
+
+    function getCursorPosition(_actions) {
+      return _actions.getCursorPosition();
+    }
+
+    function formatClockTime(date) {
+      const moment = window.moment;
+      return moment(date).format('h:mm:ss a');
+    }
+
+    function dataFunction(_outputs, result) {
+      return _outputs.push(result);
+    }
+
+    function closeFunction(_result, result) {
+      // XXX push to cell output
+      return _result(result);
+    }
+
+    function errorFunction(_, _hasError, _outputs, _errors, error) {
+      const Flow = window.Flow;
+      _hasError(true);
+      if (error.name === 'FlowError') {
+        // XXX review
+        _outputs.push(Flow.failure(_, error));
+      } else {
+        _outputs.push({
+          text: JSON.stringify(error, null, 2),
+          template: 'flow-raw'
+        });
+      }
+      // Only for headless use
+      return _errors.push(error);
+    }
+
     function format1d0(n) {
       return Math.round(n * 10) / 10;
     }
@@ -12430,27 +12476,6 @@
       return `${ ms }ms`;
     }
 
-    function formatClockTime(date) {
-      const moment = window.moment;
-      return moment(date).format('h:mm:ss a');
-    }
-
-    function templateOf(view) {
-      return view.template;
-    }
-
-    function scrollIntoView(_actions, immediate) {
-      return _actions.scrollIntoView(immediate);
-    }
-
-    function autoResize(_actions) {
-      return _actions.autoResize();
-    }
-
-    function getCursorPosition(_actions) {
-      return _actions.getCursorPosition();
-    }
-
     function endFunction(_hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go) {
       _hasInput(_isCode());
       _isBusy(false);
@@ -12460,29 +12485,37 @@
       }
     }
 
-    function errorFunction(_, _hasError, _outputs, _errors, error) {
-      const Flow = window.Flow;
-      _hasError(true);
-      if (error.name === 'FlowError') {
-        // XXX review
-        _outputs.push(Flow.failure(_, error));
-      } else {
-        _outputs.push({
-          text: JSON.stringify(error, null, 2),
-          template: 'flow-raw'
-        });
+    function execute(_, _time, input, _input, _render, _isBusy, clear, _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode, go) {
+      const startTime = Date.now();
+      _time(`Started at ${ formatClockTime(startTime) }`);
+      input = _input().trim();
+      if (!input) {
+        if (go) {
+          return go(null);
+        }
+        return void 0;
       }
-      // Only for headless use
-      return _errors.push(error);
-    }
-
-    function closeFunction(_result, result) {
-      // XXX push to cell output
-      return _result(result);
-    }
-
-    function dataFunction(_outputs, result) {
-      return _outputs.push(result);
+      const render = _render();
+      _isBusy(true);
+      clear();
+      if (_type() === 'sca') {
+        // escape backslashes
+        input = input.replace(/\\/g, '\\\\');
+        // escape quotes
+        input = input.replace(/'/g, '\\\'');
+        // escape new-lines
+        input = input.replace(/\n/g, '\\n');
+        // pass the cell body as an argument, representing the scala code, to the appropriate function
+        input = `runScalaCode ${ _.scalaIntpId() }, \'${ input }\'`;
+      }
+      const outputObject = {
+        data: dataFunction.bind(this, _outputs),
+        close: closeFunction.bind(this, _result),
+        error: errorFunction.bind(this, _, _hasError, _outputs, _errors),
+        end: endFunction.bind(this, _hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go)
+      };
+      render(input, outputObject);
+      return _isActive(false);
     }
 
     function flowCell(_, type, input) {
@@ -12570,38 +12603,6 @@
           return _hasInput(true);
         }
       };
-      const execute = go => {
-        const startTime = Date.now();
-        _time(`Started at ${ formatClockTime(startTime) }`);
-        input = _input().trim();
-        if (!input) {
-          if (go) {
-            return go(null);
-          }
-          return void 0;
-        }
-        const render = _render();
-        _isBusy(true);
-        clear();
-        if (_type() === 'sca') {
-          // escape backslashes
-          input = input.replace(/\\/g, '\\\\');
-          // escape quotes
-          input = input.replace(/'/g, '\\\'');
-          // escape new-lines
-          input = input.replace(/\n/g, '\\n');
-          // pass the cell body as an argument, representing the scala code, to the appropriate function
-          input = `runScalaCode ${ _.scalaIntpId() }, \'${ input }\'`;
-        }
-        const outputObject = {
-          data: dataFunction.bind(this, _outputs),
-          close: closeFunction.bind(this, _result),
-          error: errorFunction.bind(this, _, _hasError, _outputs, _errors),
-          end: endFunction.bind(this, _hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go)
-        };
-        render(input, outputObject);
-        return _isActive(false);
-      };
       const self = {
         guid: _guid,
         type: _type,
@@ -12624,7 +12625,7 @@
         select,
         navigate,
         activate,
-        execute,
+        execute: execute.bind(this, _, _time, input, _input, _render, _isBusy, clear, _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode),
         clear,
         clip,
         _actions,
