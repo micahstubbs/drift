@@ -10,6 +10,7 @@ import toggleOutput from './toggleOutput';
 import toggleInput from './toggleInput';
 import clip from './clip';
 import activate from './activate';
+import navigate from './navigate';
 
 export function flowCell(_, type, input) {
   console.log('arguments from flowCell', arguments);
@@ -73,13 +74,6 @@ export function flowCell(_, type, input) {
     return true;
   };
 
-  // tied to mouse-clicks in the outline view
-  const navigate = () => {
-    _.selectCell(self);
-    // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
-    return true;
-  };
-
   const self = {
     guid: _guid,
     type: _type,
@@ -100,7 +94,6 @@ export function flowCell(_, type, input) {
     isOutputHidden: _isOutputHidden,
     toggleOutput: toggleOutput.bind(this, _isOutputHidden),
     select,
-    navigate,
     activate: activate.bind(this, _isActive),
     execute: execute.bind(
       this,
@@ -150,6 +143,8 @@ export function flowCell(_, type, input) {
     templateOf,
     template: 'flow-cell',
   };
+  const boundNavigate = navigate.bind(this, _, self);
+  self.navigate = boundNavigate;
   return self;
 }
 

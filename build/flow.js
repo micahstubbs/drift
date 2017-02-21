@@ -12548,6 +12548,14 @@
       _isActive(true);
     }
 
+    function navigate(_, self) {
+      // tied to mouse-clicks in the outline view
+      _.selectCell(self);
+
+      // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
+      return true;
+    }
+
     function flowCell(_, type, input) {
       console.log('arguments from flowCell', arguments);
       const lodash = window._;
@@ -12610,13 +12618,6 @@
         return true;
       };
 
-      // tied to mouse-clicks in the outline view
-      const navigate = () => {
-        _.selectCell(self);
-        // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
-        return true;
-      };
-
       const self = {
         guid: _guid,
         type: _type,
@@ -12637,7 +12638,6 @@
         isOutputHidden: _isOutputHidden,
         toggleOutput: toggleOutput.bind(this, _isOutputHidden),
         select,
-        navigate,
         activate: activate.bind(this, _isActive),
         execute: execute.bind(this, _, _time, input, _input, _render, _isBusy, clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput), _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode),
         clear: clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput),
@@ -12649,6 +12649,8 @@
         templateOf,
         template: 'flow-cell'
       };
+      const boundNavigate = navigate.bind(this, _, self);
+      self.navigate = boundNavigate;
       return self;
     }
 
