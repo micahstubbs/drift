@@ -12436,6 +12436,10 @@
       return view.template;
     }
 
+    function scrollIntoView(_actions, immediate) {
+      return _actions.scrollIntoView(immediate);
+    }
+
     function flowCell(_, type, input) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -12608,9 +12612,7 @@
         autoResize() {
           return _actions.autoResize();
         },
-        scrollIntoView(immediate) {
-          return _actions.scrollIntoView(immediate);
-        },
+        scrollIntoView: scrollIntoView.bind(this, _actions),
         templateOf,
         template: 'flow-cell'
       };

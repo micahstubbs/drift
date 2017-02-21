@@ -1,6 +1,7 @@
 import { formatElapsedTime } from '../utils/formatElapsedTime';
 import { formatClockTime } from '../utils/formatClockTime';
 import templateOf from './templateOf';
+import scrollIntoView from './scrollIntoView';
 
 export function flowCell(_, type, input) {
   const lodash = window._;
@@ -174,9 +175,7 @@ export function flowCell(_, type, input) {
     autoResize() {
       return _actions.autoResize();
     },
-    scrollIntoView(immediate) {
-      return _actions.scrollIntoView(immediate);
-    },
+    scrollIntoView: scrollIntoView.bind(this, _actions),
     templateOf,
     template: 'flow-cell',
   };
