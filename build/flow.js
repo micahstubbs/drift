@@ -12542,6 +12542,12 @@
       return _.saveClip('user', _type(), _input());
     }
 
+    function activate(_isActive) {
+      // tied to mouse-double-clicks on html content
+      // TODO
+      _isActive(true);
+    }
+
     function flowCell(_, type, input) {
       console.log('arguments from flowCell', arguments);
       const lodash = window._;
@@ -12611,9 +12617,6 @@
         return true;
       };
 
-      // tied to mouse-double-clicks on html content
-      // TODO
-      const activate = () => _isActive(true);
       const self = {
         guid: _guid,
         type: _type,
@@ -12635,7 +12638,7 @@
         toggleOutput: toggleOutput.bind(this, _isOutputHidden),
         select,
         navigate,
-        activate,
+        activate: activate.bind(this, _isActive),
         execute: execute.bind(this, _, _time, input, _input, _render, _isBusy, clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput), _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode),
         clear: clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput),
         clip: clip.bind(this, _, _type, _input),

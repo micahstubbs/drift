@@ -9,6 +9,7 @@ import clear from './clear';
 import toggleOutput from './toggleOutput';
 import toggleInput from './toggleInput';
 import clip from './clip';
+import activate from './activate';
 
 export function flowCell(_, type, input) {
   console.log('arguments from flowCell', arguments);
@@ -79,9 +80,6 @@ export function flowCell(_, type, input) {
     return true;
   };
 
-  // tied to mouse-double-clicks on html content
-  // TODO
-  const activate = () => _isActive(true);
   const self = {
     guid: _guid,
     type: _type,
@@ -103,7 +101,7 @@ export function flowCell(_, type, input) {
     toggleOutput: toggleOutput.bind(this, _isOutputHidden),
     select,
     navigate,
-    activate,
+    activate: activate.bind(this, _isActive),
     execute: execute.bind(
       this,
       _,
