@@ -296,7 +296,7 @@ export function routines() {
       }
       return assist(getPartialDependence);
     };
-   const buildRoomscaleScatterplot = options => {
+    const buildRoomscaleScatterplot = options => {
       if (options) {
         return _fork(showRoomscaleScatterplot, _, options);
       }
