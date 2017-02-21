@@ -3,6 +3,7 @@ import { formatClockTime } from '../utils/formatClockTime';
 import templateOf from './templateOf';
 import scrollIntoView from './scrollIntoView';
 import autoResize from './autoResize';
+import getCursorPosition from './getCursorPosition';
 
 export function flowCell(_, type, input) {
   const lodash = window._;
@@ -170,9 +171,7 @@ export function flowCell(_, type, input) {
     clear,
     clip,
     _actions,
-    getCursorPosition() {
-      return _actions.getCursorPosition();
-    },
+    getCursorPosition: getCursorPosition.bind(this, _actions),
     autoResize: autoResize.bind(this, _actions),
     scrollIntoView: scrollIntoView.bind(this, _actions),
     templateOf,

@@ -12444,6 +12444,10 @@
       return _actions.autoResize();
     }
 
+    function getCursorPosition(_actions) {
+      return _actions.getCursorPosition();
+    }
+
     function flowCell(_, type, input) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -12610,9 +12614,7 @@
         clear,
         clip,
         _actions,
-        getCursorPosition() {
-          return _actions.getCursorPosition();
-        },
+        getCursorPosition: getCursorPosition.bind(this, _actions),
         autoResize: autoResize.bind(this, _actions),
         scrollIntoView: scrollIntoView.bind(this, _actions),
         templateOf,
