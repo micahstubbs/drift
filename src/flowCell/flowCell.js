@@ -6,6 +6,7 @@ import autoResize from './autoResize';
 import getCursorPosition from './getCursorPosition';
 import execute from './execute';
 import clear from './clear';
+import toggleOutput from './toggleOutput';
 
 export function flowCell(_, type, input) {
   console.log('arguments from flowCell', arguments);
@@ -81,7 +82,6 @@ export function flowCell(_, type, input) {
   const activate = () => _isActive(true);
   const clip = () => _.saveClip('user', _type(), _input());
   const toggleInput = () => _isInputVisible(!_isInputVisible());
-  const toggleOutput = () => _isOutputHidden(!_isOutputHidden());
   const self = {
     guid: _guid,
     type: _type,
@@ -100,7 +100,7 @@ export function flowCell(_, type, input) {
     isInputVisible: _isInputVisible,
     toggleInput,
     isOutputHidden: _isOutputHidden,
-    toggleOutput,
+    toggleOutput: toggleOutput.bind(this, _isOutputHidden),
     select,
     navigate,
     activate,

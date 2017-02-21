@@ -12530,6 +12530,10 @@
       }
     }
 
+    function toggleOutput(_isOutputHidden) {
+      return _isOutputHidden(!_isOutputHidden());
+    }
+
     function flowCell(_, type, input) {
       console.log('arguments from flowCell', arguments);
       const lodash = window._;
@@ -12604,7 +12608,6 @@
       const activate = () => _isActive(true);
       const clip = () => _.saveClip('user', _type(), _input());
       const toggleInput = () => _isInputVisible(!_isInputVisible());
-      const toggleOutput = () => _isOutputHidden(!_isOutputHidden());
       const self = {
         guid: _guid,
         type: _type,
@@ -12623,7 +12626,7 @@
         isInputVisible: _isInputVisible,
         toggleInput,
         isOutputHidden: _isOutputHidden,
-        toggleOutput,
+        toggleOutput: toggleOutput.bind(this, _isOutputHidden),
         select,
         navigate,
         activate,
@@ -13005,7 +13008,7 @@
       });
     }
 
-    function toggleOutput(_) {
+    function toggleOutput$1(_) {
       return _.selectedCell.toggleOutput();
     }
 
@@ -13036,7 +13039,7 @@
       ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(_, 1)], ['2', 'to heading 2', convertCellToHeading(_, 2)], ['3', 'to heading 3', convertCellToHeading(_, 3)], ['4', 'to heading 4', convertCellToHeading(_, 4)], ['5', 'to heading 5', convertCellToHeading(_, 5)], ['6', 'to heading 6', convertCellToHeading(_, 6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
       // [ 'mod+s', 'save notebook', saveNotebook ]
       // [ 'l', 'toggle line numbers' ]
-      ['o', 'toggle output', toggleOutput],
+      ['o', 'toggle output', toggleOutput$1],
       // [ 'shift+o', 'toggle output scrolling' ]
       ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
 
@@ -13536,7 +13539,7 @@
       // TODO createMenuItem('Split Cell', splitCell),
       // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
       // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
-      menuDivider, createMenuItem('Toggle Cell Input', toggleInput.bind(this, _)), createMenuItem('Toggle Cell Output', toggleOutput.bind(this, _), ['o']), createMenuItem('Clear Cell Output', clearCell.bind(this, _))];
+      menuDivider, createMenuItem('Toggle Cell Input', toggleInput.bind(this, _)), createMenuItem('Toggle Cell Output', toggleOutput$1.bind(this, _), ['o']), createMenuItem('Clear Cell Output', clearCell.bind(this, _))];
       const menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove.bind(this, _)), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow.bind(this, _))];
       if (_.onSparklingWater) {
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
