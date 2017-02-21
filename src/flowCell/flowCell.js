@@ -11,6 +11,7 @@ import toggleInput from './toggleInput';
 import clip from './clip';
 import activate from './activate';
 import navigate from './navigate';
+import select from './select';
 
 export function flowCell(_, type, input) {
   console.log('arguments from flowCell', arguments);
@@ -65,15 +66,6 @@ export function flowCell(_, type, input) {
     }
   });
 
-  // tied to mouse-clicks on the cell
-  const select = () => {
-    // pass scrollIntoView=false,
-    // otherwise mouse actions like clicking on a form field will cause scrolling.
-    _.selectCell(self, false);
-    // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
-    return true;
-  };
-
   const self = {
     guid: _guid,
     type: _type,
@@ -93,7 +85,6 @@ export function flowCell(_, type, input) {
     toggleInput: toggleInput.bind(this, _isInputVisible),
     isOutputHidden: _isOutputHidden,
     toggleOutput: toggleOutput.bind(this, _isOutputHidden),
-    select,
     activate: activate.bind(this, _isActive),
     execute: execute.bind(
       this,
@@ -143,6 +134,8 @@ export function flowCell(_, type, input) {
     templateOf,
     template: 'flow-cell',
   };
+  const boundSelect = select.bind(this, _, self);
+  self.select = boundSelect;
   const boundNavigate = navigate.bind(this, _, self);
   self.navigate = boundNavigate;
   return self;

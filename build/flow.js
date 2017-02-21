@@ -12556,6 +12556,16 @@
       return true;
     }
 
+    function select(_, self) {
+      // tied to mouse-clicks on the cell
+
+      // pass scrollIntoView=false,
+      // otherwise mouse actions like clicking on a form field will cause scrolling.
+      _.selectCell(self, false);
+      // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
+      return true;
+    }
+
     function flowCell(_, type, input) {
       console.log('arguments from flowCell', arguments);
       const lodash = window._;
@@ -12609,15 +12619,6 @@
         }
       });
 
-      // tied to mouse-clicks on the cell
-      const select = () => {
-        // pass scrollIntoView=false,
-        // otherwise mouse actions like clicking on a form field will cause scrolling.
-        _.selectCell(self, false);
-        // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
-        return true;
-      };
-
       const self = {
         guid: _guid,
         type: _type,
@@ -12637,7 +12638,6 @@
         toggleInput: toggleInput.bind(this, _isInputVisible),
         isOutputHidden: _isOutputHidden,
         toggleOutput: toggleOutput.bind(this, _isOutputHidden),
-        select,
         activate: activate.bind(this, _isActive),
         execute: execute.bind(this, _, _time, input, _input, _render, _isBusy, clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput), _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode),
         clear: clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput),
@@ -12649,6 +12649,8 @@
         templateOf,
         template: 'flow-cell'
       };
+      const boundSelect = select.bind(this, _, self);
+      self.select = boundSelect;
       const boundNavigate = navigate.bind(this, _, self);
       self.navigate = boundNavigate;
       return self;
