@@ -4,6 +4,7 @@ import templateOf from './templateOf';
 import scrollIntoView from './scrollIntoView';
 import autoResize from './autoResize';
 import getCursorPosition from './getCursorPosition';
+import endFunction from './endFunction';
 
 export function flowCell(_, type, input) {
   const lodash = window._;
@@ -112,37 +113,43 @@ export function flowCell(_, type, input) {
       // pass the cell body as an argument, representing the scala code, to the appropriate function
       input = `runScalaCode ${_.scalaIntpId()}, \'${input}\'`;
     }
-    render(input, {
-      data(result) {
-        return _outputs.push(result);
-      },
-      close(result) {
-        // XXX push to cell output
-        return _result(result);
-      },
-      error(error) {
-        _hasError(true);
-        if (error.name === 'FlowError') {
-          // XXX review
-          _outputs.push(Flow.failure(_, error));
-        } else {
-          _outputs.push({
-            text: JSON.stringify(error, null, 2),
-            template: 'flow-raw',
-          });
-        }
-        // Only for headless use
-        return _errors.push(error);
-      },
-      end() {
-        _hasInput(_isCode());
-        _isBusy(false);
-        _time(formatElapsedTime(Date.now() - startTime));
-        if (go) {
-          go(_hasError() ? _errors.slice(0) : null);
-        }
-      },
-    });
+    render(
+      input,
+      {
+        data(result) {
+          return _outputs.push(result);
+        },
+        close(result) {
+          // XXX push to cell output
+          return _result(result);
+        },
+        error(error) {
+          _hasError(true);
+          if (error.name === 'FlowError') {
+            // XXX review
+            _outputs.push(Flow.failure(_, error));
+          } else {
+            _outputs.push({
+              text: JSON.stringify(error, null, 2),
+              template: 'flow-raw',
+            });
+          }
+          // Only for headless use
+          return _errors.push(error);
+        },
+        end: endFunction.bind(
+          this,
+          _hasInput,
+          _isCode,
+          _isBusy,
+          _time,
+          _hasError,
+          _errors,
+          startTime,
+          go
+        ),
+      }
+    );
     return _isActive(false);
   };
   const self = {

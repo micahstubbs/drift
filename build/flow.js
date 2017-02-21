@@ -12448,6 +12448,15 @@
       return _actions.getCursorPosition();
     }
 
+    function endFunction(_hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go) {
+      _hasInput(_isCode());
+      _isBusy(false);
+      _time(formatElapsedTime(Date.now() - startTime));
+      if (go) {
+        go(_hasError() ? _errors.slice(0) : null);
+      }
+    }
+
     function flowCell(_, type, input) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -12577,14 +12586,7 @@
             // Only for headless use
             return _errors.push(error);
           },
-          end() {
-            _hasInput(_isCode());
-            _isBusy(false);
-            _time(formatElapsedTime(Date.now() - startTime));
-            if (go) {
-              go(_hasError() ? _errors.slice(0) : null);
-            }
-          }
+          end: endFunction.bind(this, _hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go)
         });
         return _isActive(false);
       };
