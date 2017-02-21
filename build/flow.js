@@ -12440,6 +12440,10 @@
       return _actions.scrollIntoView(immediate);
     }
 
+    function autoResize(_actions) {
+      return _actions.autoResize();
+    }
+
     function flowCell(_, type, input) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -12609,9 +12613,7 @@
         getCursorPosition() {
           return _actions.getCursorPosition();
         },
-        autoResize() {
-          return _actions.autoResize();
-        },
+        autoResize: autoResize.bind(this, _actions),
         scrollIntoView: scrollIntoView.bind(this, _actions),
         templateOf,
         template: 'flow-cell'
