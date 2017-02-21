@@ -5,6 +5,7 @@ import scrollIntoView from './scrollIntoView';
 import autoResize from './autoResize';
 import getCursorPosition from './getCursorPosition';
 import execute from './execute';
+import clear from './clear';
 
 export function flowCell(_, type, input) {
   console.log('arguments from flowCell', arguments);
@@ -81,16 +82,6 @@ export function flowCell(_, type, input) {
   const clip = () => _.saveClip('user', _type(), _input());
   const toggleInput = () => _isInputVisible(!_isInputVisible());
   const toggleOutput = () => _isOutputHidden(!_isOutputHidden());
-  const clear = () => {
-    _result(null);
-    _outputs([]);
-    // Only for headless use
-    _errors.length = 0;
-    _hasError(false);
-    if (!_isCode()) {
-      return _hasInput(true);
-    }
-  };
   const self = {
     guid: _guid,
     type: _type,
@@ -121,7 +112,15 @@ export function flowCell(_, type, input) {
       _input,
       _render,
       _isBusy,
-      clear,
+      clear.bind(
+        this,
+        _result,
+        _outputs,
+        _errors,
+        _hasError,
+        _isCode,
+        _hasInput
+      ),
       _type,
       _outputs,
       _result,
@@ -131,7 +130,15 @@ export function flowCell(_, type, input) {
       _isActive,
       _isCode
     ),
-    clear,
+    clear: clear.bind(
+      this,
+      _result,
+      _outputs,
+      _errors,
+      _hasError,
+      _isCode,
+      _hasInput
+    ),
     clip,
     _actions,
     getCursorPosition: getCursorPosition.bind(this, _actions),

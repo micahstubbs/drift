@@ -12518,6 +12518,18 @@
       return _isActive(false);
     }
 
+    function clear(_result, _outputs, _errors, _hasError, _isCode, _hasInput) {
+      console.log('arguments from flowCell clear', arguments);
+      _result(null);
+      _outputs([]);
+      // Only for headless use
+      _errors.length = 0;
+      _hasError(false);
+      if (!_isCode()) {
+        return _hasInput(true);
+      }
+    }
+
     function flowCell(_, type, input) {
       console.log('arguments from flowCell', arguments);
       const lodash = window._;
@@ -12593,16 +12605,6 @@
       const clip = () => _.saveClip('user', _type(), _input());
       const toggleInput = () => _isInputVisible(!_isInputVisible());
       const toggleOutput = () => _isOutputHidden(!_isOutputHidden());
-      const clear = () => {
-        _result(null);
-        _outputs([]);
-        // Only for headless use
-        _errors.length = 0;
-        _hasError(false);
-        if (!_isCode()) {
-          return _hasInput(true);
-        }
-      };
       const self = {
         guid: _guid,
         type: _type,
@@ -12625,8 +12627,8 @@
         select,
         navigate,
         activate,
-        execute: execute.bind(this, _, _time, input, _input, _render, _isBusy, clear, _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode),
-        clear,
+        execute: execute.bind(this, _, _time, input, _input, _render, _isBusy, clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput), _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode),
+        clear: clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput),
         clip,
         _actions,
         getCursorPosition: getCursorPosition.bind(this, _actions),
