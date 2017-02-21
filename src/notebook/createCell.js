@@ -1,4 +1,4 @@
-import { flowCell } from '../flowCell';
+import { flowCell } from '../flowCell/flowCell';
 
 export function createCell(_, type, input) {
   if (type == null) {
