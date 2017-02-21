@@ -6,6 +6,7 @@ import autoResize from './autoResize';
 import getCursorPosition from './getCursorPosition';
 import endFunction from './endFunction';
 import errorFunction from './errorFunction';
+import closeFunction from './closeFunction';
 
 export function flowCell(_, type, input) {
   const lodash = window._;
@@ -120,10 +121,10 @@ export function flowCell(_, type, input) {
         data(result) {
           return _outputs.push(result);
         },
-        close(result) {
-          // XXX push to cell output
-          return _result(result);
-        },
+        close: closeFunction.bind(
+          this,
+          _result
+        ),
         error: errorFunction.bind(
           this,
           _,

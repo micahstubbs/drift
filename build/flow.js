@@ -12473,6 +12473,11 @@
       return _errors.push(error);
     }
 
+    function closeFunction(_result, result) {
+      // XXX push to cell output
+      return _result(result);
+    }
+
     function flowCell(_, type, input) {
       const lodash = window._;
       const Flow = window.Flow;
@@ -12584,10 +12589,7 @@
           data(result) {
             return _outputs.push(result);
           },
-          close(result) {
-            // XXX push to cell output
-            return _result(result);
-          },
+          close: closeFunction.bind(this, _result),
           error: errorFunction.bind(this, _, _hasError, _outputs, _errors),
           end: endFunction.bind(this, _hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go)
         });
