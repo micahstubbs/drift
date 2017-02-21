@@ -9,6 +9,7 @@ import errorFunction from './errorFunction';
 import closeFunction from './closeFunction';
 
 export function flowCell(_, type, input) {
+  console.log('arguments from flowCell', arguments);
   const lodash = window._;
   const Flow = window.Flow;
   if (type == null) {

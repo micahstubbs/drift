@@ -20,7 +20,7 @@ import { routinesThatAcceptUnderbarParameter } from '../routinesThatAcceptUnderb
 export default function render(_, guid, sandbox, input, output) {
   const lodash = window._;
   const Flow = window.Flow;
-  console.log('arguments passed to render inside of flowCoffeescript', arguments);
+  console.log('arguments passed to flowCoffeescript render', arguments);
   console.log('input from flowCoffeescript render', input);
   console.log('output from flowCoffeescript render', output);
   let cellResult;
