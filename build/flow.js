@@ -12432,6 +12432,10 @@
       return moment(date).format('h:mm:ss a');
     }
 
+    function templateOf(view) {
+      return view.template;
+    }
+
     function flowCell(_, type, input) {
       const lodash = window._;
       const Flow = window.Flow;
