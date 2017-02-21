@@ -5532,7 +5532,7 @@
         plotUrl,
         template: 'flow-roomscale-scatterplot-output'
       };
-      return {};
+      return {}; // eslint-disable-line
     }
 
     function requestFrameSummaryWithoutData(_, key, go) {
@@ -12263,8 +12263,9 @@
       };
     }
 
-    function evaluate(output, ft) {
+    function evaluate(_, output, ft) {
       console.log('arguments from flowCoffeescript evaluate', arguments);
+      const Flow = window.Flow;
       if (ft != null ? ft.isFuture : void 0) {
         return ft((error, result) => {
           console.log('error from flowCoffeescript render evaluate', error);
@@ -12304,7 +12305,7 @@
           result: Flow.Dataflow.signal(null),
           outputs: outputBuffer = Flow.Async.createBuffer([])
         };
-        outputBuffer.subscribe(evaluate.bind(this, output));
+        outputBuffer.subscribe(evaluate.bind(this, _, output));
         const tasks = [safetyWrapCoffeescript(guid), compileCoffeescript, parseJavascript, createRootScope(sandbox), removeHoistedDeclarations, rewriteJavascript(sandbox), generateJavascript, compileJavascript, executeJavascript(sandbox, print)];
         return Flow.Async.pipe(tasks)(input, error => {
           if (error) {
@@ -12322,7 +12323,7 @@
               }
               return print(result(), guid, sandbox);
             }
-            return evaluate(output, result);
+            return evaluate(_, output, result);
           }
           return output.close(Flow.objectBrowser(_, () => output.end(), 'result', result));
         });
