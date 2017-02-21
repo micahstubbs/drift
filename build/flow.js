@@ -12538,6 +12538,10 @@
       return _isInputVisible(!_isInputVisible());
     }
 
+    function clip(_, _type, _input) {
+      return _.saveClip('user', _type(), _input());
+    }
+
     function flowCell(_, type, input) {
       console.log('arguments from flowCell', arguments);
       const lodash = window._;
@@ -12610,7 +12614,6 @@
       // tied to mouse-double-clicks on html content
       // TODO
       const activate = () => _isActive(true);
-      const clip = () => _.saveClip('user', _type(), _input());
       const self = {
         guid: _guid,
         type: _type,
@@ -12635,7 +12638,7 @@
         activate,
         execute: execute.bind(this, _, _time, input, _input, _render, _isBusy, clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput), _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode),
         clear: clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput),
-        clip,
+        clip: clip.bind(this, _, _type, _input),
         _actions,
         getCursorPosition: getCursorPosition.bind(this, _actions),
         autoResize: autoResize.bind(this, _actions),
