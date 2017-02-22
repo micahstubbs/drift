@@ -18,5 +18,5 @@ export default function showRoomscaleScatterplot(options) {
     plotUrl,
     template: 'flow-roomscale-scatterplot-output',
   };
- return {};
+  return {}; // eslint-disable-line
 }

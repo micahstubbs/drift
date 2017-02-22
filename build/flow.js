@@ -5532,7 +5532,7 @@
         plotUrl,
         template: 'flow-roomscale-scatterplot-output'
       };
-      return {};
+      return {}; // eslint-disable-line
     }
 
     function requestFrameSummaryWithoutData(_, key, go) {
@@ -12263,6 +12263,27 @@
       };
     }
 
+    function evaluate(_, output, ft) {
+      console.log('arguments from flowCoffeescript evaluate', arguments);
+      const Flow = window.Flow;
+      if (ft != null ? ft.isFuture : void 0) {
+        return ft((error, result) => {
+          console.log('error from flowCoffeescript render evaluate', error);
+          console.log('result from flowCoffeescript render evaluate', result);
+          const _ref = result._flow_;
+          if (error) {
+            output.error(new Flow.Error('Error evaluating cell', error));
+            return output.end();
+          }
+          if (result != null ? _ref != null ? _ref.render : void 0 : void 0) {
+            return output.data(result._flow_.render(() => output.end()));
+          }
+          return output.data(Flow.objectBrowser(_, (() => output.end())('output', result)));
+        });
+      }
+      return output.data(Flow.objectBrowser(_, () => output.end(), 'output', ft));
+    }
+
     const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll', 'getJobs'];
 
     function flowCoffeescript(_, guid, sandbox) {
@@ -12284,25 +12305,7 @@
           result: Flow.Dataflow.signal(null),
           outputs: outputBuffer = Flow.Async.createBuffer([])
         };
-        const evaluate = ft => {
-          if (ft != null ? ft.isFuture : void 0) {
-            return ft((error, result) => {
-              console.log('error from flowCoffeescript render evaluate', error);
-              console.log('result from flowCoffeescript render evaluate', result);
-              const _ref = result._flow_;
-              if (error) {
-                output.error(new Flow.Error('Error evaluating cell', error));
-                return output.end();
-              }
-              if (result != null ? _ref != null ? _ref.render : void 0 : void 0) {
-                return output.data(result._flow_.render(() => output.end()));
-              }
-              return output.data(Flow.objectBrowser(_, (() => output.end())('output', result)));
-            });
-          }
-          return output.data(Flow.objectBrowser(_, () => output.end(), 'output', ft));
-        };
-        outputBuffer.subscribe(evaluate);
+        outputBuffer.subscribe(evaluate.bind(this, _, output));
         const tasks = [safetyWrapCoffeescript(guid), compileCoffeescript, parseJavascript, createRootScope(sandbox), removeHoistedDeclarations, rewriteJavascript(sandbox), generateJavascript, compileJavascript, executeJavascript(sandbox, print)];
         return Flow.Async.pipe(tasks)(input, error => {
           if (error) {
@@ -12320,7 +12323,7 @@
               }
               return print(result(), guid, sandbox);
             }
-            return evaluate(result);
+            return evaluate(_, output, result);
           }
           return output.close(Flow.objectBrowser(_, () => output.end(), 'result', result));
         });
@@ -12407,6 +12410,52 @@
       };
     }
 
+    function templateOf(view) {
+      return view.template;
+    }
+
+    function scrollIntoView(_actions, immediate) {
+      return _actions.scrollIntoView(immediate);
+    }
+
+    function autoResize(_actions) {
+      return _actions.autoResize();
+    }
+
+    function getCursorPosition(_actions) {
+      return _actions.getCursorPosition();
+    }
+
+    function formatClockTime(date) {
+      const moment = window.moment;
+      return moment(date).format('h:mm:ss a');
+    }
+
+    function dataFunction(_outputs, result) {
+      return _outputs.push(result);
+    }
+
+    function closeFunction(_result, result) {
+      // XXX push to cell output
+      return _result(result);
+    }
+
+    function errorFunction(_, _hasError, _outputs, _errors, error) {
+      const Flow = window.Flow;
+      _hasError(true);
+      if (error.name === 'FlowError') {
+        // XXX review
+        _outputs.push(Flow.failure(_, error));
+      } else {
+        _outputs.push({
+          text: JSON.stringify(error, null, 2),
+          template: 'flow-raw'
+        });
+      }
+      // Only for headless use
+      return _errors.push(error);
+    }
+
     function format1d0(n) {
       return Math.round(n * 10) / 10;
     }
@@ -12427,12 +12476,98 @@
       return `${ ms }ms`;
     }
 
-    function formatClockTime(date) {
-      const moment = window.moment;
-      return moment(date).format('h:mm:ss a');
+    function endFunction(_hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go) {
+      _hasInput(_isCode());
+      _isBusy(false);
+      _time(formatElapsedTime(Date.now() - startTime));
+      if (go) {
+        go(_hasError() ? _errors.slice(0) : null);
+      }
+    }
+
+    function execute(_, _time, input, _input, _render, _isBusy, clear, _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode, go) {
+      const startTime = Date.now();
+      _time(`Started at ${ formatClockTime(startTime) }`);
+      input = _input().trim();
+      if (!input) {
+        if (go) {
+          return go(null);
+        }
+        return void 0;
+      }
+      const render = _render();
+      _isBusy(true);
+      clear();
+      if (_type() === 'sca') {
+        // escape backslashes
+        input = input.replace(/\\/g, '\\\\');
+        // escape quotes
+        input = input.replace(/'/g, '\\\'');
+        // escape new-lines
+        input = input.replace(/\n/g, '\\n');
+        // pass the cell body as an argument, representing the scala code, to the appropriate function
+        input = `runScalaCode ${ _.scalaIntpId() }, \'${ input }\'`;
+      }
+      const outputObject = {
+        data: dataFunction.bind(this, _outputs),
+        close: closeFunction.bind(this, _result),
+        error: errorFunction.bind(this, _, _hasError, _outputs, _errors),
+        end: endFunction.bind(this, _hasInput, _isCode, _isBusy, _time, _hasError, _errors, startTime, go)
+      };
+      render(input, outputObject);
+      return _isActive(false);
+    }
+
+    function clear(_result, _outputs, _errors, _hasError, _isCode, _hasInput) {
+      // console.log('arguments from flowCell clear', arguments);
+      _result(null);
+      _outputs([]);
+      // Only for headless use
+      _errors.length = 0;
+      _hasError(false);
+      if (!_isCode()) {
+        return _hasInput(true);
+      }
+    }
+
+    function toggleOutput(_isOutputHidden) {
+      return _isOutputHidden(!_isOutputHidden());
+    }
+
+    function toggleInput(_isInputVisible) {
+      return _isInputVisible(!_isInputVisible());
+    }
+
+    function clip(_, _type, _input) {
+      return _.saveClip('user', _type(), _input());
+    }
+
+    function activate(_isActive) {
+      // tied to mouse-double-clicks on html content
+      // TODO
+      _isActive(true);
+    }
+
+    function navigate(_, self) {
+      // tied to mouse-clicks in the outline view
+      _.selectCell(self);
+
+      // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
+      return true;
+    }
+
+    function select(_, self) {
+      // tied to mouse-clicks on the cell
+
+      // pass scrollIntoView=false,
+      // otherwise mouse actions like clicking on a form field will cause scrolling.
+      _.selectCell(self, false);
+      // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
+      return true;
     }
 
     function flowCell(_, type, input) {
+      console.log('arguments from flowCell', arguments);
       const lodash = window._;
       const Flow = window.Flow;
       if (type == null) {
@@ -12484,95 +12619,6 @@
         }
       });
 
-      // tied to mouse-clicks on the cell
-      const select = () => {
-        // pass scrollIntoView=false,
-        // otherwise mouse actions like clicking on a form field will cause scrolling.
-        _.selectCell(self, false);
-        // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
-        return true;
-      };
-
-      // tied to mouse-clicks in the outline view
-      const navigate = () => {
-        _.selectCell(self);
-        // Explicitly return true, otherwise ko will prevent the mouseclick event from bubbling up
-        return true;
-      };
-
-      // tied to mouse-double-clicks on html content
-      // TODO
-      const activate = () => _isActive(true);
-      const clip = () => _.saveClip('user', _type(), _input());
-      const toggleInput = () => _isInputVisible(!_isInputVisible());
-      const toggleOutput = () => _isOutputHidden(!_isOutputHidden());
-      const clear = () => {
-        _result(null);
-        _outputs([]);
-        // Only for headless use
-        _errors.length = 0;
-        _hasError(false);
-        if (!_isCode()) {
-          return _hasInput(true);
-        }
-      };
-      const execute = go => {
-        const startTime = Date.now();
-        _time(`Started at ${ formatClockTime(startTime) }`);
-        input = _input().trim();
-        if (!input) {
-          if (go) {
-            return go(null);
-          }
-          return void 0;
-        }
-        const render = _render();
-        _isBusy(true);
-        clear();
-        if (_type() === 'sca') {
-          // escape backslashes
-          input = input.replace(/\\/g, '\\\\');
-          // escape quotes
-          input = input.replace(/'/g, '\\\'');
-          // escape new-lines
-          input = input.replace(/\n/g, '\\n');
-          // pass the cell body as an argument, representing the scala code, to the appropriate function
-          input = `runScalaCode ${ _.scalaIntpId() }, \'${ input }\'`;
-        }
-        render(input, {
-          data(result) {
-            return _outputs.push(result);
-          },
-          close(result) {
-            // XXX push to cell output
-            return _result(result);
-          },
-          error(error) {
-            console.log('error from flowCell() execute() render() error()', error);
-            _hasError(true);
-            if (error.name === 'FlowError') {
-              // XXX review
-              _outputs.push(Flow.failure(_, error));
-            } else {
-              _outputs.push({
-                text: JSON.stringify(error, null, 2),
-                template: 'flow-raw'
-              });
-            }
-            // Only for headless use
-            return _errors.push(error);
-          },
-          end() {
-            _hasInput(_isCode());
-            _isBusy(false);
-            _time(formatElapsedTime(Date.now() - startTime));
-            if (go) {
-              go(_hasError() ? _errors.slice(0) : null);
-            }
-          }
-        });
-        return _isActive(false);
-      };
       const self = {
         guid: _guid,
         type: _type,
@@ -12589,30 +12635,24 @@
         result: _result,
         hasOutput: _hasOutput,
         isInputVisible: _isInputVisible,
-        toggleInput,
+        toggleInput: toggleInput.bind(this, _isInputVisible),
         isOutputHidden: _isOutputHidden,
-        toggleOutput,
-        select,
-        navigate,
-        activate,
-        execute,
-        clear,
-        clip,
+        toggleOutput: toggleOutput.bind(this, _isOutputHidden),
+        activate: activate.bind(this, _isActive),
+        execute: execute.bind(this, _, _time, input, _input, _render, _isBusy, clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput), _type, _outputs, _result, _hasError, _errors, _hasInput, _isActive, _isCode),
+        clear: clear.bind(this, _result, _outputs, _errors, _hasError, _isCode, _hasInput),
+        clip: clip.bind(this, _, _type, _input),
         _actions,
-        getCursorPosition() {
-          return _actions.getCursorPosition();
-        },
-        autoResize() {
-          return _actions.autoResize();
-        },
-        scrollIntoView(immediate) {
-          return _actions.scrollIntoView(immediate);
-        },
-        templateOf(view) {
-          return view.template;
-        },
+        getCursorPosition: getCursorPosition.bind(this, _actions),
+        autoResize: autoResize.bind(this, _actions),
+        scrollIntoView: scrollIntoView.bind(this, _actions),
+        templateOf,
         template: 'flow-cell'
       };
+      const boundSelect = select.bind(this, _, self);
+      self.select = boundSelect;
+      const boundNavigate = navigate.bind(this, _, self);
+      self.navigate = boundNavigate;
       return self;
     }
 
@@ -12981,7 +13021,7 @@
       });
     }
 
-    function toggleOutput(_) {
+    function toggleOutput$1(_) {
       return _.selectedCell.toggleOutput();
     }
 
@@ -13012,7 +13052,7 @@
       ['y', 'to code', convertCellToCode], ['m', 'to markdown', convertCellToMarkdown], ['r', 'to raw', convertCellToRaw], ['1', 'to heading 1', convertCellToHeading(_, 1)], ['2', 'to heading 2', convertCellToHeading(_, 2)], ['3', 'to heading 3', convertCellToHeading(_, 3)], ['4', 'to heading 4', convertCellToHeading(_, 4)], ['5', 'to heading 5', convertCellToHeading(_, 5)], ['6', 'to heading 6', convertCellToHeading(_, 6)], ['up', 'select previous cell', selectPreviousCell], ['down', 'select next cell', selectNextCell], ['k', 'select previous cell', selectPreviousCell], ['j', 'select next cell', selectNextCell], ['ctrl+k', 'move cell up', moveCellUp], ['ctrl+j', 'move cell down', moveCellDown], ['a', 'insert cell above', insertNewCellAbove], ['b', 'insert cell below', insertNewCellBelow], ['x', 'cut cell', cutCell], ['c', 'copy cell', copyCell], ['shift+v', 'paste cell above', pasteCellAbove], ['v', 'paste cell below', pasteCellBelow], ['z', 'undo last delete', undoLastDelete], ['d d', 'delete cell (press twice)', deleteCell], ['shift+m', 'merge cell below', mergeCellBelow], ['s', 'save notebook', saveNotebook],
       // [ 'mod+s', 'save notebook', saveNotebook ]
       // [ 'l', 'toggle line numbers' ]
-      ['o', 'toggle output', toggleOutput],
+      ['o', 'toggle output', toggleOutput$1],
       // [ 'shift+o', 'toggle output scrolling' ]
       ['h', 'keyboard shortcuts', displayKeyboardShortcuts]];
 
@@ -13487,7 +13527,7 @@
         return requestModelBuilders(_, (error, builders) => _.menus(initializeMenus(_, menuCell, error ? [] : builders)));
     }
 
-    function toggleInput(_) {
+    function toggleInput$1(_) {
       return _.selectedCell.toggleInput();
     }
 
@@ -13512,7 +13552,7 @@
       // TODO createMenuItem('Split Cell', splitCell),
       // TODO createMenuItem('Merge Cell Above', mergeCellAbove, true),
       // TODO createMenuItem('Merge Cell Below', mergeCellBelow),
-      menuDivider, createMenuItem('Toggle Cell Input', toggleInput.bind(this, _)), createMenuItem('Toggle Cell Output', toggleOutput.bind(this, _), ['o']), createMenuItem('Clear Cell Output', clearCell.bind(this, _))];
+      menuDivider, createMenuItem('Toggle Cell Input', toggleInput$1.bind(this, _)), createMenuItem('Toggle Cell Output', toggleOutput$1.bind(this, _), ['o']), createMenuItem('Clear Cell Output', clearCell.bind(this, _))];
       const menuCellSW = [menuDivider, createMenuItem('Insert Scala Cell Above', insertNewScalaCellAbove.bind(this, _)), createMenuItem('Insert Scala Cell Below', insertNewScalaCellBelow.bind(this, _))];
       if (_.onSparklingWater) {
         menuCell = __slice.call(menuCell).concat(__slice.call(menuCellSW));
