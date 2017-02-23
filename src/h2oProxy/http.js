@@ -59,31 +59,36 @@ export function http(_, method, path, opts, go) {
     }
   });
   return req.fail((xhr, status, error) => {
+    console.log('req.fail from h2oProxy http');
     let serverError;
     _.status('server', 'error', path);
     const response = xhr.responseJSON;
-    const meta = response;
     // special-case net::ERR_CONNECTION_REFUSED
     // if status is 'error' and xhr.status is 0
-    if (const cause = (meta != null) {
-      response.__meta
+    let cause;
+    let meta;
+    if (typeof response !== 'undefined' && error !== null ? error.message : void 0) {
+      meta = response.__meta;
+    }
+
+    if (
+      meta &&
+      (
+        meta.schema_type === 'H2OError' ||
+        meta.schema_type === 'H2OModelBuilderError'
+      )
+    ) {
+      serverError = new Flow.Error(response.exception_msg);
+      serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`;
+      return serverError;
+    } else if (typeof error !== 'undefined' && error !== null ? error.message : void 0) {
+      cause = new Flow.Error(error.message);
     } else {
-      if (void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError')) {
-        (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError)
+      // special-case net::ERR_CONNECTION_REFUSED
+      if (status === 'error' && xhr.status === 0) {
+        cause = new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.');
       } else {
-        if ((error != null) {
-          error.message
-        } else {
-              if (void 0)) {
-            new Flow.Error(error.message)
-          } else {
-                if (status === 'error' && xhr.status === 0) {
-              new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.')
-            } else {
-              new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
-            }
-          }
-        }
+        cause = new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${error || '?'}`);
       }
     }
     return go(new Flow.Error(`Error calling ${method} ${path}${optsToString(opts)}`, cause));
