@@ -1011,6 +1011,7 @@
             console.log('h2oProxy http fail | the response has one of two specific schema types');
             serverError = new Flow.Error(response.exception_msg);
             serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`;
+            console.log('serverError', serverError);
             cause = serverError;
           } else if (typeof error !== 'undefined' && error !== null ? error.message : void 0) {
             cause = new Flow.Error(error.message);
@@ -9883,8 +9884,10 @@
           this.message = message;
           this.cause = cause;
           this.name = 'FlowError';
-          if (_ref != null ? _ref.stack : void 0) {
-            this.stack = this.cause.stack;
+          if (typeof this.cause !== 'undefined') {
+            if (typeof this.cause.stack !== 'undefined') {
+              this.stack = this.cause.stack;
+            }
           } else {
             error = new Error();
             if (error.stack) {

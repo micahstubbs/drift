@@ -31,6 +31,7 @@ export default function httpRequestFailFunction(
         console.log('h2oProxy http fail | the response has one of two specific schema types');
         serverError = new Flow.Error(response.exception_msg);
         serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`;
+        console.log('serverError', serverError);
         cause = serverError;
       } else if (typeof error !== 'undefined' && error !== null ? error.message : void 0) {
         cause = new Flow.Error(error.message);
