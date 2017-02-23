@@ -3014,21 +3014,26 @@
       let schema;
       let _i;
       let _len;
-      let _ref1;
+      let fields;
       const dicts = {};
       for (schema in _schemaHacks) {
+        console.log('schema from blacklistedAttributesBySchema', schema);
         if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
           attrs = _schemaHacks[schema];
-          dicts[schema] = dict = { __meta: true };
+          dict = { __meta: true };
+          dicts[schema] = dict;
+          console.log('attrs from blacklistedAttributesBySchema', attrs);
           if (attrs.fields) {
-            _ref1 = flowPrelude$29.words(attrs.fields);
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              field = _ref1[_i];
+            fields = flowPrelude$29.words(attrs.fields);
+            console.log('fields from blacklistedAttributesBySchema', fields);
+            for (_i = 0, _len = fields.length; _i < _len; _i++) {
+              field = fields[_i];
               dict[field] = true;
             }
           }
         }
       }
+      console.log('dicts from blacklistedAttributesBySchema', dicts);
       return dicts;
     }
 
@@ -3039,19 +3044,24 @@
       let k;
       let meta;
       let v;
-      let _ref2;
+
       let schemaType;
       if (typeof obj !== 'undefined') {
         if (typeof obj.__meta !== 'undefined') {
           schemaType = obj.__meta.schema_type;
         }
       }
-      const attrs = blacklistedAttributesBySchema()[schemaType];
-      let blacklistedAttributes;
-      if (schemaType) {
-        blacklistedAttributes = attrs;
-      } else {
-        blacklistedAttributes = {};
+      const blacklistedAttributesBySchemaObject = blacklistedAttributesBySchema();
+      const attrs = blacklistedAttributesBySchemaObject[schemaType];
+      console.log('schemaType', schemaType);
+      console.log('blacklistedAttributesBySchemaObject', blacklistedAttributesBySchemaObject);
+      console.log('attrs', attrs);
+
+      let blacklistedAttributes = {};
+      if (typeof schemaType !== 'undefined') {
+        if (typeof attrs !== 'undefined') {
+          blacklistedAttributes = attrs;
+        }
       }
       const transform = schemaTransforms[schemaType];
       if (transform) {
@@ -3062,13 +3072,18 @@
       for (k in obj) {
         if ({}.hasOwnProperty.call(obj, k)) {
           v = obj[k];
+          console.log('blacklistedAttributes', blacklistedAttributes);
+          console.log('k', k);
           if (!blacklistedAttributes[k]) {
             if (v === null) {
               record[k] = null;
             } else {
-              _ref2 = v.__meta;
-              if ((_ref2 != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
-                inspections[`${ name } - ${ v.name }`] = inspectTwoDimTable_(origin, `${ name } - ${ v.name }`, v);
+              if (typeof v !== 'undefined') {
+                if (typeof v.__meta !== 'undefined') {
+                  if (v.__meta.schema_type === 'TwoDimTable') {
+                    inspections[`${ name } - ${ v.name }`] = inspectTwoDimTable_(origin, `${ name } - ${ v.name }`, v);
+                  }
+                }
               } else {
                 if (lodash.isArray(v)) {
                   if (k === 'cross_validation_models' || k === 'cross_validation_predictions' || name === 'output' && (k === 'weights' || k === 'biases')) {
@@ -3076,14 +3091,13 @@
                   } else {
                     inspections[k] = inspectRawArray_(k, origin, k, v);
                   }
-                } else if (lodash.isObject(v)) {
-                  meta = v.__meta;
-                  if (meta) {
-                    if (meta.schema_type === 'Key<Frame>') {
+                } else if (lodash.isObject(v) && typeof v !== 'undefined') {
+                  if (typeof v.__meta !== 'undefined') {
+                    if (v.__meta.schema_type === 'Key<Frame>') {
                       record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$27.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
-                    } else if (meta.schema_type === 'Key<Model>') {
+                    } else if (v.__meta.schema_type === 'Key<Model>') {
                       record[k] = `<a href=\'#\' data-type=\'model\' data-key=${ flowPrelude$27.stringify(v.name) }>${ lodash.escape(v.name) }</a>`;
-                    } else if (meta.schema_type === 'Frame') {
+                    } else if (v.__meta.schema_type === 'Frame') {
                       record[k] = `<a href=\'#\' data-type=\'frame\' data-key=${ flowPrelude$27.stringify(v.frame_id.name) }>${ lodash.escape(v.frame_id.name) }</a>`;
                     } else {
                       inspectObject(inspections, `${ name } - ${ k }`, origin, v);
