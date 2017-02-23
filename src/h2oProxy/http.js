@@ -54,6 +54,7 @@ export function http(_, method, path, opts, go) {
       return go(null, data);
     } catch (_error) {
       error = _error;
+      console.log('error from h2oProxy http', error);
       return go(new Flow.Error(`Error processing ${method} ${path}`, error));
     }
   });
@@ -64,7 +65,27 @@ export function http(_, method, path, opts, go) {
     const meta = response;
     // special-case net::ERR_CONNECTION_REFUSED
     // if status is 'error' and xhr.status is 0
-    const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
+    if (const cause = (meta != null) {
+      response.__meta
+    } else {
+      if (void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError')) {
+        (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError)
+      } else {
+        if ((error != null) {
+          error.message
+        } else {
+              if (void 0)) {
+            new Flow.Error(error.message)
+          } else {
+                if (status === 'error' && xhr.status === 0) {
+              new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.')
+            } else {
+              new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
+            }
+          }
+        }
+      }
+    }
     return go(new Flow.Error(`Error calling ${method} ${path}${optsToString(opts)}`, cause));
   });
 }
