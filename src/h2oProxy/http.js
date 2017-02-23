@@ -1,5 +1,6 @@
 import { optsToString } from './optsToString';
 import { trackPath } from './trackPath';
+import httpRequestFailFunction from './httpRequestFailFunction';
 
 export function http(_, method, path, opts, go) {
   const Flow = window.Flow;
@@ -54,17 +55,17 @@ export function http(_, method, path, opts, go) {
       return go(null, data);
     } catch (_error) {
       error = _error;
+      console.log('error from h2oProxy http', error);
       return go(new Flow.Error(`Error processing ${method} ${path}`, error));
     }
   });
-  return req.fail((xhr, status, error) => {
-    let serverError;
-    _.status('server', 'error', path);
-    const response = xhr.responseJSON;
-    const meta = response;
-    // special-case net::ERR_CONNECTION_REFUSED
-    // if status is 'error' and xhr.status is 0
-    const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${response.dev_msg} (${response.exception_type})\n  ${response.stacktrace.join('\n  ')}`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${status}, code=${xhr.status}, error=${(error || '?')}`);
-    return go(new Flow.Error(`Error calling ${method} ${path}${optsToString(opts)}`, cause));
-  });
+  const boundHttpRequestFailFunction = httpRequestFailFunction.bind(
+    this,
+    _,
+    path,
+    go,
+    method,
+    opts
+  );
+  return req.fail(boundHttpRequestFailFunction);
 }

@@ -989,6 +989,45 @@
       }
     }
 
+    function httpRequestFailFunction(_, path, go, method, opts, xhr, status, error) {
+      console.log('arguments from httpRequestFailFunction', arguments);
+      const Flow = window.Flow;
+      let serverError;
+      _.status('server', 'error', path);
+      const response = xhr.responseJSON;
+      console.log('h2oProxy http response from h2o-3', response);
+      // special-case net::ERR_CONNECTION_REFUSED
+      // if status is 'error' and xhr.status is 0
+      let cause;
+
+      // if there is a response
+      if (typeof response !== 'undefined') {
+        console.log('h2oProxy http fail | there is a response');
+        // if the response has a __meta metadata property
+        if (typeof response.__meta !== 'undefined') {
+          console.log('h2oProxy http fail | the response has a __meta metadata property');
+          // if that metadata property has one of two specific schema types
+          if (response.__meta.schema_type === 'H2OError' || response.__meta.schema_type === 'H2OModelBuilderError') {
+            console.log('h2oProxy http fail | the response has one of two specific schema types');
+            serverError = new Flow.Error(response.exception_msg);
+            serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`;
+            console.log('serverError', serverError);
+            cause = serverError;
+          } else if (typeof error !== 'undefined' && error !== null ? error.message : void 0) {
+            cause = new Flow.Error(error.message);
+          } else {
+            // special-case net::ERR_CONNECTION_REFUSED
+            if (status === 'error' && xhr.status === 0) {
+              cause = new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.');
+            } else {
+              cause = new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
+            }
+          }
+        }
+      }
+      return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
+    }
+
     function http(_, method, path, opts, go) {
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -1042,19 +1081,12 @@
           return go(null, data);
         } catch (_error) {
           error = _error;
+          console.log('error from h2oProxy http', error);
           return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
         }
       });
-      return req.fail((xhr, status, error) => {
-        let serverError;
-        _.status('server', 'error', path);
-        const response = xhr.responseJSON;
-        const meta = response;
-        // special-case net::ERR_CONNECTION_REFUSED
-        // if status is 'error' and xhr.status is 0
-        const cause = (meta != null ? response.__meta : void 0) && (meta.schema_type === 'H2OError' || meta.schema_type === 'H2OModelBuilderError') ? (serverError = new Flow.Error(response.exception_msg), serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`, serverError) : (error != null ? error.message : void 0) ? new Flow.Error(error.message) : status === 'error' && xhr.status === 0 ? new Flow.Error('Could not connect to H2O. Your H2O cloud is currently unresponsive.') : new Flow.Error(`HTTP connection failure: status=${ status }, code=${ xhr.status }, error=${ error || '?' }`);
-        return go(new Flow.Error(`Error calling ${ method } ${ path }${ optsToString(opts) }`, cause));
-      });
+      const boundHttpRequestFailFunction = httpRequestFailFunction.bind(this, _, path, go, method, opts);
+      return req.fail(boundHttpRequestFailFunction);
     }
 
     function doGet(_, path, go) {
@@ -9852,8 +9884,10 @@
           this.message = message;
           this.cause = cause;
           this.name = 'FlowError';
-          if (_ref != null ? _ref.stack : void 0) {
-            this.stack = this.cause.stack;
+          if (typeof this.cause !== 'undefined') {
+            if (typeof this.cause.stack !== 'undefined') {
+              this.stack = this.cause.stack;
+            }
           } else {
             error = new Error();
             if (error.stack) {
@@ -12270,12 +12304,12 @@
         return ft((error, result) => {
           console.log('error from flowCoffeescript render evaluate', error);
           console.log('result from flowCoffeescript render evaluate', result);
-          const _ref = result._flow_;
           if (error) {
+            console.log('output from flowCoffeescript evaluate', output);
             output.error(new Flow.Error('Error evaluating cell', error));
             return output.end();
           }
-          if (result != null ? _ref != null ? _ref.render : void 0 : void 0) {
+          if (result != null ? result._flow_ != null ? result._flow_.render : void 0 : void 0) {
             return output.data(result._flow_.render(() => output.end()));
           }
           return output.data(Flow.objectBrowser(_, (() => output.end())('output', result)));

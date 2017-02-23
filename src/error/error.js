@@ -27,8 +27,10 @@ export function error() {
       this.message = message;
       this.cause = cause;
       this.name = 'FlowError';
-      if (_ref != null ? _ref.stack : void 0) {
-        this.stack = this.cause.stack;
+      if (typeof this.cause !== 'undefined') {
+        if (typeof this.cause.stack !=='undefined') {
+          this.stack = this.cause.stack;
+        }
       } else {
         error = new Error();
         if (error.stack) {
