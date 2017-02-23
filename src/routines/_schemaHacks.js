@@ -10,7 +10,7 @@ export const _schemaHacks = {
   PCAOutput: { fields: 'names domains help' },
   GLRMOutput: { fields: 'names domains help' },
   SVMOutput: { fields: 'names domains help' },
-  Word2VecOutput: { fields: 'names domains help' },
+  // Word2VecOutput: { fields: 'names domains help' },
   ModelMetricsBinomialGLM: {
     fields: null,
     transform: transformBinomialMetrics,

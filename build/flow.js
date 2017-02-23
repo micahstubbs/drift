@@ -2968,7 +2968,7 @@
       PCAOutput: { fields: 'names domains help' },
       GLRMOutput: { fields: 'names domains help' },
       SVMOutput: { fields: 'names domains help' },
-      Word2VecOutput: { fields: 'names domains help' },
+      // Word2VecOutput: { fields: 'names domains help' },
       ModelMetricsBinomialGLM: {
         fields: null,
         transform: transformBinomialMetrics
@@ -3040,8 +3040,12 @@
       let meta;
       let v;
       let _ref2;
-      const _ref1 = obj.__meta;
-      const schemaType = _ref1 != null ? _ref1.schema_type : void 0;
+      let schemaType;
+      if (typeof obj !== 'undefined') {
+        if (typeof obj.__meta !== 'undefined') {
+          schemaType = obj.__meta.schema_type;
+        }
+      }
       const attrs = blacklistedAttributesBySchema()[schemaType];
       let blacklistedAttributes;
       if (schemaType) {
