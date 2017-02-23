@@ -15,6 +15,8 @@ export function h2oModelOutput(_, _go, refresh) {
     }
   });
   _.output(createOutput(_));
+  console.log('_.output from h2oModelOutput', _.output);
+  console.log('_.output() from h2oModelOutput', _.output());
   lodash.defer(_go);
   return {
     output: _.output,

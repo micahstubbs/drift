@@ -5328,6 +5328,8 @@
         }
       });
       _.output(createOutput(_));
+      console.log('_.output from h2oModelOutput', _.output);
+      console.log('_.output() from h2oModelOutput', _.output());
       lodash.defer(_go);
       return {
         output: _.output,
@@ -12327,8 +12329,17 @@
             output.error(new Flow.Error('Error evaluating cell', error));
             return output.end();
           }
-          if (result != null ? result._flow_ != null ? result._flow_.render : void 0 : void 0) {
-            return output.data(result._flow_.render(() => output.end()));
+          if (typeof result !== 'undefined') {
+            console.log('result is defined at flowCoffeescript evaluate');
+            if (typeof result._flow_ !== 'undefined') {
+              console.log('result._flow_ is defined at flowCoffeescript evaluate');
+              if (typeof result._flow_.render !== 'undefined') {
+                console.log('result._flow_.render is defined at flowCoffeescript evaluate');
+                const returnValue = output.data(result._flow_.render(() => output.end()));
+                console.log('returnValue from flowCoffeescript evaluate', returnValue);
+                return returnValue;
+              }
+            }
           }
           return output.data(Flow.objectBrowser(_, (() => output.end())('output', result)));
         });
