@@ -3048,11 +3048,10 @@
         }
       }
       const attrs = blacklistedAttributesBySchema()[schemaType];
-      let blacklistedAttributes;
-      if (schemaType) {
+      console.log('attrs from inspectObject', attrs);
+      let blacklistedAttributes = { __meta: true };
+      if (schemaType && typeof attrs !== 'undefined') {
         blacklistedAttributes = attrs;
-      } else {
-        blacklistedAttributes = {};
       }
       const transform = schemaTransforms[schemaType];
       if (transform) {
@@ -3061,12 +3060,16 @@
       const record = {};
       inspections[name] = inspectRawObject_(name, origin, name, record);
       for (k in obj) {
-        if ({}.hasOwnProperty.call(obj, k)) {
+        if ({}.hasOwnProperty.call(obj, k) && typeof obj !== 'undefined') {
+          console.log('k from inspectObject', k);
+          console.log('obj from inspectObject', obj);
+          console.log('blacklistedAttributes from inspectObject', blacklistedAttributes);
           v = obj[k];
           if (!blacklistedAttributes[k]) {
             if (v === null) {
               record[k] = null;
             } else {
+              console.log('v from inspectObject', v);
               _ref2 = v.__meta;
               if ((_ref2 != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
                 inspections[`${ name } - ${ v.name }`] = inspectTwoDimTable_(origin, `${ name } - ${ v.name }`, v);
@@ -3078,6 +3081,7 @@
                     inspections[k] = inspectRawArray_(k, origin, k, v);
                   }
                 } else if (lodash.isObject(v)) {
+                  console.log('v from inspectObject', v);
                   meta = v.__meta;
                   if (meta) {
                     if (meta.schema_type === 'Key<Frame>') {
