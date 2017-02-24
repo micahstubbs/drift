@@ -3017,8 +3017,8 @@
       let fields;
       const dicts = {};
       for (schema in _schemaHacks) {
-        console.log('schema from blacklistedAttributesBySchema', schema);
         if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
+          console.log('schema from blacklistedAttributesBySchema', schema);
           attrs = _schemaHacks[schema];
           dict = { __meta: true };
           dicts[schema] = dict;
