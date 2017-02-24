@@ -29,13 +29,40 @@ export default function renderTables(_) {
         continue;
       }
     }
+    console.log('_ from renderTable', _);
+    console.log('_.model from renderTable', _.model);
+    console.log('tableName from renderTable', tableName);
+    // table = _.model[tableName];
     table = _.inspect(tableName, _.model);
+    console.log('table from renderTables', table);
     if (typeof table !== 'undefined') {
-      const plotTitle = tableName + (table.metadata.description ? ` (${table.metadata.description})` : '');
-      const gFunction = g => g(
-        table.indices.length > 1 ? g.select() : g.select(0),
-        g.from(table)
-      );
+      let plotTitle = tableName;
+      // if there is a table description, use it in the plot title
+      if (typeof table.metadata !== 'undefined') {
+        if (
+          typeof table.metadata.description !== 'undefined' &&
+          table.metadata.description.length > 0
+        ) {
+          plotTitle = `${tableName} (${table.metadata.description})`
+        }
+      }
+
+      // set the gFunction
+      let gFunction;
+      if (table.indices.length > 1) {
+        // lightning.js domain specific language
+        gFunction = g => g(
+          g.select(),
+          g.from(table)
+        );
+      } else {
+        // lightning.js domain specific language
+         gFunction = g => g(
+          g.select(0),
+          g.from(table)
+        )
+      }
+
       const plotFunction = _.plot(gFunction);
       renderPlot(
         _,
