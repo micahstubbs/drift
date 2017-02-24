@@ -31,7 +31,7 @@ export function inspectObject(inspections, name, origin, obj) {
   if (typeof schemaType !== 'undefined') {
     if (typeof attrs !== 'undefined') {
       blacklistedAttributes = attrs;
-    } 
+    }
   }
   const transform = schemaTransforms[schemaType];
   if (transform) {

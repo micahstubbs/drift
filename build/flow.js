@@ -5161,13 +5161,21 @@
       let output;
       let table;
       const tableNames = _.ls(_.model);
+      console.log('tableNames from renderTables', tableNames);
       for (let i = 0; i < tableNames.length; i++) {
         tableName = tableNames[i];
         if (!(tableName !== 'parameters')) {
           continue;
         }
         // Skip confusion matrix tables for multinomial models
-        output = (_.model.output != null ? _.model.output.model_category : void 0) === 'Multinomial';
+        let output;
+        if (_.model !== 'undefined') {
+          if (_.model.output !== 'undefined') {
+            if (_.model.output.model_category === 'Multinomial') {
+              output = true;
+            }
+          }
+        }
         if (output) {
           if (tableName.indexOf('output - training_metrics - cm') === 0) {
             continue;
@@ -5328,7 +5336,6 @@
         }
       });
       _.output(createOutput(_));
-      console.log('_.output from h2oModelOutput', _.output);
       console.log('_.output() from h2oModelOutput', _.output());
       lodash.defer(_go);
       return {
@@ -12378,7 +12385,9 @@
           // console.log('result.name from tasks pipe', result.name);
           // console.log('result from tasks pipe', result);
           if (lodash.isFunction(result)) {
+            console.log('result is a function at flowCoffeescript');
             if (isRoutine(result, sandbox)) {
+              console.log('result is a routine at flowCoffeescript');
               // a hack to gradually migrate routines to accept _ as a parameter
               // rather than expect _ to be a global variable
               if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {

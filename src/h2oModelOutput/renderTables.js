@@ -5,13 +5,21 @@ export default function renderTables(_) {
   let output;
   let table;
   const tableNames = _.ls(_.model);
+  console.log('tableNames from renderTables', tableNames);
   for (let i = 0; i < tableNames.length; i++) {
     tableName = tableNames[i];
     if (!(tableName !== 'parameters')) {
       continue;
     }
     // Skip confusion matrix tables for multinomial models
-    output = (_.model.output != null ? _.model.output.model_category : void 0) === 'Multinomial';
+    let output;
+    if (_.model !== 'undefined') {
+      if (_.model.output !== 'undefined') {
+        if (_.model.output.model_category === 'Multinomial') {
+          output = true;
+        }
+      }
+    }
     if (output) {
       if (tableName.indexOf('output - training_metrics - cm') === 0) {
         continue;
