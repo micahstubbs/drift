@@ -19,7 +19,7 @@ import renderStackedEnsemblePlots from './renderStackedEnsemblePlots';
 import renderGainsLiftPlots from './renderGainsLiftPlots';
 import renderTables from './renderTables';
 
-export default function createOutput(_) {
+export default function createOutput(_, _model) {
   const lodash = window._;
   const Flow = window.Flow;
   _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
@@ -33,7 +33,7 @@ export default function createOutput(_) {
   });
 
   // TODO use _.enumerate()
-  const _inputParameters = lodash.map(_.model.parameters, parameter => {
+  const _inputParameters = lodash.map(_model.parameters, parameter => {
     const type = parameter.type;
     const defaultValue = parameter.default_value;
     const actualValue = parameter.actual_value;
@@ -80,7 +80,7 @@ export default function createOutput(_) {
 
   // look at the algo of the current model
   // and render the relevant plots and tables
-  switch (_.model.algo) {
+  switch (_model.algo) {
     case 'kmeans':
       renderKMeansPlots(_);
       break;
@@ -109,11 +109,11 @@ export default function createOutput(_) {
   }
 
   renderGainsLiftPlots(_);
-  renderTables(_);
+  renderTables(_, _model);
 
   return {
-    key: _.model.model_id,
-    algo: _.model.algo_full_name,
+    key: _model.model_id,
+    algo: _model.algo_full_name,
     plots: _.plots,
     inputParameters: _inputParameters,
     isExpanded: _.modelOutputIsExpanded,

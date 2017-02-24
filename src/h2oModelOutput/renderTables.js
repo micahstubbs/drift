@@ -1,10 +1,10 @@
 import renderPlot from './renderPlot';
 
-export default function renderTables(_) {
+export default function renderTables(_, _model) {
   let tableName;
   let output;
   let table;
-  const tableNames = _.ls(_.model);
+  const tableNames = _.ls(_model);
   console.log('tableNames from renderTables', tableNames);
   for (let i = 0; i < tableNames.length; i++) {
     tableName = tableNames[i];
@@ -13,9 +13,9 @@ export default function renderTables(_) {
     }
     // Skip confusion matrix tables for multinomial models
     let output;
-    if (_.model !== 'undefined') {
-      if (_.model.output !== 'undefined') {
-        if (_.model.output.model_category === 'Multinomial') {
+    if (_model !== 'undefined') {
+      if (_model.output !== 'undefined') {
+        if (_model.output.model_category === 'Multinomial') {
           output = true;
         }
       }
@@ -30,10 +30,10 @@ export default function renderTables(_) {
       }
     }
     console.log('_ from renderTable', _);
-    console.log('_.model from renderTable', _.model);
+    console.log('_model from renderTable', _model);
     console.log('tableName from renderTable', tableName);
-    // table = _.model[tableName];
-    table = _.inspect(tableName, _.model);
+    table = _.inspect(tableName, _model);
+
     console.log('table from renderTables', table);
     if (typeof table !== 'undefined') {
       let plotTitle = tableName;

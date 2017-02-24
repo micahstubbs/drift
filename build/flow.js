@@ -5156,11 +5156,11 @@
       }
     }
 
-    function renderTables(_) {
+    function renderTables(_, _model) {
       let tableName;
       let output;
       let table;
-      const tableNames = _.ls(_.model);
+      const tableNames = _.ls(_model);
       console.log('tableNames from renderTables', tableNames);
       for (let i = 0; i < tableNames.length; i++) {
         tableName = tableNames[i];
@@ -5169,9 +5169,9 @@
         }
         // Skip confusion matrix tables for multinomial models
         let output;
-        if (_.model !== 'undefined') {
-          if (_.model.output !== 'undefined') {
-            if (_.model.output.model_category === 'Multinomial') {
+        if (_model !== 'undefined') {
+          if (_model.output !== 'undefined') {
+            if (_model.output.model_category === 'Multinomial') {
               output = true;
             }
           }
@@ -5186,10 +5186,10 @@
           }
         }
         console.log('_ from renderTable', _);
-        console.log('_.model from renderTable', _.model);
+        console.log('_model from renderTable', _model);
         console.log('tableName from renderTable', tableName);
-        // table = _.model[tableName];
-        table = _.inspect(tableName, _.model);
+        table = _.inspect(tableName, _model);
+
         console.log('table from renderTables', table);
         if (typeof table !== 'undefined') {
           let plotTitle = tableName;
@@ -5216,7 +5216,7 @@
       }
     }
 
-    function createOutput(_) {
+    function createOutput(_, _model) {
       const lodash = window._;
       const Flow = window.Flow;
       _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
@@ -5230,7 +5230,7 @@
       });
 
       // TODO use _.enumerate()
-      const _inputParameters = lodash.map(_.model.parameters, parameter => {
+      const _inputParameters = lodash.map(_model.parameters, parameter => {
         const type = parameter.type;
         const defaultValue = parameter.default_value;
         const actualValue = parameter.actual_value;
@@ -5277,7 +5277,7 @@
 
       // look at the algo of the current model
       // and render the relevant plots and tables
-      switch (_.model.algo) {
+      switch (_model.algo) {
         case 'kmeans':
           renderKMeansPlots(_);
           break;
@@ -5306,11 +5306,11 @@
       }
 
       renderGainsLiftPlots(_);
-      renderTables(_);
+      renderTables(_, _model);
 
       return {
-        key: _.model.model_id,
-        algo: _.model.algo_full_name,
+        key: _model.model_id,
+        algo: _model.algo_full_name,
         plots: _.plots,
         inputParameters: _inputParameters,
         isExpanded: _.modelOutputIsExpanded,
@@ -5345,7 +5345,8 @@
       return _.isLive(!_.isLive());
     }
 
-    function h2oModelOutput(_, _go, refresh) {
+    function h2oModelOutput(_, _go, _model, refresh) {
+      console.log('arguments from h2oModelOutput', arguments);
       const lodash = window._;
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -5356,7 +5357,7 @@
           return _refresh(_, refresh);
         }
       });
-      _.output(createOutput(_));
+      _.output(createOutput(_, _model));
       console.log('_.output() from h2oModelOutput', _.output());
       lodash.defer(_go);
       return {
@@ -5404,7 +5405,7 @@
       });
       lodash.extend(model);
       _.model = model;
-      return render_(_, model, h2oModelOutput, refresh);
+      return render_(_, model, h2oModelOutput, model, refresh);
     }
 
     function requestModel(_, modelKey, go) {
