@@ -55,7 +55,9 @@ export function flowCoffeescript(_, guid, sandbox) {
       // console.log('result.name from tasks pipe', result.name);
       // console.log('result from tasks pipe', result);
       if (lodash.isFunction(result)) {
+        console.log('result is a function at flowCoffeescript');
         if (isRoutine(result, sandbox)) {
+          console.log('result is a routine at flowCoffeescript');
           // a hack to gradually migrate routines to accept _ as a parameter
           // rather than expect _ to be a global variable
           if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {

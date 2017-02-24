@@ -2968,7 +2968,7 @@
       PCAOutput: { fields: 'names domains help' },
       GLRMOutput: { fields: 'names domains help' },
       SVMOutput: { fields: 'names domains help' },
-      Word2VecOutput: { fields: 'names domains help' },
+      // Word2VecOutput: { fields: 'names domains help' },
       ModelMetricsBinomialGLM: {
         fields: null,
         transform: transformBinomialMetrics
@@ -3018,6 +3018,7 @@
       const dicts = {};
       for (schema in _schemaHacks) {
         if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
+          console.log('schema from blacklistedAttributesBySchema', schema);
           attrs = _schemaHacks[schema];
           dicts[schema] = dict = { __meta: true };
           if (attrs.fields) {
@@ -3040,14 +3041,17 @@
       let meta;
       let v;
       let _ref2;
-      const _ref1 = obj.__meta;
-      const schemaType = _ref1 != null ? _ref1.schema_type : void 0;
+      let schemaType;
+      if (typeof obj !== 'undefined') {
+        if (typeof obj.__meta !== 'undefined') {
+          schemaType = obj.__meta.schema_type;
+        }
+      }
       const attrs = blacklistedAttributesBySchema()[schemaType];
-      let blacklistedAttributes;
-      if (schemaType) {
+      console.log('attrs from inspectObject', attrs);
+      let blacklistedAttributes = { __meta: true };
+      if (schemaType && typeof attrs !== 'undefined') {
         blacklistedAttributes = attrs;
-      } else {
-        blacklistedAttributes = {};
       }
       const transform = schemaTransforms[schemaType];
       if (transform) {
@@ -3056,12 +3060,16 @@
       const record = {};
       inspections[name] = inspectRawObject_(name, origin, name, record);
       for (k in obj) {
-        if ({}.hasOwnProperty.call(obj, k)) {
+        if ({}.hasOwnProperty.call(obj, k) && typeof obj !== 'undefined') {
+          console.log('k from inspectObject', k);
+          console.log('obj from inspectObject', obj);
+          console.log('blacklistedAttributes from inspectObject', blacklistedAttributes);
           v = obj[k];
           if (!blacklistedAttributes[k]) {
             if (v === null) {
               record[k] = null;
             } else {
+              console.log('v from inspectObject', v);
               _ref2 = v.__meta;
               if ((_ref2 != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
                 inspections[`${ name } - ${ v.name }`] = inspectTwoDimTable_(origin, `${ name } - ${ v.name }`, v);
@@ -3073,6 +3081,7 @@
                     inspections[k] = inspectRawArray_(k, origin, k, v);
                   }
                 } else if (lodash.isObject(v)) {
+                  console.log('v from inspectObject', v);
                   meta = v.__meta;
                   if (meta) {
                     if (meta.schema_type === 'Key<Frame>') {
@@ -5138,18 +5147,26 @@
       }
     }
 
-    function renderTables(_) {
+    function renderTables(_, _model) {
       let tableName;
       let output;
       let table;
-      const tableNames = _.ls(_.model);
+      const tableNames = _.ls(_model);
+      console.log('tableNames from renderTables', tableNames);
       for (let i = 0; i < tableNames.length; i++) {
         tableName = tableNames[i];
         if (!(tableName !== 'parameters')) {
           continue;
         }
         // Skip confusion matrix tables for multinomial models
-        output = (_.model.output != null ? _.model.output.model_category : void 0) === 'Multinomial';
+        let output;
+        if (_model !== 'undefined') {
+          if (_model.output !== 'undefined') {
+            if (_model.output.model_category === 'Multinomial') {
+              output = true;
+            }
+          }
+        }
         if (output) {
           if (tableName.indexOf('output - training_metrics - cm') === 0) {
             continue;
@@ -5159,17 +5176,38 @@
             continue;
           }
         }
-        table = _.inspect(tableName, _.model);
+        console.log('_ from renderTable', _);
+        console.log('_model from renderTable', _model);
+        console.log('tableName from renderTable', tableName);
+        table = _.inspect(tableName, _model);
+
+        console.log('table from renderTables', table);
         if (typeof table !== 'undefined') {
-          const plotTitle = tableName + (table.metadata.description ? ` (${ table.metadata.description })` : '');
-          const gFunction = g => g(table.indices.length > 1 ? g.select() : g.select(0), g.from(table));
+          let plotTitle = tableName;
+          // if there is a table description, use it in the plot title
+          if (typeof table.metadata !== 'undefined') {
+            if (typeof table.metadata.description !== 'undefined' && table.metadata.description.length > 0) {
+              plotTitle = `${ tableName } (${ table.metadata.description })`;
+            }
+          }
+
+          // set the gFunction
+          let gFunction;
+          if (table.indices.length > 1) {
+            // lightning.js domain specific language
+            gFunction = g => g(g.select(), g.from(table));
+          } else {
+            // lightning.js domain specific language
+            gFunction = g => g(g.select(0), g.from(table));
+          }
+
           const plotFunction = _.plot(gFunction);
           renderPlot$1(_, plotTitle, true, plotFunction);
         }
       }
     }
 
-    function createOutput(_) {
+    function createOutput(_, _model) {
       const lodash = window._;
       const Flow = window.Flow;
       _.modelOutputIsExpanded = Flow.Dataflow.signal(false);
@@ -5183,7 +5221,7 @@
       });
 
       // TODO use _.enumerate()
-      const _inputParameters = lodash.map(_.model.parameters, parameter => {
+      const _inputParameters = lodash.map(_model.parameters, parameter => {
         const type = parameter.type;
         const defaultValue = parameter.default_value;
         const actualValue = parameter.actual_value;
@@ -5230,7 +5268,7 @@
 
       // look at the algo of the current model
       // and render the relevant plots and tables
-      switch (_.model.algo) {
+      switch (_model.algo) {
         case 'kmeans':
           renderKMeansPlots(_);
           break;
@@ -5259,11 +5297,11 @@
       }
 
       renderGainsLiftPlots(_);
-      renderTables(_);
+      renderTables(_, _model);
 
       return {
-        key: _.model.model_id,
-        algo: _.model.algo_full_name,
+        key: _model.model_id,
+        algo: _model.algo_full_name,
         plots: _.plots,
         inputParameters: _inputParameters,
         isExpanded: _.modelOutputIsExpanded,
@@ -5298,7 +5336,8 @@
       return _.isLive(!_.isLive());
     }
 
-    function h2oModelOutput(_, _go, refresh) {
+    function h2oModelOutput(_, _go, _model, refresh) {
+      console.log('arguments from h2oModelOutput', arguments);
       const lodash = window._;
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -5309,7 +5348,8 @@
           return _refresh(_, refresh);
         }
       });
-      _.output(createOutput(_));
+      _.output(createOutput(_, _model));
+      console.log('_.output() from h2oModelOutput', _.output());
       lodash.defer(_go);
       return {
         output: _.output,
@@ -5356,7 +5396,7 @@
       });
       lodash.extend(model);
       _.model = model;
-      return render_(_, model, h2oModelOutput, refresh);
+      return render_(_, model, h2oModelOutput, model, refresh);
     }
 
     function requestModel(_, modelKey, go) {
@@ -12309,8 +12349,17 @@
             output.error(new Flow.Error('Error evaluating cell', error));
             return output.end();
           }
-          if (result != null ? result._flow_ != null ? result._flow_.render : void 0 : void 0) {
-            return output.data(result._flow_.render(() => output.end()));
+          if (typeof result !== 'undefined') {
+            console.log('result is defined at flowCoffeescript evaluate');
+            if (typeof result._flow_ !== 'undefined') {
+              console.log('result._flow_ is defined at flowCoffeescript evaluate');
+              if (typeof result._flow_.render !== 'undefined') {
+                console.log('result._flow_.render is defined at flowCoffeescript evaluate');
+                const returnValue = output.data(result._flow_.render(() => output.end()));
+                console.log('returnValue from flowCoffeescript evaluate', returnValue);
+                return returnValue;
+              }
+            }
           }
           return output.data(Flow.objectBrowser(_, (() => output.end())('output', result)));
         });
@@ -12349,7 +12398,9 @@
           // console.log('result.name from tasks pipe', result.name);
           // console.log('result from tasks pipe', result);
           if (lodash.isFunction(result)) {
+            console.log('result is a function at flowCoffeescript');
             if (isRoutine(result, sandbox)) {
+              console.log('result is a routine at flowCoffeescript');
               // a hack to gradually migrate routines to accept _ as a parameter
               // rather than expect _ to be a global variable
               if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {

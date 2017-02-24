@@ -45,5 +45,5 @@ export function extendModel(_, model) {
   });
   lodash.extend(model);
   _.model = model;
-  return render_(_, model, h2oModelOutput, refresh);
+  return render_(_, model, h2oModelOutput, model, refresh);
 }

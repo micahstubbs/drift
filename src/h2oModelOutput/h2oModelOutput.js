@@ -3,7 +3,8 @@ import createOutput from './createOutput';
 import _toggleRefresh from './_toggleRefresh';
 
 
-export function h2oModelOutput(_, _go, refresh) {
+export function h2oModelOutput(_, _go, _model, refresh) {
+  console.log('arguments from h2oModelOutput', arguments);
   const lodash = window._;
   const Flow = window.Flow;
   const $ = window.jQuery;
@@ -14,7 +15,8 @@ export function h2oModelOutput(_, _go, refresh) {
       return _refresh(_, refresh);
     }
   });
-  _.output(createOutput(_));
+  _.output(createOutput(_, _model));
+  console.log('_.output() from h2oModelOutput', _.output());
   lodash.defer(_go);
   return {
     output: _.output,

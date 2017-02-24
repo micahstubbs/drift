@@ -14,6 +14,7 @@ export function blacklistedAttributesBySchema() {
   const dicts = {};
   for (schema in _schemaHacks) {
     if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
+      console.log('schema from blacklistedAttributesBySchema', schema);
       attrs = _schemaHacks[schema];
       dicts[schema] = dict = { __meta: true };
       if (attrs.fields) {
