@@ -115,7 +115,6 @@
       const _maxPages = Flow.Dataflow.signal(Math.ceil(_frame.total_column_count / MaxItemsPerPage));
       const _canGoToPreviousPage = Flow.Dataflow.lift(_currentPage, index => index > 0);
       const _canGoToNextPage = Flow.Dataflow.lift(_maxPages, _currentPage, (maxPages, index) => index < maxPages - 1);
-      console.log('_ from h2oFrameDataOutput', _);
       const renderPlot = (container, render) => render((error, vis) => {
         if (error) {
           return console.debug(error);
@@ -990,28 +989,22 @@
     }
 
     function httpRequestFailFunction(_, path, go, method, opts, xhr, status, error) {
-      console.log('arguments from httpRequestFailFunction', arguments);
       const Flow = window.Flow;
       let serverError;
       _.status('server', 'error', path);
       const response = xhr.responseJSON;
-      console.log('h2oProxy http response from h2o-3', response);
       // special-case net::ERR_CONNECTION_REFUSED
       // if status is 'error' and xhr.status is 0
       let cause;
 
       // if there is a response
       if (typeof response !== 'undefined') {
-        console.log('h2oProxy http fail | there is a response');
         // if the response has a __meta metadata property
         if (typeof response.__meta !== 'undefined') {
-          console.log('h2oProxy http fail | the response has a __meta metadata property');
           // if that metadata property has one of two specific schema types
           if (response.__meta.schema_type === 'H2OError' || response.__meta.schema_type === 'H2OModelBuilderError') {
-            console.log('h2oProxy http fail | the response has one of two specific schema types');
             serverError = new Flow.Error(response.exception_msg);
             serverError.stack = `${ response.dev_msg } (${ response.exception_type })\n  ${ response.stacktrace.join('\n  ') }`;
-            console.log('serverError', serverError);
             cause = serverError;
           } else if (typeof error !== 'undefined' && error !== null ? error.message : void 0) {
             cause = new Flow.Error(error.message);
@@ -1081,7 +1074,6 @@
           return go(null, data);
         } catch (_error) {
           error = _error;
-          console.log('error from h2oProxy http', error);
           return go(new Flow.Error(`Error processing ${ method } ${ path }`, error));
         }
       });
@@ -1676,7 +1668,6 @@
     }
 
     function requestCreateFrame(_, opts, go) {
-      console.log('arguments from requestCreateFrame', arguments);
       return postCreateFrameRequest(_, opts, (error, result) => {
         if (error) {
           return go(error);
@@ -3018,7 +3009,6 @@
       const dicts = {};
       for (schema in _schemaHacks) {
         if ({}.hasOwnProperty.call(_schemaHacks, schema)) {
-          console.log('schema from blacklistedAttributesBySchema', schema);
           attrs = _schemaHacks[schema];
           dicts[schema] = dict = { __meta: true };
           if (attrs.fields) {
@@ -3048,7 +3038,6 @@
         }
       }
       const attrs = blacklistedAttributesBySchema()[schemaType];
-      console.log('attrs from inspectObject', attrs);
       let blacklistedAttributes = { __meta: true };
       if (schemaType && typeof attrs !== 'undefined') {
         blacklistedAttributes = attrs;
@@ -3061,15 +3050,11 @@
       inspections[name] = inspectRawObject_(name, origin, name, record);
       for (k in obj) {
         if ({}.hasOwnProperty.call(obj, k) && typeof obj !== 'undefined') {
-          console.log('k from inspectObject', k);
-          console.log('obj from inspectObject', obj);
-          console.log('blacklistedAttributes from inspectObject', blacklistedAttributes);
           v = obj[k];
           if (!blacklistedAttributes[k]) {
             if (v === null) {
               record[k] = null;
             } else {
-              console.log('v from inspectObject', v);
               _ref2 = v.__meta;
               if ((_ref2 != null ? _ref2.schema_type : void 0) === 'TwoDimTable') {
                 inspections[`${ name } - ${ v.name }`] = inspectTwoDimTable_(origin, `${ name } - ${ v.name }`, v);
@@ -3081,7 +3066,6 @@
                     inspections[k] = inspectRawArray_(k, origin, k, v);
                   }
                 } else if (lodash.isObject(v)) {
-                  console.log('v from inspectObject', v);
                   meta = v.__meta;
                   if (meta) {
                     if (meta.schema_type === 'Key<Frame>') {
@@ -3094,7 +3078,6 @@
                       inspectObject(inspections, `${ name } - ${ k }`, origin, v);
                     }
                   } else {
-                    console.log(`WARNING: dropping [${ k }] from inspection:`, v);
                   }
                 } else {
                   record[k] = lodash.isNumber(v) ? format6fi(v) : v;
@@ -3228,7 +3211,6 @@
     }
 
     function postPredictRequest(_, destinationKey, modelKey, frameKey, options, go) {
-      console.log('arguments from postPredictRequest', arguments);
       let opt;
       const opts = {};
       if (destinationKey) {
@@ -3487,7 +3469,6 @@
     }
 
     function testNetwork(_) {
-      console.log('arguments from testNetwork', arguments);
       return _fork(requestNetworkTest, _);
     }
 
@@ -4322,7 +4303,6 @@
     }
 
     function getModelRequest(_, key, go) {
-      console.log('arguments from getModelRequest', arguments);
       const lodash = window._;
       return doGet(_, `/3/Models/${ encodeURIComponent(key) }`, (error, result) => {
         if (error) {
@@ -4455,9 +4435,6 @@
     }
 
     function renderConfusionMatrices(_) {
-      console.log('_ from renderConfusionMatrices', _);
-      console.log('_.model from renderConfusionMatrices', _.model);
-      console.log('_.model.output from renderConfusionMatrices', _.model.output);
       const output = _.model.output;
       let confusionMatrix;
       if (output.model_category === 'Multinomial') {
@@ -5152,7 +5129,6 @@
       let output;
       let table;
       const tableNames = _.ls(_model);
-      console.log('tableNames from renderTables', tableNames);
       for (let i = 0; i < tableNames.length; i++) {
         tableName = tableNames[i];
         if (!(tableName !== 'parameters')) {
@@ -5176,12 +5152,7 @@
             continue;
           }
         }
-        console.log('_ from renderTable', _);
-        console.log('_model from renderTable', _model);
-        console.log('tableName from renderTable', tableName);
         table = _.inspect(tableName, _model);
-
-        console.log('table from renderTables', table);
         if (typeof table !== 'undefined') {
           let plotTitle = tableName;
           // if there is a table description, use it in the plot title
@@ -5320,7 +5291,6 @@
     }
 
     function _refresh(_, refresh) {
-      console.log('arguments passed to _refresh', arguments);
       const lodash = window._;
       refresh((error, model) => {
         if (!error) {
@@ -5337,7 +5307,6 @@
     }
 
     function h2oModelOutput(_, _go, _model, refresh) {
-      console.log('arguments from h2oModelOutput', arguments);
       const lodash = window._;
       const Flow = window.Flow;
       const $ = window.jQuery;
@@ -5349,7 +5318,6 @@
         }
       });
       _.output(createOutput(_, _model));
-      console.log('_.output() from h2oModelOutput', _.output());
       lodash.defer(_go);
       return {
         output: _.output,
@@ -5587,10 +5555,7 @@
     }
 
     function showRoomscaleScatterplot(options) {
-      console.log('showRoomscaleScatterplot was called');
-      console.log('arguments passed to showRoomscaleScatterplot', arguments);
       const selectedFrame = options.frameID;
-      console.log('selectedFrame from showModelDeviancesPlot', selectedFrame);
 
       // hard code values for `small-synth-data` for now
       // add proper form input soon
@@ -5716,7 +5681,6 @@
               columnValues = frame.columns.map(column => column.label);
               columnLabels = frame.columns.map(column => {
                 const missingPercent = 100 * column.missing_count / frame.rows;
-                console.log('column from _updateColumns', column);
                 return {
                   type: column.type === 'enum' ? `enum(${ column.domain_cardinality })` : column.type,
                   value: column.label,
@@ -5724,7 +5688,6 @@
                   missingLabel: missingPercent === 0 ? '' : `${ Math.round(missingPercent) }% NA`
                 };
               });
-              console.log('columnLabels from _updateColumns', columnLabels);
               _columns(columnLabels.map(d => d.value));
             }
           });
@@ -5807,7 +5770,6 @@
     const flowPrelude$48 = flowPreludeFunction();
 
     function h2oPlotInput(_, _go, _frame) {
-      console.log('arguments passed into h2oPlotInput', arguments);
       const Flow = window.Flow;
       const lodash = window._;
       let vector;
@@ -5845,7 +5807,6 @@
           // CoffeeScript code cell in Flow
           command = `plot (g) -> g(\n  g.${ _type() }(\n    g.position ${ flowPrelude$48.stringify(_x()) }, ${ flowPrelude$48.stringify(_y()) }\n  )\n  g.from inspect ${ flowPrelude$48.stringify(_frame.label) }, ${ _frame.metadata.origin }\n)`;
         }
-        console.log('command from h2oPlotInput', command);
         return _.insertAndExecuteCell('cs', command);
       };
       lodash.defer(_go);
@@ -6238,7 +6199,6 @@
     }
 
     function h2oScalaIntpOutput(_, _go, _result) {
-      console.log('_result from h2oScalaIntpOutput', _result);
       const lodash = window._;
       const Flow = window.Flow;
       const _scalaIntpView = Flow.Dataflow.signal(null);
@@ -8636,7 +8596,6 @@
         };
         const extendPlot = vis => render_(vis, h2oPlotOutput, vis.element);
         const createPlot = (f, go) => {
-          console.log('f from routines createPlot', f);
           if (lodash.isFunction(f)) {
             return _plot(f(lightning), (error, vis) => {
               if (error) {
@@ -8715,7 +8674,6 @@
           return inspection;
         };
         const plot = f => {
-          console.log('f from routines plot', f);
           if (_isFuture(f)) {
             return _fork(proceed, _, h2oPlotInput, f);
           } else if (lodash.isFunction(f)) {
@@ -9252,7 +9210,6 @@
         };
         const requestScalaCode = (session_id, code, go) => {
           // eslint-disable-line camelcase
-          console.log('session_id from routines requestScalaCode', session_id);
           return postScalaCodeRequest(_, session_id, code, (error, result) => {
             if (error) {
               return go(error);
@@ -9266,7 +9223,6 @@
         };
         const runScalaCode = (session_id, code) => {
           // eslint-disable-line camelcase
-          console.log('session_id from routines runScalaCode', session_id);
           return _fork(requestScalaCode, session_id, code);
         };
         const requestScalaIntp = go => postScalaIntpRequest(_, (error, result) => {
@@ -12326,7 +12282,6 @@
     function executeJavascript(sandbox, print) {
       const Flow = window.Flow;
       return (closure, go) => {
-        console.log('sandbox from executeJavascript', sandbox);
         let error;
         try {
           return go(null, closure(sandbox.routines, sandbox.context, sandbox.results, print));
@@ -12338,25 +12293,17 @@
     }
 
     function evaluate(_, output, ft) {
-      console.log('arguments from flowCoffeescript evaluate', arguments);
       const Flow = window.Flow;
       if (ft != null ? ft.isFuture : void 0) {
         return ft((error, result) => {
-          console.log('error from flowCoffeescript render evaluate', error);
-          console.log('result from flowCoffeescript render evaluate', result);
           if (error) {
-            console.log('output from flowCoffeescript evaluate', output);
             output.error(new Flow.Error('Error evaluating cell', error));
             return output.end();
           }
           if (typeof result !== 'undefined') {
-            console.log('result is defined at flowCoffeescript evaluate');
             if (typeof result._flow_ !== 'undefined') {
-              console.log('result._flow_ is defined at flowCoffeescript evaluate');
               if (typeof result._flow_.render !== 'undefined') {
-                console.log('result._flow_.render is defined at flowCoffeescript evaluate');
                 const returnValue = output.data(result._flow_.render(() => output.end()));
-                console.log('returnValue from flowCoffeescript evaluate', returnValue);
                 return returnValue;
               }
             }
@@ -12370,7 +12317,6 @@
     const routinesThatAcceptUnderbarParameter = ['testNetwork', 'getFrames', 'getGrids', 'getCloud', 'getTimeline', 'getStackTrace', 'deleteAll', 'getJobs'];
 
     function flowCoffeescript(_, guid, sandbox) {
-      console.log('arguments passed to flowCoffeescript', arguments);
       const lodash = window._;
       const Flow = window.Flow;
       // abstracting out `render` results in the output code cells
@@ -12379,9 +12325,6 @@
       //
       // XXX special-case functions so that bodies are not printed with the raw renderer.
       const render = (input, output) => {
-        console.log('arguments passed to render inside of flowCoffeescript', arguments);
-        console.log('input from flowCoffeescript render', input);
-        console.log('output from flowCoffeescript render', output);
         let cellResult;
         let outputBuffer;
         sandbox.results[guid] = cellResult = {
@@ -12398,9 +12341,7 @@
           // console.log('result.name from tasks pipe', result.name);
           // console.log('result from tasks pipe', result);
           if (lodash.isFunction(result)) {
-            console.log('result is a function at flowCoffeescript');
             if (isRoutine(result, sandbox)) {
-              console.log('result is a routine at flowCoffeescript');
               // a hack to gradually migrate routines to accept _ as a parameter
               // rather than expect _ to be a global variable
               if (typeof result !== 'undefined' && routinesThatAcceptUnderbarParameter.indexOf(result.name) > -1) {
@@ -12652,7 +12593,6 @@
     }
 
     function flowCell(_, type, input) {
-      console.log('arguments from flowCell', arguments);
       const lodash = window._;
       const Flow = window.Flow;
       if (type == null) {
@@ -12958,7 +12898,6 @@
     }
 
     function convertCellToMarkdown(_) {
-      console.log('arguments passed to convertCellToMarkdown', arguments);
       _.selectedCell.type('md');
       return _.selectedCell.execute();
     }
@@ -13395,7 +13334,6 @@
     }
 
     function runAllCells(_, fromBeginning) {
-      console.log('arguments from runAllCells', arguments);
       if (fromBeginning == null) {
         fromBeginning = true;
       }
@@ -13654,7 +13592,6 @@
 
     function appendCellAndRun(_, type, input) {
       const cell = appendCell(_, createCell(_, type, input));
-      console.log('cell from appendCellAndRun', cell);
       cell.execute();
       return cell;
     }
@@ -13671,7 +13608,6 @@
           // Handle the error
           return _.scalaIntpId(-1);
         }
-        console.log('response from notebook _initializeInterpreter', response);
         return _.scalaIntpId(response.session_id);
       });
     }
@@ -13942,7 +13878,6 @@
       const _sandbox = flowSandbox(_, routines(_));
       // TODO support external renderers
       _.renderers = flowRenderers(_, _sandbox);
-      console.log('_.renderers from flowApplication', _.renderers);
       flowAnalytics(_);
       flowGrowl(_);
       flowAutosave(_);

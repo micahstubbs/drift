@@ -1,7 +1,8 @@
 import json from 'rollup-plugin-json';
 import babel from 'rollup-plugin-babel';
 import nodeResolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs'; 
+import commonjs from 'rollup-plugin-commonjs';
+import strip from 'rollup-plugin-strip';
 
 export default {
   entry: 'src/index.js',
@@ -12,7 +13,19 @@ export default {
     nodeResolve({ jsnext: true, main: true }),
     json(),
     babel(),
-    commonjs()
+    commonjs(),
+    strip({
+      // set this to `false` if you don't want to
+      // remove debugger statements
+      debugger: true,
+
+      // defaults to `[ 'console.*', 'assert.*']`
+      functions: [ 'console.log', 'assert.*', 'debug'],
+
+      // set this to `false` if you're not using sourcemaps –
+      // defaults to `true`
+      sourceMap: false
+    })
   ],
   external: [],
   dest: 'build/flow.js',

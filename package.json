@@ -39,9 +39,10 @@
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^5.0.5",
     "rollup-plugin-json": "^2.0.1",
-    "rollup-plugin-node-resolve": "^2.0.0"
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-strip": "^1.1.1"
   },
-  "dependencies": { 
+  "dependencies": {
     "rollup": "^0.33.2"
   },
   "license": "MIT",
