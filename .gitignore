@@ -1,10 +1,10 @@
 node_modules/
 bin/
-reports/
 sublime-projects/
 *.sublime-project
 *.sublime-workspace
-selenium-debug.log
-nightwatch.json
+tests/selenium-debug.log
+tests/nightwatch.json
 tests/example.js
+tests/reports/
 npm-debug.log
