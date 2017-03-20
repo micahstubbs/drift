@@ -12342,7 +12342,7 @@
 
     function about() {
       var Flow = window.Flow;
-      Flow.Version = '0.4.54';
+      Flow.Version = '0.6.1';
       Flow.about = function (_) {
         var _properties = Flow.Dataflow.signals([]);
         Flow.Dataflow.link(_.ready, function () {
