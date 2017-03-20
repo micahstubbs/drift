@@ -2,7 +2,7 @@ import { getAboutRequest } from '../h2oProxy/getAboutRequest';
 
 export function about() {
   const Flow = window.Flow;
-  Flow.Version = '0.4.54';
+  Flow.Version = '0.6.1';
   Flow.about = _ => {
     const _properties = Flow.Dataflow.signals([]);
     Flow.Dataflow.link(_.ready, () => {
